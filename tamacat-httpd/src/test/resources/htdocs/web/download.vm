@@ -1,0 +1,26 @@
+#parse("htdocs/common/html-start.vm")
+<body>
+  <div id="contents">
+    <div id="header">DOWNLOAD</div>
+    #parse("htdocs/common/left-menu.vm")
+    <div id="main">
+      <h1>Download page.</h1>
+      <p>Download this software.</p>
+      <p>URL: ${url}</p>
+      
+      <h2>Repository</h2>
+      <div class="entry">
+        <p>Subversion repository</p>
+        <p>
+          </p><ul>
+            <li>SVN Repository. (read-only)<br>
+              <a href="http://tamacat.googlecode.com/svn/trunk/" target="_blank">
+               <span>http://tamacat.googlecode.com/svn/trunk/</span></a>
+            </li>
+          </ul>
+       </div>
+    </div>
+    #parse("htdocs/common/footer.vm")
+  </div>
+</body>
+#parse("htdocs/common/html-end.vm")

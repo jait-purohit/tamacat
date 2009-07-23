@@ -1,0 +1,7 @@
+  <div id="left-menu">
+    <h2>MENU</h2>
+    <ul>
+      <li><a href="/web/index.html"><span>TOP</span></a></li>
+      <li><a href="/web/download.html"><span>DOWNLOAD</span></a></li>
+    </ul>
+  </div>
