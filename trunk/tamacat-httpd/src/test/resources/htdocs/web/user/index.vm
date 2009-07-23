@@ -1,0 +1,18 @@
+#parse("htdocs/common/html-start.vm")
+<body>
+  <div id="contents">
+    <div id="header">USER</div>
+    
+    #parse("htdocs/common/left-menu.vm")
+    <div id="main">
+      <h1>User page.</h1>
+      <p>This is user page.</p>
+      <p>URL: ${url}</p>
+      
+    <h3>test</h3>
+    <p>${user}</p>
+
+    #parse("htdocs/common/footer.vm")
+  </div>
+</body>
+#parse("htdocs/common/html-end.vm")
