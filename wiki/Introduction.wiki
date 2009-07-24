@@ -7,7 +7,7 @@
 Please make the following configuration files for the place where in CLASSPATH. 
   (It makes it referring to `tamacat-httpd/src/test/resources`.)
 
-  * server.properties (required)
+=== server.properties (required)===
 {{{
 Port=80
 https=false
@@ -41,7 +41,7 @@ file.resource.loader.modificationCheckInterval=2
 || url-config.file || url-config.xml || URL configuration file in CLASSPATH. ||
 
 
-  * components.xml (required)
+=== components.xml (required)===
 {{{
 <?xml version="1.0" encoding="UTF-8"?> 
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -53,7 +53,7 @@ file.resource.loader.modificationCheckInterval=2
 </beans>
 }}}
 
-  * url-config (required)
+=== url-config (required)===
 {{{
 <?xml version="1.0" encoding="UTF-8"?> 
 <service-config>
@@ -63,7 +63,7 @@ file.resource.loader.modificationCheckInterval=2
 </service-config>
 }}}
 
-  * mime-types.properties (required)
+=== mime-types.properties (required)===
 {{{
 ...
 gif=image/gif
