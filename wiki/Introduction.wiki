@@ -6,7 +6,7 @@
 
 Please make the following configuration files for the place where in CLASSPATH. 
   * server.properties (required)
-<code>
+{{{
 Port=80
 https=false
 https.keyStoreFile=test.keystore
@@ -25,7 +25,13 @@ file.resource.loader.class=org.apache.velocity.runtime.resource.loader.Classpath
 file.resource.loader.path=.
 file.resource.loader.cache=false
 file.resource.loader.modificationCheckInterval=2
-</code>
+}}}
+
+|| *key* || *value* || *description* ||
+|| Port  || 80      ||  Httpd Listen Port ||
+|| https || false/true || true: use https protocol ||
+|| https.keyStoreFile || test.keystore || The key.store file is specified. It is possible to make it by using keytool. keystore file create by keytools ||
+||https.keyPassword|| nopassword || keystore file's pasword||
 
   * components.xml (required)
   * url-config (optional)
