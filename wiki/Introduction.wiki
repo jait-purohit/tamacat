@@ -27,11 +27,25 @@ file.resource.loader.cache=false
 file.resource.loader.modificationCheckInterval=2
 }}}
 
-==|| *key* || *value* || *description* ||==
+==|| *key* || *value* || *description* ||
 || Port  || 80      ||  Httpd Listen Port ||
 || https || false/true || true: use https protocol ||
 || https.keyStoreFile || test.keystore || The key.store file is specified. It is possible to make it by using keytool. keystore file create by keytools ||
 ||https.keyPassword|| nopassword || keystore file's pasword||
 
   * components.xml (required)
+{{{
+<?xml version="1.0" encoding="UTF-8"?> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+  http://www.springframework.org/schema/aop
+  http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+  <bean id="DefaultHandler" class="org.tamacat.httpd.core.LocalFileHttpHandler" />
+  <bean id="server" class="org.tamacat.httpd.core.HttpEngine" />
+</beans>
+}}}
+
   * url-config (optional)
