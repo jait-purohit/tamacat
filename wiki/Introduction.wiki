@@ -5,6 +5,8 @@
 ==Configuring httpd==
 
 Please make the following configuration files for the place where in CLASSPATH. 
+(It makes it referring to `tamacat-httpd/src/test/resources`.)
+
   * server.properties (required)
 {{{
 Port=80
