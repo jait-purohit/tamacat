@@ -7,6 +7,8 @@
 Please make the following configuration files for the place where in CLASSPATH. 
   (It makes it referring to `tamacat-httpd/src/test/resources`.)
 
+---
+
 === server.properties (required)===
 {{{
 Port=80
@@ -37,9 +39,10 @@ file.resource.loader.modificationCheckInterval=2
 || https.protocol || SSL,SSLv2,SSLv3,TLS,TLSv1,TLSv1_1 || http protocol ||
 || MaxServerThreads || 5 || Maximum worker threads of server. ||
 || ServerSocketTimeout || 30000 || socket timeout (ms) ||
-|| ServerSocketBufferSize || 8192 || socket buffer size (bytes) |||
+|| ServerSocketBufferSize || 8192 || socket buffer size (bytes) ||
 || url-config.file || url-config.xml || URL configuration file in CLASSPATH. ||
 
+---
 
 === components.xml (required)===
 {{{
@@ -53,6 +56,7 @@ file.resource.loader.modificationCheckInterval=2
 </beans>
 }}}
 
+---
 === url-config (required)===
 {{{
 <?xml version="1.0" encoding="UTF-8"?> 
@@ -63,6 +67,7 @@ file.resource.loader.modificationCheckInterval=2
 </service-config>
 }}}
 
+---
 === mime-types.properties (required)===
 {{{
 ...
