@@ -7,10 +7,11 @@
 Please make the following configuration files for the place where in CLASSPATH. 
   (It makes it referring to `tamacat-httpd/src/test/resources`.)
 
-* server.properties
-* components.xml
-* url-config.xml
-* mime-types.properties
+=== Configuration Files: ===
+  * server.properties
+  * components.xml
+  * url-config.xml
+  * mime-types.properties
 
 ==== server.properties (required) ====
 {{{
