@@ -1,9 +1,30 @@
 #summary One-sentence summary of this page.
 
-= Introduction =
+=Introduction=
 
-== Configuring httpd
+==Configuring httpd==
+
 Please make the following configuration files for the place where in CLASSPATH. 
-* server.properties (required)
-* components.xml (required)
-* url-config (optional)
+  * server.properties (required)
+{{{
+Port=80
+https=false
+https.keyStoreFile=test.keystore
+https.keyPassword=nopassword
+https.keyStoreType=JKS
+https.protocol=TLS
+MaxServerThreads=5
+ServerSocketTimeout=30000
+ServerSocketBufferSize=8192
+url-config.file=url-config.xml
+
+# Velocity Engine configuration.
+resource.loader=file
+file.resource.loader.description=Velocity Classpath Resource Loader
+file.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+file.resource.loader.path=.
+file.resource.loader.cache=false
+file.resource.loader.modificationCheckInterval=2
+}}}
+  * components.xml (required)
+  * url-config (optional)
