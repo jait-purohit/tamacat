@@ -2,14 +2,17 @@
 
 =Introduction=
 
-==Configuring httpd==
+== Configuring httpd ==
 
 Please make the following configuration files for the place where in CLASSPATH. 
   (It makes it referring to `tamacat-httpd/src/test/resources`.)
 
-----
+* server.properties
+* components.xml
+* url-config.xml
+* mime-types.properties
 
-=== server.properties (required)===
+==== server.properties (required) ====
 {{{
 Port=80
 https=false
@@ -30,7 +33,6 @@ file.resource.loader.path=.
 file.resource.loader.cache=false
 file.resource.loader.modificationCheckInterval=2
 }}}
-
 || *key* || *value* || *description* ||
 || Port  || 80      ||  Httpd Listen Port ||
 || https || false/true || true: use https protocol ||
@@ -42,9 +44,7 @@ file.resource.loader.modificationCheckInterval=2
 || ServerSocketBufferSize || 8192 || socket buffer size (bytes) ||
 || url-config.file || url-config.xml || URL configuration file in CLASSPATH. ||
 
-----
-
-=== components.xml (required)===
+==== components.xml (required)====
 {{{
 <?xml version="1.0" encoding="UTF-8"?> 
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -55,9 +55,12 @@ file.resource.loader.modificationCheckInterval=2
   <bean id="server" class="org.tamacat.httpd.core.HttpEngine" />
 </beans>
 }}}
+|| *class* || *description* ||
+|| org.tamacat.httpd.core.LocalFileHttpHandler || returns local contents. ||
+|| org.tamacat.httpd.core.VelocityHttpHandler || returns local contents using velocity templates. ||
+|| org.tamacat.httpd.core.ReverseProxyHttpHandler || returns remote server contents. ||
 
-----
-=== url-config (required)===
+==== url-config.xml (required) ====
 {{{
 <?xml version="1.0" encoding="UTF-8"?> 
 <service-config>
@@ -67,8 +70,8 @@ file.resource.loader.modificationCheckInterval=2
 </service-config>
 }}}
 
-----
-=== mime-types.properties (required)===
+
+==== mime-types.properties (required) ====
 {{{
 ...
 gif=image/gif
