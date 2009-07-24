@@ -34,6 +34,9 @@ file.resource.loader.modificationCheckInterval=2
 || https || false/true || true: use https protocol ||
 || https.keyStoreFile || test.keystore || The key.store file is specified. It is possible to make it by using keytool. keystore file create by keytools ||
 ||https.keyPassword|| nopassword || keystore file's pasword||
+|| MaxServerThreads || 5 || Maximum worker threads. ||
+|| ServerSocketTimeout || 30000 || socket timeout (ms) ||
+|| url-config.file || url-config.xml || URL configuration file in CLASSPATH. ||
 </p>
 
   * components.xml (required)
