@@ -26,12 +26,13 @@ file.resource.loader.path=.
 file.resource.loader.cache=false
 file.resource.loader.modificationCheckInterval=2
 }}}
-
-==|| *key* || *value* || *description* ||
+<p>
+|| *key* || *value* || *description* ||
 || Port  || 80      ||  Httpd Listen Port ||
 || https || false/true || true: use https protocol ||
 || https.keyStoreFile || test.keystore || The key.store file is specified. It is possible to make it by using keytool. keystore file create by keytools ||
 ||https.keyPassword|| nopassword || keystore file's pasword||
+</p>
 
   * components.xml (required)
 {{{
@@ -48,4 +49,12 @@ file.resource.loader.modificationCheckInterval=2
 </beans>
 }}}
 
-  * url-config (optional)
+  * url-config (required)
+{{{
+<?xml version="1.0" encoding="UTF-8"?> 
+<service-config>
+  <service host="http://localhost">
+    <url path="/" type="normal" handler="DefaultHandler" />
+  </service>
+</service-config>
+}}}
