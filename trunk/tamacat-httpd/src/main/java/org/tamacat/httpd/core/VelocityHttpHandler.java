@@ -5,6 +5,7 @@
 package org.tamacat.httpd.core;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -22,7 +23,7 @@ import org.tamacat.httpd.action.ActionHandler;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityPage;
-import org.tamacat.httpd.util.ClassUtils;
+import org.tamacat.util.ClassUtils;
 
 /**
  * <p>It is implements of HttpHandler that uses {@code Apache Velociry}. 

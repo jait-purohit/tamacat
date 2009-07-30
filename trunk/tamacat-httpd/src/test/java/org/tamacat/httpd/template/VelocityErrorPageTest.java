@@ -5,8 +5,6 @@
 package org.tamacat.httpd.template;
 
 import static org.junit.Assert.*;
-
-
 import java.util.Properties;
 
 import org.apache.http.HttpRequest;
@@ -22,7 +20,7 @@ import org.junit.Test;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityErrorPage;
-import org.tamacat.httpd.util.PropertyUtils;
+import org.tamacat.util.PropertyUtils;
 
 public class VelocityErrorPageTest {
 

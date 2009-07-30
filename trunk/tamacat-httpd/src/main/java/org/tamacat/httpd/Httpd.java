@@ -4,8 +4,8 @@
  */
 package org.tamacat.httpd;
 
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.tamacat.di.DI;
+import org.tamacat.di.DIContainer;
 import org.tamacat.httpd.core.HttpEngine;
 
 public class Httpd {
@@ -13,9 +13,9 @@ public class Httpd {
 	static final String XML = "components.xml";
 	
 	public static void main(String[] args) {
-		XmlBeanFactory di = new XmlBeanFactory(new ClassPathResource(XML));
+		DIContainer di = DI.configure(XML);
 		if (di == null) throw new IllegalArgumentException(XML + " is not found.");
-		HttpEngine server = (HttpEngine) di.getBean("server");
+		HttpEngine server = di.getBean("server", HttpEngine.class);
 		if (server == null) throw new IllegalArgumentException();
 		server.start();
 	}

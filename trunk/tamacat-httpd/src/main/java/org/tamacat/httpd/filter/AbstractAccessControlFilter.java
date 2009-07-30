@@ -5,6 +5,7 @@
 package org.tamacat.httpd.filter;
 
 import org.apache.http.HttpRequest;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.auth.AuthComponent;
@@ -12,7 +13,7 @@ import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.filter.acl.AccessUrlCache;
-import org.tamacat.httpd.util.StringUtils;
+import org.tamacat.util.StringUtils;
 
 /**
  * URL Based ACCESS CONTROL.

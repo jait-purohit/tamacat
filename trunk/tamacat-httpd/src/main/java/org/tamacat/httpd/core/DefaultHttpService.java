@@ -6,8 +6,6 @@ package org.tamacat.httpd.core;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -31,6 +29,8 @@ import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.httpd.util.AccessLogUtils;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public class DefaultHttpService extends HttpService {
 

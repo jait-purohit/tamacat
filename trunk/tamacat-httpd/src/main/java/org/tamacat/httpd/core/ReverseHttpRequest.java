@@ -4,11 +4,7 @@
  */
 package org.tamacat.httpd.core;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
-
-
 import org.apache.http.HttpRequest;
 import org.apache.http.client.utils.CloneUtils;
 import org.apache.http.message.BasicHeader;
@@ -17,6 +13,8 @@ import org.apache.http.message.BasicRequestLine;
 import org.apache.http.protocol.HTTP;
 
 import org.tamacat.httpd.config.ReverseUrl;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 /**
  * <p>Client side request for reverse proxy.

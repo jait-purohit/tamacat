@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -33,6 +31,8 @@ import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.httpd.util.ReverseUtils;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public class ReverseProxyHandler extends AbstractHttpHandler {
 	

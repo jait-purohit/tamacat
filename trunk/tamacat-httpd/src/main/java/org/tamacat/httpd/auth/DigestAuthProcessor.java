@@ -5,7 +5,6 @@
 package org.tamacat.httpd.auth;
 
 import java.security.MessageDigest;
-
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -18,8 +17,8 @@ import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.UnauthorizedException;
 import org.tamacat.httpd.filter.RequestFilter;
-import org.tamacat.httpd.util.StringUtils;
-import org.tamacat.httpd.util.UniqueCodeGenerator;
+import org.tamacat.util.StringUtils;
+import org.tamacat.util.UniqueCodeGenerator;
 
 /**
  * <p>DIGEST AUTHENTICATION

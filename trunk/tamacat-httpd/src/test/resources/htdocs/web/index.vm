@@ -22,7 +22,6 @@
       <li>Supported Basic, Digest and WSSE authentication.</li>
       <li>Container design of URL path, such as Servlet Container.</li>
       <li>Prepared containers: Reverse Proxy, Velocity Template Server and Simple local file Web Server.</li>
-      <li>It is architecture that uses DI Container(Springframework).</li>
       <li>Required Java Platform, Standard Edition 6 (JDK6).</li>
     </ul>
 

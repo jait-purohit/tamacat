@@ -5,14 +5,10 @@
 package org.tamacat.httpd.core;
 
 import java.io.Closeable;
-
-
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.ConnectionClosedException;
 import org.apache.http.HttpClientConnection;
 import org.apache.http.HttpServerConnection;
@@ -21,6 +17,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public class WorkerThread extends Thread {
 	static final Log LOG = LogFactory.getLog(WorkerThread.class);

@@ -5,7 +5,6 @@
 package org.tamacat.httpd.util;
 
 import java.io.File;
-
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -13,6 +12,7 @@ import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.util.PropertyUtils;
 
 public class FileMimeTypesTest extends TestCase {
 

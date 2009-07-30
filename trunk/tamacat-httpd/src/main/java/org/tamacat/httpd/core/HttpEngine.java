@@ -5,7 +5,6 @@
 package org.tamacat.httpd.core;
 
 import java.io.IOException;
-
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,8 +12,6 @@ import java.util.concurrent.ExecutorService;
 
 import javax.net.ssl.SSLContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.protocol.HttpRequestHandlerRegistry;
 import org.apache.http.protocol.HttpService;
 import org.tamacat.httpd.config.ServerConfig;
@@ -22,6 +19,8 @@ import org.tamacat.httpd.config.ServiceConfig;
 import org.tamacat.httpd.config.ServiceConfigXmlParser;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.ssl.SSLContextCreator;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public class HttpEngine {
 

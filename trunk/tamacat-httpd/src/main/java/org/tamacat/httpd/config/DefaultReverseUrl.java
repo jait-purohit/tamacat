@@ -11,13 +11,9 @@ import java.net.URL;
 
 public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 
-	private ServiceUrl serviceUrl;
-	
-	//private HttpHandler handler;
-	
+	private ServiceUrl serviceUrl;	
 	private URL reverseUrl;
 	private InetSocketAddress targetAddress;
-	
 	
 	public DefaultReverseUrl(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;

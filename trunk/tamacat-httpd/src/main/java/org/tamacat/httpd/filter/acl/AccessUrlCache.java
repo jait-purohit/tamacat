@@ -4,7 +4,7 @@
  */
 package org.tamacat.httpd.filter.acl;
 
-import org.tamacat.httpd.util.LimitedCacheLRU;
+import org.tamacat.util.LimitedCacheLRU;
 
 public class AccessUrlCache extends LimitedCacheLRU<String, AccessUrl> {
 

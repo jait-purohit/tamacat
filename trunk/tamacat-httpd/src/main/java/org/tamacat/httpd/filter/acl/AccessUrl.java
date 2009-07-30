@@ -4,7 +4,7 @@
  */
 package org.tamacat.httpd.filter.acl;
 
-import org.tamacat.httpd.util.LimitedCacheObject;
+import org.tamacat.util.LimitedCacheObject;
 
 public interface AccessUrl extends LimitedCacheObject {
 

@@ -6,9 +6,10 @@ package org.tamacat.httpd.config;
 
 import java.util.Properties;
 
+
 import org.apache.velocity.app.Velocity;
-import org.tamacat.httpd.util.PropertyUtils;
-import org.tamacat.httpd.util.StringUtils;
+import org.tamacat.util.PropertyUtils;
+import org.tamacat.util.StringUtils;
 
 public class ServerConfig {
 
