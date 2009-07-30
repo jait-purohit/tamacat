@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+  http://www.springframework.org/schema/aop
+  http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+  <bean id="AuthComponent" class="org.tamacat.httpd.examples.UserAuthComponent">
+    <property name="password">
+      <value>pass</value>
+    </property>
+  </bean>
+  
+  <bean id="ActionHandler" class="org.tamacat.httpd.action.ActionHandler">
+    <property name="pattern">
+      <value>/.*/(.*)/(.*).html</value>
+    </property>
+    <property name="actionPackage">
+      <value>org.tamacat.server.examples.action</value>
+    </property>
+  </bean>
+  
+  <bean id="BasicAuthFilter" class="org.tamacat.httpd.auth.BasicAuthProcessor">
+    <property name="authComponent">
+      <ref bean="AuthComponent" />
+    </property>
+  </bean>
+  
+  <bean id="DigestAuthFilter" class="org.tamacat.httpd.auth.DigestAuthProcessor">
+    <property name="authComponent">
+      <ref bean="AuthComponent" />
+    </property>
+  </bean>
+
+  <bean id="WSSEAuthFilter" class="org.tamacat.httpd.auth.WSSEAuthProcessor">
+    <property name="authComponent">
+      <ref bean="AuthComponent" />
+    </property>
+  </bean>
+    
+  <bean id="SSOFilter" class="org.tamacat.httpd.sso.SingleSignOnFilter" />
+  <bean id="AccessControlFilter" class="org.tamacat.httpd.examples.AccessControlFilter">
+    <property name="cacheSize">
+      <value>100</value>
+    </property>
+    <property name="cacheExpire">
+      <value>5000</value>
+    </property>
+  </bean>
+  
+  <bean id="VelocityHandler" class="org.tamacat.httpd.core.VelocityHttpHandler">
+    <property name="docsRoot">
+      <value>htdocs</value>
+    </property>
+    <property name="requestFilter">
+      <ref bean="DigestAuthFilter" />
+    </property>
+    <!--
+    <property name="requestFilter">
+      <ref bean="AccessControlFilter" />
+    </property>
+    <property name="actionHandler">
+      <ref bean="ActionHandler" />
+    </property>
+    -->
+  </bean>
+  
+  <bean id="WebServiceHandler" class="org.tamacat.httpd.core.VelocityHttpHandler">
+    <property name="docsRoot">
+      <value>htdocs</value>
+    </property>
+    <property name="requestFilter">
+      <ref bean="WSSEAuthFilter" />
+    </property>
+    <!--
+    <property name="requestFilter">
+      <ref bean="AccessControlFilter" />
+    </property>
+    <property name="actionHandler">
+      <ref bean="ActionHandler" />
+    </property>
+    -->
+  </bean>
+  
+  <bean id="DefaultHandler" class="org.tamacat.httpd.core.LocalFileHttpHandler" />
+  
+  <bean id="ReverseHandler" class="org.tamacat.httpd.core.ReverseProxyHandler">
+    <property name="requestFilter">
+      <ref bean="DigestAuthFilter" />
+    </property>
+    <!--
+    <property name="requestFilter">
+      <ref bean="SSOFilter" />
+    </property>
+    <property name="requestFilter">
+      <ref bean="AccessControlFilter" />
+    </property>
+    -->
+  </bean>
+  
+  <bean id="server" class="org.tamacat.httpd.core.HttpEngine" />
+  
+</beans>

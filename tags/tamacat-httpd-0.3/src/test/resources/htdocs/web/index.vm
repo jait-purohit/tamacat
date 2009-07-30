@@ -1,0 +1,40 @@
+#parse("htdocs/common/html-start.vm")
+<body>
+  <div id="contents">
+    <div id="header">TOP</div>
+    
+    #parse("htdocs/common/left-menu.vm")
+    <div id="main">
+      <h1>Top page.</h1>
+      <p>This is top page.</p>
+      <p>URL: ${url}</p>
+      
+    <h3>Welcome</h3>
+    <p>TamaCat-httpd is a open source Java Web Server software, Powered by 
+      "<a href="http://hc.apache.org/" title="Go to Apache HttpComponents project site." target="_blank">
+        <span>Apache HttpComponents</span>
+      </a>". 
+    </p>
+
+    <h3>Feature</h3>
+    <ul>
+      <li>Supported HTTP and HTTPS protocols.</li>
+      <li>Supported Basic, Digest and WSSE authentication.</li>
+      <li>Container design of URL path, such as Servlet Container.</li>
+      <li>Prepared containers: Reverse Proxy, Velocity Template Server and Simple local file Web Server.</li>
+      <li>It is architecture that uses DI Container(Springframework).</li>
+      <li>Required Java Platform, Standard Edition 6 (JDK6).</li>
+    </ul>
+
+    <h3>License</h3>
+    <p>TamaCat-httpd is licensed under the terms of the 
+      <a href="http://www.apache.org/licenses/LICENSE-2.0.html" target="_blank">
+        <span>Apache License, Version 2.0.</span>
+      </a>
+    </p>
+   </div>
+    
+    #parse("htdocs/common/footer.vm")
+  </div>
+</body>
+#parse("htdocs/common/html-end.vm")
