@@ -4,8 +4,6 @@
  */
 package org.tamacat.httpd.filter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -14,7 +12,9 @@ import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.UnauthorizedException;
 import org.tamacat.httpd.util.HeaderUtils;
-import org.tamacat.httpd.util.StringUtils;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
+import org.tamacat.util.StringUtils;
 
 
 public class SingleSignOnFilter implements RequestFilter {

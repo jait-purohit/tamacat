@@ -6,13 +6,14 @@ package org.tamacat.httpd.config;
 
 import java.net.MalformedURLException;
 
+
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.tamacat.httpd.config.ServiceUrl.Type;
-import org.tamacat.httpd.util.ClassUtils;
-import org.tamacat.httpd.util.StringUtils;
+import org.tamacat.util.ClassUtils;
+import org.tamacat.util.StringUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

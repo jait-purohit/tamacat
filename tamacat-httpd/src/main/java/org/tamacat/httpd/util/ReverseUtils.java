@@ -5,7 +5,6 @@
 package org.tamacat.httpd.util;
 
 import java.net.InetAddress;
-
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -17,13 +16,14 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ReverseUrl;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
+import org.tamacat.util.StringUtils;
 
 public class ReverseUtils {
 
@@ -32,7 +32,6 @@ public class ReverseUtils {
 	static Charset charset = Charset.forName("UTF-8");
 	static CharsetDecoder decoder = charset.newDecoder();
 	static CharsetEncoder encoder = charset.newEncoder();
-
 	
 	static Pattern PATTERN = Pattern.compile(
 		"<[^<]*\\s+(href|src|action)=('|\")([^('|\")]*)('|\")[^>]*>"

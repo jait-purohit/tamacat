@@ -6,11 +6,11 @@ package org.tamacat.httpd.action;
 
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 //  /web/#{Class}/#{method}.html -> 
 //  /web/#{method}.html -> DefaultAction#index()

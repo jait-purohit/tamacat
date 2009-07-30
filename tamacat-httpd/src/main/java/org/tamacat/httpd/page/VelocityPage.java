@@ -9,8 +9,6 @@ import java.io.StringWriter;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.velocity.Template;
@@ -19,6 +17,8 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public class VelocityPage {
 	static final Log LOG = LogFactory.getLog(VelocityPage.class);

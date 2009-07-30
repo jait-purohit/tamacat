@@ -6,17 +6,12 @@ package org.tamacat.httpd.core;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-
-
 import java.io.IOException;
 import java.net.URLDecoder;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -26,8 +21,10 @@ import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.page.VelocityErrorPage;
-import org.tamacat.httpd.util.PropertyUtils;
-import org.tamacat.httpd.util.StringUtils;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
+import org.tamacat.util.PropertyUtils;
+import org.tamacat.util.StringUtils;
 
 /**
  * <p>This class is implements of the abstraction of {@link HttpHandler} interface. 

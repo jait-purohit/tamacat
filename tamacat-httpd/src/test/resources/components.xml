@@ -1,12 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?> 
-<beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:aop="http://www.springframework.org/schema/aop"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-  http://www.springframework.org/schema/aop
-  http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
   <bean id="AuthComponent" class="org.tamacat.httpd.examples.UserAuthComponent">
     <property name="password">
       <value>pass</value>
@@ -40,7 +33,7 @@
     </property>
   </bean>
     
-  <bean id="SSOFilter" class="org.tamacat.httpd.sso.SingleSignOnFilter" />
+  <bean id="SSOFilter" class="org.tamacat.httpd.filter.SingleSignOnFilter" />
   <bean id="AccessControlFilter" class="org.tamacat.httpd.examples.AccessControlFilter">
     <property name="cacheSize">
       <value>100</value>
@@ -87,13 +80,13 @@
   <bean id="DefaultHandler" class="org.tamacat.httpd.core.LocalFileHttpHandler" />
   
   <bean id="ReverseHandler" class="org.tamacat.httpd.core.ReverseProxyHandler">
-    <property name="requestFilter">
+    <property name="requestFilter" >
       <ref bean="DigestAuthFilter" />
     </property>
-    <!--
     <property name="requestFilter">
       <ref bean="SSOFilter" />
     </property>
+    <!--
     <property name="requestFilter">
       <ref bean="AccessControlFilter" />
     </property>

@@ -6,8 +6,4 @@ The Apache Software Foundation (http://www.apache.org/).
 
   - Apache HttpComponents Core - HttpCore
   - Apache HttpComponents Client - HttpClient
-
-  - Apache Commons-logging
-
-The SpringSource.org (http://www.springsource.org/)
-  - Spring Framework
+  - Log4J (optional)

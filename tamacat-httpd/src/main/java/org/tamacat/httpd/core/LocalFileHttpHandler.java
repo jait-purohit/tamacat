@@ -7,8 +7,6 @@ package org.tamacat.httpd.core;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -18,6 +16,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.exception.NotFoundException;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public class LocalFileHttpHandler extends AbstractHttpHandler {
 

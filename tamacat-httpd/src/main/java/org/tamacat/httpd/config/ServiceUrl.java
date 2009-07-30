@@ -6,8 +6,8 @@ package org.tamacat.httpd.config;
 
 import java.net.URL;
 
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.tamacat.di.DI;
+import org.tamacat.di.DIContainer;
 import org.tamacat.httpd.core.HttpHandler;
 
 public class ServiceUrl {
@@ -36,8 +36,7 @@ public class ServiceUrl {
 	private ReverseUrl reverseUrl;
 	private Type type;
 	private final ServerConfig serverConfig;
-	static XmlBeanFactory di
-		= new XmlBeanFactory(new ClassPathResource("components.xml"));
+	static DIContainer di = DI.configure("components.xml");
 	
 	public ServiceUrl(ServerConfig serverConfig) {
 		this.serverConfig = serverConfig;
@@ -48,7 +47,7 @@ public class ServiceUrl {
 	}
 
 	public HttpHandler getHttpHandler() {
-		HttpHandler httpHandler = (HttpHandler)di.getBean(getHandlerName());
+		HttpHandler httpHandler = di.getBean(getHandlerName(), HttpHandler.class);
 		httpHandler.setServiceUrl(this);
 		return httpHandler;
 	}

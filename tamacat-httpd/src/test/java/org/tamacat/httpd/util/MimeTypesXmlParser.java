@@ -5,13 +5,12 @@
 package org.tamacat.httpd.util;
 
 import java.util.LinkedHashMap;
-
 import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.tamacat.httpd.util.ClassUtils;
+import org.tamacat.util.ClassUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

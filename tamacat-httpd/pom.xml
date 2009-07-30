@@ -1,8 +1,11 @@
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.tamacat</groupId>
   <artifactId>tamacat-httpd</artifactId>
-  <version>0.3</version>
+  <version>0.4</version>
   
   <scm>
     <url>http://tamacat.googlecode.com/svn/trunk/tamacat-httpd</url>
@@ -11,9 +14,9 @@
   </scm>
   <dependencies>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <version>2.5.6</version>
+      <groupId>org.tamacat</groupId>
+      <artifactId>tamacat-core</artifactId>
+      <version>0.4</version>
     </dependency>
     
     <dependency>
@@ -126,12 +129,4 @@
      </plugin>
     </plugins>
   </reporting>
-  
-  <distributionManagement>
-    <repository>
-    <id>maven.tamacat.org</id>
-    <url>https://maven.tamacat.org/maven2/</url>
-    <uniqueVersion>false</uniqueVersion>
-    </repository>
-  </distributionManagement>
 </project>

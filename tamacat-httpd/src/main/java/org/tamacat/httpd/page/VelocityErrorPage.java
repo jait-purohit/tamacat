@@ -9,14 +9,14 @@ import java.io.StringWriter;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.tamacat.httpd.exception.HttpException;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public class VelocityErrorPage {
 
