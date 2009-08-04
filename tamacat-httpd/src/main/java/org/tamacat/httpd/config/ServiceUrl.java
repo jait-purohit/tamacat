@@ -14,6 +14,7 @@ public class ServiceUrl {
 	public enum Type {
 		NORMAL("normal"),
 		REVERSE("reverse"),
+		LB("balancer"),
 		ERROR("error");
 		
 		private final String name;

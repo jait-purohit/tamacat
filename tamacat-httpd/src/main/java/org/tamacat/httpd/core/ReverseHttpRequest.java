@@ -6,6 +6,7 @@ package org.tamacat.httpd.core;
 
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
+import org.apache.http.RequestLine;
 import org.apache.http.client.utils.CloneUtils;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpRequest;
@@ -25,6 +26,11 @@ public class ReverseHttpRequest extends BasicHttpRequest implements Cloneable {
 
 	protected ReverseUrl reverseUrl;
 	
+	public ReverseHttpRequest(RequestLine line, ReverseUrl reverseUrl) {
+		super(line);
+		this.reverseUrl = reverseUrl;
+	}
+	
 	public ReverseHttpRequest(HttpRequest request, ReverseUrl reverseUrl) {
 		super(new BasicRequestLine(
 	    		request.getRequestLine().getMethod(),
@@ -32,7 +38,10 @@ public class ReverseHttpRequest extends BasicHttpRequest implements Cloneable {
 	    		request.getRequestLine().getProtocolVersion())
 		);
 		this.reverseUrl = reverseUrl;
-
+		setRequest(request);
+	}
+	
+	public void setRequest(HttpRequest request) {
         rewriteHostHeader(request);
         
         setHeaders(request.getAllHeaders());

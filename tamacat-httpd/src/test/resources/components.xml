@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-  <bean id="AuthComponent" class="org.tamacat.httpd.examples.UserAuthComponent">
+  <bean id="AuthComponent"
+     class="org.tamacat.httpd.examples.UserAuthComponent" singleton="false">
     <property name="password">
       <value>pass</value>
     </property>
   </bean>
   
-  <bean id="ActionHandler" class="org.tamacat.httpd.action.ActionHandler">
+  <bean id="ActionHandler"
+     class="org.tamacat.httpd.action.ActionHandler" singleton="false">
     <property name="pattern">
       <value>/.*/(.*)/(.*).html</value>
     </property>
@@ -15,26 +17,32 @@
     </property>
   </bean>
   
-  <bean id="BasicAuthFilter" class="org.tamacat.httpd.auth.BasicAuthProcessor">
+  <bean id="BasicAuthFilter"
+     class="org.tamacat.httpd.auth.BasicAuthProcessor" singleton="false">
     <property name="authComponent">
       <ref bean="AuthComponent" />
     </property>
   </bean>
   
-  <bean id="DigestAuthFilter" class="org.tamacat.httpd.auth.DigestAuthProcessor">
+  <bean id="DigestAuthFilter"
+     class="org.tamacat.httpd.auth.DigestAuthProcessor" singleton="false">
     <property name="authComponent">
       <ref bean="AuthComponent" />
     </property>
   </bean>
 
-  <bean id="WSSEAuthFilter" class="org.tamacat.httpd.auth.WSSEAuthProcessor">
+  <bean id="WSSEAuthFilter"
+     class="org.tamacat.httpd.auth.WSSEAuthProcessor" singleton="false">
     <property name="authComponent">
       <ref bean="AuthComponent" />
     </property>
   </bean>
     
-  <bean id="SSOFilter" class="org.tamacat.httpd.filter.SingleSignOnFilter" />
-  <bean id="AccessControlFilter" class="org.tamacat.httpd.examples.AccessControlFilter">
+  <bean id="SSOFilter"
+     class="org.tamacat.httpd.filter.SingleSignOnFilter" />
+     
+  <bean id="AccessControlFilter"
+     class="org.tamacat.httpd.examples.AccessControlFilter">
     <property name="cacheSize">
       <value>100</value>
     </property>
@@ -43,7 +51,8 @@
     </property>
   </bean>
   
-  <bean id="VelocityHandler" class="org.tamacat.httpd.core.VelocityHttpHandler">
+  <bean id="VelocityHandler" 
+     class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
     <property name="docsRoot">
       <value>htdocs</value>
     </property>
@@ -60,7 +69,8 @@
     -->
   </bean>
   
-  <bean id="WebServiceHandler" class="org.tamacat.httpd.core.VelocityHttpHandler">
+  <bean id="WebServiceHandler" 
+     class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
     <property name="docsRoot">
       <value>htdocs</value>
     </property>
@@ -77,9 +87,11 @@
     -->
   </bean>
   
-  <bean id="DefaultHandler" class="org.tamacat.httpd.core.LocalFileHttpHandler" />
+  <bean id="DefaultHandler"
+     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false" />
   
-  <bean id="ReverseHandler" class="org.tamacat.httpd.core.ReverseProxyHandler">
+  <bean id="ReverseHandler"
+     class="org.tamacat.httpd.core.ReverseProxyHandler" singleton="false">
     <property name="requestFilter" >
       <ref bean="DigestAuthFilter" />
     </property>
@@ -93,6 +105,7 @@
     -->
   </bean>
   
-  <bean id="server" class="org.tamacat.httpd.core.HttpEngine" />
+  <bean id="server"
+     class="org.tamacat.httpd.core.HttpEngine" singleton="false" />
   
 </beans>
