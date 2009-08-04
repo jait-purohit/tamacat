@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.URL;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -17,6 +18,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultHttpClientConnection;
+import org.apache.http.message.BasicRequestLine;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.protocol.HttpRequestExecutor;
@@ -28,6 +30,7 @@ import org.apache.http.protocol.RequestUserAgent;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
+import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.httpd.util.ReverseUtils;
@@ -65,7 +68,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     	
         // Access Backend server //
         HttpResponse targetResponse = forwardRequest(request, response, context);
-        ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
+        ReverseUrl reverseUrl = //serviceUrl.getReverseUrl();
+        	(ReverseUrl) context.getAttribute("reverseUrl");
         ReverseUtils.copyHttpResponse(targetResponse, response);
         ReverseUtils.rewriteContentLocationHeader(response, reverseUrl);
         
@@ -82,8 +86,13 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		this.httpproc = procBuilder.build();
 		
         LOG.trace(">> Request URI: " + request.getRequestLine().getUri());
-        ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
+
 		try {
+	        ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
+	        if (reverseUrl == null) {
+	        	throw new ServiceUnavailableException("reverseUrl is null.");
+	        }
+	        context.setAttribute("reverseUrl", reverseUrl);
 			Socket outsocket = new Socket(
 					reverseUrl.getTargetAddress().getHostName(),
 					reverseUrl.getTargetAddress().getPort());
@@ -95,11 +104,20 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		        LOG.trace("request: " + request);
 		    }
 
-	        HttpRequest targetRequest = null;
+	        ReverseHttpRequest targetRequest = null;
 	        if (request instanceof HttpEntityEnclosingRequest) {
 	        	targetRequest = new ReverseHttpEntityEnclosingRequest(request, reverseUrl);
 	        } else {
-	        	targetRequest = new ReverseHttpRequest(request, reverseUrl);
+	        	URL url = reverseUrl.getReverseUrl(request.getRequestLine().getUri());
+		        if (url == null) {
+		        	throw new NotFoundException("url is null.");
+		        }
+	        	BasicRequestLine line = new BasicRequestLine(
+    		    		request.getRequestLine().getMethod(),
+    		    		url.toString(),
+    		    		request.getRequestLine().getProtocolVersion());
+	        	targetRequest = new ReverseHttpRequest(line, reverseUrl);
+	        	targetRequest.setRequest(request);
 	        }
 	        httpexecutor.preProcess(targetRequest, httpproc, context);
 	        HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
@@ -113,7 +131,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 				html = page.getErrorPage(request, response, (HttpException)e);
 			} else {
 				LOG.error(e.getMessage());
-				//e.printStackTrace(); //for debug
+				e.printStackTrace(); //for debug
 				html = page.getErrorPage(request, response, 
 						new ServiceUnavailableException(e));
 			}

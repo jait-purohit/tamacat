@@ -27,7 +27,7 @@ public class ReverseHttpRequestTest {
 	public void setUp() throws Exception {
 		config = new ServerConfig();
 		ServiceConfig serviceConfig
-			= new ServiceConfigXmlParser(config).getReverseConfig();
+			= new ServiceConfigXmlParser(config).getServiceConfig();
 		url = serviceConfig.getServiceUrl("/test/");
 		reverseUrl = url.getReverseUrl();
 	}
@@ -42,7 +42,6 @@ public class ReverseHttpRequestTest {
 			new ReverseHttpRequest(
 					new BasicHttpRequest("GET","/test/test.jsp"),
 					reverseUrl);
-		
 		ReverseHttpRequest clone = request.clone();
 		assertNotSame(clone, request);
 		assertNotSame(clone.reverseUrl, request.reverseUrl);

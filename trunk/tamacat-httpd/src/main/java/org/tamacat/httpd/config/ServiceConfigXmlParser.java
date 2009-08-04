@@ -5,13 +5,12 @@
 package org.tamacat.httpd.config;
 
 import java.net.MalformedURLException;
-
-
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.tamacat.httpd.config.ServiceUrl.Type;
+import org.tamacat.httpd.lb.LbRoundRobinServiceUrl;
 import org.tamacat.util.ClassUtils;
 import org.tamacat.util.StringUtils;
 
@@ -51,7 +50,7 @@ public class ServiceConfigXmlParser {
 		this.serverConfig = serverConfig;
 	}
 	
-	public ServiceConfig getReverseConfig() {
+	public ServiceConfig getServiceConfig() {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -119,14 +118,32 @@ public class ServiceConfigXmlParser {
 				if (serviceUrl.isType(Type.REVERSE)) {
 					ReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
 					NodeList reverseNodes = urlNode.getChildNodes();
-					for (int j=0; j<reverseNodes.getLength(); j++) {
+					REV: for (int j=0; j<reverseNodes.getLength(); j++) {
 						Node reverseNode = reverseNodes.item(j);
 						if (REVERSE.equals(reverseNode.getNodeName())) {
 							String reverse = reverseNode.getTextContent();
 							reverseUrl.setReverse(getURL(reverse));
+							break REV;
 						}
 					}
 					serviceUrl.setReverseUrl(reverseUrl);
+				} else if (serviceUrl.isType(Type.LB)) { //Load Balancer
+					LbRoundRobinServiceUrl lbServiceUrl = new LbRoundRobinServiceUrl(serverConfig);
+					lbServiceUrl.setPath(serviceUrl.getPath());
+					lbServiceUrl.setHandlerName(serviceUrl.getHandlerName());
+					lbServiceUrl.setType(serviceUrl.getType());
+					lbServiceUrl.setHost(getURL(host));
+					NodeList reverseNodes = urlNode.getChildNodes();
+					for (int j=0; j<reverseNodes.getLength(); j++) {
+						ReverseUrl reverseUrl = new DefaultReverseUrl(lbServiceUrl);
+						Node reverseNode = reverseNodes.item(j);
+						if (REVERSE.equals(reverseNode.getNodeName())) {
+							String reverse = reverseNode.getTextContent();
+							reverseUrl.setReverse(getURL(reverse));
+							lbServiceUrl.setReverseUrl(reverseUrl);
+						}
+					}
+					serviceUrl = lbServiceUrl;
 				}
 				serviceConfig.addServiceUrl(serviceUrl);
 			}

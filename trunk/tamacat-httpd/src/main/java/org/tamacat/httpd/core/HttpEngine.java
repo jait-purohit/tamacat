@@ -66,7 +66,7 @@ public class HttpEngine {
 		
 		//Register services and service URLs.
 		ServiceConfig serviceConfig
-			= new ServiceConfigXmlParser(serverConfig).getReverseConfig();
+			= new ServiceConfigXmlParser(serverConfig).getServiceConfig();
 		for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
 			registry.register(serviceUrl.getPath() + "*", serviceUrl.getHttpHandler());
 		}
