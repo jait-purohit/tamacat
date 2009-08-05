@@ -9,7 +9,7 @@
     <url path="/api/" type="normal" handler="WebServiceHandler" />
     <url path="/lb/" type="lb" handler="ReverseHandler">
       <reverse>http://localhost:8080/lb1/</reverse>
-      <reverse>http://localhost:8080/lb2/</reverse>
+      <reverse>http://localhost:8088/lb2/</reverse>
     </url>
   </service>
 </service-config>
