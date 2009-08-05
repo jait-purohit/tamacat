@@ -143,6 +143,7 @@ public class ServiceConfigXmlParser {
 							lbServiceUrl.setReverseUrl(reverseUrl);
 						}
 					}
+					lbServiceUrl.startHealthCheck();
 					serviceUrl = lbServiceUrl;
 				}
 				serviceConfig.addServiceUrl(serviceUrl);
