@@ -4,6 +4,14 @@
  */
 package org.tamacat.log;
 
+/**
+ * <p>The interface of diagnostic context for logging.
+ * 
+ * <ul>
+ *   <li>Nested diagnostic context.(NDC)</li>
+ *   <li>Mapped diagnostic context.(MDC)</li>
+ * </ul>
+ */
 public interface DiagnosticContext {
 
 	void setNestedContext(String data);

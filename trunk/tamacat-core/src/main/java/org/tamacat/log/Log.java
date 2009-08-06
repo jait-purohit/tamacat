@@ -5,7 +5,7 @@
 package org.tamacat.log;
 
 /**
- * Log interface supports a basic logging operation.
+ * <p>Log interface supports a basic logging operation.
  */
 public interface Log {
     Object getOriginalLogger();
