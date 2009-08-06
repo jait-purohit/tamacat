@@ -14,10 +14,30 @@ import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.monitor.HealthCheckSupport;
 import org.tamacat.httpd.monitor.HttpMonitor;
+import org.tamacat.httpd.util.DefaultThreadFactory;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
+/**
+ * <p>It is service URL setting of the round robin type load balancer.
+ * 
+ * <pre>ex. url-config.xml{@code 
+ * <?xml version="1.0" encoding="UTF-8"?> 
+ * <service-config>
+ *   <service host="http://localhost">
+ *     <url path="/lb/" type="lb" handler="ReverseHandler">
+ *       <reverse>http://localhost:8080/lb1/</reverse>
+ *       <reverse>http://localhost:8088/lb2/</reverse>
+ *     </url>
+ *   </service>
+ * </service-config>}
+ * </pre>
+ */
 public class LbRoundRobinServiceUrl extends ServiceUrl
 		implements HealthCheckSupport<ReverseUrl> {
 	
+	static final Log LOG = LogFactory.getLog(LbRoundRobinServiceUrl.class);
+
 	private List<ReverseUrl> reverseUrls = new ArrayList<ReverseUrl>();
 	private int next;
 	
@@ -35,7 +55,6 @@ public class LbRoundRobinServiceUrl extends ServiceUrl
 		ReverseUrl reverseUrl = null;
 		synchronized (reverseUrls) {
 			int size = reverseUrls.size();
-			System.out.println(reverseUrls);
 			if (size == 0) {
 				throw new ServiceUnavailableException();
 			} else if (size == 1) {
@@ -48,20 +67,18 @@ public class LbRoundRobinServiceUrl extends ServiceUrl
 				next++;
 			}
 		}
-		System.out.println("access: "+reverseUrl.getReverse());
-
 		return reverseUrl;
 	}
 
 	@Override
 	public void addTarget(ReverseUrl target) {
-		System.out.println("add: "+target.getReverse());
+		LOG.trace("add: "+target.getReverse());
 		reverseUrls.add(target);
 	}
 
 	@Override
 	public void removeTarget(ReverseUrl target) {
-		System.out.println("del: "+target.getReverse());
+		LOG.trace("del: "+target.getReverse());
 		reverseUrls.remove(target);
 	}
 
@@ -76,7 +93,7 @@ public class LbRoundRobinServiceUrl extends ServiceUrl
 			config.setUrl(url.getReverse().toString() + "check.html");
 			monitor.setMonitorConfig(config);
 			monitor.setTarget(url);
-			new Thread(monitor).start();
+			new DefaultThreadFactory("Monitor").newThread(monitor).start();
 			monitor.startMonitor();
 		}
 	}

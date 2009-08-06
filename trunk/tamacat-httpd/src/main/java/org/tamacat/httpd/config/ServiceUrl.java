@@ -10,7 +10,14 @@ import org.tamacat.di.DI;
 import org.tamacat.di.DIContainer;
 import org.tamacat.httpd.core.HttpHandler;
 
+/**
+ * <p>It is setting of the service URL.
+ */
 public class ServiceUrl {
+	
+	/**
+	 * The type of service URL.
+	 */
 	public enum Type {
 		NORMAL("normal"),
 		REVERSE("reverse"),

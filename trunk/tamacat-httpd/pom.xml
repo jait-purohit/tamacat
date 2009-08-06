@@ -6,6 +6,9 @@
   <groupId>org.tamacat</groupId>
   <artifactId>tamacat-httpd</artifactId>
   <version>0.4</version>
+  <packaging>jar</packaging>
+  <name>tamacat-httpd components</name>
+  <url>http://code.google.com/p/tamacat/</url>
   
   <scm>
     <url>http://tamacat.googlecode.com/svn/trunk/tamacat-httpd</url>
@@ -97,6 +100,17 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptor>src/main/assembly/release.xml</descriptor>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>svn:https://tamacat.googlecode.com/svn/trunk/tamacat-httpd</tagBase>
+          <goals>clean,package,cargo:deploy</goals>
+          <username>${scm.username}</username>
+          <password>${scm.password}</password>
         </configuration>
       </plugin>
     </plugins>

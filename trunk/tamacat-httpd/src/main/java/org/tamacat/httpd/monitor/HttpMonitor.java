@@ -13,6 +13,11 @@ import org.tamacat.httpd.config.MonitorConfig;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
+/**
+ * <p>Thread of HTTP Monitor for back end server.
+ *
+ * @param <T> target of {@code HealthCheckSupport}.
+ */
 public class HttpMonitor<T> implements Runnable {
 
 	static final Log LOG = LogFactory.getLog(HttpMonitor.class);
@@ -36,6 +41,7 @@ public class HttpMonitor<T> implements Runnable {
 		this.config = config;
 	}
 	
+	@Override
 	public void run() {
 		while (true) {
 			try {
@@ -45,9 +51,11 @@ public class HttpMonitor<T> implements Runnable {
 						if (isNormal == true && result == false) {
 							healthCheckTarget.removeTarget(target);
 							isNormal = false;
+							LOG.info("check: " + config.getUrl() + " is down.");
 						} else if (isNormal == false && result == true){
 							healthCheckTarget.addTarget(target);
 							isNormal = true;
+							LOG.info("check: " + config.getUrl() + " is up.");
 						}
 					}
 				}
@@ -59,7 +67,7 @@ public class HttpMonitor<T> implements Runnable {
 		}
 	}
 	
-	public boolean check() {
+	protected boolean check() {
 		if (config == null) return true;
 		HttpClient client= new DefaultHttpClient();
 		boolean result = false;
@@ -69,9 +77,8 @@ public class HttpMonitor<T> implements Runnable {
 				result = true;
 			}
 		} catch (Exception e) {
-			LOG.warn(e.getMessage());
+			if (isNormal) LOG.warn(e.getMessage());
 		}
-		LOG.info("check: " + config.getUrl() + ", status=" + isNormal);
 		return result;
 	}
 	
