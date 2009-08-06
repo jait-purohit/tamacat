@@ -11,6 +11,5 @@ public interface DIContainer {
     public Object getBean(String id);
     public <T>T getBean(String id, Class<T> type);
 
-    //public <T>List<T> getInstanceOfClass(Class<T> type);
     public <T>List<T> getInstanceOfType(Class<T> type);
 }
