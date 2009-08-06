@@ -4,6 +4,9 @@
  */
 package org.tamacat.httpd.config;
 
+/**
+ * <p>It is the setting of the monitor for health check.
+ */
 public class MonitorConfig {
 
 	private int interval;
