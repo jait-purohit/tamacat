@@ -70,7 +70,7 @@ public class ReverseUtils {
     
     public static void copyHttpResponse(HttpResponse targetResponse, HttpResponse response) {
         // Remove hop-by-hop headers
-        targetResponse.removeHeaders("Content-Length");
+        //targetResponse.removeHeaders("Content-Length");
         targetResponse.removeHeaders("Transfer-Encoding");
         targetResponse.removeHeaders("Connection");
         targetResponse.removeHeaders("Keep-Alive");

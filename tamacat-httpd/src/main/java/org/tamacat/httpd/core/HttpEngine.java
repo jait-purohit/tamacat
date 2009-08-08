@@ -22,6 +22,9 @@ import org.tamacat.httpd.ssl.SSLContextCreator;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
+/**
+ * <p>{@code HttpEngine} implements multi thread server.
+ */
 public class HttpEngine {
 
 	static final Log LOG = LogFactory.getLog(HttpEngine.class);
@@ -35,7 +38,7 @@ public class HttpEngine {
     private HttpParamsBuilder paramsBuilder;
 
     private boolean isInitalized;
-    protected ExecutorService executors;
+    private ExecutorService executors;
     
     public HttpEngine() {}
     
