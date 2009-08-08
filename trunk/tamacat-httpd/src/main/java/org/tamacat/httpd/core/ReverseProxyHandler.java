@@ -36,6 +36,7 @@ import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.IOUtils;
 
 public class ReverseProxyHandler extends AbstractHttpHandler {
 	
@@ -86,14 +87,14 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		this.httpproc = procBuilder.build();
 		
         LOG.trace(">> Request URI: " + request.getRequestLine().getUri());
-
+        Socket outsocket = null;
 		try {
 	        ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
 	        if (reverseUrl == null) {
 	        	throw new ServiceUnavailableException("reverseUrl is null.");
 	        }
 	        context.setAttribute("reverseUrl", reverseUrl);
-			Socket outsocket = new Socket(
+	        outsocket = new Socket(
 					reverseUrl.getTargetAddress().getHostName(),
 					reverseUrl.getTargetAddress().getPort());
 			DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
@@ -142,6 +143,10 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 			} catch (UnsupportedEncodingException e1) {
 			}
 			return response;
+		} finally {
+			if (outsocket != null) {
+				IOUtils.close(outsocket);
+			}
 		}
 	}
 	

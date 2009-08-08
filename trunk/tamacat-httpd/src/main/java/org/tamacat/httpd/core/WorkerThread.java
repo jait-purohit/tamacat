@@ -23,13 +23,8 @@ import org.tamacat.log.LogFactory;
 public class WorkerThread extends Thread {
 	static final Log LOG = LogFactory.getLog(WorkerThread.class);
 	
-	public static final String HTTP_IN_CONN = "http.proxy.in-conn";
-    public static final String HTTP_OUT_CONN = "http.proxy.out-conn";
-    static final String HTTP_CONN_KEEPALIVE = "http.proxy.conn-keepalive";
-    
     private HttpService service;
     private DefaultHttpServerConnection inconn = new DefaultHttpServerConnection();
-    private HttpClientConnection outconn; //optional.
     
     public WorkerThread(HttpService service, Socket insocket, HttpParams params) throws IOException {
     	this.service = service;
@@ -38,37 +33,15 @@ public class WorkerThread extends Thread {
     
     public void init() {
     	inconn = null;
-    	outconn = null;
     }
     
     @Override
 	public void run() {
     	LOG.trace("New connection thread");
         HttpContext context = new BasicHttpContext(null);
-        
-        // Bind connection objects to the execution context
-        context.setAttribute(HTTP_IN_CONN, this.inconn);
-        //context.setAttribute(HTTP_OUT_CONN, this.outconn);
-        
         try {
-            while (! Thread.interrupted()) {
-                if (! this.inconn.isOpen()) {
-                //	  this.outconn = (HttpClientConnection) context.getAttribute(HTTP_OUT_CONN);
-                //    close(this.outconn);
-                    break;
-                }
-                this.service.handleRequest(inconn, context);
-                
-                Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
-                if (! Boolean.TRUE.equals(keepalive)) {
-                	//this.outconn = (HttpClientConnection) context.getAttribute(HTTP_OUT_CONN);
-                	//close(outconn);
-                    close(this.inconn);
-                    break;
-                }
-            }
+            this.service.handleRequest(inconn, context);
         } catch (ConnectionClosedException ex) {
-        	//ex.printStackTrace();
         	LOG.error("Client closed connection");
         } catch (SocketTimeoutException ex) {
         	LOG.trace("timeout >> close connection.");
@@ -78,10 +51,7 @@ public class WorkerThread extends Thread {
         } finally {
             try {
                 this.inconn.shutdown();
-            } catch (IOException ignore) {}
-            try {
-            	this.outconn = (HttpClientConnection) context.getAttribute(HTTP_OUT_CONN);
-            	if (this.outconn != null) this.outconn.shutdown();
+                close(inconn);
             } catch (IOException ignore) {}
         }
     }
