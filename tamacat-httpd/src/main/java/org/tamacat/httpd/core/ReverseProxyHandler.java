@@ -98,7 +98,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 					reverseUrl.getTargetAddress().getHostName(),
 					reverseUrl.getTargetAddress().getPort());
 			DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
-	        conn.bind(outsocket, builder.build());
+	        conn.bind(outsocket, builder.buildParams());
 	        
 	        if (LOG.isTraceEnabled()) {
 		        LOG.trace("Outgoing connection to " + outsocket.getInetAddress());

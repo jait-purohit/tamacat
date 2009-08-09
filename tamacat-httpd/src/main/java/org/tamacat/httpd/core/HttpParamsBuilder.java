@@ -17,7 +17,7 @@ public class HttpParamsBuilder {
 	private int serverSocketBufferSize = 8*1024;
 	private boolean staleConnectionCheck = false;
 	private boolean tcpNoDelay = true;
-	private String originServer = "HttpComponents/1.1";
+	private String originServer = "tamacat-httpd-0.4";
 	
 	public HttpParamsBuilder socketTimeout(int serverSocketTimeout) {
 		this.serverSocketTimeout = serverSocketTimeout;
@@ -42,15 +42,6 @@ public class HttpParamsBuilder {
 	public HttpParamsBuilder originServer(String originServer) {
 		this.originServer = originServer;
 		return this;
-	}
-	
-	public HttpParams build() {
-		return new BasicHttpParams()
-			.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, serverSocketTimeout)
-			.setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, serverSocketBufferSize)
-			.setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, staleConnectionCheck)
-			.setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, tcpNoDelay)
-			.setParameter(CoreProtocolPNames.ORIGIN_SERVER, originServer);
 	}
 	
 	public HttpParams buildParams() {

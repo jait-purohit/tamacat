@@ -65,20 +65,6 @@ public class DefaultHttpService extends HttpService {
 		procBuilder.addInterceptor(new ResponseServer());
 		procBuilder.addInterceptor(new ResponseContent());
 		procBuilder.addInterceptor(new ResponseConnControl());
-
-//        inhttpproc.addInterceptor(new HttpRequestInterceptor() {
-//            public void process(
-//                    HttpRequest request, 
-//                    HttpContext context) throws HttpException, IOException {
-//                if (request instanceof HttpEntityEnclosingRequest) {
-//                	
-//                	HttpEntity entity = ((HttpEntityEnclosingRequest)request).getEntity();
-//                	//System.out.println(BasicHttpEntity(entity);
-//               		//List<NameValuePair> paramList = URLEncodedUtils.parse(entity);
-//               		//System.out.println("params=" + paramList.size());
-//            	}
-//            }
-//        });
 	}
 	
 	public void setHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
