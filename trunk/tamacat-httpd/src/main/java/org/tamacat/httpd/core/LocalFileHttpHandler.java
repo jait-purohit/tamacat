@@ -42,6 +42,8 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 		    LOG.trace("File " + file.getPath() + " found");
 		    response.setStatusCode(HttpStatus.SC_OK);
 		    response.setEntity(getFileEntity(file));
+		    response.setHeader("Content-Length",String.valueOf(response.getEntity().getContentLength()));
+			response.setHeader(response.getEntity().getContentEncoding());
 		    LOG.trace("Serving file " + file.getPath());
 		}
 	}

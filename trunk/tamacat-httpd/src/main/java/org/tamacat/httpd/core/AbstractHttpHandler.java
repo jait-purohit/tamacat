@@ -93,6 +93,8 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 		}
 		HttpEntity entity = getEntity(html);
 		response.setEntity(entity);
+		response.setHeader("Content-Length",String.valueOf(response.getEntity().getContentLength()));
+		response.setHeader(response.getEntity().getContentEncoding());
 	}
 	
 	/**
