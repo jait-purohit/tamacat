@@ -21,6 +21,7 @@ import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.page.VelocityErrorPage;
+import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.PropertyUtils;
@@ -92,9 +93,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 					new ServiceUnavailableException(e));
 		}
 		HttpEntity entity = getEntity(html);
-		response.setEntity(entity);
-		response.setHeader("Content-Length",String.valueOf(response.getEntity().getContentLength()));
-		response.setHeader(response.getEntity().getContentEncoding());
+		ResponseUtils.setEntity(response, entity);
 	}
 	
 	/**

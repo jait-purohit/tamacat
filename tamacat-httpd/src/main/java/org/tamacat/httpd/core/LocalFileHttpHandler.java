@@ -16,6 +16,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.exception.NotFoundException;
+import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
@@ -41,9 +42,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 		else {
 		    LOG.trace("File " + file.getPath() + " found");
 		    response.setStatusCode(HttpStatus.SC_OK);
-		    response.setEntity(getFileEntity(file));
-		    response.setHeader("Content-Length",String.valueOf(response.getEntity().getContentLength()));
-			response.setHeader(response.getEntity().getContentEncoding());
+		    ResponseUtils.setEntity(response, getFileEntity(file));
 		    LOG.trace("Serving file " + file.getPath());
 		}
 	}

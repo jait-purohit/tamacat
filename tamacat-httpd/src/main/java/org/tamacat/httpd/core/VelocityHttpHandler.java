@@ -23,6 +23,7 @@ import org.tamacat.httpd.action.ActionHandler;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityPage;
+import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.util.ClassUtils;
 
 /**
@@ -65,10 +66,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 				if (r == null) throw new NotFoundException();
 				File file = new File(r.toURI());
 				if (file.exists() == false) throw new NotFoundException();
-				response.setEntity(getFileEntity(file));
-				response.setHeader(response.getEntity().getContentType());
-				response.setHeader("Content-Length",String.valueOf(response.getEntity().getContentLength()));
-				response.setHeader(response.getEntity().getContentEncoding());
+				ResponseUtils.setEntity(response, getFileEntity(file));
 			} catch (URISyntaxException e) {
 				throw new NotFoundException(e);
 			}
@@ -84,9 +82,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			}
 		}
 		String html = page.getPage(request, response, vc, path);
-		response.setEntity(getEntity(html));
-		response.setHeader("Content-Length",String.valueOf(response.getEntity().getContentLength()));
-		response.setHeader(response.getEntity().getContentEncoding());
+		ResponseUtils.setEntity(response, getEntity(html));
 	}
 	
 	@Override
