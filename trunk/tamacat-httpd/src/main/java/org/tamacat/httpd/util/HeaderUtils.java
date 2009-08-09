@@ -5,6 +5,7 @@
 package org.tamacat.httpd.util;
 
 import java.util.StringTokenizer;
+
 import org.apache.http.Header;
 
 public final class HeaderUtils {
