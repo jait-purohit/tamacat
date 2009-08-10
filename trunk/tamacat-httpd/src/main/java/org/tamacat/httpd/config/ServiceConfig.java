@@ -6,11 +6,12 @@ package org.tamacat.httpd.config;
 
 import java.util.ArrayList;
 
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.tamacat.httpd.config.ServiceUrl.Type;
+import org.tamacat.httpd.config.Type;
 
 public class ServiceConfig {
 

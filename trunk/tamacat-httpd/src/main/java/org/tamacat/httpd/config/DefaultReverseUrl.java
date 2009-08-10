@@ -9,6 +9,8 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.http.client.utils.CloneUtils;
+
 public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 
 	private ServiceUrl serviceUrl;	
@@ -43,7 +45,7 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
     		String distUrl = path.replaceFirst(getPath(), reverseUrl.getPath());
     		try {
     			int port = reverseUrl.getPort();
-    			if (port == -1) port = reverseUrl.getDefaultPort();
+    			//if (port == -1) port = reverseUrl.getDefaultPort();
     			URL convertUrl = new URL(reverseUrl.getProtocol(),
                     reverseUrl.getHost(), port, distUrl);
     			return convertUrl;
@@ -70,7 +72,7 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
     	if (path != null) {
     		return path.replaceFirst(
     				reverseUrl.toString(),
-    				getHost().getHost()
+    				getHost().toString()
     		);
     	} else {
     		return path;
@@ -82,8 +84,7 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
     	DefaultReverseUrl clone = 
             (DefaultReverseUrl) super.clone();
         if (this.serviceUrl != null) {
-        	//TODO
-            //clone.serviceUrl = (ServiceUrl) CloneUtils.clone(this.serviceUrl);
+            clone.serviceUrl = (ServiceUrl) CloneUtils.clone(this.serviceUrl);
         }
         return clone;
     }

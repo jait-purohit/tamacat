@@ -149,6 +149,12 @@ public class ReverseUtils {
 		else return "";
 	}
 	
+	/**
+	 * convert backend hostname to original hostname.
+	 * @param reverseUrl
+	 * @param line cookie header line.
+	 * @return 
+	 */
 	public static String getConvertedSetCookieHeader(ReverseUrl reverseUrl, String line) {
 		if (line == null) return "";
 		String dist = reverseUrl.getReverse().getHost();
