@@ -5,11 +5,12 @@
 package org.tamacat.httpd.config;
 
 import java.net.MalformedURLException;
+
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.tamacat.httpd.config.ServiceUrl.Type;
+import org.tamacat.httpd.config.Type;
 import org.tamacat.httpd.lb.LbRoundRobinServiceUrl;
 import org.tamacat.util.ClassUtils;
 import org.tamacat.util.StringUtils;

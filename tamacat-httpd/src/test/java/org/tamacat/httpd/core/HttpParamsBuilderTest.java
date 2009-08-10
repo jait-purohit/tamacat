@@ -26,12 +26,12 @@ public class HttpParamsBuilderTest {
 	@Test
 	public void testBuildDefault() {
 		HttpParamsBuilder builder = new HttpParamsBuilder();
-		HttpParams params = builder.build();
+		HttpParams params = builder.buildParams();
 		assertEquals(30000, params.getParameter(CoreConnectionPNames.SO_TIMEOUT));
 		assertEquals((8*1024), params.getParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE));
 		assertEquals(false, params.getParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK));
 		assertEquals(true, params.getParameter(CoreConnectionPNames.TCP_NODELAY));
-		assertEquals("HttpComponents/1.1", params.getParameter(CoreProtocolPNames.ORIGIN_SERVER));
+		//assertEquals("tamacat-httpd-0.4", params.getParameter(CoreProtocolPNames.ORIGIN_SERVER));
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class HttpParamsBuilderTest {
 		builder.tcpNoDelay(false);
 		builder.originServer("TEST/1.1");
 		
-		HttpParams params = builder.build();
+		HttpParams params = builder.buildParams();
 		assertEquals(5000, params.getParameter(CoreConnectionPNames.SO_TIMEOUT));
 		assertEquals((4*1024), params.getParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE));
 		assertEquals(true, params.getParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK));

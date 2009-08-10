@@ -6,37 +6,14 @@ package org.tamacat.httpd.config;
 
 import java.net.URL;
 
-import org.tamacat.di.DI;
-import org.tamacat.di.DIContainer;
+import org.tamacat.httpd.core.DefaultHttpHandlerFactory;
 import org.tamacat.httpd.core.HttpHandler;
+import org.tamacat.httpd.core.HttpHandlerFactory;
 
 /**
  * <p>It is setting of the service URL.
  */
 public class ServiceUrl {
-	
-	/**
-	 * The type of service URL.
-	 */
-	public enum Type {
-		NORMAL("normal"),
-		REVERSE("reverse"),
-		LB("balancer"),
-		ERROR("error");
-		
-		private final String name;
-		Type(String name) {
-			this.name = name;
-		}
-		
-		public String getName() {
-			return name;
-		}
-		
-		public static Type find(String name) {
-			return valueOf(name.toUpperCase());
-		}
-	}
 	
 	private URL host;
 	private String handlerName;
@@ -44,10 +21,21 @@ public class ServiceUrl {
 	private ReverseUrl reverseUrl;
 	private Type type;
 	private final ServerConfig serverConfig;
-	static DIContainer di = DI.configure("components.xml");
+	private HttpHandlerFactory factory;
 	
 	public ServiceUrl(ServerConfig serverConfig) {
 		this.serverConfig = serverConfig;
+	}
+	
+	public void setHttpHandlerFactory(HttpHandlerFactory factory) {
+		this.factory = factory;
+	}
+	
+	protected HttpHandlerFactory getHttpHandlerFactory() {
+		if (factory == null) {
+			factory = new DefaultHttpHandlerFactory();
+		}
+		return factory;
 	}
 	
 	public URL getHost() {
@@ -55,9 +43,7 @@ public class ServiceUrl {
 	}
 
 	public HttpHandler getHttpHandler() {
-		HttpHandler httpHandler = di.getBean(getHandlerName(), HttpHandler.class);
-		httpHandler.setServiceUrl(this);
-		return httpHandler;
+		return getHttpHandlerFactory().getHttpHandler(this, getHandlerName());
 	}
 
 	public String getPath() {

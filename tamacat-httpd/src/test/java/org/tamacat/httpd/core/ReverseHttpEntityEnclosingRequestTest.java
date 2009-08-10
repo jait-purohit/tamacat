@@ -42,17 +42,29 @@ public class ReverseHttpEntityEnclosingRequestTest {
 	}
 
 	@Test
-	public void testClone() throws Exception {
+	public void testReverseHttpRequest() throws Exception {
 		ReverseHttpEntityEnclosingRequest request =
 			new ReverseHttpEntityEnclosingRequest(
 					new BasicHttpRequest("GET","/test/test.jsp"),
 					reverseUrl);
 		request.setEntity(new StringEntity("test"));
 		
-		ReverseHttpEntityEnclosingRequest clone = request.clone();
-		assertNotSame(clone, request);
-		assertNotSame(clone.reverseUrl, request.reverseUrl);
-		assertNotSame(clone.getEntity(), request.getEntity());
+		assertNotNull(request.getAllHeaders());
+		assertEquals("http://localhost:8080/test/test.jsp", request.getRequestLine().getUri());
 	}
+	
+//	@Test
+//	public void testClone() throws Exception {
+//		ReverseHttpEntityEnclosingRequest request =
+//			new ReverseHttpEntityEnclosingRequest(
+//					new BasicHttpRequest("GET","/test/test.jsp"),
+//					reverseUrl);
+//		request.setEntity(new StringEntity("test"));
+//		
+//		ReverseHttpEntityEnclosingRequest clone = request.clone();
+//		assertNotSame(clone, request);
+//		assertNotSame(clone.reverseUrl, request.reverseUrl);
+//		assertNotSame(clone.getEntity(), request.getEntity());
+//	}
 
 }

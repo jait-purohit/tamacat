@@ -5,9 +5,9 @@
 package org.tamacat.httpd.core;
 
 import org.apache.http.Header;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.RequestLine;
-import org.apache.http.client.utils.CloneUtils;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicRequestLine;
@@ -21,7 +21,7 @@ import org.tamacat.log.LogFactory;
  * <p>Client side request for reverse proxy.
  * (Implements HttpRequest)
  */
-public class ReverseHttpRequest extends BasicHttpRequest implements Cloneable {
+public class ReverseHttpRequest extends BasicHttpRequest {
 	static final Log LOG = LogFactory.getLog(ReverseHttpRequest.class);
 
 	protected ReverseUrl reverseUrl;
@@ -82,13 +82,13 @@ public class ReverseHttpRequest extends BasicHttpRequest implements Cloneable {
         }	
 	}
 	
-    @Override
-    public ReverseHttpRequest clone() throws CloneNotSupportedException {
-    	ReverseHttpRequest clone = 
-            (ReverseHttpRequest) super.clone();
-        if (this.reverseUrl != null) {
-            clone.reverseUrl = (ReverseUrl) CloneUtils.clone(this.reverseUrl);
-        }
-        return clone;
-    }
+//    @Override
+//    public ReverseHttpRequest clone() throws CloneNotSupportedException {
+//    	ReverseHttpRequest clone = 
+//            (ReverseHttpRequest) super.clone();
+//        if (this.reverseUrl != null) {
+//            clone.reverseUrl = (ReverseUrl) CloneUtils.clone(this.reverseUrl);
+//        }
+//        return clone;
+//    }
 }

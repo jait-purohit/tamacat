@@ -7,6 +7,7 @@ package org.tamacat.httpd.core;
 import static org.junit.Assert.*;
 
 
+
 import org.apache.http.message.BasicHttpRequest;
 import org.junit.After;
 import org.junit.Before;
@@ -35,15 +36,26 @@ public class ReverseHttpRequestTest {
 	@After
 	public void tearDown() throws Exception {
 	}
-
+	
 	@Test
-	public void testClone() throws CloneNotSupportedException {
+	public void testReverseHttpRequest() throws CloneNotSupportedException {
 		ReverseHttpRequest request =
 			new ReverseHttpRequest(
 					new BasicHttpRequest("GET","/test/test.jsp"),
 					reverseUrl);
-		ReverseHttpRequest clone = request.clone();
-		assertNotSame(clone, request);
-		assertNotSame(clone.reverseUrl, request.reverseUrl);
+		
+		assertNotNull(request.getAllHeaders());
+		assertEquals("http://localhost:8080/test/test.jsp", request.getRequestLine().getUri());
 	}
+	
+//	@Test
+//	public void testClone() throws CloneNotSupportedException {
+//		ReverseHttpRequest request =
+//			new ReverseHttpRequest(
+//					new BasicHttpRequest("GET","/test/test.jsp"),
+//					reverseUrl);
+//		ReverseHttpRequest clone = request.clone();
+//		assertNotSame(clone, request);
+//		assertNotSame(clone.reverseUrl, request.reverseUrl);
+//	}
 }
