@@ -75,7 +75,7 @@ public class HttpEngine {
 		}
         service.setHandlerResolver(registry);
         executors = new ThreadExecutorFactory(serverConfig).getExecutorService();
-		
+		LOG.info("Listen: " + serverConfig.getPort());
         while (!Thread.interrupted()) {
             try {
                 //socket accept -> execute WorkerThrad.

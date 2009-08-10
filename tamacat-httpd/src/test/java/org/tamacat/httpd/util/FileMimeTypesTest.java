@@ -18,7 +18,7 @@ public class FileMimeTypesTest extends TestCase {
 
 	static final Properties mimeTypes;
     static {
-    	mimeTypes = PropertyUtils.getProperties("mime-types.properties");
+    	mimeTypes = PropertyUtils.getProperties("org/tamacat/httpd/mime-types.properties");
     }
     
 	@Before

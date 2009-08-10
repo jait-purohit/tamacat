@@ -17,6 +17,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
+import org.tamacat.httpd.util.AccessLogUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
@@ -40,6 +41,7 @@ public class WorkerThread extends Thread {
     	LOG.trace("New connection thread");
         HttpContext context = new BasicHttpContext(null);
         try {
+        	AccessLogUtils.setRemoteAddress(context, inconn.getRemoteAddress());
             this.service.handleRequest(inconn, context);
         } catch (ConnectionClosedException ex) {
         	LOG.error("Client closed connection");
@@ -56,7 +58,8 @@ public class WorkerThread extends Thread {
         }
     }
     
-    void close(Object conn) throws ConnectionClosedException, SocketTimeoutException{
+    protected void close(Object conn)
+    		throws ConnectionClosedException, SocketTimeoutException{
     	if (conn != null) {
     		try {
 	    		if (conn instanceof Closeable) {
