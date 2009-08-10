@@ -4,7 +4,6 @@
  */
 package org.tamacat.httpd.util;
 
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -19,7 +18,6 @@ import java.util.regex.Pattern;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -66,8 +64,6 @@ public class ReverseUtils {
 		return result;
 	}
 	
-	static final String REMOTE_ADDRESS = "remote_address";
-    
     public static void copyHttpResponse(HttpResponse targetResponse, HttpResponse response) {
         // Remove hop-by-hop headers
         //targetResponse.removeHeaders("Content-Length");
@@ -138,16 +134,6 @@ public class ReverseUtils {
         	response.addHeader("Set-Cookie", newValue);
         }
     }
-	
-	public static void setRemoteAddress(HttpContext context, InetAddress address) {
-		context.setAttribute(REMOTE_ADDRESS, address);
-	}
-	
-	public static String getRemoteIPAddress(HttpContext context) {
-		InetAddress address= (InetAddress) context.getAttribute(REMOTE_ADDRESS);
-		if (address != null) return address.getHostAddress();
-		else return "";
-	}
 	
 	/**
 	 * convert backend hostname to original hostname.

@@ -35,9 +35,14 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     static final Log LOG = LogFactory.getLog(AbstractHttpHandler.class);
     protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
 
-	static final Properties mimeTypes;
+	static Properties mimeTypes;
     static {
-    	mimeTypes = PropertyUtils.getProperties("mime-types.properties");
+    	try {
+    		mimeTypes = PropertyUtils.getProperties("mime-types.properties");
+    	} catch (Exception e) {
+    		//use default mime-types.
+    		mimeTypes = PropertyUtils.getProperties("org/tamacat/httpd/mime-types.properties");
+    	}
     }
 
     protected ServiceUrl serviceUrl;

@@ -4,12 +4,14 @@
  */
 package org.tamacat.httpd.util;
 
+import java.net.InetAddress;
 import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
+import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.log.DiagnosticContext;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -19,7 +21,8 @@ public class AccessLogUtils {
 	
 	static final Log ACCESS_LOG = LogFactory.getLog("AccessLog");
     static final DiagnosticContext DC = LogFactory.getDiagnosticContext(ACCESS_LOG);
-    
+	static final String REMOTE_ADDRESS = "remote_address";
+
 	static
 	  public void writeAccessLog(
 			  HttpRequest request, HttpResponse response,
@@ -29,9 +32,9 @@ public class AccessLogUtils {
         int statusCode = response.getStatusLine().getStatusCode();
         String reasonPhrase = response.getStatusLine().getReasonPhrase();
         String proto = request.getProtocolVersion().toString();
-        String ip = (String) context.getAttribute("remote_address"); //ReverseUtils.getRemoteIPAddress(context);
+        String ip = getRemoteIPAddress(context);
         if (ip == null) ip = ""; 
-        String remoteUser = "";//.getRemoteUser();
+        String remoteUser = (String) context.getAttribute(AuthComponent.REMOTE_USER_KEY);
         if (StringUtils.isEmpty(remoteUser)) remoteUser = "-";
         HttpEntity entity = response.getEntity();
         long size = entity != null ? entity.getContentLength() : 0;
@@ -44,5 +47,15 @@ public class AccessLogUtils {
         	DC.remove("ip");
         	DC.remove("user");
         }
+	}
+	
+	public static void setRemoteAddress(HttpContext context, InetAddress address) {
+		context.setAttribute(REMOTE_ADDRESS, address);
+	}
+	
+	public static String getRemoteIPAddress(HttpContext context) {
+		InetAddress address= (InetAddress) context.getAttribute(REMOTE_ADDRESS);
+		if (address != null) return address.getHostAddress();
+		else return "";
 	}
 }

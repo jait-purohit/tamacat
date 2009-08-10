@@ -20,7 +20,7 @@ import org.tamacat.log.LogFactory;
  */
 public class HttpMonitor<T> implements Runnable {
 
-	static final Log LOG = LogFactory.getLog(HttpMonitor.class);
+	static final Log LOG = LogFactory.getLog("MonitorLog");
 	
 	private MonitorConfig config;
 	private T target;
