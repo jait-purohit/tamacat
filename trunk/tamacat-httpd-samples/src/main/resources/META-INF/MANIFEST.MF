@@ -1,0 +1,8 @@
+Implementation-Title: tamacat-httpd-samples
+Implementation-Version: 0.4
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: tamacat-httpd-samples
+Bundle-Name: tamacat-httpd-samples
+Bundle-Vendor: TAMACAT.ORG
+Export-Package: org.tamacat.httpd.samples;version=0.4
+Bundle-Version: 0.4
