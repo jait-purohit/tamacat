@@ -20,5 +20,5 @@ set CLASSPATH_JAR=%SERVER_HOME%\conf
 for %%i in ("%SERVER_HOME%"\lib\*.jar) do call classpath_jar.bat %%i
 rem echo %CLASSPATH_JAR%
 
-%JAVA_EXE% %JAVA_OPT% -classpath %CLASSPATH_JAR% org.tamacat.httpd.Httpd
+%JAVA_EXE% %JAVA_OPT% -classpath %CLASSPATH_JAR% -Dserver.home=%SERVER_HOME% org.tamacat.httpd.Httpd
 
