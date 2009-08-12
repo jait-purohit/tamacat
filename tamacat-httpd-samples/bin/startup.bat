@@ -1,6 +1,6 @@
 @echo off
 
-set JAVA_OPT=
+set JAVA_OPT="-server"
 
 if not "%JAVA_HOME%" == "" goto OkJHome
 echo.

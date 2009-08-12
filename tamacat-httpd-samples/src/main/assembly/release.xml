@@ -21,18 +21,24 @@
         <include>conf/*.*</include>
         <include>htdocs/*</include>
         <include>logs</include>
-        <include>lib/*.*</include>
+       <!-- <include>lib/*.*</include> -->
         <include>**/README*</include>
         <include>**/LICENSE*</include>
         <include>**/NOTICE*</include>
         <include>**/*.txt</include>
         <include>**/*.xml</include>
-        <include>**/*.properties</include>
+        <include>**/*.vm</include>
+        <include>**/*.gif</include>
+        <include>**/*.js</include>
+        <include>**/*.css</include>
+        <include>**/*.xml</include>
       </includes>
+      <!-- 
       <excludes>
         <exclude>**/src/*.*</exclude>
         <exclude>**/target/*.*</exclude>
       </excludes>
+       -->
     </fileSet>
     <!-- javadoc -->
     <!--

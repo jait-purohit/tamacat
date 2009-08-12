@@ -1,6 +1,6 @@
 #!/bin/sh
 JAVA_HOME=/usr/java
-JAVA_OPT=
+JAVA_OPT="-server"
 
 if [ -z "$JAVA_HOME" ] ; then
   echo "Warning: JAVA_HOME environment variable is not set."
@@ -20,5 +20,5 @@ done
 
 ## echo $CLASSPATH_JAR
 
-$JAVA_EXE $JAVA_OPT -classpath $CLASSPATH_JAR org.tamacat.httpd.Httpd
+$JAVA_EXE $JAVA_OPT -classpath $CLASSPATH_JAR -Dserver.home=$SERVER_HOME org.tamacat.httpd.Httpd
 
