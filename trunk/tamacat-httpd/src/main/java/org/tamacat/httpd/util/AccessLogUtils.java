@@ -19,7 +19,7 @@ import org.tamacat.util.StringUtils;
 
 public class AccessLogUtils {
 	
-	static final Log ACCESS_LOG = LogFactory.getLog("AccessLog");
+	static final Log ACCESS_LOG = LogFactory.getLog("Access");
     static final DiagnosticContext DC = LogFactory.getDiagnosticContext(ACCESS_LOG);
 	static final String REMOTE_ADDRESS = "remote_address";
 
