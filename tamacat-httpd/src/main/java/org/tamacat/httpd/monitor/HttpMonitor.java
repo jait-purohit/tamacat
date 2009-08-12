@@ -20,7 +20,7 @@ import org.tamacat.log.LogFactory;
  */
 public class HttpMonitor<T> implements Runnable {
 
-	static final Log LOG = LogFactory.getLog("MonitorLog");
+	static final Log LOG = LogFactory.getLog("Monitor");
 	
 	private MonitorConfig config;
 	private T target;
@@ -51,11 +51,11 @@ public class HttpMonitor<T> implements Runnable {
 						if (isNormal == true && result == false) {
 							healthCheckTarget.removeTarget(target);
 							isNormal = false;
-							LOG.info("check: " + config.getUrl() + " is down.");
+							LOG.warn("check: " + config.getUrl() + " is down.");
 						} else if (isNormal == false && result == true){
 							healthCheckTarget.addTarget(target);
 							isNormal = true;
-							LOG.info("check: " + config.getUrl() + " is up.");
+							LOG.warn("check: " + config.getUrl() + " is up.");
 						}
 					}
 				}
@@ -77,7 +77,7 @@ public class HttpMonitor<T> implements Runnable {
 				result = true;
 			}
 		} catch (Exception e) {
-			if (isNormal) LOG.warn(e.getMessage());
+			if (isNormal) LOG.error(e.getMessage());
 		}
 		return result;
 	}

@@ -9,7 +9,15 @@
   <packaging>jar</packaging>
   <name>tamacat-httpd components</name>
   <url>http://code.google.com/p/tamacat/</url>
-  
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <scm>
     <url>http://tamacat.googlecode.com/svn/trunk/tamacat-httpd</url>
     <connection>scm:svn:http://tamacat.googlecode.com/svn/trunk/tamacat-httpd</connection>

@@ -7,7 +7,7 @@ package org.tamacat.httpd.monitor;
 /**
  * <p>It is interface to express that I support a health check function.
  * 
- * @param <T>
+ * @param <T> target of health check object.
  */
 public interface HealthCheckSupport<T> {
 
