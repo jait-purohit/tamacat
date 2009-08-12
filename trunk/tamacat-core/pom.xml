@@ -9,9 +9,17 @@
   <artifactId>tamacat-core</artifactId>
   <version>0.4</version>
   <packaging>jar</packaging>
-  <name>TamaCat Core(DI Container)</name>
+  <name>tamacat-core(DI Container)</name>
   <url>http://code.google.com/p/tamacat/</url>
-  
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <scm>
     <url>http://tamacat.googlecode.com/svn/trunk/tamacat-core</url>
     <connection>scm:svn:http://tamacat.googlecode.com/svn/trunk/tamacat-core</connection>
@@ -35,6 +43,9 @@
   </dependencies>
   
   <build>
+    <outputDirectory>${basedir}/${target.dir}/classes</outputDirectory>
+    <testOutputDirectory>${basedir}/${target.dir}/test-classes</testOutputDirectory>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -56,7 +67,17 @@
           </execution>
         </executions>
       </plugin>
-      <!--
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>${basedir}/src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+            <manifestEntries>
+              <Built-By>tamacat.org</Built-By>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -66,7 +87,6 @@
           </includes>
         </configuration>
       </plugin>
-      -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -96,6 +116,18 @@
     </extensions>
   </build>
 
+  <properties>
+    <target.dir>target</target.dir>
+  </properties>
+  <profiles>
+    <profile>
+      <id>eclipse-folders</id>
+      <properties>
+        <target.dir>build</target.dir>
+      </properties>
+    </profile>
+  </profiles>
+  
   <reporting>
     <plugins>
       <plugin>
@@ -106,22 +138,21 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
       </plugin>
-     <plugin>
-       <groupId>org.apache.maven.plugins</groupId>
-       <artifactId>maven-javadoc-plugin</artifactId>
-       <version>2.5</version>
-       <configuration>
-         <source>1.6</source>
-         <encoding>MS932</encoding>
-         <docencoding>UTF-8</docencoding>
-         <charset>UTF-8</charset>
-         <locale>en</locale>
-         <links>
-           <link>http://java.sun.com/javase/6/docs/api/</link>
-         </links>
-       </configuration>
-     </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <source>1.6</source>
+          <encoding>MS932</encoding>
+          <docencoding>UTF-8</docencoding>
+          <charset>UTF-8</charset>
+          <locale>en</locale>
+          <links>
+            <link>http://java.sun.com/javase/6/docs/api/</link>
+          </links>
+        </configuration>
+      </plugin>
     </plugins>
   </reporting>
 </project>
-
