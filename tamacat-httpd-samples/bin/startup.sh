@@ -11,7 +11,7 @@ JAVA_EXE=$JAVA_HOME/bin/java
 
 PRG="$0"
 SERVER_HOME=`dirname $PRG`/..
-CLASSPATH_JAR=$SERVER_HOME/conf
+CLASSPATH_JAR=$SERVER_HOME:$SERVER_HOME/conf
 
 for i in `ls $SERVER_HOME/lib/*.jar`
 do

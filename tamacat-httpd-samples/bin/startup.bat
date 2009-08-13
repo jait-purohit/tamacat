@@ -15,7 +15,7 @@ SET JAVA_EXE="%JAVA_HOME%\bin\java.exe"
 
 if "%OS%"=="Windows_NT" SET SERVER_HOME=%~dp0\..
 
-set CLASSPATH_JAR=%SERVER_HOME%\conf
+set CLASSPATH_JAR=%SERVER_HOME%\;%SERVER_HOME%\conf
 
 for %%i in ("%SERVER_HOME%"\lib\*.jar) do call classpath_jar.bat %%i
 rem echo %CLASSPATH_JAR%
