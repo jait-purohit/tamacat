@@ -6,6 +6,7 @@ package org.tamacat.httpd.core;
 
 import java.io.File;
 
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -18,8 +19,6 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.velocity.VelocityContext;
-import org.tamacat.httpd.action.ActionContext;
-import org.tamacat.httpd.action.ActionHandler;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityPage;
@@ -30,12 +29,6 @@ import org.tamacat.util.ClassUtils;
  * <p>It is implements of HttpHandler that uses {@code Apache Velociry}. 
  */
 public class VelocityHttpHandler extends AbstractHttpHandler {
-
-	private ActionHandler actionHandler;
-	
-	public void setActionHandler(ActionHandler actionHandler) {
-		this.actionHandler = actionHandler;
-	}
 	
 	@Override
 	protected void doRequest(HttpRequest request, HttpResponse response,
@@ -74,13 +67,6 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		}
 		VelocityPage page = new VelocityPage();
 		VelocityContext vc = new VelocityContext();
-		if (actionHandler != null) {
-			ActionContext actionContext = actionHandler.handleAction(
-					request, response, context);
-			for (String name : actionContext.getAttributeNames()) {
-				vc.put(name, actionContext.getAttribute(name));
-			}
-		}
 		String html = page.getPage(request, response, vc, path);
 		ResponseUtils.setEntity(response, getEntity(html));
 	}

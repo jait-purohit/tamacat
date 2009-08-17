@@ -11,6 +11,9 @@ import java.net.URL;
 
 import org.apache.http.client.utils.CloneUtils;
 
+/**
+ * The default implements of {@link ReverseUrl}.
+ */
 public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 
 	private ServiceUrl serviceUrl;	
@@ -21,14 +24,17 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 		this.serviceUrl = serviceUrl;
 	}
 	
+	@Override
 	public ServiceUrl getServiceUrl() {
 		return serviceUrl;
 	}
 	
+	@Override
 	public URL getHost() {
 		return serviceUrl.getHost();
 	}
-
+	
+	@Override
 	public String getPath() {
 		return serviceUrl.getPath();
 	}

@@ -24,22 +24,12 @@ import org.tamacat.util.UniqueCodeGenerator;
 /**
  * <p>WS-Security Extenstion (WSSE) AUTHENTICATION
  */
-public class WSSEAuthProcessor implements RequestFilter {
+public class WSSEAuthProcessor extends AbstractAuthProcessor implements RequestFilter {
 	
 	static final String AUTHORIZATION = "Authorization";
 	static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 
 	static final String X_WSSE_HEADER = "X-WSSE";
-	
-	private AuthComponent<?> authComponent;
-	private String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
-	
-	@Override
-	public void init() {
-		if (authComponent != null) {
-			authComponent.init();
-		}
-	}
 	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
@@ -100,14 +90,6 @@ public class WSSEAuthProcessor implements RequestFilter {
 	protected String getNonce() {
 		String nonce = UniqueCodeGenerator.generate();
 		return new String(new Base64().encode(nonce.getBytes()));
-	}
-	
-	public void setAuthComponent(AuthComponent<?> authComponent) {
-		this.authComponent = authComponent;
-	}
-
-	public void setRemoteUserKey(String remoteUserKey) {
-		this.remoteUserKey = remoteUserKey;
 	}
 	
 	static class WSSE {

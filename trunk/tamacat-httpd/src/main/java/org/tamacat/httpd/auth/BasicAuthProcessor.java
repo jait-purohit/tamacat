@@ -19,22 +19,13 @@ import org.tamacat.util.StringUtils;
 /**
  * <p>BASIC AUTHENTICATION
  */
-public class BasicAuthProcessor implements RequestFilter {
+public class BasicAuthProcessor extends AbstractAuthProcessor implements RequestFilter {
 
 	static final String AUTHORIZATION = "Authorization";
 	static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 
 	protected String realm = "Authentication required";
-	protected AuthComponent<?> authComponent;
-	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
-
-	@Override
-	public void init() {
-		if (authComponent != null) {
-			authComponent.init();
-		}
-	}
-
+	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context, ServiceUrl serviceUrl) {
@@ -73,13 +64,5 @@ public class BasicAuthProcessor implements RequestFilter {
 
 	public void setRealm(String realm) {
 		this.realm = realm;
-	}
-
-	public void setAuthComponent(AuthComponent<?> authComponent) {
-		this.authComponent = authComponent;
-	}
-
-	public void setRemoteUserKey(String remoteUserKey) {
-		this.remoteUserKey = remoteUserKey;
 	}
 }

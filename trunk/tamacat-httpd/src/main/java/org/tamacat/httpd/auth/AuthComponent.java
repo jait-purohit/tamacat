@@ -7,7 +7,7 @@ package org.tamacat.httpd.auth;
 import org.apache.http.protocol.HttpContext;
 
 /**
- * <p>AuthComponent is Singleton.
+ * <p>The interface of Authentication component.
  * (Thread unsafe)
  */
 public interface AuthComponent<T extends AuthUser> {
