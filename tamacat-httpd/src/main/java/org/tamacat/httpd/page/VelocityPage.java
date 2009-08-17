@@ -20,6 +20,9 @@ import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
+/**
+ * <p>It is the HTTP page that used Velocity template.
+ */
 public class VelocityPage {
 	static final Log LOG = LogFactory.getLog(VelocityPage.class);
     

@@ -7,9 +7,8 @@ package org.tamacat.httpd.config;
 import java.net.InetSocketAddress;
 import java.net.URL;
 
-
 /**
- * The ReverseUrl interface is a setup of Reverse Proxy URL.
+ * <p>The ReverseUrl interface is a setup of Reverse Proxy URL.
  */
 public interface ReverseUrl {
 	

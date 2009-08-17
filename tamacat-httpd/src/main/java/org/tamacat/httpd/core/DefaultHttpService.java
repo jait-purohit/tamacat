@@ -32,6 +32,9 @@ import org.tamacat.httpd.util.AccessLogUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
+/**
+ * <p>The default implements of {@link HttpService}.
+ */
 public class DefaultHttpService extends HttpService {
 
 	static final Log LOG = LogFactory.getLog(DefaultHttpService.class);
@@ -56,6 +59,7 @@ public class DefaultHttpService extends HttpService {
     	setDefaultHttpResponseInterceptors();
     }
 
+    @Override
     public void setHandlerResolver(final HttpRequestHandlerResolver handlerResolver) {
         this.handlerResolver = handlerResolver;
     }

@@ -18,6 +18,9 @@ import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
+/**
+ * <p>It is the HTTP error page that used Velocity template.
+ */
 public class VelocityErrorPage {
 
 	static final Log LOG = LogFactory.getLog(VelocityErrorPage.class);

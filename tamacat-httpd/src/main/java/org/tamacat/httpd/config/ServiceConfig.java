@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.tamacat.httpd.config.Type;
+import org.tamacat.httpd.config.ServiceType;
 
 public class ServiceConfig {
 
@@ -42,7 +42,7 @@ public class ServiceConfig {
 	 */
 	public void addServiceUrl(ServiceUrl serviceUrl) {
 		regulars.put(serviceUrl.getPath(), serviceUrl);
-		if (serviceUrl.isType(Type.REVERSE)) {
+		if (serviceUrl.isType(ServiceType.REVERSE)) {
 			reverses.put(serviceUrl.getReverseUrl().getReverse().getPath(), serviceUrl);
 		}
 		reverseUrls.add(serviceUrl);
@@ -54,7 +54,7 @@ public class ServiceConfig {
 	 */
 	public void removeServiceUrl(ServiceUrl serviceUrl) {
 		regulars.remove(serviceUrl.getPath());
-		if (serviceUrl.isType(Type.REVERSE)) {
+		if (serviceUrl.isType(ServiceType.REVERSE)) {
 			reverses.remove(serviceUrl.getReverseUrl().getReverse().getPath());
 		}
 		reverseUrls.remove(serviceUrl);

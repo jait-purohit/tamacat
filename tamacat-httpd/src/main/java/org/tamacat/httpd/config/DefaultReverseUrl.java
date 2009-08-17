@@ -12,7 +12,7 @@ import java.net.URL;
 import org.apache.http.client.utils.CloneUtils;
 
 /**
- * The default implements of {@link ReverseUrl}.
+ * <p>The default implements of {@link ReverseUrl}.
  */
 public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 
