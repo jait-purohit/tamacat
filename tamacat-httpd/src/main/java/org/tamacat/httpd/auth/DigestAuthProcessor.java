@@ -23,24 +23,16 @@ import org.tamacat.util.UniqueCodeGenerator;
 /**
  * <p>DIGEST AUTHENTICATION
  */
-public class DigestAuthProcessor implements RequestFilter {
+public class DigestAuthProcessor extends AbstractAuthProcessor implements RequestFilter {
 
 	static final String AUTHORIZATION = "Authorization";
 	static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 
 	private String realm = "Authentication required";
-	private AuthComponent<?> authComponent;
-	private String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
+
 	private String algorithm = "MD5";
 	private String qop = "auth";
-
-	@Override
-	public void init() {
-		if (authComponent != null) {
-			authComponent.init();
-		}
-	}
-
+	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context, ServiceUrl serviceUrl) {
@@ -106,14 +98,6 @@ public class DigestAuthProcessor implements RequestFilter {
 
 	public void setRealm(String realm) {
 		this.realm = realm;
-	}
-
-	public void setAuthComponent(AuthComponent<?> authComponent) {
-		this.authComponent = authComponent;
-	}
-
-	public void setRemoteUserKey(String remoteUserKey) {
-		this.remoteUserKey = remoteUserKey;
 	}
 
 	public void setAlgorithm(String algorithm) {
