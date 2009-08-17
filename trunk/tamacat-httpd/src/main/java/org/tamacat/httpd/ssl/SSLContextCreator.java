@@ -15,6 +15,9 @@ import javax.net.ssl.SSLContext;
 
 import org.tamacat.httpd.config.ServerConfig;
 
+/**
+ * <p>The {@link SSLContext} create from {@link ServerConfig} or setter methods.
+ */
 public class SSLContextCreator {
 	
 	private String keyStoreFile;
@@ -30,8 +33,14 @@ public class SSLContextCreator {
 		this.keyPassword = keyPassword.toCharArray();
 	}
 	
+	/**
+	 * <p>Default constructor.
+	 */
 	public SSLContextCreator() {}
 	
+	/**
+	 * <p>The constructor of setting values from {@code ServerConfig}.
+	 */
 	public SSLContextCreator(ServerConfig serverConfig) {
 		setKeyStoreFile(serverConfig.getParam("https.keyStoreFile", ""));
 		setKeyPassword(serverConfig.getParam("https.keyPassword", ""));

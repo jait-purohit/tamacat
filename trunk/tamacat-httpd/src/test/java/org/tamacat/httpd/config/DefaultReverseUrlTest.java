@@ -11,7 +11,7 @@ import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.tamacat.httpd.config.Type;
+import org.tamacat.httpd.config.ServiceType;
 
 public class DefaultReverseUrlTest {
 
@@ -24,7 +24,7 @@ public class DefaultReverseUrlTest {
 		config = new ServerConfig();
 		serviceUrl = new ServiceUrl(config);
 		serviceUrl.setPath("/test/");
-		serviceUrl.setType(Type.REVERSE);
+		serviceUrl.setType(ServiceType.REVERSE);
 		serviceUrl.setHost(new URL("http://localhost/test/"));		
 		reverseUrl = new DefaultReverseUrl(serviceUrl);
 		reverseUrl.setReverse(new URL("http://localhost:8080/test2/"));

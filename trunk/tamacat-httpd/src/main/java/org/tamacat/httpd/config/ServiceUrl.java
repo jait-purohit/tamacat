@@ -19,7 +19,7 @@ public class ServiceUrl {
 	private String handlerName;
 	private String path;
 	private ReverseUrl reverseUrl;
-	private Type type;
+	private ServiceType type;
 	private final ServerConfig serverConfig;
 	private HttpHandlerFactory factory;
 	
@@ -58,11 +58,11 @@ public class ServiceUrl {
 		return serverConfig;
 	}
 
-	public Type getType() {
+	public ServiceType getType() {
 		return type;
 	}
 
-	public boolean isType(Type type) {
+	public boolean isType(ServiceType type) {
 		if (this.type == null) return false;
 		return this.type.equals(type);
 	}
@@ -79,7 +79,7 @@ public class ServiceUrl {
 		this.reverseUrl = reverseUrl;
 	}
 
-	public void setType(Type type) {
+	public void setType(ServiceType type) {
 		this.type = type;
 	}
 
