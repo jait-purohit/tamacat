@@ -14,8 +14,8 @@ import org.apache.http.protocol.HTTP;
 import org.tamacat.httpd.config.ReverseUrl;
 
 /**
- * Client side request for reverse proxy.
- * (Implements HttpEntityEnclosingRequest)
+ * <p>Client side request for reverse proxy.
+ * (Implements {@link HttpEntityEnclosingRequest})
  */
 public class ReverseHttpEntityEnclosingRequest
 		extends ReverseHttpRequest implements HttpEntityEnclosingRequest {
@@ -44,14 +44,4 @@ public class ReverseHttpEntityEnclosingRequest
         Header expect = getFirstHeader(HTTP.EXPECT_DIRECTIVE);
         return expect != null && HTTP.EXPECT_CONTINUE.equalsIgnoreCase(expect.getValue());
     }
-
-//    @Override
-//    public ReverseHttpEntityEnclosingRequest clone() throws CloneNotSupportedException {
-//    	ReverseHttpEntityEnclosingRequest clone = 
-//            (ReverseHttpEntityEnclosingRequest) super.clone();
-//        if (this.entity != null) {
-//            clone.entity = (HttpEntity) CloneUtils.clone(this.entity);
-//        }
-//        return clone;
-//    }
 }

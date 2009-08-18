@@ -21,6 +21,9 @@ import org.tamacat.httpd.util.AccessLogUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
+/**
+ * <p>This class is a worker thread for multi thread server.
+ */
 public class WorkerThread extends Thread {
 	static final Log LOG = LogFactory.getLog(WorkerThread.class);
 	

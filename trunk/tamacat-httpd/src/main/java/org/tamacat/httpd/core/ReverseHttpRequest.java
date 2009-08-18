@@ -19,7 +19,6 @@ import org.tamacat.log.LogFactory;
 
 /**
  * <p>Client side request for reverse proxy.
- * (Implements HttpRequest)
  */
 public class ReverseHttpRequest extends BasicHttpRequest {
 	static final Log LOG = LogFactory.getLog(ReverseHttpRequest.class);
@@ -81,14 +80,4 @@ public class ReverseHttpRequest extends BasicHttpRequest {
         	request.addHeader(newHeader);
         }	
 	}
-	
-//    @Override
-//    public ReverseHttpRequest clone() throws CloneNotSupportedException {
-//    	ReverseHttpRequest clone = 
-//            (ReverseHttpRequest) super.clone();
-//        if (this.reverseUrl != null) {
-//            clone.reverseUrl = (ReverseUrl) CloneUtils.clone(this.reverseUrl);
-//        }
-//        return clone;
-//    }
 }
