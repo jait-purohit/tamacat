@@ -21,15 +21,22 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-/*
-<?xml version="1.0" encoding="UTF-8"?> 
-<service-config>
-  <service host="http://localhost">
-    <url path="/test/" handler="org.tamacat.server.mock.reverse.MockReverseHandler" type="reverse">
-      <reverse>http://localhost:8080/test/</reverse>
-    </url>
-  </service>
-</service-config>
+/**
+ * <p>XML parser for ServiceConfig.<br>
+ * 
+ * <p>The XML file is key of "url-config.file" in server.properties.
+ * examples:
+ * <pre>{@code
+ * <?xml version="1.0" encoding="UTF-8"?> 
+ * <service-config>
+ *   <service host="http://localhost">
+ *     <url path="/test/" handler="org.tamacat.server.mock.reverse.MockReverseHandler" type="reverse">
+ *       <reverse>http://localhost:8080/test/</reverse>
+ *     </url>
+ *   </service>
+ * </service-config>
+ * }
+ * </pre>
  */
 public class ServiceConfigXmlParser {
 
@@ -51,6 +58,10 @@ public class ServiceConfigXmlParser {
 		this.serverConfig = serverConfig;
 	}
 	
+	/**
+	 * Get the {@link ServiceConfig}.
+	 * @return mapping to ServiceConfig.
+	 */
 	public ServiceConfig getServiceConfig() {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {

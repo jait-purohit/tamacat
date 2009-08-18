@@ -17,12 +17,35 @@ import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.StringUtils;
 
+/**
+ * <p>Access log utility.<br>
+ * 
+ * Log category : Access
+ * 
+ * <p>logging for:
+ * <ul>
+ *  <li>Remote IP address</li>
+ *  <li>Access time</li>
+ *  <li>Remote Username</li>
+ *  <li>URL</li>
+ *  <li>HTTP status code</li>
+ *  <li>Content-Length(size)</li>
+ *  <li>Response time</li>
+ * </ul>
+ */
 public class AccessLogUtils {
 	
 	static final Log ACCESS_LOG = LogFactory.getLog("Access");
     static final DiagnosticContext DC = LogFactory.getDiagnosticContext(ACCESS_LOG);
 	static final String REMOTE_ADDRESS = "remote_address";
 
+	/**
+	 * Write the access log.
+	 * @param request
+	 * @param response
+	 * @param context Before set the remote IP address and username.
+	 * @param time Response time
+	 */
 	static
 	  public void writeAccessLog(
 			  HttpRequest request, HttpResponse response,
@@ -49,10 +72,20 @@ public class AccessLogUtils {
         }
 	}
 	
+	/**
+	 * Set the remote IP address to {@code HttpContext}.
+	 * @param context
+	 * @param address
+	 */
 	public static void setRemoteAddress(HttpContext context, InetAddress address) {
 		context.setAttribute(REMOTE_ADDRESS, address);
 	}
 	
+	/**
+	 * Get the remote IP address in {@code HttpContext}.
+	 * @param context
+	 * @return
+	 */
 	public static String getRemoteIPAddress(HttpContext context) {
 		InetAddress address= (InetAddress) context.getAttribute(REMOTE_ADDRESS);
 		if (address != null) return address.getHostAddress();

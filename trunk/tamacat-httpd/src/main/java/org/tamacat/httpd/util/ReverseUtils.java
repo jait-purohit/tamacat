@@ -23,15 +23,18 @@ import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.StringUtils;
 
+/**
+ * <p>The utility class for reverse proxy.
+ */
 public class ReverseUtils {
 
 	static final Log LOG = LogFactory.getLog(ReverseUtils.class);
 	
-	static Charset charset = Charset.forName("UTF-8");
-	static CharsetDecoder decoder = charset.newDecoder();
-	static CharsetEncoder encoder = charset.newEncoder();
+	private static Charset charset = Charset.forName("UTF-8");
+	private static CharsetDecoder decoder = charset.newDecoder();
+	private static CharsetEncoder encoder = charset.newEncoder();
 	
-	static Pattern PATTERN = Pattern.compile(
+	private static Pattern PATTERN = Pattern.compile(
 		"<[^<]*\\s+(href|src|action)=('|\")([^('|\")]*)('|\")[^>]*>"
 	);
 	
@@ -64,9 +67,13 @@ public class ReverseUtils {
 		return result;
 	}
 	
+	/**
+	 * <p>Copy the response headers.
+	 * @param targetResponse
+	 * @param response
+	 */
     public static void copyHttpResponse(HttpResponse targetResponse, HttpResponse response) {
         // Remove hop-by-hop headers
-        //targetResponse.removeHeaders("Content-Length");
         targetResponse.removeHeaders("Transfer-Encoding");
         targetResponse.removeHeaders("Connection");
         targetResponse.removeHeaders("Keep-Alive");
@@ -75,26 +82,15 @@ public class ReverseUtils {
         targetResponse.removeHeaders("Upgrade");
         targetResponse.removeHeaders("Content-MD5");
         
-//        Header[] setCookies = targetResponse.getHeaders("Set-Cookie");
-//        for (Header h : setCookies) {
-//        	response.addHeader(h);
-//        }
         response.setStatusLine(targetResponse.getStatusLine());
         response.setHeaders(targetResponse.getAllHeaders());
-        
-        
-//        Iterator<String> names = response.getHeaderNames();
-//        while (names.hasNext()) {
-//        	String name = names.next();
-//        	Iterator<String> values = response.getHeaders(name);
-//        	while (values.hasNext()) {
-//        		String value = values.next();
-//        		System.out.println(name+": "+value);
-//        		//response.replaceHeader(name, value);
-//        	}
-//        }
     }
     
+    /**
+     * <p>Rewrite the Content-Location response headers.
+     * @param response
+     * @param reverseUrl
+     */
     public static void rewriteContentLocationHeader(HttpResponse response, ReverseUrl reverseUrl) {
         Header[] locationHeaders = response.getHeaders("Content-Location");
         response.removeHeaders("Content-Location");
@@ -107,6 +103,11 @@ public class ReverseUtils {
         }
     }
     
+    /**
+     * <p>Rewrite the Location response headers.
+     * @param response
+     * @param reverseUrl
+     */
     public static void rewriteLocationHeader(HttpResponse response, ReverseUrl reverseUrl) {
     	Header[] locationHeaders = response.getHeaders("Location");
     	response.removeHeaders("Location");
@@ -119,6 +120,11 @@ public class ReverseUtils {
         }
     }
     
+    /**
+     * Rewrite the Set-Cookie response headers.
+     * @param response
+     * @param reverseUrl
+     */
     public static void rewriteSetCookieHeader(HttpResponse response, ReverseUrl reverseUrl) {
         Header[] cookies = response.getHeaders("Set-Cookie");
         ArrayList<String> newValues = new ArrayList<String>();
@@ -129,17 +135,16 @@ public class ReverseUtils {
         		newValues.add(newValue);
         	}
         }
-        //response.removeHeaders("Set-Cookie"); //TODO Bug.
         for (String newValue : newValues) {
         	response.addHeader("Set-Cookie", newValue);
         }
     }
 	
 	/**
-	 * convert backend hostname to original hostname.
+	 * <p>Convert backend hostname to original hostname.
 	 * @param reverseUrl
 	 * @param line cookie header line.
-	 * @return 
+	 * @return converted Set-Cookie response header line.
 	 */
 	public static String getConvertedSetCookieHeader(ReverseUrl reverseUrl, String line) {
 		if (line == null) return "";
@@ -153,11 +158,37 @@ public class ReverseUtils {
 	}
 	
 	/**
-	 * Convert cookie path. 
+	 * <p>Get the Cookie value in request headers.
+	 * @param request
+	 * @param name
+	 * @return Cookie value.
+	 */
+	public static String getCookieValue(HttpRequest request, String name) {
+		Header[] headers = request.getHeaders("Cookie");
+		for (Header h : headers) {
+			String value = h.getValue();
+			StringTokenizer st = new StringTokenizer(value, ";");
+			if (st.countTokens() == 0) continue;
+			while (st.hasMoreTokens()) {
+				String set = st.nextToken().trim();
+				String[] nameValue = set.split("=");
+				if (nameValue.length < 2) continue;
+				if (nameValue[0].equals(name)) {
+					return nameValue[1];
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * <p>Convert cookie path. 
+	 * <pre>
 	 *   BEFORE: JSESSIONID=1234567890ABCDEFGHIJKLMNOPQRSTUV; Path=/dist
 	 *   AFTER : JSESSIONID=1234567890ABCDEFGHIJKLMNOPQRSTUV; Path=/src
+	 * </pre>
 	 */
-	static String getConvertedSetCookieHeader(String dist, String src, String line) {
+	private static String getConvertedSetCookieHeader(String dist, String src, String line) {
 		if (line != null) {
 			String d = stripEnd(dist, "/");
 			String s = stripEnd(src, "/");
@@ -168,7 +199,7 @@ public class ReverseUtils {
 		}
 	}
 	
-	static String stripEnd(String str, String stripChars) {
+	private static String stripEnd(String str, String stripChars) {
 		int end;
 		if (str == null || (end = str.length()) == 0) {
 			return str;
@@ -186,23 +217,5 @@ public class ReverseUtils {
 			}
 		}
 		return str.substring(0, end);
-	}
-	
-	public static String getCookieValue(HttpRequest request, String name) {
-		Header[] headers = request.getHeaders("Cookie");
-		for (Header h : headers) {
-			String value = h.getValue();
-			StringTokenizer st = new StringTokenizer(value, ";");
-			if (st.countTokens() == 0) continue;
-			while (st.hasMoreTokens()) {
-				String set = st.nextToken().trim();
-				String[] nameValue = set.split("=");
-				if (nameValue.length < 2) continue;
-				if (nameValue[0].equals(name)) {
-					return nameValue[1];
-				}
-			}
-		}
-		return null;
 	}
 }

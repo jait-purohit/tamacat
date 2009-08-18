@@ -6,6 +6,10 @@ package org.tamacat.httpd.util;
 
 import java.util.concurrent.ThreadFactory;
 
+/**
+ * <p>Implements the default {@link ThreadFactory}.<br>
+ * {@code Thread name: name-$count}
+ */
 public class DefaultThreadFactory implements ThreadFactory {
 
 	private static volatile int COUNT = 0;

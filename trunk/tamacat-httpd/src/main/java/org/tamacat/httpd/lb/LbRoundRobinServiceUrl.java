@@ -21,7 +21,8 @@ import org.tamacat.log.LogFactory;
 /**
  * <p>It is service URL setting of the round robin type load balancer.
  * 
- * <pre>ex. url-config.xml{@code 
+ * <pre>ex. url-config.xml
+ * {@code 
  * <?xml version="1.0" encoding="UTF-8"?> 
  * <service-config>
  *   <service host="http://localhost">
