@@ -13,6 +13,9 @@ import java.util.Map;
 
 import org.tamacat.httpd.config.ServiceType;
 
+/**
+ * <p>Service configuration.
+ */
 public class ServiceConfig {
 
 	private List<ServiceUrl> reverseUrls = new ArrayList<ServiceUrl>();
