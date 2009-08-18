@@ -1,4 +1,4 @@
 /**
- * The package of core components. 
+ * <p>Provides the classes for core components. 
  */
 package org.tamacat.httpd.core;

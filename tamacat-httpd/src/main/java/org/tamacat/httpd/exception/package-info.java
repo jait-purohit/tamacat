@@ -1,4 +1,4 @@
 /**
- * The package of exceptions. 
+ * <p>Provides the classes for exceptions. 
  */
 package org.tamacat.httpd.exception;
