@@ -38,6 +38,9 @@ import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.IOUtils;
 
+/**
+ * <p>The {@link HttpHandler} for reverse proxy.
+ */
 public class ReverseProxyHandler extends AbstractHttpHandler {
 	
 	static final Log LOG = LogFactory.getLog(ReverseProxyHandler.class);

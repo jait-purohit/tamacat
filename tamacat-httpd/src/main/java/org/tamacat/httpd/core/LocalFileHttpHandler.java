@@ -20,6 +20,9 @@ import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
+/**
+ * <p>The {@link HttpHandler} for local file access.
+ */
 public class LocalFileHttpHandler extends AbstractHttpHandler {
 
 	static final Log LOG = LogFactory.getLog(LocalFileHttpHandler.class);

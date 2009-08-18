@@ -24,13 +24,14 @@ import org.w3c.dom.NodeList;
 /**
  * <p>XML parser for ServiceConfig.<br>
  * 
- * <p>The XML file is key of "url-config.file" in server.properties.
- * examples:
+ * <p>The XML file is key of "url-config.file" in server.properties.<br>
+ * 
+ * <p><b>Sample Usage:</b>
  * <pre>{@code
  * <?xml version="1.0" encoding="UTF-8"?> 
  * <service-config>
  *   <service host="http://localhost">
- *     <url path="/test/" handler="org.tamacat.server.mock.reverse.MockReverseHandler" type="reverse">
+ *     <url path="/test/" type="reverse" handler="ReverseHandler">
  *       <reverse>http://localhost:8080/test/</reverse>
  *     </url>
  *   </service>
@@ -54,12 +55,16 @@ public class ServiceConfigXmlParser {
 	
 	protected ServiceConfig serviceConfig = new ServiceConfig();
 
+	/**
+	 * <p>Constructs with the specified {@link ServerConfig}.
+	 * @param serverConfig
+	 */
 	public ServiceConfigXmlParser(ServerConfig serverConfig) {
 		this.serverConfig = serverConfig;
 	}
 	
 	/**
-	 * Get the {@link ServiceConfig}.
+	 * <p>Get the {@link ServiceConfig}.
 	 * @return mapping to ServiceConfig.
 	 */
 	public ServiceConfig getServiceConfig() {

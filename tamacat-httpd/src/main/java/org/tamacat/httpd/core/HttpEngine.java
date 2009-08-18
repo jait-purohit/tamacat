@@ -23,7 +23,7 @@ import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
 /**
- * <p>{@code HttpEngine} implements multi thread server.
+ * <p>It is implements of the multi thread server.
  */
 public class HttpEngine {
 

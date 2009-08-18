@@ -13,7 +13,7 @@ import org.apache.http.Header;
  */
 public final class HeaderUtils {
 
-	//Can't make instance from the other classes.
+	/** Cannot instantiate. */
 	private HeaderUtils() {}
 	
 	/**
