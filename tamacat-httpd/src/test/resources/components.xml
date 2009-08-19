@@ -7,16 +7,6 @@
     </property>
   </bean>
   
-  <bean id="ActionHandler"
-     class="org.tamacat.httpd.action.ActionHandler" singleton="false">
-    <property name="pattern">
-      <value>/.*/(.*)/(.*).html</value>
-    </property>
-    <property name="actionPackage">
-      <value>org.tamacat.server.examples.action</value>
-    </property>
-  </bean>
-  
   <bean id="BasicAuthFilter"
      class="org.tamacat.httpd.auth.BasicAuthProcessor" singleton="false">
     <property name="authComponent">
@@ -63,9 +53,6 @@
     <property name="requestFilter">
       <ref bean="AccessControlFilter" />
     </property>
-    <property name="actionHandler">
-      <ref bean="ActionHandler" />
-    </property>
     -->
   </bean>
   
@@ -80,9 +67,6 @@
     <!--
     <property name="requestFilter">
       <ref bean="AccessControlFilter" />
-    </property>
-    <property name="actionHandler">
-      <ref bean="ActionHandler" />
     </property>
     -->
   </bean>
