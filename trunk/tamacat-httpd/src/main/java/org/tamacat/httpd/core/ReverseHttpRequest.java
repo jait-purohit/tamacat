@@ -18,18 +18,30 @@ import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
 /**
- * <p>Client side request for reverse proxy.
+ * <p>The client side request for reverse proxy.<br>
+ * The case including the entity uses {@link ReverseHttpEntityEnclosingRequest}
+ * for a request.
  */
 public class ReverseHttpRequest extends BasicHttpRequest {
 	static final Log LOG = LogFactory.getLog(ReverseHttpRequest.class);
 
 	protected ReverseUrl reverseUrl;
 	
+	/**
+	 * <p>Constructs with the {@link RequestLine}.
+	 * @param line
+	 * @param reverseUrl
+	 */
 	public ReverseHttpRequest(RequestLine line, ReverseUrl reverseUrl) {
 		super(line);
 		this.reverseUrl = reverseUrl;
 	}
 	
+	/**
+	 * <p>Constructs with the original request of {@link HttpRequest}.
+	 * @param request
+	 * @param reverseUrl
+	 */
 	public ReverseHttpRequest(HttpRequest request, ReverseUrl reverseUrl) {
 		super(new BasicRequestLine(
 	    		request.getRequestLine().getMethod(),
@@ -40,6 +52,10 @@ public class ReverseHttpRequest extends BasicHttpRequest {
 		setRequest(request);
 	}
 	
+	/**
+	 * <p>Set the original request.
+	 * @param request
+	 */
 	public void setRequest(HttpRequest request) {
         rewriteHostHeader(request);
         

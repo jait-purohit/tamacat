@@ -43,6 +43,9 @@ public class DefaultHttpService extends HttpService {
 	private HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
     private HttpRequestHandlerResolver handlerResolver;
     
+    /**
+     * default.
+     */
 	public DefaultHttpService() {
 		super(new BasicHttpProcessor(),
 				new DefaultConnectionReuseStrategy(), 
@@ -51,10 +54,17 @@ public class DefaultHttpService extends HttpService {
 		setDefaultHttpResponseInterceptors();
 	}
 	
+	/**
+	 * <p>For using custom {@link HttpProcessor},{@link ConnectionReuseStrategy}
+	 *  and {@link HttpResponseFactory}.
+	 * @param proc
+	 * @param connStrategy
+	 * @param responseFactory
+	 */
     public DefaultHttpService(
-            final HttpProcessor proc,
-            final ConnectionReuseStrategy connStrategy,
-            final HttpResponseFactory responseFactory) {
+            HttpProcessor proc,
+            ConnectionReuseStrategy connStrategy,
+            HttpResponseFactory responseFactory) {
     	super(proc, connStrategy, responseFactory);
     	setDefaultHttpResponseInterceptors();
     }
@@ -64,6 +74,9 @@ public class DefaultHttpService extends HttpService {
         this.handlerResolver = handlerResolver;
     }
     
+    /**
+     * <p>default preset the response interceptors.
+     */
 	private void setDefaultHttpResponseInterceptors() {
 		procBuilder.addInterceptor(new ResponseDate());
 		procBuilder.addInterceptor(new ResponseServer());
@@ -71,12 +84,16 @@ public class DefaultHttpService extends HttpService {
 		procBuilder.addInterceptor(new ResponseConnControl());
 	}
 	
+	/**
+	 * Add the response interceptor.
+	 * @param interceptor
+	 */
 	public void setHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
 		procBuilder.addInterceptor(interceptor);
 	}
 	
 	@Override
-	//handleRequest() -> doService()->service()
+	//handleRequest() -> doService() -> service()
 	public void doService(HttpRequest request, HttpResponse response, HttpContext context) {
 		long start = System.currentTimeMillis();
 		try {
@@ -105,6 +122,13 @@ public class DefaultHttpService extends HttpService {
 		}
 	}
 
+	/**
+	 * <p>Handling the exception for {@link org.tamacat.httpd.exception.HttpException}.<br>
+	 * The response of the error page corresponding to the HTTP status cord.
+	 * @param request
+	 * @param response
+	 * @param e
+	 */
 	protected void handleException(HttpRequest request, HttpResponse response,
 			org.tamacat.httpd.exception.HttpException e) {
 		VelocityErrorPage page = new VelocityErrorPage();
@@ -112,6 +136,12 @@ public class DefaultHttpService extends HttpService {
 		response.setEntity(getEntity(html));
 	}
 	
+	/**
+	 * <p>Returns the {@link HttpEntity}.<br>
+	 * Content-Type is using {@link DEFAULT_CONTENT_TYPE}.
+	 * @param html
+	 * @return HttpEntity
+	 */
 	protected HttpEntity getEntity(String html) {
 		try {
 			StringEntity entity = new StringEntity(html);

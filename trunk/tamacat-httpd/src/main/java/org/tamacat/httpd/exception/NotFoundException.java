@@ -5,7 +5,7 @@
 package org.tamacat.httpd.exception;
 
 /**
- * Throws 404 Not Found.
+ * <p>Throws 404 Not Found.
  */
 public class NotFoundException extends HttpException {
 

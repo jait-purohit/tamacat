@@ -5,7 +5,7 @@
 package org.tamacat.httpd.exception;
 
 /**
- * Throws 503 Service Unavailable.
+ * <p>Throws 503 Service Unavailable.
  */
 public class ServiceUnavailableException extends HttpException {
 

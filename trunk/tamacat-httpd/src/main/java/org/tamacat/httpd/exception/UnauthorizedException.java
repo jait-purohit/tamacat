@@ -5,7 +5,7 @@
 package org.tamacat.httpd.exception;
 
 /**
- * Throws 401 Unauthorized
+ * <p>Throws 401 Unauthorized
  */
 public class UnauthorizedException extends HttpException {
 

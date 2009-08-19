@@ -5,7 +5,7 @@
 package org.tamacat.httpd.exception;
 
 /**
- * Throws 403 Forbidden.
+ * <p>Throws 403 Forbidden.
  */
 public class ForbiddenException extends HttpException {
 

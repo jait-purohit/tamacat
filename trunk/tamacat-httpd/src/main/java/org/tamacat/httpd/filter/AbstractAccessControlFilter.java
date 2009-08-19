@@ -26,7 +26,7 @@ public abstract class AbstractAccessControlFilter implements RequestFilter {
 	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
 	
 	/**
-	 * Set the maximum cache size.
+	 * <p>Set the maximum number of instances.
 	 * @param cacheSize default 100 instances.
 	 */
 	public void setCacheSize(int cacheSize) {
