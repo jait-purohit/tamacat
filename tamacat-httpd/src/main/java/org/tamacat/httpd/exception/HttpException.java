@@ -4,6 +4,9 @@
  */
 package org.tamacat.httpd.exception;
 
+/**
+ * <p>The {@code HttpException} exception represents a HTTP fault.
+ */
 public class HttpException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;

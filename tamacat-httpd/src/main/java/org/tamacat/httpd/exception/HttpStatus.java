@@ -7,9 +7,9 @@ package org.tamacat.httpd.exception;
 import java.util.HashMap;
 
 /**
- * Constants of HTTP Status Code and Reason Phrase.
+ * <p>Constants of HTTP Status Code and Reason Phrase.<br>
  * RFC 2616 Hypertext Transfer Protocol -- HTTP/1.1 (June 1999)
- * @see http://www.ietf.org/rfc/rfc2616.txt
+ * @see {@link http://www.ietf.org/rfc/rfc2616.txt}
  */
 public enum HttpStatus {
 	

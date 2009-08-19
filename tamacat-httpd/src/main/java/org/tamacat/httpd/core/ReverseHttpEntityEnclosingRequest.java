@@ -14,7 +14,7 @@ import org.apache.http.protocol.HTTP;
 import org.tamacat.httpd.config.ReverseUrl;
 
 /**
- * <p>Client side request for reverse proxy.
+ * <p>The client side request for reverse proxy, including the entity.
  * (Implements {@link HttpEntityEnclosingRequest})
  */
 public class ReverseHttpEntityEnclosingRequest
@@ -22,6 +22,11 @@ public class ReverseHttpEntityEnclosingRequest
 
 	private HttpEntity entity;
 	
+	/**
+	 * <p>Constructs with the original request of {@link HttpRequest}.
+	 * @param request
+	 * @param reverseUrl
+	 */
 	public ReverseHttpEntityEnclosingRequest(HttpRequest request, ReverseUrl reverseUrl) {
 		super(request, reverseUrl);
 		if (request instanceof HttpEntityEnclosingRequest) {

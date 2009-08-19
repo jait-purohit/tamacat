@@ -6,8 +6,16 @@ package org.tamacat.httpd.filter.acl;
 
 import org.tamacat.util.LimitedCacheObject;
 
+/**
+ * <p>This interface is represents a accessible URL.
+ */
 public interface AccessUrl extends LimitedCacheObject {
 
+	/**
+	 * <p>When the accessible URL returns true.
+	 * @param url
+	 * @return true: accessible.
+	 */
 	boolean isSuccess(String url);
 	
 }

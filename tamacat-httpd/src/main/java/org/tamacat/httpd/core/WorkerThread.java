@@ -4,14 +4,11 @@
  */
 package org.tamacat.httpd.core;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 import org.apache.http.ConnectionClosedException;
-import org.apache.http.HttpClientConnection;
-import org.apache.http.HttpServerConnection;
 import org.apache.http.impl.DefaultHttpServerConnection;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
@@ -28,15 +25,18 @@ public class WorkerThread extends Thread {
 	static final Log LOG = LogFactory.getLog(WorkerThread.class);
 	
     private HttpService service;
-    private DefaultHttpServerConnection inconn = new DefaultHttpServerConnection();
+    private DefaultHttpServerConnection conn = new DefaultHttpServerConnection();
     
+    /**
+     * <p>Constructs with the specified {@link HttpService}.
+     * @param service
+     * @param insocket
+     * @param params
+     * @throws IOException
+     */
     public WorkerThread(HttpService service, Socket insocket, HttpParams params) throws IOException {
     	this.service = service;
-    	inconn.bind(insocket, params);
-    }
-    
-    public void init() {
-    	inconn = null;
+    	conn.bind(insocket, params);
     }
     
     @Override
@@ -44,8 +44,8 @@ public class WorkerThread extends Thread {
     	LOG.trace("New connection thread");
         HttpContext context = new BasicHttpContext(null);
         try {
-        	AccessLogUtils.setRemoteAddress(context, inconn.getRemoteAddress());
-            this.service.handleRequest(inconn, context);
+        	AccessLogUtils.setRemoteAddress(context, conn.getRemoteAddress());
+            this.service.handleRequest(conn, context);
         } catch (ConnectionClosedException ex) {
         	LOG.error("Client closed connection");
         } catch (SocketTimeoutException ex) {
@@ -55,30 +55,9 @@ public class WorkerThread extends Thread {
         	//ex.printStackTrace();
         } finally {
             try {
-                this.inconn.shutdown();
-                close(inconn);
+                this.conn.shutdown();
+                conn.close();
             } catch (IOException ignore) {}
         }
-    }
-    
-    protected void close(Object conn)
-    		throws ConnectionClosedException, SocketTimeoutException{
-    	if (conn != null) {
-    		try {
-	    		if (conn instanceof Closeable) {
-	    			((Closeable)conn).close();
-	    		} else if (conn instanceof HttpClientConnection) {
-	    			((HttpClientConnection)conn).close();
-	    		} else if (conn instanceof HttpServerConnection) {
-	    			((HttpServerConnection)conn).close();
-	    		}
-            } catch (ConnectionClosedException e) {
-            	throw e;
-            } catch (SocketTimeoutException e) {
-            	throw e;
-    		} catch (IOException e) {
-    			LOG.error("I/O error: " + e.getMessage());
-    		}
-    	}
     }
 }

@@ -52,6 +52,9 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     private HttpParamsBuilder builder = new HttpParamsBuilder();
 	private HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
 
+	/**
+	 * <p>Default constructor.
+	 */
 	public ReverseProxyHandler() {
 		this.httpexecutor = new HttpRequestExecutor();
 		setDefaultHttpRequestInterceptor();
@@ -64,7 +67,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
           .socketBufferSize(serviceUrl.getServerConfig().getParam("BackEndSocketBufferSize", (8*1024)));
     }
 	
-
     @Override
     public void doRequest(
     		HttpRequest request, HttpResponse response, 
@@ -85,6 +87,13 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
         response.setEntity(targetResponse.getEntity());
     }
 
+    /**
+     * <p>Request forwarding to backend server.
+     * @param request
+     * @param response
+     * @param context
+     * @return {@code HttpResponse}
+     */
 	protected HttpResponse forwardRequest(
 			HttpRequest request, HttpResponse response, HttpContext context) {
 		this.httpproc = procBuilder.build();
@@ -139,12 +148,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 				html = page.getErrorPage(request, response, 
 						new ServiceUnavailableException(e));
 			}
-			try {
-				StringEntity entity = new StringEntity(html);
-				entity.setContentType(DEFAULT_CONTENT_TYPE);
-				response.setEntity(entity);
-			} catch (UnsupportedEncodingException e1) {
-			}
+			response.setEntity(getEntity(html));
 			return response;
 		} finally {
 			if (outsocket != null) {
@@ -153,6 +157,9 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		}
 	}
 	
+	/**
+	 * <p>Preset the HttpRequestInterceptor.
+	 */
 	protected void setDefaultHttpRequestInterceptor() {
 		procBuilder.addInterceptor(new RequestContent())
         .addInterceptor(new RequestTargetHost())

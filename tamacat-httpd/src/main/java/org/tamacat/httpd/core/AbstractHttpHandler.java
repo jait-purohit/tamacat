@@ -106,7 +106,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	}
 	
 	/**
-	 * <p>This method is executed after {@link RequestFilter}.
+	 * <p>Handling the request, this method is executed after {@link RequestFilter}.
 	 * @see {@link executeRequestFilter}
 	 * @param request
 	 * @param response
@@ -150,7 +150,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     }
     
     /**
-     * <p>Returns the decoded URI, .
+     * <p>Returns the decoded URI.
      * @param uri
      * @return default decoding is UTF-8.
      */
