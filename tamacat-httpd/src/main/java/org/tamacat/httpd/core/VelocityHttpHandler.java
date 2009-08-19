@@ -26,7 +26,7 @@ import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.util.ClassUtils;
 
 /**
- * <p>It is implements of {@link HttpHandler} that uses {@code Apache Velociry}. 
+ * <p>It is implements of {@link HttpHandler} that uses {@code Apache Velocity}. 
  */
 public class VelocityHttpHandler extends AbstractHttpHandler {
 	
