@@ -64,7 +64,7 @@ public class ServiceConfigXmlParser {
 	}
 	
 	/**
-	 * <p>Get the {@link ServiceConfig}.
+	 * <p>Returns the {@link ServiceConfig}.
 	 * @return mapping to ServiceConfig.
 	 */
 	public ServiceConfig getServiceConfig() {

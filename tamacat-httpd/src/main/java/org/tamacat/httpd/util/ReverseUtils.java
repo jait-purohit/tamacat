@@ -41,7 +41,7 @@ public class ReverseUtils {
 	//TODO bug?
 	public static ByteBuffer parse(ReverseUrl reverseUrl, ByteBuffer buffer) {
 		if (reverseUrl == null) return buffer;
-		String src = reverseUrl.getPath();
+		String src = reverseUrl.getServiceUrl().getPath();
 		String dist = reverseUrl.getReverse().getPath();
 		ByteBuffer result = null;
     	try {
@@ -152,7 +152,7 @@ public class ReverseUtils {
 		String src =reverseUrl.getHost().getHost();
 		return getConvertedSetCookieHeader(
 				reverseUrl.getReverse().getPath(),
-				reverseUrl.getPath(),
+				reverseUrl.getServiceUrl().getPath(),
 				line.replace("domain=" + dist, "domain=" + src)
 		);
 	}

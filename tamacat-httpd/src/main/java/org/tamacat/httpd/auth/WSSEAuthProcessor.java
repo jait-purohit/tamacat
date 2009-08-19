@@ -22,7 +22,7 @@ import org.tamacat.util.StringUtils;
 import org.tamacat.util.UniqueCodeGenerator;
 
 /**
- * <p>WS-Security Extenstion (WSSE) AUTHENTICATION
+ * <p>Implements of WS-Security Extenstion (WSSE) authentication.
  */
 public class WSSEAuthProcessor extends AbstractAuthProcessor implements RequestFilter {
 	
@@ -83,7 +83,7 @@ public class WSSEAuthProcessor extends AbstractAuthProcessor implements RequestF
 	    return new String(new Base64().encode(getSHA1(digest)));
 	}
 	
-	public void setWWWAuthenticateHeader(HttpResponse response) {
+	protected void setWWWAuthenticateHeader(HttpResponse response) {
 	    response.addHeader(WWW_AUTHENTICATE, "WSSE profile=\"UsernameToken\"");
 	}
 	
@@ -138,7 +138,7 @@ public class WSSEAuthProcessor extends AbstractAuthProcessor implements RequestF
 		}
 	}
 	
-	public byte[] getSHA1(byte[] digest) {
+	private byte[] getSHA1(byte[] digest) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA1");
 			return md.digest(digest);

@@ -24,7 +24,7 @@ public class ServiceUrl {
 	private HttpHandlerFactory factory;
 	
 	/**
-	 * Constructor for ServiceConfig.
+	 * <p>Constructor for ServiceConfig.
 	 * @param serverConfig
 	 */
 	public ServiceUrl(ServerConfig serverConfig) {
@@ -40,7 +40,7 @@ public class ServiceUrl {
 	}
 	
 	/**
-	 * <p>Get the {@link HttpHandlerFactory}.
+	 * <p>Returns the {@link HttpHandlerFactory}.
 	 * If unset, use the {@link DefaultHttpHandlerFactory}. 
 	 * @return
 	 */
@@ -51,7 +51,7 @@ public class ServiceUrl {
 		return factory;
 	}
 	/**
-	 * <p>Get the URL of host.
+	 * <p>Returns the URL of host.
 	 * @return URL of host.
 	 */
 	public URL getHost() {
@@ -59,7 +59,7 @@ public class ServiceUrl {
 	}
 
 	/**
-	 * <p>Get the HttpHandler from {@link HttpHandlerFactory#getHttpHandler}.
+	 * <p>Returns the HttpHandler from {@link HttpHandlerFactory#getHttpHandler}.
 	 * @return HttpHandler
 	 */
 	public HttpHandler getHttpHandler() {
@@ -67,7 +67,7 @@ public class ServiceUrl {
 	}
 
 	/**
-	 * <p>Get the URL path.
+	 * <p>Returns the URL path.
 	 * @return URL path
 	 */
 	public String getPath() {
@@ -75,7 +75,7 @@ public class ServiceUrl {
 	}
 
 	/**
-	 * Get the {@link ReverseUrl}. 
+	 * <p>Returns the {@link ReverseUrl}. 
 	 * @return ReverseUrl
 	 */
 	public ReverseUrl getReverseUrl() {
@@ -83,7 +83,7 @@ public class ServiceUrl {
 	}
 
 	/**
-	 * <p>Get the {@link ServiceConfig}.
+	 * <p>Returns the {@link ServiceConfig}.
 	 * @return ServerConfig
 	 */
 	public ServerConfig getServerConfig() {
@@ -91,7 +91,7 @@ public class ServiceUrl {
 	}
 
 	/**
-	 * <p>Get the type of Service URL.
+	 * <p>Returns the type of Service URL.
 	 * @return ServiceType
 	 */
 	public ServiceType getType() {
@@ -99,7 +99,7 @@ public class ServiceUrl {
 	}
 	
 	/**
-	 * <p>Check the ServiceType.
+	 * <p>Check the {@code ServiceType}.
 	 * @param type
 	 * @return if ServiceType is equals, returns true
 	 */
@@ -133,19 +133,22 @@ public class ServiceUrl {
 	}
 
 	/**
-	 * Set the {@link ServiceType}.
+	 * <p>Set the {@link ServiceType}.
 	 * @param type
 	 */
 	public void setType(ServiceType type) {
 		this.type = type;
 	}
 
+	/**
+	 * <p>Returns the handler name.
+	 */
 	public String getHandlerName() {
 		return handlerName;
 	}
 
 	/**
-	 * <p>Get the name of the {@link HttpHandler}.
+	 * <p>Set the name of the {@link HttpHandler}.
 	 * @param handlerName
 	 */
 	public void setHandlerName(String handlerName) {

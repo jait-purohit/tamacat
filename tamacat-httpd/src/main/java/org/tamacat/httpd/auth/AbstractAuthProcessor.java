@@ -7,7 +7,7 @@ package org.tamacat.httpd.auth;
 import org.tamacat.httpd.filter.RequestFilter;
 
 /**
- * <p>abstract class of authentication processor.
+ * <p>The abstract class of authentication processor.
  */
 public abstract class AbstractAuthProcessor implements RequestFilter {
 

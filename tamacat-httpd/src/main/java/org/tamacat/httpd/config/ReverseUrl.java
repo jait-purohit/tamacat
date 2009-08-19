@@ -12,34 +12,48 @@ import java.net.URL;
  */
 public interface ReverseUrl {
 	
+	/**
+	 * <p>Returns the {@link ServiceURL}. 
+	 * @return {@code ServiceUrl}
+	 */
 	ServiceUrl getServiceUrl();
 
+	/**
+	 * <p>Returns the host URL.
+	 * @return URL
+	 */
 	URL getHost();
 
-	String getPath();
-
+	/**
+	 * <p>Returns the URL of backend server.
+	 * @return URL
+	 */
 	URL getReverse();
 	
+	/**
+	 * <p>Set the reverse URL for backend server.
+	 * @param url
+	 */
 	void setReverse(URL url);
 	
 	/**
-	 * Get the ReverseUrl with path.
+	 * <p>Returns the {@code ReverseUrl} with path.
 	 * @param path
 	 * @return URL
 	 */
 	URL getReverseUrl(String path);
 	
 	/**
-	 * Get the convert requested URL with path.
+	 * <p>Returns the convert requested URL with path.
 	 * It uses at the time of Location header conversion.
 	 * @param path
-	 * @return
+	 * @return convertend URL string.
 	 */
 	String getConvertRequestedUrl(String path);
 	
 	/**
-	 * Get the backend server's InetSocketAddress.
-	 * @return InetSocketAddress
+	 * <p>Returns the backend server's {@link InetSocketAddress}.
+	 * @return {@code InetSocketAddress}
 	 */
 	InetSocketAddress getTargetAddress();
 	

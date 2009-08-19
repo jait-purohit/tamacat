@@ -16,5 +16,12 @@ public class TypeTest {
 		assertEquals(ServiceType.REVERSE, ServiceType.find("reverse"));
 		assertEquals(ServiceType.LB, ServiceType.find("lb"));
 		assertEquals(ServiceType.ERROR, ServiceType.find("error"));
+		
+		try {
+			ServiceType.find("test");
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
 	}
 }

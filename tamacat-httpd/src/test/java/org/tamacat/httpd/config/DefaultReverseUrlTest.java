@@ -37,7 +37,7 @@ public class DefaultReverseUrlTest {
 
 	@Test
 	public void testGetPath() {
-		assertEquals("/test/", reverseUrl.getPath());
+		assertEquals("/test/", reverseUrl.getServiceUrl().getPath());
 	}
 
 	@Test

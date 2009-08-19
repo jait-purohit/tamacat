@@ -21,7 +21,7 @@ import org.tamacat.util.StringUtils;
 import org.tamacat.util.UniqueCodeGenerator;
 
 /**
- * <p>DIGEST AUTHENTICATION
+ * <p>Implements of Digest authentication.
  */
 public class DigestAuthProcessor extends AbstractAuthProcessor implements RequestFilter {
 
