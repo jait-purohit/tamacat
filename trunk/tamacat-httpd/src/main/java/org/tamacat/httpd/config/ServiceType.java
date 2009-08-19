@@ -10,25 +10,30 @@ package org.tamacat.httpd.config;
 public enum ServiceType {
 	
 	/**
-	 * The service url type of normal http server.
+	 * <p>The service url type of normal http server.
 	 */
 	NORMAL,
 	
 	/**
-	 * The service url type of reverse proxy.
+	 * <p>The service url type of reverse proxy.
 	 */
 	REVERSE,
 	
 	/**
-	 * The service url type of reverse proxy with load balancing.
+	 * <p>The service url type of reverse proxy with load balancing.
 	 */
 	LB,
 	
 	/**
-	 * The service url type of error page.
+	 * <p>The service url type of error page.
 	 */
 	ERROR;
 	
+	/**
+	 * <p>Find the String of {@code ServiceType} enum const object. 
+	 * @param name
+	 * @return When no enum const class, throws the {@code java.lang.IllegalArgumentException}.
+	 */
 	public static ServiceType find(String name) {
 		return valueOf(name.toUpperCase());
 	}

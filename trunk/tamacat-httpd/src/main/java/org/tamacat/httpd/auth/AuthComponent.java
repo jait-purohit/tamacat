@@ -8,10 +8,12 @@ import org.apache.http.protocol.HttpContext;
 
 /**
  * <p>The interface of Authentication component.
- * (Thread unsafe)
  */
 public interface AuthComponent<T extends AuthUser> {
 
+	/**
+	 * <p>Remote user key used for HttpContext.
+	 */
 	String REMOTE_USER_KEY = AuthComponent.class.getClass().getName() + ".REMOTE_USER";
 
 	/**
@@ -32,7 +34,7 @@ public interface AuthComponent<T extends AuthUser> {
 	 * <p>Get the {@link AuthUser}.
 	 * @param id
 	 * @param context
-	 * @return
+	 * @return Implements of {@code AuthUser}
 	 */
 	T getAuthUser(String id, HttpContext context);
 }

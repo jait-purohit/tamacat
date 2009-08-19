@@ -61,6 +61,10 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 		requestFilters.add(filter);
 	}
 
+	/**
+	 * <p>Set the path of document root.
+	 * @param docsRoot
+	 */
 	public void setDocsRoot(String docsRoot) {
 		this.docsRoot = docsRoot;
 	}
@@ -117,14 +121,14 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	/**
 	 * <p>The entity is acquired based on the string. 
 	 * @param html
-	 * @return
+	 * @return {@link HttpEntity}
 	 */
 	protected abstract HttpEntity getEntity(String html);
 	
 	/**
 	 * <p>The entity is acquired based on the file. 
 	 * @param file
-	 * @return
+	 * @return {@link HttpEntity}
 	 */
 	protected abstract HttpEntity getFileEntity(File file);
 	
@@ -145,6 +149,11 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     	return StringUtils.isNotEmpty(contentType)? contentType : DEFAULT_CONTENT_TYPE;
     }
     
+    /**
+     * <p>Returns the decoded URI, .
+     * @param uri
+     * @return default decoding is UTF-8.
+     */
     protected String getDecodeUri(String uri) {
     	try {
     		return URLDecoder.decode(uri, "UTF-8");

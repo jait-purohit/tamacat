@@ -5,20 +5,16 @@
 package org.tamacat.httpd.filter;
 
 import org.apache.http.HttpRequest;
-
-
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.auth.AuthComponent;
-import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.config.ServiceUrl;
-import org.tamacat.httpd.config.ServiceType;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.filter.acl.AccessUrlCache;
 import org.tamacat.util.StringUtils;
 
 /**
- * URL Based ACCESS CONTROL.
+ * <p>The abstract class of URL based access control.
  */
 public abstract class AbstractAccessControlFilter implements RequestFilter {
 	
@@ -29,10 +25,18 @@ public abstract class AbstractAccessControlFilter implements RequestFilter {
 	
 	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
 	
+	/**
+	 * Set the maximum cache size.
+	 * @param cacheSize default 100 instances.
+	 */
 	public void setCacheSize(int cacheSize) {
 		this.cacheSize = cacheSize;
 	}
 	
+	/**
+	 * <p>Set the cache expire time (ms).<br>
+	 * @param cacheExpire default 30000 ms. 
+	 */
 	public void setCacheExpire(long cacheExpire) {
 		this.cacheExpire = cacheExpire;
 	}
@@ -49,13 +53,13 @@ public abstract class AbstractAccessControlFilter implements RequestFilter {
 			HttpContext context, ServiceUrl serviceUrl) {
 		String remoteUser = (String) context.getAttribute(remoteUserKey);
         if (remoteUser != null && serviceUrl != null) {
-        	String accessUrl = null;
-        	if (serviceUrl.isType(ServiceType.REVERSE)) {
-        		ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
-        		accessUrl = reverseUrl.getPath();
-        	} else {
-        		accessUrl = serviceUrl.getPath();
-        	}
+        	String accessUrl = serviceUrl.getPath();
+//        	if (serviceUrl.isType(ServiceType.REVERSE)) {
+//        		ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
+//        		accessUrl = reverseUrl.getServiceUrl().getPath();
+//        	} else {
+//        		accessUrl = serviceUrl.getPath();
+//        	}
         	if (StringUtils.isEmpty(accessUrl)) throw new ForbiddenException();
         	
         	if (isSuccess(accessUrl) == false) {
@@ -64,8 +68,18 @@ public abstract class AbstractAccessControlFilter implements RequestFilter {
         }
 	}
 	
+	/**
+	 * <p>Implements for sub class.<br>
+	 * When the accessible URL returns true.
+	 * @param url
+	 * @return true: accessible.
+	 */
 	protected abstract boolean isSuccess(String url);
 	
+	/**
+	 * <p>Set the remote user key.
+	 * @param remoteUserKey
+	 */
 	public void setRemoteUserKey(String remoteUserKey) {
 		this.remoteUserKey = remoteUserKey;
 	}

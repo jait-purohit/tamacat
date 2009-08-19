@@ -10,7 +10,16 @@ package org.tamacat.httpd.auth;
  */
 public interface AuthUser {
 	
+	/**
+	 * <p>Get the username
+	 * @return username
+	 */
 	String getAuthUsername();
+	
+	/**
+	 * <p>Get the password
+	 * @return password
+	 */
 	String getAuthPassword();
 	
 	/**

@@ -13,7 +13,7 @@ import org.tamacat.util.PropertyUtils;
 import org.tamacat.util.StringUtils;
 
 /**
- * <p>Server configurations.
+ * <p>Server configurations.<br>
  * Default setting file is {@code server.properties} in CLASSPATH.
  */
 public class ServerConfig {
@@ -48,7 +48,7 @@ public class ServerConfig {
 	}
 	
 	/**
-	 * <p>Get the Listen port.
+	 * <p>Returns the Listen port.
 	 * @return Get the parameter value key of "Port",
 	 * if value is null then returns {@code DEFAULT_PORT}.
 	 */
@@ -57,7 +57,7 @@ public class ServerConfig {
 	}
 	
 	/**
-	 * <p>Get the maximum server threads.
+	 * <p>Returns the maximum server threads.
 	 * @return Get the parameter value key of "MaxServerThreads",
 	 * if value is null then returns {@code MAX_SERVER_THREADS}.
 	 */
@@ -66,7 +66,7 @@ public class ServerConfig {
     }
 	
 	/**
-	 * <p>Get the Socket timeout (ms).
+	 * <p>Returns the Socket timeout (ms).
 	 * @return Get the parameter value key of "ServerSocketTimeout",
 	 * if value is null then returns {@code 30000}.
 	 */
@@ -75,7 +75,7 @@ public class ServerConfig {
 	}
 
 	/**
-	 * <p>Get the Socket buffer size.
+	 * <p>Returns the Socket buffer size.
 	 * @return Get the parameter value key of "ServerSocketBufferSize",
 	 * if value is null then returns {@code (8*1024)}.
 	 */
@@ -93,7 +93,7 @@ public class ServerConfig {
 	}
 	
 	/**
-	 * <p>Get the value of parameter
+	 * <p>Returns the value of parameter
 	 * @param name parameter name.
 	 * @return parameter value.
 	 */
@@ -111,7 +111,7 @@ public class ServerConfig {
 	}
 	
 	/**
-	 * Get the parameter, if value is null then returns {@code defaultValue}. 
+	 * Returns the parameter, if value is null then returns {@code defaultValue}. 
 	 * @param <T>
 	 * @param name
 	 * @param defaultValue

@@ -20,6 +20,10 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 	private URL reverseUrl;
 	private InetSocketAddress targetAddress;
 	
+	/**
+	 * <p>Constructs with the specified {@link ServiceUrl}. 
+	 * @param serviceUrl
+	 */
 	public DefaultReverseUrl(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
 	}
@@ -33,11 +37,6 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 	public URL getHost() {
 		return serviceUrl.getHost();
 	}
-	
-	@Override
-	public String getPath() {
-		return serviceUrl.getPath();
-	}
 
 	@Override
 	public URL getReverse() {
@@ -46,9 +45,9 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 
 	@Override
 	public URL getReverseUrl(String path) {
-		String p = getPath();
+		String p = serviceUrl.getPath();
 		if (path != null && p != null && path.startsWith(p)) {
-    		String distUrl = path.replaceFirst(getPath(), reverseUrl.getPath());
+    		String distUrl = path.replaceFirst(serviceUrl.getPath(), reverseUrl.getPath());
     		try {
     			int port = reverseUrl.getPort();
     			//if (port == -1) port = reverseUrl.getDefaultPort();

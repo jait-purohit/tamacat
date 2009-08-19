@@ -17,7 +17,7 @@ import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.util.StringUtils;
 
 /**
- * <p>BASIC AUTHENTICATION
+ * <p>Implements of Basic authentication.
  */
 public class BasicAuthProcessor extends AbstractAuthProcessor implements RequestFilter {
 
