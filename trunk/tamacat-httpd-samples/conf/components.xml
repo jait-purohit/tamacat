@@ -62,9 +62,6 @@
     <property name="requestFilter">
       <ref bean="AccessControlFilter" />
     </property>
-    <property name="actionHandler">
-      <ref bean="ActionHandler" />
-    </property>
   </bean>
   
   <bean id="WebServiceHandler" 
@@ -77,9 +74,6 @@
     </property>
     <property name="requestFilter">
       <ref bean="AccessControlFilter" />
-    </property>
-    <property name="actionHandler">
-      <ref bean="ActionHandler" />
     </property>
   </bean>
   
