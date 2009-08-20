@@ -12,13 +12,20 @@ public abstract class DateUtils {
 
     static final Locale currentLocale = Locale.getDefault(); //JAPANESE;
 
+    public static String getTime(Date date, String pattern) {
+    	return getTime(date, pattern, currentLocale);
+    }
+    
+    public static String getTime(Date date, String pattern, Locale locale) {
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern, locale);
+        return formatter.format(date);
+    }
+    
     public static String getTimestamp(String pattern) {
-        SimpleDateFormat formatter = new SimpleDateFormat(pattern, currentLocale);
-        return formatter.format(new Date());
+    	return getTime(new Date(), pattern, currentLocale);
     }
     
     public static String getTimestamp(String pattern, Locale locale) {
-        SimpleDateFormat formatter = new SimpleDateFormat(pattern, locale);
-        return formatter.format(new Date());
+    	return getTime(new Date(), pattern, locale);
     }
 }
