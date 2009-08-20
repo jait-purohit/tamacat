@@ -15,6 +15,7 @@
  */
 package org.tamacat.util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
 public abstract class StringUtils {
@@ -77,6 +78,26 @@ public abstract class StringUtils {
 		} catch (Exception e) {
 		}
 		return defaultValue;
+    }
+    
+    static
+      public String decode(String str, String encoding) {
+    	if (str == null || str.length() == 0) return str;
+    	try {
+			return new String(str.getBytes("iso-8859-1"), encoding);
+		} catch (UnsupportedEncodingException e) {
+			return str;
+		}
+    }
+
+    static
+      public String encode(String str, String encoding) {
+  	    if (str == null || str.length() == 0) return str;
+  	    try {
+			return new String(str.getBytes(encoding), "iso-8859-1");
+		} catch (UnsupportedEncodingException e) {
+			return str;
+		}
     }
     
     static
