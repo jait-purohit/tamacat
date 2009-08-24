@@ -11,7 +11,6 @@ Please make the following configuration files for the place where in CLASSPATH.
   * server.properties
   * components.xml
   * url-config.xml
-  * mime-types.properties
 
 ==== server.properties (required) ====
 {{{
@@ -72,7 +71,7 @@ file.resource.loader.modificationCheckInterval=2
 }}}
 
 
-==== mime-types.properties (required) ====
+==== mime-types.properties (option) ====
 {{{
 ...
 gif=image/gif
