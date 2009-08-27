@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.protocol.HTTP;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -74,13 +75,18 @@ public class ReverseUtils {
 	 */
     public static void copyHttpResponse(HttpResponse targetResponse, HttpResponse response) {
         // Remove hop-by-hop headers
-        targetResponse.removeHeaders("Transfer-Encoding");
-        targetResponse.removeHeaders("Connection");
-        targetResponse.removeHeaders("Keep-Alive");
+        targetResponse.removeHeaders(HTTP.TRANSFER_ENCODING);
+        targetResponse.removeHeaders(HTTP.CONN_DIRECTIVE);
+        targetResponse.removeHeaders(HTTP.CONN_KEEP_ALIVE);
         targetResponse.removeHeaders("TE");
         targetResponse.removeHeaders("Trailers");
         targetResponse.removeHeaders("Upgrade");
         targetResponse.removeHeaders("Content-MD5");
+        
+        //reset for entity
+        targetResponse.removeHeaders(HTTP.CONTENT_ENCODING);
+        targetResponse.removeHeaders(HTTP.CONTENT_TYPE);
+        targetResponse.removeHeaders(HTTP.CONTENT_LEN);
         
         response.setStatusLine(targetResponse.getStatusLine());
         response.setHeaders(targetResponse.getAllHeaders());

@@ -20,8 +20,11 @@ public class ResponseUtils {
 	 */
 	public static void setEntity(HttpResponse response, HttpEntity entity) {
 		response.setEntity(entity);
-		response.setHeader(response.getEntity().getContentType());
-		response.setHeader("Content-Length",String.valueOf(response.getEntity().getContentLength()));
-		response.setHeader(response.getEntity().getContentEncoding());
+
+		//can't set the response header. (Bugfix: already present)
+		//response.setHeader(response.getEntity().getContentType());
+		
+		//response.setHeader("Content-Length",String.valueOf(response.getEntity().getContentLength()));
+		//response.setHeader(response.getEntity().getContentEncoding());
 	}
 }

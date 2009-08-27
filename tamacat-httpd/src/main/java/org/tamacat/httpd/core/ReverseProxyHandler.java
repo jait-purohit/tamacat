@@ -5,6 +5,7 @@
 package org.tamacat.httpd.core;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
@@ -83,7 +84,9 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
         ReverseUtils.rewriteLocationHeader(response, reverseUrl);
         
         // Set-Cookie Header convert. //
-        ReverseUtils.rewriteSetCookieHeader(response, reverseUrl);	    
+        ReverseUtils.rewriteSetCookieHeader(response, reverseUrl);
+        
+        // Set the entity and response headers from targetResponse.
         response.setEntity(targetResponse.getEntity());
     }
 
