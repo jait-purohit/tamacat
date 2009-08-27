@@ -5,15 +5,18 @@
 package org.tamacat.httpd.core;
 
 import java.io.IOException;
+
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.protocol.HttpRequestHandlerRegistry;
-import org.apache.http.protocol.HttpService;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfig;
 import org.tamacat.httpd.config.ServiceConfigXmlParser;
@@ -31,7 +34,7 @@ public class HttpEngine {
 
 	private ServerConfig serverConfig;
 	private HttpRequestHandlerRegistry registry = new HttpRequestHandlerRegistry();
-	private HttpService service;
+	private DefaultHttpService service;
 	
 	private SSLContextCreator sslContextCreator;
     private ServerSocket serversocket;
@@ -39,6 +42,9 @@ public class HttpEngine {
 
     private boolean isInitalized;
     private ExecutorService executors;
+    
+    private List<HttpResponseInterceptor> interceptors
+    	= new ArrayList<HttpResponseInterceptor>();
     
     /**
      * <p>This method called by {@link #start}.
@@ -57,6 +63,9 @@ public class HttpEngine {
 					serversocket = new ServerSocket(port);
 				}
 				service = new DefaultHttpService();
+				for (HttpResponseInterceptor interceptor : interceptors) {
+					service.setHttpResponseInterceptor(interceptor);
+				}
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -120,5 +129,14 @@ public class HttpEngine {
 		}
 		SSLContext ctx = sslContextCreator.getSSLContext();
         return ctx.getServerSocketFactory().createServerSocket(port);
+	}
+	
+	/**
+	 * <p>Add the response interceptor.
+	 * @param interceptor
+	 * @since 0.5
+	 */
+	public void setHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
+		interceptors.add(interceptor);
 	}
 }

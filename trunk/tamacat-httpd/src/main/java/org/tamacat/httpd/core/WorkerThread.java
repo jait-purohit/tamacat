@@ -52,7 +52,7 @@ public class WorkerThread extends Thread {
         	LOG.trace("timeout >> close connection.");
         } catch (Exception ex) {
         	LOG.error("Error: " + ex.getMessage());
-        	//ex.printStackTrace();
+        	//ex.printStackTrace(); //debug
         } finally {
             try {
                 this.conn.shutdown();

@@ -4,14 +4,17 @@
  */
 package org.tamacat.httpd.core;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseFactory;
 import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.HttpServerConnection;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.DefaultHttpResponseFactory;
@@ -85,11 +88,19 @@ public class DefaultHttpService extends HttpService {
 	}
 	
 	/**
-	 * Add the response interceptor.
+	 * <p>Add the response interceptor.
 	 * @param interceptor
 	 */
 	public void setHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
 		procBuilder.addInterceptor(interceptor);
+	}
+	
+	@Override
+    public final void handleRequest(
+            final HttpServerConnection conn, 
+            final HttpContext context) throws IOException, HttpException {
+		super.setHttpProcessor(procBuilder.build());
+		super.handleRequest(conn, context);
 	}
 	
 	@Override
