@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.tamacat</groupId>
   <artifactId>tamacat-httpd-samples</artifactId>
-  <version>0.4</version>
+  <version>0.5</version>
   <packaging>jar</packaging>
   <name>tamacat-httpd samples</name>
   <url>http://code.google.com/p/tamacat/</url>
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.tamacat</groupId>
       <artifactId>tamacat-httpd</artifactId>
-      <version>0.4</version>
+      <version>0.5</version>
     </dependency>
     
     <dependency>
