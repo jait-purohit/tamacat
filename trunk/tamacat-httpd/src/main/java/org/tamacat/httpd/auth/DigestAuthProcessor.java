@@ -97,7 +97,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor implements Reques
 	}
 
 	public void setRealm(String realm) {
-		this.realm = realm;
+		this.realm = DynamicRealm.getRealm(realm);
 	}
 
 	public void setAlgorithm(String algorithm) {

@@ -63,6 +63,6 @@ public class BasicAuthProcessor extends AbstractAuthProcessor implements Request
 	}
 
 	public void setRealm(String realm) {
-		this.realm = realm;
+		this.realm = DynamicRealm.getRealm(realm);
 	}
 }
