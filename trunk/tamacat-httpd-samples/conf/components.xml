@@ -12,12 +12,18 @@
     <property name="authComponent">
       <ref bean="AuthComponent" />
     </property>
+    <property name="realm">
+      <value>Authentication required ${yyyyMMdd}</value>
+    </property>
   </bean>
   
   <bean id="DigestAuthFilter"
      class="org.tamacat.httpd.auth.DigestAuthProcessor" singleton="false">
     <property name="authComponent">
       <ref bean="AuthComponent" />
+    </property>
+    <property name="realm">
+      <value>Authentication required ${yyyyMMdd}</value>
     </property>
   </bean>
 
@@ -83,7 +89,11 @@
     </property>
   </bean>
   
-  <bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor" />
+  <bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor">
+    <property name="contentType">
+      <value>html,xml,css,javascript</value>
+    </property>
+  </bean>
   
   <bean id="server"
      class="org.tamacat.httpd.core.HttpEngine" singleton="false">
