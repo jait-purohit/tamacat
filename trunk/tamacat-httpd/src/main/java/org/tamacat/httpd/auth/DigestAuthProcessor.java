@@ -6,6 +6,7 @@ package org.tamacat.httpd.auth;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -97,7 +98,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor implements Reques
 	}
 
 	public void setRealm(String realm) {
-		this.realm = DynamicRealm.getRealm(realm);
+		this.realm = DynamicRealm.getRealm(realm, new Date());
 	}
 
 	public void setAlgorithm(String algorithm) {

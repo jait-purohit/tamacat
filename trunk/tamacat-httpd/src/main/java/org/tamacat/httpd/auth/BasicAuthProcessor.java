@@ -4,6 +4,8 @@
  */
 package org.tamacat.httpd.auth;
 
+import java.util.Date;
+
 import org.apache.commons.codec.binary.Base64;
 
 import org.apache.http.Header;
@@ -63,6 +65,6 @@ public class BasicAuthProcessor extends AbstractAuthProcessor implements Request
 	}
 
 	public void setRealm(String realm) {
-		this.realm = DynamicRealm.getRealm(realm);
+		this.realm = DynamicRealm.getRealm(realm, new Date());
 	}
 }
