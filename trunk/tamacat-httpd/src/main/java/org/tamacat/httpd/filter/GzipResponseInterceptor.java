@@ -7,6 +7,8 @@ package org.tamacat.httpd.filter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.http.Header;
@@ -22,6 +24,7 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.util.IOUtils;
+import org.tamacat.util.StringUtils;
 
 /**
  * <p>Server-side interceptor to handle Gzip-encoded responses.
@@ -32,26 +35,57 @@ public class GzipResponseInterceptor implements HttpResponseInterceptor {
 	private static final String ACCEPT_ENCODING = "Accept-Encoding";
     private static final String GZIP_CODEC = "gzip";
 
+    private Set<String> contentTypes = new HashSet<String>();
+    private boolean useAll = true;
+    
 	@Override
 	public void process(HttpResponse response, HttpContext context)
 			throws HttpException, IOException {
         if (context == null) {
             throw new IllegalArgumentException("HTTP context may not be null");
         }
-        HttpRequest request = (HttpRequest)
-            context.getAttribute(ExecutionContext.HTTP_REQUEST);
+        HttpRequest request = (HttpRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
         Header aeheader = request.getFirstHeader(ACCEPT_ENCODING);
-        if (aeheader != null) {
-            HeaderElement[] codecs = aeheader.getElements();
-            for (int i=0; i<codecs.length; i++) {
-                if (codecs[i].getName().equalsIgnoreCase(GZIP_CODEC)) {
-                	GzipCompressingEntity entity = new GzipCompressingEntity(response.getEntity());
-                    response.setEntity(entity);
-                    response.setHeader(entity.getContentEncoding()); //Bugfix.
-                    return;
-                }
+        if (aeheader != null && useCompress(response.getFirstHeader(HTTP.CONTENT_TYPE))) {
+	        HeaderElement[] codecs = aeheader.getElements();
+	        for (int i=0; i<codecs.length; i++) {
+	            if (codecs[i].getName().equalsIgnoreCase(GZIP_CODEC)) {
+	            	GzipCompressingEntity entity = new GzipCompressingEntity(response.getEntity());
+	                response.setEntity(entity);
+	                response.setHeader(entity.getContentEncoding()); //Bugfix.
+	                return;
+	            }
             }
         }
+	}
+	
+	public void setContentType(String contentType) {
+		if (StringUtils.isNotEmpty(contentType)) {
+			String[] csv = contentType.split(",");
+			for (String t : csv) {
+				contentTypes.add(t.trim().toLowerCase());
+				useAll = false;
+				String[] types = t.split(";")[0].split("/");
+				if (types.length >= 2) {
+					contentTypes.add(types[1].trim().toLowerCase());
+				}
+			}
+		}
+	}
+	
+	boolean useCompress(Header contentType) {
+		if (contentType == null) return false;
+		String type = contentType.getValue();
+		if (useAll || contentTypes.contains(type)) {
+			return true;
+		} else {
+			String[] types = type != null ? type.split(";")[0].split("/") : new String[0];
+			if (types.length >= 2 && contentTypes.contains(types[1])) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 	
 	/**

@@ -28,7 +28,7 @@ import org.tamacat.util.PropertyUtils;
 import org.tamacat.util.StringUtils;
 
 /**
- * <p>This class is implements of the abstraction of {@link HttpHandler} interface. 
+ * <p>This class is implements of the abstraction of {@link HttpHandler} interface.
  */
 public abstract class AbstractHttpHandler implements HttpHandler {
 	
@@ -36,6 +36,11 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
 
 	static Properties mimeTypes;
+	
+	/*
+	 * 1. using first mime-types.properties in CLASSPATH. (optional)
+	 * 2. using org/tamacat/httpd/mime-types.properties} in jar archive.
+	 */
     static {
     	try {
     		mimeTypes = PropertyUtils.getProperties("mime-types.properties");
