@@ -27,7 +27,17 @@ import org.tamacat.util.IOUtils;
 import org.tamacat.util.StringUtils;
 
 /**
- * <p>Server-side interceptor to handle Gzip-encoded responses.
+ * <p>Server-side interceptor to handle Gzip-encoded responses.<br>
+ * The cord of the basis is Apache HttpComponents {@code ResponseGzipCompress.java}.</p>
+ * 
+ * <pre>Example:{@code components.xml}
+ * {@code <bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor">
+ *  <property name="contentType">
+ *    <value>html,xml,css,javascript</value>
+ *  </property>
+ * </bean>
+ * }</pre>
+ * 
  * {@link http://svn.apache.org/repos/asf/httpcomponents/httpcore/trunk/contrib/src/main/java/org/apache/http/contrib/compress/ResponseGzipCompress.java}
  */
 public class GzipResponseInterceptor implements HttpResponseInterceptor {
@@ -59,6 +69,22 @@ public class GzipResponseInterceptor implements HttpResponseInterceptor {
         }
 	}
 	
+	/**
+	 * <p>Set the content type of the gzip compression.<br>
+	 * default are all content types to compressed.</p>
+	 * <p>The {@code contentType} value is not case sensitive,<br>
+	 * and the white space of before and after is trimmed.</p>
+	 * 
+	 * <p>Examples: {@code contentType="html, css, javascript, xml" }
+	 * <ul>
+	 *   <li>text/html</li>
+	 *   <li>text/css</li>
+	 *   <li>text/javascript</li>
+	 *   <li>application/xml</li>
+	 *   <li>text/xml</li>
+	 * </ul>
+	 * @param contentType Comma Separated Value of content-type or sub types.
+	 */
 	public void setContentType(String contentType) {
 		if (StringUtils.isNotEmpty(contentType)) {
 			String[] csv = contentType.split(",");
@@ -73,12 +99,18 @@ public class GzipResponseInterceptor implements HttpResponseInterceptor {
 		}
 	}
 	
+	/**
+	 * <p>Check for use compress contents.
+	 * @param contentType
+	 * @return true use compress.
+	 */
 	boolean useCompress(Header contentType) {
 		if (contentType == null) return false;
 		String type = contentType.getValue();
 		if (useAll || contentTypes.contains(type)) {
 			return true;
 		} else {
+			//Get the content sub type. (text/html; charset=UTF-8 -> html)
 			String[] types = type != null ? type.split(";")[0].split("/") : new String[0];
 			if (types.length >= 2 && contentTypes.contains(types[1])) {
 				return true;
