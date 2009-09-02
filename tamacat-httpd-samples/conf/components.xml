@@ -87,6 +87,9 @@
     <property name="requestFilter">
       <ref bean="AccessControlFilter" />
     </property>
+    <property name="httpResponseInterceptor" mode="add">
+      <ref bean="html" />
+    </property>
   </bean>
   
   <bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor">
@@ -106,11 +109,6 @@
     <property name="httpResponseInterceptor">
       <ref bean="gzip" />
     </property>
-    <!--
-    <property name="httpResponseInterceptor">
-      <ref bean="html" />
-    </property>
-    -->
   </bean>
   
 </beans>
