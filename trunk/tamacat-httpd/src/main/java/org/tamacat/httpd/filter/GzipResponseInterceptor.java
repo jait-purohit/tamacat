@@ -72,7 +72,7 @@ public class GzipResponseInterceptor implements HttpResponseInterceptor {
 	/**
 	 * <p>Set the content type of the gzip compression.<br>
 	 * default are all content types to compressed.</p>
-	 * <p>The {@code contentType} value is not case sensitive,<br>
+	 * <p>The {@code contentType} value is case insensitive,<br>
 	 * and the white space of before and after is trimmed.</p>
 	 * 
 	 * <p>Examples: {@code contentType="html, css, javascript, xml" }
