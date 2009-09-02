@@ -16,6 +16,7 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultHttpClientConnection;
@@ -137,7 +138,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        }
 	        httpexecutor.preProcess(targetRequest, httpproc, context);
 	        HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
-	        httpexecutor.postProcess(response, httpproc, context);
+	        httpexecutor.postProcess(targetResponse, httpproc, context);
 	        
 	        return targetResponse;
 		} catch (Exception e) {
@@ -172,6 +173,10 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	}
 	
 	public void addHttpRequestInterceptor(HttpRequestInterceptor interceptor) {
+		procBuilder.addInterceptor(interceptor);
+	}
+	
+	public void addHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
 		procBuilder.addInterceptor(interceptor);
 	}
 	

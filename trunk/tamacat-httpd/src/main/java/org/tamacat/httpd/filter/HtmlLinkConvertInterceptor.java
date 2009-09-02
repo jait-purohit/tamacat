@@ -51,7 +51,7 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 	        	LinkConvertingEntity entity = new LinkConvertingEntity(
 	        			response.getEntity(), before, after);
 	        	response.setEntity(entity);
-	        	response.removeHeaders(HTTP.CONTENT_LEN); //reset Content-Length.
+		        //response.setHeader(HTTP.CONTENT_LEN, String.valueOf(entity.getContentLength()));
 	        }
         }
 	}
@@ -119,7 +119,7 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 		private String before;
 		private String after;
 		private long contentLength = -1;
-
+		
 		public LinkConvertingEntity(HttpEntity entity, String before, String after) {
 			super(entity);
 	        this.before = before;
