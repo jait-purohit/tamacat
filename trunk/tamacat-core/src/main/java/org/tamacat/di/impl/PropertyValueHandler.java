@@ -116,7 +116,7 @@ public class PropertyValueHandler {
             } else if ("false".equalsIgnoreCase(param)) {
                 return Boolean.FALSE;
             } else {
-                throw new RuntimeException("don't convert boolean.");
+                throw new RuntimeException("can not convert boolean.");
             }
         }
     }
