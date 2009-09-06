@@ -75,14 +75,14 @@ public class BeanCreator {
             //instance is null then create new instance.
             BeanAdapter<Object> adapter = beans.get(id);
             if (adapter == null) {
-                T instance = newInstance(def);
+                T instance = (T) newInstance(def);
                 beans.put(id, new BeanAdapter(id, def.getType(), instance));
                 return instance;
             } else {
                 return (T) initializeInstance(def, adapter.getInstance());
             }
         } else { //Prototype, always new instance.
-            return newInstance(def);
+            return (T) newInstance(def);
         }
     }
 
