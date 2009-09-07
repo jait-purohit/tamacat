@@ -7,9 +7,12 @@ package org.tamacat.httpd.util;
 import java.net.InetAddress;
 import java.util.Locale;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.log.DiagnosticContext;
@@ -38,18 +41,17 @@ public class AccessLogUtils {
 	static final Log ACCESS_LOG = LogFactory.getLog("Access");
     static final DiagnosticContext DC = LogFactory.getDiagnosticContext(ACCESS_LOG);
 	static final String REMOTE_ADDRESS = "remote_address";
-
+	
 	/**
 	 * Write the access log.
-	 * @param request
-	 * @param response
 	 * @param context Before set the remote IP address and username.
 	 * @param time Response time
 	 */
 	static
 	  public void writeAccessLog(
-			  HttpRequest request, HttpResponse response,
 			  HttpContext context, long time) {
+		HttpRequest request =(HttpRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
+		HttpResponse response = (HttpResponse) context.getAttribute(ExecutionContext.HTTP_RESPONSE);
 		String method = request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH);
         String uri = request.getRequestLine().getUri();
         int statusCode = response.getStatusLine().getStatusCode();
@@ -61,6 +63,12 @@ public class AccessLogUtils {
         if (StringUtils.isEmpty(remoteUser)) remoteUser = "-";
         HttpEntity entity = response.getEntity();
         long size = entity != null ? entity.getContentLength() : 0;
+        if (size == -1) {
+        	Header h = response.getFirstHeader(HTTP.CONTENT_LEN);
+        	if (h != null) {
+        		size = StringUtils.parse(h.getValue(), -1L);
+        	}
+        }
         DC.setMappedContext("ip", ip);
         DC.setMappedContext("user", remoteUser);
         try {

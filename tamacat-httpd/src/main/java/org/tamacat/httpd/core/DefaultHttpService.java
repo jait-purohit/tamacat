@@ -99,14 +99,19 @@ public class DefaultHttpService extends HttpService {
     public final void handleRequest(
             final HttpServerConnection conn, 
             final HttpContext context) throws IOException, HttpException {
-		super.setHttpProcessor(procBuilder.build());
-		super.handleRequest(conn, context);
+		long start = System.currentTimeMillis();
+		try {
+			super.setHttpProcessor(procBuilder.build());
+			super.handleRequest(conn, context);
+		} finally {
+			AccessLogUtils.writeAccessLog(context, 
+				System.currentTimeMillis() - start);
+		}
 	}
 	
 	@Override
 	//handleRequest() -> doService() -> service()
 	public void doService(HttpRequest request, HttpResponse response, HttpContext context) {
-		long start = System.currentTimeMillis();
 		try {
 			LOG.trace("doService() >> " + request.getRequestLine().getUri());
 			HttpRequestHandler handler = null;
@@ -127,9 +132,6 @@ public class DefaultHttpService extends HttpService {
 				handleException(request, response, 
 					new ServiceUnavailableException());
 			}
-		} finally {
-			AccessLogUtils.writeAccessLog(request, response, context, 
-					System.currentTimeMillis() - start);
 		}
 	}
 

@@ -5,7 +5,6 @@
 package org.tamacat.httpd.core;
 
 import java.io.File;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
@@ -73,7 +72,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     public void doRequest(
     		HttpRequest request, HttpResponse response, 
     		HttpContext context) throws HttpException, IOException {
-    	
+    	        
         // Access Backend server //
         HttpResponse targetResponse = forwardRequest(request, response, context);
         ReverseUrl reverseUrl = //serviceUrl.getReverseUrl();
@@ -136,10 +135,10 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        	targetRequest = new ReverseHttpRequest(line, reverseUrl);
 	        	targetRequest.setRequest(request);
 	        }
+	        
 	        httpexecutor.preProcess(targetRequest, httpproc, context);
 	        HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
 	        httpexecutor.postProcess(targetResponse, httpproc, context);
-	        
 	        return targetResponse;
 		} catch (Exception e) {
 			VelocityErrorPage page = new VelocityErrorPage();
