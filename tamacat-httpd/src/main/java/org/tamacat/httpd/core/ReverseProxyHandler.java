@@ -72,7 +72,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     public void doRequest(
     		HttpRequest request, HttpResponse response, 
     		HttpContext context) throws HttpException, IOException {
-    	        
         // Access Backend server //
         HttpResponse targetResponse = forwardRequest(request, response, context);
         ReverseUrl reverseUrl = //serviceUrl.getReverseUrl();
@@ -109,6 +108,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        	throw new ServiceUnavailableException("reverseUrl is null.");
 	        }
 	        context.setAttribute("reverseUrl", reverseUrl);
+	        ReverseUtils.setXForwardedFor(request, context);
+
 	        outsocket = new Socket(
 					reverseUrl.getTargetAddress().getHostName(),
 					reverseUrl.getTargetAddress().getPort());

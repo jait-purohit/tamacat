@@ -9,8 +9,10 @@ import java.util.Locale;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpServerConnection;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -83,10 +85,13 @@ public class AccessLogUtils {
 	/**
 	 * Set the remote IP address to {@code HttpContext}.
 	 * @param context
-	 * @param address
+	 * @param conn instance of HttpInetConnection
 	 */
-	public static void setRemoteAddress(HttpContext context, InetAddress address) {
-		context.setAttribute(REMOTE_ADDRESS, address);
+	public static void setRemoteAddress(HttpContext context, HttpServerConnection conn) {
+		if (conn instanceof HttpInetConnection) {
+			InetAddress address = ((HttpInetConnection)conn).getRemoteAddress();
+			context.setAttribute(REMOTE_ADDRESS, address);
+		}
 	}
 	
 	/**
