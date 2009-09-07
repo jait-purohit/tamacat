@@ -14,7 +14,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
-import org.tamacat.httpd.util.AccessLogUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.ExceptionUtils;
@@ -26,7 +25,7 @@ public class WorkerThread extends Thread {
 	static final Log LOG = LogFactory.getLog(WorkerThread.class);
 	
     private HttpService service;
-    private DefaultHttpServerConnection conn = new DefaultHttpServerConnection();
+    private DefaultHttpServerConnection conn;
     
     /**
      * <p>Constructs with the specified {@link HttpService}.
@@ -37,28 +36,33 @@ public class WorkerThread extends Thread {
      */
     public WorkerThread(HttpService service, Socket insocket, HttpParams params) throws IOException {
     	this.service = service;
-    	conn.bind(insocket, params);
+    	this.conn = new DefaultHttpServerConnection();
+    	this.conn.bind(insocket, params);
     }
     
     @Override
 	public void run() {
-    	LOG.trace("New connection thread");
+    	LOG.debug("New connection thread");
         HttpContext context = new BasicHttpContext(null);
         try {
-        	AccessLogUtils.setRemoteAddress(context, conn.getRemoteAddress());
             this.service.handleRequest(conn, context);
         } catch (ConnectionClosedException ex) {
-        	LOG.error("Client closed connection");
+        	LOG.debug("Client closed connection");
         } catch (SocketTimeoutException ex) {
-        	LOG.trace("timeout >> close connection.");
+        	LOG.debug("timeout >> close connection.");
         } catch (Exception ex) {
         	LOG.error("Error: " + ex.getMessage());
         	LOG.trace(ExceptionUtils.getStackTrace(ex)); //debug
         } finally {
-            try {
-                this.conn.shutdown();
-                conn.close();
-            } catch (IOException ignore) {}
+        	shutdown();
+        }
+    }
+    
+    private void shutdown() {
+        try {
+            conn.shutdown();
+            conn.close();
+        } catch (IOException ignore) {
         }
     }
 }

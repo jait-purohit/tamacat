@@ -101,6 +101,7 @@ public class DefaultHttpService extends HttpService {
             final HttpContext context) throws IOException, HttpException {
 		long start = System.currentTimeMillis();
 		try {
+			AccessLogUtils.setRemoteAddress(context, conn);
 			super.setHttpProcessor(procBuilder.build());
 			super.handleRequest(conn, context);
 		} finally {

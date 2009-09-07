@@ -19,6 +19,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -159,6 +160,10 @@ public class ReverseUtils {
         for (String newValue : newValues) {
         	response.addHeader("Set-Cookie", newValue);
         }
+    }
+    
+    public static void setXForwardedFor(HttpRequest request, HttpContext context) {
+    	request.setHeader("X-Forwarded-For", AccessLogUtils.getRemoteIPAddress(context));
     }
 	
 	/**
