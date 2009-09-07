@@ -87,9 +87,30 @@
       <ref bean="AccessControlFilter" />
     </property>
     -->
+    <property name="httpResponseInterceptor" mode="add">
+      <ref bean="html" />
+    </property>
+  </bean>
+  
+  <bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor">
+    <property name="contentType">
+      <value>html,xml,css,javascript</value>
+    </property>
+  </bean>
+  
+  <bean id="html" class="org.tamacat.httpd.filter.HtmlLinkConvertInterceptor">
+    <property name="contentType">
+      <value>html</value>
+    </property>
   </bean>
   
   <bean id="server"
-     class="org.tamacat.httpd.core.HttpEngine" singleton="false" />
+     class="org.tamacat.httpd.core.HttpEngine" singleton="false">
+   <!--
+    <property name="httpResponseInterceptor">
+      <ref bean="gzip" />
+    </property>
+    -->
+  </bean>
   
 </beans>

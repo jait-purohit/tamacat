@@ -29,7 +29,7 @@ public class ReverseHttpRequestTest {
 		config = new ServerConfig();
 		ServiceConfig serviceConfig
 			= new ServiceConfigXmlParser(config).getServiceConfig();
-		url = serviceConfig.getServiceUrl("/test/");
+		url = serviceConfig.getServiceUrl("/test2/");
 		reverseUrl = url.getReverseUrl();
 	}
 
@@ -41,7 +41,7 @@ public class ReverseHttpRequestTest {
 	public void testReverseHttpRequest() throws CloneNotSupportedException {
 		ReverseHttpRequest request =
 			new ReverseHttpRequest(
-					new BasicHttpRequest("GET","/test/test.jsp"),
+					new BasicHttpRequest("GET","/test2/test.jsp"),
 					reverseUrl);
 		
 		assertNotNull(request.getAllHeaders());

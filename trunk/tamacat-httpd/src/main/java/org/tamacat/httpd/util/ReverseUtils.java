@@ -68,6 +68,20 @@ public class ReverseUtils {
 		return result;
 	}
 	
+	public static void removeRequestHeaders(HttpRequest request) {
+        // Remove hop-by-hop headers
+        request.removeHeaders(HTTP.CONTENT_LEN);
+        request.removeHeaders(HTTP.TRANSFER_ENCODING);
+        request.removeHeaders(HTTP.CONN_DIRECTIVE);
+        request.removeHeaders(HTTP.CONN_KEEP_ALIVE);
+        request.removeHeaders("Proxy-Authenticate");
+        request.removeHeaders("Proxy-Authorization");
+        request.removeHeaders("TE");
+        request.removeHeaders("Trailers");
+        request.removeHeaders("Upgrade");
+        request.removeHeaders("Range");
+	}
+	
 	/**
 	 * <p>Copy the response headers.
 	 * @param targetResponse
@@ -90,6 +104,7 @@ public class ReverseUtils {
         
         response.setStatusLine(targetResponse.getStatusLine());
         response.setHeaders(targetResponse.getAllHeaders());
+        response.setEntity(targetResponse.getEntity());
     }
     
     /**

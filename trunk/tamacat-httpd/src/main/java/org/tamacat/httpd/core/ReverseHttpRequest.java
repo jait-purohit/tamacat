@@ -14,6 +14,7 @@ import org.apache.http.message.BasicRequestLine;
 import org.apache.http.protocol.HTTP;
 
 import org.tamacat.httpd.config.ReverseUrl;
+import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
@@ -61,17 +62,7 @@ public class ReverseHttpRequest extends BasicHttpRequest {
         
         setHeaders(request.getAllHeaders());
         setParams(request.getParams());
-        // Remove hop-by-hop headers
-        removeHeaders(HTTP.CONTENT_LEN);
-        removeHeaders(HTTP.TRANSFER_ENCODING);
-        removeHeaders(HTTP.CONN_DIRECTIVE);
-        removeHeaders("Keep-Alive");
-        removeHeaders("Proxy-Authenticate");
-        removeHeaders("Proxy-Authorization");
-        removeHeaders("TE");
-        removeHeaders("Trailers");
-        removeHeaders("Upgrade");
-        removeHeaders("Range");
+        ReverseUtils.removeRequestHeaders(this);
 	}
 	
 	//rewrite Host Header

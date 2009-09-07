@@ -17,6 +17,7 @@ import org.apache.http.protocol.HttpService;
 import org.tamacat.httpd.util.AccessLogUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.ExceptionUtils;
 
 /**
  * <p>This class is a worker thread for multi thread server.
@@ -52,7 +53,7 @@ public class WorkerThread extends Thread {
         	LOG.trace("timeout >> close connection.");
         } catch (Exception ex) {
         	LOG.error("Error: " + ex.getMessage());
-        	//ex.printStackTrace(); //debug
+        	LOG.trace(ExceptionUtils.getStackTrace(ex)); //debug
         } finally {
             try {
                 this.conn.shutdown();

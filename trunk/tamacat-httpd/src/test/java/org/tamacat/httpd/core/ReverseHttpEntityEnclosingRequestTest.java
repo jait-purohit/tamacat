@@ -29,7 +29,7 @@ public class ReverseHttpEntityEnclosingRequestTest {
 		config = new ServerConfig();
 		ServiceConfig serviceConfig
 			= new ServiceConfigXmlParser(config).getServiceConfig();
-		url = serviceConfig.getServiceUrl("/test/");
+		url = serviceConfig.getServiceUrl("/test2/");
 		reverseUrl = url.getReverseUrl();
 	}
 
@@ -45,7 +45,7 @@ public class ReverseHttpEntityEnclosingRequestTest {
 	public void testReverseHttpRequest() throws Exception {
 		ReverseHttpEntityEnclosingRequest request =
 			new ReverseHttpEntityEnclosingRequest(
-					new BasicHttpRequest("GET","/test/test.jsp"),
+					new BasicHttpRequest("GET","/test2/test.jsp"),
 					reverseUrl);
 		request.setEntity(new StringEntity("test"));
 		

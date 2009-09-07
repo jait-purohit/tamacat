@@ -51,7 +51,6 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 	        	LinkConvertingEntity entity = new LinkConvertingEntity(
 	        			response.getEntity(), before, after);
 	        	response.setEntity(entity);
-		        //response.setHeader(HTTP.CONTENT_LEN, String.valueOf(entity.getContentLength()));
 	        }
         }
 	}
