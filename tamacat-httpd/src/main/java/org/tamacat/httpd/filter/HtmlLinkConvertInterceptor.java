@@ -141,13 +141,19 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 	        			wrappedEntity.getContent());
 	        	byte[] tmp = new byte[bufferSize];
 	        	this.contentLength = wrappedEntity.getContentLength();
+	        	Header contentType = wrappedEntity.getContentType();
+	        	String charset = getJavaEncoding(getCharSet(contentType));
 	        	int l;
 	        	while ((l = in.read(tmp)) != -1) {
-	        		String html = convert(new String(tmp), before, after);
-	    			byte[] bytes = html.getBytes();
-	    			int diff = bytes.length - tmp.length;
-	        		out.write(bytes, 0, (l + diff));
-	        		contentLength += diff;
+	        		ConvertData html = convert(new String(tmp, charset), before, after);
+	        		if (html.isConverted()) {
+	        			byte[] bytes = html.getData().getBytes(charset);
+	    				int diff = bytes.length - tmp.length;
+	        			out.write(bytes, 0, (l + diff));
+	        			contentLength += diff;
+	        		} else {
+	        			out.write(tmp, 0, l);
+	        		}
 	        	}
 	        	out.flush();
 	        } finally {
@@ -156,18 +162,67 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 	        //System.out.println("writeTo: " + contentLength); //debug
 	    }
 		
-		static String convert(String html, String before, String after) {
+		static String getCharSet(Header contentType) {
+			if (contentType != null) {
+				String value = contentType.getValue();
+				if (value.indexOf("=") >= 0) {
+					String[] values = value.split("=");
+					if (values != null && values.length >= 2) {
+						String charset = values[1];
+						return charset.toLowerCase().trim();
+					}
+				}
+			}
+			return null;
+		}
+		
+		static String getJavaEncoding(String encoding) {
+			if (encoding == null) return "8859_1";
+			if (encoding.startsWith("utf")) {
+				return "UTF-8";
+			} else if (encoding.startsWith("shift")) {
+				return "MS932";
+			} else if (encoding.startsWith("euc")) {
+				return "EUC_JP";
+			} else if (encoding.startsWith("jis")
+				|| encoding.startsWith("2022")) {
+				return "2022-JP";
+			}
+			return "8859_1";
+		}
+		
+		static class ConvertData {
+			private final boolean converted;
+			private final String data;
+
+			public ConvertData(String data, boolean converted) {
+				this.data = data;
+				this.converted = converted;
+			}
+			
+			public String getData() {
+				return data;
+			}
+			
+			public boolean isConverted() {
+				return converted;
+			}
+		}
+		
+		static ConvertData convert(String html, String before, String after) {
     		Matcher matcher = PATTERN.matcher(html);
     		StringBuffer result = new StringBuffer();
+    		boolean converted = false;
     		while (matcher.find()) {
 				String url = matcher.group(2);
 				if (url.startsWith("http"))	continue;
 				String rev = matcher.group().replaceFirst(before, after);
 				matcher.appendReplacement(result, rev.replace("$", "\\$"));
+				converted = true;
     		}
 			matcher.appendTail(result);
 			//System.out.println("URLConvert: " + before + " -> " + after); //debug
-            return result.toString();
+			return new ConvertData(result.toString(), converted);
 		}
 	}
 }
