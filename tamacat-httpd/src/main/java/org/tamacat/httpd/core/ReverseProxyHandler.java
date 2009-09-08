@@ -37,7 +37,6 @@ import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
-import org.tamacat.util.IOUtils;
 
 /**
  * <p>The {@link HttpHandler} for reverse proxy.
@@ -74,8 +73,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     		HttpContext context) throws HttpException, IOException {
         // Access Backend server //
         HttpResponse targetResponse = forwardRequest(request, response, context);
-        ReverseUrl reverseUrl = //serviceUrl.getReverseUrl();
-        	(ReverseUrl) context.getAttribute("reverseUrl");
+        ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
+        	//(ReverseUrl) context.getAttribute("reverseUrl");
         ReverseUtils.copyHttpResponse(targetResponse, response);
         ReverseUtils.rewriteContentLocationHeader(response, reverseUrl);
         
@@ -154,10 +153,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 			}
 			response.setEntity(getEntity(html));
 			return response;
-		} finally {
-			if (outsocket != null) {
-				IOUtils.close(outsocket);
-			}
 		}
 	}
 	

@@ -82,11 +82,9 @@
     <property name="requestFilter">
       <ref bean="SSOFilter" />
     </property>
-    <!--
     <property name="requestFilter">
       <ref bean="AccessControlFilter" />
     </property>
-    -->
     <property name="httpResponseInterceptor" mode="add">
       <ref bean="html" />
     </property>

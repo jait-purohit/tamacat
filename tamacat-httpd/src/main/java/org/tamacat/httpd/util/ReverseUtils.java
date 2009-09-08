@@ -105,7 +105,6 @@ public class ReverseUtils {
         
         response.setStatusLine(targetResponse.getStatusLine());
         response.setHeaders(targetResponse.getAllHeaders());
-        response.setEntity(targetResponse.getEntity());
     }
     
     /**

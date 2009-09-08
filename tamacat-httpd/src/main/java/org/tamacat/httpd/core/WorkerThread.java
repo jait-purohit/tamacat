@@ -42,7 +42,7 @@ public class WorkerThread extends Thread {
     
     @Override
 	public void run() {
-    	LOG.debug("New connection thread");
+    	LOG.trace("New connection thread");
         HttpContext context = new BasicHttpContext(null);
         try {
             this.service.handleRequest(conn, context);
