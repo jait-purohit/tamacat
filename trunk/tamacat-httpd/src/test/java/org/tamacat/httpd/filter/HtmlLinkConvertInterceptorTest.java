@@ -13,7 +13,7 @@ public class HtmlLinkConvertInterceptorTest {
 	@Test
 	public void testUseLinkConvert() {
 		String html = "<html><a href=\"test\">TEST</a></html>";
-		html = HtmlLinkConvertInterceptor.LinkConvertingEntity.convert(html, "test", "zzzz");
+		html = HtmlLinkConvertInterceptor.LinkConvertingEntity.convert(html, "test", "zzzz").getData();
 		assertEquals("<html><a href=\"zzzz\">TEST</a></html>", html);
 	}
 
