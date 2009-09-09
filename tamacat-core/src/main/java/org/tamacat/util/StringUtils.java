@@ -37,6 +37,21 @@ public abstract class StringUtils {
     	return value != null && value.indexOf(str) >=0;
     }
     
+    static 
+      public String toLowerCase(String value) {
+    	return value != null ? value.toLowerCase() : value;
+    }
+    
+    static 
+      public String toUpperCase(String value) {
+  	    return value != null ? value.toUpperCase() : value;
+    }
+    
+    static 
+      public String trim(String value) {
+    	return value != null ? value.trim() : value;
+    }
+    
     static
       public String[] toStringArray(Collection<String> collection) {
         return collection != null ? collection.toArray(new String[collection.size()]) : null;
