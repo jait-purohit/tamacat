@@ -22,6 +22,7 @@ import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ReverseUrl;
+import org.tamacat.httpd.util.EncodeUtils;
 import org.tamacat.util.IOUtils;
 import org.tamacat.util.StringUtils;
 
@@ -142,7 +143,7 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 	        	byte[] tmp = new byte[bufferSize];
 	        	this.contentLength = wrappedEntity.getContentLength();
 	        	Header contentType = wrappedEntity.getContentType();
-	        	String charset = getJavaEncoding(getCharSet(contentType));
+	        	String charset = EncodeUtils.getJavaEncoding(getCharSet(contentType), "UTF-8");
 	        	int l;
 	        	while ((l = in.read(tmp)) != -1) {
 	        		ConvertData html = convert(new String(tmp, charset), before, after);
@@ -174,21 +175,6 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 				}
 			}
 			return null;
-		}
-		
-		static String getJavaEncoding(String encoding) {
-			if (encoding == null) return "8859_1";
-			if (encoding.startsWith("utf")) {
-				return "UTF-8";
-			} else if (encoding.startsWith("shift")) {
-				return "MS932";
-			} else if (encoding.startsWith("euc")) {
-				return "EUC_JP";
-			} else if (encoding.startsWith("jis")
-				|| encoding.startsWith("2022")) {
-				return "2022-JP";
-			}
-			return "8859_1";
 		}
 		
 		static class ConvertData {
