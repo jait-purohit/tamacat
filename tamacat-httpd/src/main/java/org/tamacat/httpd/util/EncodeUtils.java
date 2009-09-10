@@ -10,18 +10,31 @@ import java.util.Map.Entry;
 
 import org.tamacat.util.PropertyUtils;
 
-public class EncodeUtils {
+public abstract class EncodeUtils {
 
-	private static HashMap<String,String> map = new HashMap<String,String>();
+	private static HashMap<String,String> charsetMap = new HashMap<String,String>();
+	private static final String ENCODE_MAPPING_FILE = "encode-mapping.properties";
 	
 	static {
-		Properties props = PropertyUtils.getProperties(
-				"org/tamacat/httpd/util/encode-mapping.properties");
+		try {
+			Properties props = PropertyUtils.getProperties(
+				"org/tamacat/httpd/util/" + ENCODE_MAPPING_FILE);
+			addCharsetMap(props);
+		} catch (Exception e) { //skip.
+		}
+		try {
+			Properties props = PropertyUtils.getProperties(ENCODE_MAPPING_FILE);
+			addCharsetMap(props);
+		} catch (Exception e) { //skip.
+		}
+	}
+	
+	private static void addCharsetMap(Properties props) {
 		for (Entry<Object, Object> entry : props.entrySet()) {
 			String key = (String)entry.getKey();
 			String value = (String)entry.getValue();
 			if (key != null && value != null) {
-				map.put(key.toLowerCase().trim(), value.trim());
+				charsetMap.put(key.toLowerCase().trim(), value.trim());
 			}
 		}
 	}
@@ -32,7 +45,7 @@ public class EncodeUtils {
 	
 	public static String getJavaEncoding(String charset, String defaultCharset) {
 		if (charset == null) return defaultCharset;
-		String encoding = map.get(charset.toLowerCase());
+		String encoding = charsetMap.get(charset.toLowerCase());
 		return encoding != null ? encoding : defaultCharset;
 	}
 }
