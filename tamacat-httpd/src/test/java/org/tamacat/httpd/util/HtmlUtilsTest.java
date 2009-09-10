@@ -2,7 +2,7 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.html;
+package org.tamacat.httpd.util;
 
 
 import static org.junit.Assert.assertEquals;
@@ -12,10 +12,11 @@ import java.util.regex.Pattern;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.httpd.util.HtmlUtils;
 
-public class LinkConvertingEntityTest {
+public class HtmlUtilsTest {
 
-	private static Pattern pattern = LinkConvertingEntity.CHARSET_PATTERN;
+	private static Pattern pattern = HtmlUtils.CHARSET_PATTERN;
 
 	@Before
 	public void setUp() throws Exception {
@@ -24,7 +25,7 @@ public class LinkConvertingEntityTest {
 	@Test
 	public void testUseLinkConvert() {
 		String html = "<html><a href=\"test\">TEST</a></html>";
-		html = LinkConvertingEntity.convert(html, "test", "zzzz").getData();
+		html = HtmlUtils.convertLink(html, "test", "zzzz").getData();
 		assertEquals("<html><a href=\"zzzz\">TEST</a></html>", html);
 	}
 	
