@@ -4,26 +4,19 @@
  */
 package org.tamacat.httpd.filter;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ReverseUrl;
-import org.tamacat.httpd.util.EncodeUtils;
-import org.tamacat.util.IOUtils;
+import org.tamacat.httpd.html.LinkConvertingEntity;
+import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.util.StringUtils;
 
 /**
@@ -46,7 +39,7 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
         ReverseUrl reverseUrl = (ReverseUrl) context.getAttribute("reverseUrl");
         if (reverseUrl != null) {
 	        Header header = response.getFirstHeader(HTTP.CONTENT_TYPE);
-	        if (header != null && useLinkConvert(header)) {
+	        if (header != null && HeaderUtils.inContentType(contentTypes, header)) {
 	        	String before = reverseUrl.getReverse().getPath();
 	        	String after = reverseUrl.getServiceUrl().getPath();
 	        	LinkConvertingEntity entity = new LinkConvertingEntity(
@@ -82,133 +75,6 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 					contentTypes.add(types[1].trim().toLowerCase());
 				}
 			}
-		}
-	}
-	
-	/**
-	 * <p>Check for use link convert.
-	 * @param contentType
-	 * @return true use link convert.
-	 */
-	boolean useLinkConvert(Header contentType) {
-		if (contentType == null) return false;
-		String type = contentType.getValue();
-		if (contentTypes.contains(type)) {
-			return true;
-		} else {
-			//Get the content sub type. (text/html; charset=UTF-8 -> html)
-			String[] types = type != null ? type.split(";")[0].split("/") : new String[0];
-			if (types.length >= 2 && contentTypes.contains(types[1])) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-	}
-	
-	/**
-	 * <p>HttpEntity for Link convert.
-	 */
-	static class LinkConvertingEntity extends HttpEntityWrapper {
-		
-		static final Pattern PATTERN = Pattern.compile(
-			"<[^<]*\\s+(href|src|action)=['|\"]([^('|\")]*)['|\"][^>]*>",
-			Pattern.CASE_INSENSITIVE
-		);
-		private static final int bufferSize = 2048;
-		private String before;
-		private String after;
-		private long contentLength = -1;
-		
-		public LinkConvertingEntity(HttpEntity entity, String before, String after) {
-			super(entity);
-	        this.before = before;
-	        this.after = after;
-	    }
-		
-		@Override
-	    public long getContentLength() {
-	        return contentLength;
-	    }
-		
-		@Override
-	    public void writeTo(OutputStream outstream) throws IOException {
-	        if (outstream == null) {
-	            throw new IllegalArgumentException("Output stream may not be null");
-	        }
-	        BufferedOutputStream out = new BufferedOutputStream(outstream);
-	        try {
-	        	BufferedInputStream in = new BufferedInputStream(
-	        			wrappedEntity.getContent());
-	        	byte[] tmp = new byte[bufferSize];
-	        	this.contentLength = wrappedEntity.getContentLength();
-	        	Header contentType = wrappedEntity.getContentType();
-	        	String charset = EncodeUtils.getJavaEncoding(getCharSet(contentType), "UTF-8");
-	        	int l;
-	        	while ((l = in.read(tmp)) != -1) {
-	        		ConvertData html = convert(new String(tmp, charset), before, after);
-	        		if (html.isConverted()) {
-	        			byte[] bytes = html.getData().getBytes(charset);
-	    				int diff = bytes.length - tmp.length;
-	        			out.write(bytes, 0, (l + diff));
-	        			contentLength += diff;
-	        		} else {
-	        			out.write(tmp, 0, l);
-	        		}
-	        	}
-	        	out.flush();
-	        } finally {
-	        	IOUtils.close(out);
-	        }
-	        //System.out.println("writeTo: " + contentLength); //debug
-	    }
-		
-		static String getCharSet(Header contentType) {
-			if (contentType != null) {
-				String value = contentType.getValue();
-				if (value.indexOf("=") >= 0) {
-					String[] values = value.split("=");
-					if (values != null && values.length >= 2) {
-						String charset = values[1];
-						return charset.toLowerCase().trim();
-					}
-				}
-			}
-			return null;
-		}
-		
-		static class ConvertData {
-			private final boolean converted;
-			private final String data;
-
-			public ConvertData(String data, boolean converted) {
-				this.data = data;
-				this.converted = converted;
-			}
-			
-			public String getData() {
-				return data;
-			}
-			
-			public boolean isConverted() {
-				return converted;
-			}
-		}
-		
-		static ConvertData convert(String html, String before, String after) {
-    		Matcher matcher = PATTERN.matcher(html);
-    		StringBuffer result = new StringBuffer();
-    		boolean converted = false;
-    		while (matcher.find()) {
-				String url = matcher.group(2);
-				if (url.startsWith("http"))	continue;
-				String rev = matcher.group().replaceFirst(before, after);
-				matcher.appendReplacement(result, rev.replace("$", "\\$"));
-				converted = true;
-    		}
-			matcher.appendTail(result);
-			//System.out.println("URLConvert: " + before + " -> " + after); //debug
-			return new ConvertData(result.toString(), converted);
 		}
 	}
 }

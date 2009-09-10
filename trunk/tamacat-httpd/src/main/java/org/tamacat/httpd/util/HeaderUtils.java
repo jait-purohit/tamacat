@@ -4,6 +4,7 @@
  */
 package org.tamacat.httpd.util;
 
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.http.Header;
@@ -59,5 +60,26 @@ public final class HeaderUtils {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * <p>Check for use link convert.
+	 * @param contentType
+	 * @return true use link convert.
+	 */
+	public static boolean inContentType(Set<String> contentTypes, Header contentType) {
+		if (contentType == null) return false;
+		String type = contentType.getValue();
+		if (contentTypes.contains(type)) {
+			return true;
+		} else {
+			//Get the content sub type. (text/html; charset=UTF-8 -> html)
+			String[] types = type != null ? type.split(";")[0].split("/") : new String[0];
+			if (types.length >= 2 && contentTypes.contains(types[1])) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 }

@@ -37,6 +37,7 @@ import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.ExceptionUtils;
 
 /**
  * <p>The {@link HttpHandler} for reverse proxy.
@@ -147,7 +148,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 				html = page.getErrorPage(request, response, (HttpException)e);
 			} else {
 				LOG.error(e.getMessage());
-				e.printStackTrace(); //for debug
+				LOG.trace(ExceptionUtils.getStackTrace(e)); //debug
 				html = page.getErrorPage(request, response, 
 						new ServiceUnavailableException(e));
 			}
