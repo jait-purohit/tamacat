@@ -9,7 +9,7 @@ import org.tamacat.httpd.filter.AbstractAccessControlFilter;
 public class AccessControlFilter extends AbstractAccessControlFilter {
 
 	@Override
-	protected boolean isSuccess(String url) {
+	protected boolean isSuccess(String username, String url) {
 		return true;
 	}
 }
