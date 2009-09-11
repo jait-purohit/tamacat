@@ -62,7 +62,7 @@ public abstract class AbstractAccessControlFilter implements RequestFilter {
 //        	}
         	if (StringUtils.isEmpty(accessUrl)) throw new ForbiddenException();
         	
-        	if (isSuccess(accessUrl) == false) {
+        	if (isSuccess(remoteUser, accessUrl) == false) {
         		throw new ForbiddenException();
         	}
         }
@@ -71,10 +71,11 @@ public abstract class AbstractAccessControlFilter implements RequestFilter {
 	/**
 	 * <p>Implements for sub class.<br>
 	 * When the accessible URL returns true.
+	 * @param username
 	 * @param url
 	 * @return true: accessible.
 	 */
-	protected abstract boolean isSuccess(String url);
+	protected abstract boolean isSuccess(String username, String url);
 	
 	/**
 	 * <p>Set the remote user key.
