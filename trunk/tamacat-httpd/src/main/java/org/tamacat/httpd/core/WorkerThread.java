@@ -14,6 +14,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
+import org.tamacat.httpd.jmx.BasicCounter;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.ExceptionUtils;
@@ -26,6 +27,7 @@ public class WorkerThread extends Thread {
 	
     private HttpService service;
     private DefaultHttpServerConnection conn;
+    private BasicCounter counter;
     
     /**
      * <p>Constructs with the specified {@link HttpService}.
@@ -34,17 +36,21 @@ public class WorkerThread extends Thread {
      * @param params
      * @throws IOException
      */
-    public WorkerThread(HttpService service, Socket insocket, HttpParams params) throws IOException {
+    public WorkerThread(
+    		HttpService service, Socket insocket, 
+    		HttpParams params, BasicCounter counter) throws IOException {
     	this.service = service;
     	this.conn = new DefaultHttpServerConnection();
     	this.conn.bind(insocket, params);
+    	this.counter = counter;
     }
     
     @Override
 	public void run() {
-    	LOG.trace("New connection thread");
-        HttpContext context = new BasicHttpContext(null);
-        try {
+    	try {
+        	counter.countUp();
+        	LOG.trace("New connection thread");
+            HttpContext context = new BasicHttpContext(null);
             this.service.handleRequest(conn, context);
         } catch (ConnectionClosedException ex) {
         	LOG.debug("Client closed connection");
@@ -63,6 +69,8 @@ public class WorkerThread extends Thread {
             conn.shutdown();
             conn.close();
         } catch (IOException ignore) {
+        } finally {
+        	counter.countDown();
         }
     }
 }

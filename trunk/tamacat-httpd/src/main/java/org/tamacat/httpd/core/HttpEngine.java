@@ -7,12 +7,19 @@ package org.tamacat.httpd.core;
 import java.io.IOException;
 
 import java.io.InterruptedIOException;
+import java.lang.management.ManagementFactory;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpResponseInterceptor;
@@ -21,14 +28,18 @@ import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfig;
 import org.tamacat.httpd.config.ServiceConfigXmlParser;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.jmx.BasicCounter;
+import org.tamacat.httpd.jmx.BasicHttpMonitor;
 import org.tamacat.httpd.ssl.SSLContextCreator;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.ExceptionUtils;
+import org.tamacat.util.StringUtils;
 
 /**
  * <p>It is implements of the multi thread server.
  */
-public class HttpEngine {
+public class HttpEngine implements BasicHttpMonitor {
 
 	static final Log LOG = LogFactory.getLog(HttpEngine.class);
 
@@ -43,6 +54,7 @@ public class HttpEngine {
     private boolean isInitalized;
     private ExecutorService executors;
     
+    private static BasicCounter counter = new BasicCounter();
     private List<HttpResponseInterceptor> interceptors
     	= new ArrayList<HttpResponseInterceptor>();
     
@@ -66,6 +78,7 @@ public class HttpEngine {
 				for (HttpResponseInterceptor interceptor : interceptors) {
 					service.setHttpResponseInterceptor(interceptor);
 				}
+				registryMXServer();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -93,8 +106,10 @@ public class HttpEngine {
             try {
                 //socket accept -> execute WorkerThrad.
                 Socket insocket = serversocket.accept();
-                executors.execute(
-                		new WorkerThread(service, insocket, paramsBuilder.buildParams()));
+                
+                executors.execute(new WorkerThread(
+                	service, insocket, paramsBuilder.buildParams(), counter)
+                );
             } catch (InterruptedIOException e) {
             	LOG.error(e.getMessage());
                 break;
@@ -138,5 +153,39 @@ public class HttpEngine {
 	 */
 	public void setHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
 		interceptors.add(interceptor);
+	}
+	
+	//install
+	//http://ws-jmx-connector.dev.java.net/files/documents/4956/114781/jsr262-ri.jar
+	//https://jax-ws.dev.java.net/2.1.1/JAXWS2.1.1_20070501.jar
+	void registryMXServer() {
+		try {
+			//"service:jmx:rmi:///jndi/rmi://localhost/httpd";
+			//"ws", "localhost", 9999, "/admin"
+			String jmxUrl = serverConfig.getParam("JMX.server-url");
+			if (StringUtils.isNotEmpty(jmxUrl)) {
+				String objectName = serverConfig.getParam(
+						"JMX.objectname","org.tamacat.httpd:type=HttpEngine");
+				int rmiPort = serverConfig.getParam("JMX.rmi.port", -1);
+				if (rmiPort > 0) {
+					LocateRegistry.createRegistry(rmiPort);
+				}
+				MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
+	        	ObjectName name = new ObjectName(objectName);
+	        	server.registerMBean(this, name);
+	        	
+	        	JMXConnectorServer sv = JMXConnectorServerFactory.newJMXConnectorServer(
+	                new JMXServiceURL(jmxUrl), null, server);
+	        	sv.start();
+			}
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
+			LOG.trace(ExceptionUtils.getStackTrace(e));
+		}
+	}
+
+	@Override
+	public int getActiveConnections() {
+		return counter.getActiveConnections();
 	}
 }
