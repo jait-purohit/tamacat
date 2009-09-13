@@ -17,8 +17,9 @@ public class Httpd {
 	public static final String XML = "components.xml";
 	
 	public static void main(String[] args) {
-		DIContainer di = DI.configure(XML);
-		if (di == null) throw new IllegalArgumentException(XML + " is not found.");
+		String config = args.length > 0 ? args[0] : XML;
+		DIContainer di = DI.configure(config);
+		if (di == null) throw new IllegalArgumentException(config + " is not found.");
 		HttpEngine server = di.getBean("server", HttpEngine.class);
 		if (server == null) throw new IllegalArgumentException();
 		server.start();
