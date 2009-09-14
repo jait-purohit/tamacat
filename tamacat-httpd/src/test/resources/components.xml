@@ -28,8 +28,11 @@
     </property>
   </bean>
     
-  <bean id="SSOFilter"
-     class="org.tamacat.httpd.filter.SingleSignOnFilter" />
+  <bean id="SSOFilter" class="org.tamacat.httpd.filter.SingleSignOnFilter">
+    <property name="singleSignOnCookieName">
+      <value>SingleSignOnCookie</value>
+    </property>
+  </bean>
      
   <bean id="AccessControlFilter"
      class="org.tamacat.httpd.examples.AccessControlFilter">
@@ -47,7 +50,7 @@
       <value>htdocs</value>
     </property>
     <property name="requestFilter">
-      <ref bean="DigestAuthFilter" />
+      <ref bean="BasicAuthFilter" />
     </property>
     <!--
     <property name="requestFilter">
@@ -77,7 +80,7 @@
   <bean id="ReverseHandler"
      class="org.tamacat.httpd.core.ReverseProxyHandler" singleton="false">
     <property name="requestFilter" >
-      <ref bean="DigestAuthFilter" />
+      <ref bean="BasicAuthFilter" />
     </property>
     <property name="requestFilter">
       <ref bean="SSOFilter" />

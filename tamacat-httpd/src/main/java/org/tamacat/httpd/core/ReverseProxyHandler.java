@@ -72,8 +72,10 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     public void doRequest(
     		HttpRequest request, HttpResponse response, 
     		HttpContext context) throws HttpException, IOException {
+
         // Access Backend server //
         HttpResponse targetResponse = forwardRequest(request, response, context);
+
         ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
         	//(ReverseUrl) context.getAttribute("reverseUrl");
         ReverseUtils.copyHttpResponse(targetResponse, response);

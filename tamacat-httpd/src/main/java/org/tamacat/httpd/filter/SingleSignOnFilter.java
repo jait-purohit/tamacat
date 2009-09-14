@@ -52,9 +52,9 @@ public class SingleSignOnFilter implements RequestFilter {
 				}
 			}
 			if (StringUtils.isEmpty(user)) {
-				response.addHeader("Set-Cookie",
-					singleSignOnCookieName + "=" + remoteUser + "; Path=/");
-				LOG.trace("Set-Cookie: " + singleSignOnCookieName + "=" + remoteUser);
+				response.setHeader("Set-Cookie", singleSignOnCookieName + "=" + remoteUser + "; Path=/");
+				request.setHeader("Cookie",	singleSignOnCookieName + "=" + remoteUser); //for Reverse Proxy
+				LOG.trace("Set-Cookie: " + singleSignOnCookieName + "=" + remoteUser + "; Path=/");
 			}
 		} else {
 			throw new UnauthorizedException();
