@@ -73,6 +73,7 @@ public class ReverseUtils {
         // Remove hop-by-hop headers
         request.removeHeaders(HTTP.CONTENT_LEN);
         request.removeHeaders(HTTP.TRANSFER_ENCODING);
+        request.removeHeaders("Accept-Encoding");
         request.removeHeaders(HTTP.CONN_DIRECTIVE);
         request.removeHeaders(HTTP.CONN_KEEP_ALIVE);
         request.removeHeaders("Proxy-Authenticate");
@@ -97,14 +98,18 @@ public class ReverseUtils {
         targetResponse.removeHeaders("Trailers");
         targetResponse.removeHeaders("Upgrade");
         targetResponse.removeHeaders("Content-MD5");
-        
+
         //reset for entity
         targetResponse.removeHeaders(HTTP.CONTENT_ENCODING);
         targetResponse.removeHeaders(HTTP.CONTENT_TYPE);
         targetResponse.removeHeaders(HTTP.CONTENT_LEN);
         
         response.setStatusLine(targetResponse.getStatusLine());
-        response.setHeaders(targetResponse.getAllHeaders());
+        Header[] headers = response.getHeaders("Set-Cookie"); //backup Set-Cookie header.
+        response.setHeaders(targetResponse.getAllHeaders()); //clean and reset all headers.
+        for (Header h : headers) { //add Set-Cookie headers.
+        	response.addHeader(h);
+        }
     }
     
     /**
@@ -154,6 +159,7 @@ public class ReverseUtils {
         	String newValue = ReverseUtils.getConvertedSetCookieHeader(reverseUrl, value);
         	if (StringUtils.isNotEmpty(newValue)) {
         		newValues.add(newValue);
+            	response.removeHeader(h);
         	}
         }
         for (String newValue : newValues) {
