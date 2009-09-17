@@ -30,7 +30,7 @@
     
   <bean id="SSOFilter" class="org.tamacat.httpd.filter.SingleSignOnFilter">
     <property name="singleSignOnCookieName">
-      <value>SingleSignOnCookie</value>
+      <value>SingleSignOnUser</value>
     </property>
   </bean>
      
