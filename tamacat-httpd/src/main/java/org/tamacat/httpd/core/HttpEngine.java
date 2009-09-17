@@ -12,6 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -110,12 +111,16 @@ public class HttpEngine implements BasicHttpMonitor {
                 executors.execute(new WorkerThread(
                 	service, insocket, paramsBuilder.buildParams(), counter)
                 );
+                counter.access();
             } catch (InterruptedIOException e) {
+            	counter.error();
             	LOG.error(e.getMessage());
                 break;
             } catch (IOException e) {
+            	counter.error();
             	LOG.error(e.getMessage());
             } catch (Exception e) {
+            	counter.error();
             	LOG.error(e.getMessage(), e);
             }
         }
@@ -187,5 +192,30 @@ public class HttpEngine implements BasicHttpMonitor {
 	@Override
 	public int getActiveConnections() {
 		return counter.getActiveConnections();
+	}
+
+	@Override
+	public long getAccessCount() {
+		return counter.getAccessCount();
+	}
+
+	@Override
+	public long getErrorCount() {
+		return counter.getErrorCount();
+	}
+
+	@Override
+	public Date getStartedTime() {
+		return counter.getStartedTime();
+	}
+
+	@Override
+	public void resetAccessCount() {
+		counter.resetAccessCount();
+	}
+
+	@Override
+	public void resetErrorCount() {
+		counter.resetErrorCount();
 	}
 }
