@@ -11,6 +11,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,15 +21,23 @@ import java.util.regex.Pattern;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.PropertyUtils;
+import org.tamacat.util.ResourceNotFoundException;
 import org.tamacat.util.StringUtils;
 
 /**
- * <p>The utility class for reverse proxy.
+ * <p>The utility class for reverse proxy.<br>
+ *  When customize a request/response header to remove in reverse
+ *  to the origin server, create the "reverse-header.properties" in CLASSPATH.
+ * <pre>Configuration: reverse-header.properties
+ * {@code
+ * request.removeHeaders=Content-Length,Transfer-Encoding,Accept-Encoding,...
+ * response.removeHeaders=Content-Type,Content-Encoding,Content-Length,...
+ * }</pre>
  */
 public class ReverseUtils {
 
@@ -40,48 +51,42 @@ public class ReverseUtils {
 		"<[^<]*\\s+(href|src|action)=('|\")([^('|\")]*)('|\")[^>]*>"
 	);
 	
-	//TODO bug?
-	public static ByteBuffer parse(ReverseUrl reverseUrl, ByteBuffer buffer) {
-		if (reverseUrl == null) return buffer;
-		String src = reverseUrl.getServiceUrl().getPath();
-		String dist = reverseUrl.getReverse().getPath();
-		ByteBuffer result = null;
-    	try {
-    		CharBuffer cb = decoder.decode(buffer);
-    		Matcher matcher = PATTERN.matcher(cb);
-    		StringBuffer tmp = new StringBuffer();
-    		while (matcher.find()) {
-				String url = matcher.group(3);
-				if (url.startsWith("http"))	continue;
-				LOG.trace("URL:" + url);
-				// LOG.trace(dist +"->" + src);
-				String rev = matcher.group().replaceFirst(dist, src);
-				LOG.trace("->URL:" + rev);
-				matcher.appendReplacement(tmp, rev.replace("$", "\\$"));
-    		}
-			matcher.appendTail(tmp);
-			LOG.trace("URLConvert: " + dist + " -> " + src);
-			cb = CharBuffer.wrap(tmp.toString());
-			result = encoder.encode(cb);
-		} catch (CharacterCodingException e) {
-			result = buffer;
+	private static final String HEADER_PROPERTIES = "reverse-header.properties";
+	private static final String DEFAULT_HEADER_PROPERTIES = "org/tamacat/httpd/util/reverse-header.properties";
+	
+	private static final Set<String> removeRequestHeaders = new HashSet<String>();
+	private static final Set<String> removeResponseHeaders = new HashSet<String>();
+
+	//Configuration of remove request/response headers.
+	static {
+		Properties props = null;
+		try {
+			props = PropertyUtils.getProperties(HEADER_PROPERTIES);
+		} catch (ResourceNotFoundException e) {
+			props = PropertyUtils.getProperties(DEFAULT_HEADER_PROPERTIES);
 		}
-		return result;
+		if (props != null) {
+			String removeHeaders1 = props.getProperty("request.removeHeaders");
+			String[] headers1 = removeHeaders1.split(",");
+			for (String h : headers1) {
+				removeRequestHeaders.add(h.trim());
+			}
+			String removeHeaders2 = props.getProperty("response.removeHeaders");
+			String[]headers2 = removeHeaders2.split(",");
+			for (String h : headers2) {
+				removeResponseHeaders.add(h.trim());
+			}
+		}
 	}
 	
+	/**
+	 * <p>Remove hop-by-hop headers.
+	 * @param request
+	 */
 	public static void removeRequestHeaders(HttpRequest request) {
-        // Remove hop-by-hop headers
-        request.removeHeaders(HTTP.CONTENT_LEN);
-        request.removeHeaders(HTTP.TRANSFER_ENCODING);
-        request.removeHeaders("Accept-Encoding");
-        request.removeHeaders(HTTP.CONN_DIRECTIVE);
-        request.removeHeaders(HTTP.CONN_KEEP_ALIVE);
-        request.removeHeaders("Proxy-Authenticate");
-        request.removeHeaders("Proxy-Authorization");
-        request.removeHeaders("TE");
-        request.removeHeaders("Trailers");
-        request.removeHeaders("Upgrade");
-        request.removeHeaders("Range");
+		for (String h : removeRequestHeaders) {
+			request.removeHeaders(h);
+		}
 	}
 	
 	/**
@@ -91,18 +96,9 @@ public class ReverseUtils {
 	 */
     public static void copyHttpResponse(HttpResponse targetResponse, HttpResponse response) {
         // Remove hop-by-hop headers
-        targetResponse.removeHeaders(HTTP.TRANSFER_ENCODING);
-        targetResponse.removeHeaders(HTTP.CONN_DIRECTIVE);
-        targetResponse.removeHeaders(HTTP.CONN_KEEP_ALIVE);
-        targetResponse.removeHeaders("TE");
-        targetResponse.removeHeaders("Trailers");
-        targetResponse.removeHeaders("Upgrade");
-        targetResponse.removeHeaders("Content-MD5");
-
-        //reset for entity
-        targetResponse.removeHeaders(HTTP.CONTENT_ENCODING);
-        targetResponse.removeHeaders(HTTP.CONTENT_TYPE);
-        targetResponse.removeHeaders(HTTP.CONTENT_LEN);
+    	for (String h : removeResponseHeaders) {
+    		targetResponse.removeHeaders(h);
+    	}
         
         response.setStatusLine(targetResponse.getStatusLine());
         Header[] headers = response.getHeaders("Set-Cookie"); //backup Set-Cookie header.
@@ -147,7 +143,7 @@ public class ReverseUtils {
     }
     
     /**
-     * Rewrite the Set-Cookie response headers.
+     * <p>Rewrite the Set-Cookie response headers.
      * @param response
      * @param reverseUrl
      */
@@ -167,6 +163,12 @@ public class ReverseUtils {
         }
     }
     
+    /**
+     * <p>Set the remote IP address to {@code X-Forwarded-For} request header
+     * for origin server.
+     * @param request
+     * @param context
+     */
     public static void setXForwardedFor(HttpRequest request, HttpContext context) {
     	request.setHeader("X-Forwarded-For", AccessLogUtils.getRemoteIPAddress(context));
     }
@@ -248,5 +250,34 @@ public class ReverseUtils {
 			}
 		}
 		return str.substring(0, end);
+	}
+	
+	//TODO bug?
+	public static ByteBuffer parse(ReverseUrl reverseUrl, ByteBuffer buffer) {
+		if (reverseUrl == null) return buffer;
+		String src = reverseUrl.getServiceUrl().getPath();
+		String dist = reverseUrl.getReverse().getPath();
+		ByteBuffer result = null;
+    	try {
+    		CharBuffer cb = decoder.decode(buffer);
+    		Matcher matcher = PATTERN.matcher(cb);
+    		StringBuffer tmp = new StringBuffer();
+    		while (matcher.find()) {
+				String url = matcher.group(3);
+				if (url.startsWith("http"))	continue;
+				LOG.trace("URL:" + url);
+				// LOG.trace(dist +"->" + src);
+				String rev = matcher.group().replaceFirst(dist, src);
+				LOG.trace("->URL:" + rev);
+				matcher.appendReplacement(tmp, rev.replace("$", "\\$"));
+    		}
+			matcher.appendTail(tmp);
+			LOG.trace("URLConvert: " + dist + " -> " + src);
+			cb = CharBuffer.wrap(tmp.toString());
+			result = encoder.encode(cb);
+		} catch (CharacterCodingException e) {
+			result = buffer;
+		}
+		return result;
 	}
 }
