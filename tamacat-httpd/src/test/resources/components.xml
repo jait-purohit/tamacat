@@ -33,7 +33,13 @@
       <value>SingleSignOnUser</value>
     </property>
   </bean>
-     
+  
+  <bean id="SessionFilter" class="org.tamacat.httpd.filter.SessionCookieFilter">
+    <property name="essionCookieName">
+      <value>tamacat-httpd-Session</value>
+    </property>
+  </bean>
+  
   <bean id="AccessControlFilter"
      class="org.tamacat.httpd.examples.AccessControlFilter">
     <property name="cacheSize">
@@ -84,6 +90,9 @@
     </property>
     <property name="requestFilter">
       <ref bean="SSOFilter" />
+    </property>
+    <property name="requestFilter">
+      <ref bean="SessionFilter" />
     </property>
     <property name="requestFilter">
       <ref bean="AccessControlFilter" />
