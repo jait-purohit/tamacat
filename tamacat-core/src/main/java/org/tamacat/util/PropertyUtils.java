@@ -40,7 +40,13 @@ public abstract class PropertyUtils {
     
     static String getClassPathToResourcePath(String path) {
         if (path == null || path.indexOf('/') >= 0) return path;
-        String propName = path.replace(".properties", "");
-        return propName.replace('.', '/') + ".properties";
+        int idx = path.lastIndexOf(".");
+        if (idx > 0) {
+	        String name = path.substring(0, idx);
+	        String ext = path.substring(idx, path.length());
+	        return name.replace('.', '/') + ext;
+        } else {
+        	return path;
+        }
     }
 }
