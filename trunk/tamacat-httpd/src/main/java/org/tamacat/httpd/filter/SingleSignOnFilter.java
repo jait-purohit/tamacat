@@ -22,7 +22,7 @@ public class SingleSignOnFilter implements RequestFilter {
 	static final Log LOG = LogFactory.getLog(SingleSignOnFilter.class);
 
 	protected String singleSignOnCookieName;
-	private String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
+	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
 	
 	public SingleSignOnFilter(String singleSignOnCookieName) {
 		this.singleSignOnCookieName = singleSignOnCookieName;
