@@ -5,53 +5,55 @@
 package org.tamacat.httpd.jmx;
 
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class BasicCounter implements BasicHttpMonitor {
 
-	private int activeConnections;
-	private long accessCount;
-	private long errorCount;
+	private AtomicInteger activeConnections;
+	private AtomicLong accessCount;
+	private AtomicLong errorCount;
 
 	private final Date startedTime = new Date();
 	
 	public int getActiveConnections() {
-		return activeConnections;
+		return activeConnections.get();
 	}
 
 	public void countUp() {
-		activeConnections++;
+		activeConnections.incrementAndGet();
 	}
 	
 	public void countDown() {
-		activeConnections--;
+		activeConnections.decrementAndGet();
 	}
 
 	@Override
 	public long getAccessCount() {
-		return accessCount;
+		return accessCount.get();
 	}
 	
 	@Override
 	public void resetAccessCount() {
-		accessCount = 0;
+		accessCount.set(0);
 	}
 	
 	public void access() {
-		accessCount++;
+		accessCount.incrementAndGet();
 	}
 
 	@Override
 	public long getErrorCount() {
-		return errorCount;
+		return errorCount.get();
 	}
 	
 	@Override
 	public void resetErrorCount() {
-		errorCount = 0;
+		errorCount.set(0);
 	}
 	
 	public void error() {
-		errorCount ++;
+		errorCount.incrementAndGet();
 	}
 
 	@Override
