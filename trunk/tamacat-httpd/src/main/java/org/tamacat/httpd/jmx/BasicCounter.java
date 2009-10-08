@@ -4,15 +4,17 @@
  */
 package org.tamacat.httpd.jmx;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class BasicCounter implements BasicHttpMonitor {
-
-	private AtomicInteger activeConnections;
-	private AtomicLong accessCount;
-	private AtomicLong errorCount;
+public class BasicCounter implements BasicHttpMonitor, Serializable {
+	private static final long serialVersionUID = 6089725451626828983L;
+	
+	private AtomicInteger activeConnections = new AtomicInteger();
+	private AtomicLong accessCount = new AtomicLong();
+	private AtomicLong errorCount = new AtomicLong();
 
 	private final Date startedTime = new Date();
 	
