@@ -55,6 +55,9 @@ public class VelocityListingsPage {
 			HttpRequest request, HttpResponse response, 
 			VelocityContext context, File file) {
 		context.put("url", request.getRequestLine().getUri());
+		if (request.getRequestLine().getUri().lastIndexOf('/') >= 0) {
+			context.put("parent", "../");
+		}
 		File[] files = file.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {

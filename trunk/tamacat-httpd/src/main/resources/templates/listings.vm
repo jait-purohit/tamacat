@@ -25,15 +25,20 @@
     <h1>Index of ${url}</h1>
     <table style="width: 80%;">
       <tr>
-        <th>Name</th>
-        <th>Last modified</th>
-        <th style="text-align:right;">Size</th>
+        <th style="width:60%;">Name</th>
+        <th style="width:10%;" nowrap="nowrap">Last modified</th>
+        <th style="witdh:5%;text-align:right;">Size</th>
       </tr>
+#if($parent)
+      <tr>
+        <td colspan="3"><a href="../"><span>../</span></a></td>
+      </tr>
+#end
 #foreach($file in $list)
       <tr>
         <td><a href="$url$file.getName"><span>$file.getName</span></a></td>
-        <td>$file.lastModified</td>
-        <td style="text-align:right;">$file.length</td>
+        <td nowrap="nowrap">$file.lastModified</td>
+        <td style="text-align:right;" nowrap="nowrap">$file.length</td>
       </tr>
 #end
     </table>

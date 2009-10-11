@@ -22,5 +22,4 @@ public class DefaultHttpHandlerFactory implements HttpHandlerFactory {
 		httpHandler.setServiceUrl(serviceUrl);
 		return httpHandler;
 	}
-
 }

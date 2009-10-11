@@ -5,7 +5,6 @@
 package org.tamacat.httpd.core;
 
 import java.io.IOException;
-
 import java.io.InterruptedIOException;
 import java.lang.management.ManagementFactory;
 import java.net.ServerSocket;
@@ -30,7 +29,7 @@ import org.tamacat.httpd.config.ServiceConfig;
 import org.tamacat.httpd.config.ServiceConfigXmlParser;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.jmx.BasicCounter;
-import org.tamacat.httpd.jmx.BasicHttpMonitor;
+import org.tamacat.httpd.jmx.JMXReloadableHttpd;
 import org.tamacat.httpd.ssl.SSLContextCreator;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -40,7 +39,7 @@ import org.tamacat.util.StringUtils;
 /**
  * <p>It is implements of the multi thread server.
  */
-public class HttpEngine implements BasicHttpMonitor {
+public class HttpEngine implements JMXReloadableHttpd {
 
 	static final Log LOG = LogFactory.getLog(HttpEngine.class);
 
@@ -52,7 +51,6 @@ public class HttpEngine implements BasicHttpMonitor {
     private ServerSocket serversocket;
     private HttpParamsBuilder paramsBuilder;
 
-    private boolean isInitalized;
     private ExecutorService executors;
     
     private static BasicCounter counter = new BasicCounter();
@@ -63,37 +61,18 @@ public class HttpEngine implements BasicHttpMonitor {
      * <p>This method called by {@link #start}.
      */
 	protected void init() {
-		if (isInitalized == false) {
+		if (serverConfig == null) {
 			serverConfig = new ServerConfig();
-	        paramsBuilder = new HttpParamsBuilder();
+			paramsBuilder = new HttpParamsBuilder();
 	        paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
 	          .socketBufferSize(serverConfig.getSocketBufferSize());
-			try {
-				int port = serverConfig.getPort();
-				if (serverConfig.useHttps()) {					
-					serversocket = createSecureServerSocket(port);
-				} else {
-					serversocket = new ServerSocket(port);
-				}
-				service = new DefaultHttpService();
-				for (HttpResponseInterceptor interceptor : interceptors) {
-					service.setHttpResponseInterceptor(interceptor);
-				}
-				registryMXServer();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			isInitalized = true;
+			service = new DefaultHttpService();
+			for (HttpResponseInterceptor interceptor : interceptors) {
+				service.setHttpResponseInterceptor(interceptor);
+			}	        
+	        registryMXServer();
 		}
-	}
 
-	/**
-	 * <p>Start the http server.
-	 */
-	public void start() {
-		//Initalize engine.
-		init();
-		
 		//Register services and service URLs.
 		ServiceConfig serviceConfig
 			= new ServiceConfigXmlParser(serverConfig).getServiceConfig();
@@ -101,7 +80,28 @@ public class HttpEngine implements BasicHttpMonitor {
 			registry.register(serviceUrl.getPath() + "*", serviceUrl.getHttpHandler());
 		}
         service.setHandlerResolver(registry);
+	}
+
+	/**
+	 * <p>Start the http server.
+	 */
+	@Override
+	public void start() {
+		//Initalize engine.
+		init();
+		
+		try {
+			int port = serverConfig.getPort();
+			if (serverConfig.useHttps()) {					
+				serversocket = createSecureServerSocket(port);
+			} else {
+				serversocket = new ServerSocket(port);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
         executors = new ThreadExecutorFactory(serverConfig).getExecutorService();
+
 		LOG.info("Listen: " + serverConfig.getPort());
         while (!Thread.interrupted()) {
             try {
@@ -119,12 +119,25 @@ public class HttpEngine implements BasicHttpMonitor {
             } catch (IOException e) {
             	counter.error();
             	LOG.error(e.getMessage());
+            	if (serversocket.isClosed()) { //for stop()
+            		break;
+            	}
             } catch (Exception e) {
             	counter.error();
             	LOG.error(e.getMessage(), e);
             }
         }
         executors.shutdown();
+	}
+	
+	@Override
+	public void stop() {
+		try {
+			serversocket.close();
+			executors.shutdown();
+		} catch (IOException e) {
+			LOG.error(e.getMessage(), e);
+		}
 	}
 	
 	/**
@@ -217,5 +230,11 @@ public class HttpEngine implements BasicHttpMonitor {
 	@Override
 	public void resetErrorCount() {
 		counter.resetErrorCount();
+	}
+	
+	@Override
+	public void reload() {
+		init();
+		LOG.info("reloaded.");
 	}
 }
