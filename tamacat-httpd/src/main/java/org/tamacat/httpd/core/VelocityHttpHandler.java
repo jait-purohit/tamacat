@@ -37,38 +37,48 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		if (path.indexOf('?') >= 0) {
 			String[] requestParams = path.split("\\?");
 			path = requestParams[0];
-			if (requestParams.length >= 2) {
-				String params = requestParams[1];
-				String[] param = params.split("&");
-				for (String kv : param) {
-					String[] p = kv.split("=");
-					if (p.length >=2) {
-						//request.setParameter(p[0], p[1]);
-					}
-				}
-			}
+//set request parameters for Custom HttpRequest.
+//			if (requestParams.length >= 2) {
+//				String params = requestParams[1];
+//				String[] param = params.split("&");
+//				for (String kv : param) {
+//					String[] p = kv.split("=");
+//					if (p.length >=2) {
+//						//request.setParameter(p[0], p[1]);
+//					}
+//				}
+//			}
 		}
 		int idx = path.lastIndexOf(".html");
 		if (idx >= 0) {
-			path = path.replace(".html", "");
+			//delete the extention of file name.
+			setEntity(request, response, path.replace(".html", ""));
 		} else if (path.endsWith("/")) {
-			path = path + "index";
+			//directory -> index page.
+			setEntity(request, response, path + "index");
 		} else {
-			try {
-				URL r = ClassUtils.getURL(getDecodeUri(path));
-				if (r == null) throw new NotFoundException();
-				File file = new File(r.toURI());
-				if (file.exists() == false) throw new NotFoundException();
-				ResponseUtils.setEntity(response, getFileEntity(file));
-			} catch (URISyntaxException e) {
-				throw new NotFoundException(e);
-			}
-			return;
+			//get the file in this server.
+			setFileEntity(request, response, path);
 		}
+	}
+	
+	private void setEntity(HttpRequest request, HttpResponse response, String path) {
 		VelocityPage page = new VelocityPage();
 		VelocityContext vc = new VelocityContext();
 		String html = page.getPage(request, response, vc, path);
 		ResponseUtils.setEntity(response, getEntity(html));
+	}
+	
+	private void setFileEntity(HttpRequest request, HttpResponse response, String path) {
+		try {
+			URL r = ClassUtils.getURL(getDecodeUri(path));
+			if (r == null) throw new NotFoundException();
+			File file = new File(r.toURI());
+			if (file.exists() == false) throw new NotFoundException();
+			ResponseUtils.setEntity(response, getFileEntity(file));
+		} catch (URISyntaxException e) {
+			throw new NotFoundException(e);
+		}
 	}
 	
 	@Override
