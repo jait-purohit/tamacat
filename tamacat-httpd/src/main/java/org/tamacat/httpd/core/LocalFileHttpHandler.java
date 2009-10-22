@@ -28,6 +28,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 
 	static final Log LOG = LogFactory.getLog(LocalFileHttpHandler.class);
 	protected String welcomeFile = "index.html";
+	private VelocityListingsPage listingPage = new VelocityListingsPage();
 	protected boolean listings;
 	
 	/**
@@ -79,8 +80,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 		///// 403 FORBIDDEN /////
 		else if (!file.canRead() || file.isDirectory()) {
 			if (file.isDirectory() && useDirectoryListings()) {
-				VelocityListingsPage page = new VelocityListingsPage();
-				String html = page.getListingsPage(request, response, file);
+				String html = listingPage.getListingsPage(request, response, file);
 				response.setStatusCode(HttpStatus.SC_OK);
 			    ResponseUtils.setEntity(response, getEntity(html));
 			} else {

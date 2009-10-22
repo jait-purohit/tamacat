@@ -5,8 +5,6 @@
 package org.tamacat.httpd.core;
 
 import java.io.File;
-
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -18,18 +16,18 @@ import org.apache.http.HttpResponse;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
-import org.apache.velocity.VelocityContext;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityPage;
 import org.tamacat.httpd.util.ResponseUtils;
-import org.tamacat.util.ClassUtils;
+import org.tamacat.util.FileUtils;
 
 /**
  * <p>It is implements of {@link HttpHandler} that uses {@code Apache Velocity}. 
  */
 public class VelocityHttpHandler extends AbstractHttpHandler {
-	
+	private VelocityPage page = new VelocityPage();
+
 	@Override
 	protected void doRequest(HttpRequest request, HttpResponse response,
 			HttpContext context) throws HttpException, IOException {
@@ -51,7 +49,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		}
 		int idx = path.lastIndexOf(".html");
 		if (idx >= 0) {
-			//delete the extention of file name.
+			//delete the extention of file name. (index.html -> index)
 			setEntity(request, response, path.replace(".html", ""));
 		} else if (path.endsWith("/")) {
 			//directory -> index page.
@@ -63,15 +61,13 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	}
 	
 	private void setEntity(HttpRequest request, HttpResponse response, String path) {
-		VelocityPage page = new VelocityPage();
-		VelocityContext vc = new VelocityContext();
-		String html = page.getPage(request, response, vc, path);
+		String html = page.getPage(request, response, path);
 		ResponseUtils.setEntity(response, getEntity(html));
 	}
 	
 	private void setFileEntity(HttpRequest request, HttpResponse response, String path) {
 		try {
-			URL r = ClassUtils.getURL(getDecodeUri(path));
+			URL r = FileUtils.getRelativePathToURL(getDecodeUri(path));
 			if (r == null) throw new NotFoundException();
 			File file = new File(r.toURI());
 			if (file.exists() == false) throw new NotFoundException();
@@ -80,7 +76,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			throw new NotFoundException(e);
 		}
 	}
-	
+
 	@Override
 	protected HttpEntity getEntity(String html) {
 		try {

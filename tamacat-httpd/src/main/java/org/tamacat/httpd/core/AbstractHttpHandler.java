@@ -49,7 +49,8 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     		mimeTypes = PropertyUtils.getProperties("org/tamacat/httpd/mime-types.properties");
     	}
     }
-
+    
+	protected VelocityErrorPage errorPage = new VelocityErrorPage();
     protected ServiceUrl serviceUrl;
     protected String docsRoot;
     
@@ -98,12 +99,11 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	 */
 	protected void handleException(HttpRequest request, HttpResponse response, Exception e) {
 		//e.printStackTrace();
-		VelocityErrorPage page = new VelocityErrorPage();
 		String html = null;
 		if (e instanceof HttpException) {
-			html = page.getErrorPage(request, response, (HttpException)e);
+			html = errorPage.getErrorPage(request, response, (HttpException)e);
 		} else {
-			html = page.getErrorPage(request, response,
+			html = errorPage.getErrorPage(request, response,
 					new ServiceUnavailableException(e));
 		}
 		HttpEntity entity = getEntity(html);

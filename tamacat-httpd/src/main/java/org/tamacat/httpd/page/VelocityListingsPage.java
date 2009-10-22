@@ -16,10 +16,12 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.DateUtils;
+import org.tamacat.util.PropertyUtils;
 import org.tamacat.util.StringUtils;
 
 /**
@@ -28,17 +30,35 @@ import org.tamacat.util.StringUtils;
 public class VelocityListingsPage {
 
 	static final Log LOG = LogFactory.getLog(VelocityListingsPage.class);
+	static final String LOGGER_NAME = "Velocity"; //VelocityListingsPage.class.getName();
+
     static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
     
     static final String DEFAULT_ERROR_500_HTML
 		= "<html><body><p>500 Internal Server Error.<br /></p></body></html>";
     private String listingsPage = "listings";
-    
-	public VelocityListingsPage() {}
+    private VelocityEngine velocityEngine;
+
+	public VelocityListingsPage() {
+		init(PropertyUtils.getProperties("server.properties"));
+	}
 	
 	public VelocityListingsPage(Properties props) {
+		init(props);
+	}
+	
+	void init(Properties props) {
 		try {
-			Velocity.init(props);
+			velocityEngine = new VelocityEngine();
+			velocityEngine.setProperty("resource.loader", "list");
+			velocityEngine.setProperty("velocimacro.library", "");
+			velocityEngine.setProperty("list.resource.loader.class", 
+				"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+			velocityEngine.setProperty(
+				RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+				      "org.apache.velocity.runtime.log.Log4JLogChute");
+			velocityEngine.setProperty("runtime.log.logsystem.log4j.logger", LOGGER_NAME);
+			velocityEngine.init();
 		} catch (Exception e) {
 			LOG.warn(e.getMessage());
 		}
@@ -92,6 +112,6 @@ public class VelocityListingsPage {
     }
     
     protected Template getTemplate(String page) throws Exception {
-    	return Velocity.getTemplate("templates/" + page, "UTF-8");
+    	return velocityEngine.getTemplate("templates/" + page, "UTF-8");
     }
 }

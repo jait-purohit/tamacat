@@ -6,9 +6,6 @@ package org.tamacat.httpd.config;
 
 import java.util.Properties;
 
-
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.app.VelocityEngine;
 import org.tamacat.util.PropertyUtils;
 import org.tamacat.util.StringUtils;
 
@@ -39,9 +36,9 @@ public class ServerConfig {
 		try {
 			String home = System.getProperty("server.home");
 			if (StringUtils.isNotEmpty(home)) {
-				Velocity.setProperty(VelocityEngine.RUNTIME_LOG, home + "/logs/velocity.log");
+				//Velocity.setProperty(VelocityEngine.RUNTIME_LOG, home + "/logs/velocity.log");
 			}
-			Velocity.init(props);
+			//Velocity.init(props);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

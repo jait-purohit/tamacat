@@ -5,7 +5,6 @@
 package org.tamacat.httpd.page;
 
 import java.io.StringWriter;
-
 import java.util.Locale;
 import java.util.Properties;
 
@@ -13,10 +12,12 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.PropertyUtils;
 
 /**
  * <p>It is the HTTP error page that used Velocity template.
@@ -24,16 +25,36 @@ import org.tamacat.log.LogFactory;
 public class VelocityErrorPage {
 
 	static final Log LOG = LogFactory.getLog(VelocityErrorPage.class);
+	static final String LOGGER_NAME = "Velocity"; //VelocityErrorPage.class.getName();
+
     static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
     
     static final String DEFAULT_ERROR_500_HTML
-		= "<html><body><p>500 Internal Server Error.<br /></p></body></html>";
+		= "<html><body><p>500 Internal Server Error.</p></body></html>";
     
-	public VelocityErrorPage() {}
+    private VelocityEngine velocityEngine;
+
+	public VelocityErrorPage() {
+		init(PropertyUtils.getProperties("server.properties"));
+	}
 	
 	public VelocityErrorPage(Properties props) {
+		init(props);
+	}
+	
+	void init(Properties props) {
 		try {
-			Velocity.init(props);
+			velocityEngine = new VelocityEngine();
+			velocityEngine.setProperty("resource.loader", "error");
+			velocityEngine.setProperty("velocimacro.library","");
+
+			velocityEngine.setProperty("error.resource.loader.class", 
+				"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+			velocityEngine.setProperty(
+				RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+				      "org.apache.velocity.runtime.log.Log4JLogChute");
+			velocityEngine.setProperty("runtime.log.logsystem.log4j.logger", LOGGER_NAME);
+			velocityEngine.init();
 		} catch (Exception e) {
 			LOG.warn(e.getMessage());
 		}
@@ -69,6 +90,6 @@ public class VelocityErrorPage {
     }
     
     protected Template getTemplate(String page) throws Exception {
-    	return Velocity.getTemplate("templates/" + page, "UTF-8");
+    	return velocityEngine.getTemplate("templates/" + page, "UTF-8");
     }
 }
