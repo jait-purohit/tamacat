@@ -41,6 +41,11 @@ public abstract class ClassUtils {
     }
 
     static
+      public URL getURL(String path, ClassLoader loader) {
+        return loader.getResource(path);
+    }
+    
+    static
       public <T> T newInstance(Class<T> type) {
         try {
             return type.newInstance();
