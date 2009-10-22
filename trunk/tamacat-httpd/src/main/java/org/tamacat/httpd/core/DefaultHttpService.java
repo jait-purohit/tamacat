@@ -45,7 +45,8 @@ public class DefaultHttpService extends HttpService {
     static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
 	private HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
     private HttpRequestHandlerResolver handlerResolver;
-    
+	private VelocityErrorPage errorPage = new VelocityErrorPage();
+
     /**
      * default.
      */
@@ -145,8 +146,7 @@ public class DefaultHttpService extends HttpService {
 	 */
 	protected void handleException(HttpRequest request, HttpResponse response,
 			org.tamacat.httpd.exception.HttpException e) {
-		VelocityErrorPage page = new VelocityErrorPage();
-		String html = page.getErrorPage(request, response, e);
+		String html = errorPage.getErrorPage(request, response, e);
 		response.setEntity(getEntity(html));
 	}
 	

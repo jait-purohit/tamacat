@@ -82,6 +82,16 @@
   
   <bean id="DefaultHandler"
      class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false" />
+
+  <bean id="DocsHandler"
+     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
+    <property name="docsRoot">
+      <value>../htdocs/</value>
+    </property>
+    <property name="listings">
+      <value>true</value>
+    </property>
+  </bean>
   
   <bean id="ReverseHandler"
      class="org.tamacat.httpd.core.ReverseProxyHandler" singleton="false">

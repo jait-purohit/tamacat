@@ -33,7 +33,6 @@ import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
-import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -144,14 +143,13 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        httpexecutor.postProcess(targetResponse, httpproc, context);
 	        return targetResponse;
 		} catch (Exception e) {
-			VelocityErrorPage page = new VelocityErrorPage();
 			String html = null;
 			if (e instanceof HttpException) {
-				html = page.getErrorPage(request, response, (HttpException)e);
+				html = errorPage.getErrorPage(request, response, (HttpException)e);
 			} else {
 				LOG.error(e.getMessage());
 				LOG.trace(ExceptionUtils.getStackTrace(e)); //debug
-				html = page.getErrorPage(request, response, 
+				html = errorPage.getErrorPage(request, response, 
 						new ServiceUnavailableException(e));
 			}
 			response.setEntity(getEntity(html));
