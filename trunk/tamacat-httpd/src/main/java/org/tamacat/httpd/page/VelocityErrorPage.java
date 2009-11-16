@@ -13,7 +13,6 @@ import org.apache.http.HttpResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -35,26 +34,19 @@ public class VelocityErrorPage {
     private VelocityEngine velocityEngine;
 
 	public VelocityErrorPage() {
-		init(PropertyUtils.getProperties("server.properties"));
+		init("velocity.properties");
 	}
 	
-	public VelocityErrorPage(Properties props) {
-		init(props);
+	public VelocityErrorPage(String fileName) {
+		init(fileName);
 	}
 	
-	void init(Properties props) {
+	void init(String fileName) {
 		try {
+			Properties props = PropertyUtils.getProperties(fileName);
 			velocityEngine = new VelocityEngine();
 			velocityEngine.setProperty("resource.loader", "error");
-			velocityEngine.setProperty("velocimacro.library","");
-
-			velocityEngine.setProperty("error.resource.loader.class", 
-				"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-			velocityEngine.setProperty(
-				RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
-				      "org.apache.velocity.runtime.log.Log4JLogChute");
-			velocityEngine.setProperty("runtime.log.logsystem.log4j.logger", LOGGER_NAME);
-			velocityEngine.init();
+			velocityEngine.init(props);
 		} catch (Exception e) {
 			LOG.warn(e.getMessage());
 		}
