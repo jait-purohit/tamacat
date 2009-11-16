@@ -14,7 +14,6 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.ResourceNotFoundException;
-import org.apache.velocity.runtime.RuntimeConstants;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.log.Log;
@@ -26,32 +25,24 @@ import org.tamacat.util.PropertyUtils;
  */
 public class VelocityPage {
 	static final Log LOG = LogFactory.getLog(VelocityPage.class);
-	static final String LOGGER_NAME = "Velocity"; //VelocityPage.class.getName();
 	
     private VelocityEngine velocityEngine;
     
 	public VelocityPage() {
-		init(PropertyUtils.getProperties("server.properties"));
+		init(".");
 	}
 	
-	public VelocityPage(Properties props) {
-		init(props);
+	public VelocityPage(String docsRoot) {
+		init(docsRoot);
 	}
 	
-	void init(Properties props) {
+	void init(String docsRoot) {
 		try {
-			velocityEngine = new VelocityEngine();//props);
-			velocityEngine.setProperty("velocimacro.library","");
-//			velocityEngine.setProperty("resource.loader", "page");
-			//velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "page");
-//			velocityEngine.setProperty("page.resource.loader.class", 
-//				"org.apache.velocity.runtime.resource.loader.FileResourceLoader");
-//			velocityEngine.setProperty("file.resource.loader.path", ".");
-			velocityEngine.setProperty(
-				RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
-				"org.apache.velocity.runtime.log.Log4JLogChute");
-			velocityEngine.setProperty("runtime.log.logsystem.log4j.logger", LOGGER_NAME);
-			velocityEngine.init();
+			Properties props = PropertyUtils.getProperties("velocity.properties");
+			velocityEngine = new VelocityEngine();
+			velocityEngine.setProperty("resource.loader", "page");
+			velocityEngine.setProperty("page.resource.loader.path", docsRoot);
+			velocityEngine.init(props);
 		} catch (Exception e) {
 			LOG.warn(e.getMessage());
 		}

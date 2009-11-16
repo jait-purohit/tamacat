@@ -27,6 +27,7 @@ import org.tamacat.log.LogFactory;
 public class LocalFileHttpHandler extends AbstractHttpHandler {
 
 	static final Log LOG = LogFactory.getLog(LocalFileHttpHandler.class);
+	
 	protected String welcomeFile = "index.html";
 	private VelocityListingsPage listingPage = new VelocityListingsPage();
 	protected boolean listings;
@@ -72,28 +73,29 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 			uri = uri + welcomeFile;
 		}
 		File file = new File(docsRoot, getDecodeUri(uri));
-		///// 404 NOT FOUND /////
+		// /// 404 NOT FOUND /////
 		if (!file.exists()) {
-		    LOG.trace("File " + file.getPath() + " not found");
-		    throw new NotFoundException();
+			LOG.trace("File " + file.getPath() + " not found");
+			throw new NotFoundException();
 		}
-		///// 403 FORBIDDEN /////
+		// /// 403 FORBIDDEN /////
 		else if (!file.canRead() || file.isDirectory()) {
 			if (file.isDirectory() && useDirectoryListings()) {
-				String html = listingPage.getListingsPage(request, response, file);
+				String html = listingPage.getListingsPage(request, response,
+						file);
 				response.setStatusCode(HttpStatus.SC_OK);
-			    ResponseUtils.setEntity(response, getEntity(html));
+				ResponseUtils.setEntity(response, getEntity(html));
 			} else {
 				LOG.trace("Cannot read file " + file.getPath());
-		    	throw new ForbiddenException();
+				throw new ForbiddenException();
 			}
 		}
-		///// 200 OK /////
+		// /// 200 OK /////
 		else {
-		    LOG.trace("File " + file.getPath() + " found");
-		    response.setStatusCode(HttpStatus.SC_OK);
-		    ResponseUtils.setEntity(response, getFileEntity(file));
-		    LOG.trace("Serving file " + file.getPath());
+			LOG.trace("File " + file.getPath() + " found");
+			response.setStatusCode(HttpStatus.SC_OK);
+			ResponseUtils.setEntity(response, getFileEntity(file));
+			LOG.trace("Serving file " + file.getPath());
 		}
 	}
 

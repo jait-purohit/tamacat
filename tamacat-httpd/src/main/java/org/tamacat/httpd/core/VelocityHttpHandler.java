@@ -7,8 +7,6 @@ package org.tamacat.httpd.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -20,18 +18,26 @@ import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityPage;
 import org.tamacat.httpd.util.ResponseUtils;
-import org.tamacat.util.FileUtils;
 
 /**
  * <p>It is implements of {@link HttpHandler} that uses {@code Apache Velocity}. 
  */
 public class VelocityHttpHandler extends AbstractHttpHandler {
-	private VelocityPage page = new VelocityPage();
+	
+	private VelocityPage page;
+
+	private VelocityPage getVelocityPage() {
+		if (page == null) {
+			page = new VelocityPage(this.docsRoot);
+		}
+		return page;
+	}
 
 	@Override
 	protected void doRequest(HttpRequest request, HttpResponse response,
 			HttpContext context) throws HttpException, IOException {
-		String path = docsRoot + request.getRequestLine().getUri();
+		String path = request.getRequestLine().getUri();
+		//String path = docsRoot + request.getRequestLine().getUri();
 		if (path.indexOf('?') >= 0) {
 			String[] requestParams = path.split("\\?");
 			path = requestParams[0];
@@ -61,18 +67,18 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	}
 	
 	private void setEntity(HttpRequest request, HttpResponse response, String path) {
-		String html = page.getPage(request, response, path);
+		String html = getVelocityPage().getPage(request, response, path);
 		ResponseUtils.setEntity(response, getEntity(html));
 	}
 	
 	private void setFileEntity(HttpRequest request, HttpResponse response, String path) {
 		try {
-			URL r = FileUtils.getRelativePathToURL(getDecodeUri(path));
-			if (r == null) throw new NotFoundException();
-			File file = new File(r.toURI());
-			if (file.exists() == false) throw new NotFoundException();
+			File file = new File(docsRoot + getDecodeUri(path));//r.toURI());
+			if (file.exists() == false) {
+				throw new NotFoundException();
+			}
 			ResponseUtils.setEntity(response, getFileEntity(file));
-		} catch (URISyntaxException e) {
+		} catch (Exception e) {
 			throw new NotFoundException(e);
 		}
 	}

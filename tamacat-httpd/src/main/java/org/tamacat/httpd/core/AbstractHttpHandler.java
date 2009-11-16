@@ -35,8 +35,9 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     static final Log LOG = LogFactory.getLog(AbstractHttpHandler.class);
     protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
 
-	static Properties mimeTypes;
-	
+	private static Properties mimeTypes;
+	private static String serverHome;
+
 	/*
 	 * 1. using first mime-types.properties in CLASSPATH. (optional)
 	 * 2. using org/tamacat/httpd/mime-types.properties} in jar archive.
@@ -48,8 +49,19 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     		//use default mime-types.
     		mimeTypes = PropertyUtils.getProperties("org/tamacat/httpd/mime-types.properties");
     	}
+		try {
+			serverHome = System.getProperty("server.home");
+			if (serverHome == null) serverHome = System.getProperty("user.dir");
+			File home = new File(serverHome);
+			serverHome = home.getCanonicalPath();
+		} catch (Exception e) {
+		}
     }
     
+	public static Properties getMimeTypes() {
+		return mimeTypes;
+	}
+	
 	protected VelocityErrorPage errorPage = new VelocityErrorPage();
     protected ServiceUrl serviceUrl;
     protected String docsRoot;
@@ -72,7 +84,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	 * @param docsRoot
 	 */
 	public void setDocsRoot(String docsRoot) {
-		this.docsRoot = docsRoot;
+		this.docsRoot = docsRoot.replace("${server.home}", serverHome).replace("\\", "/");
 	}
 	
 	@Override
@@ -150,7 +162,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     	if (file == null) return DEFAULT_CONTENT_TYPE;
     	String fileName = file.getName();
     	String ext = fileName.substring(fileName.lastIndexOf('.')+1, fileName.length());
-    	String contentType =  mimeTypes.getProperty(ext.toLowerCase());
+    	String contentType =  getMimeTypes().getProperty(ext.toLowerCase());
     	return StringUtils.isNotEmpty(contentType)? contentType : DEFAULT_CONTENT_TYPE;
     }
     
