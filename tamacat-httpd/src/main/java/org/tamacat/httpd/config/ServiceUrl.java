@@ -5,10 +5,7 @@
 package org.tamacat.httpd.config;
 
 import java.net.URL;
-
-import org.tamacat.httpd.core.DefaultHttpHandlerFactory;
 import org.tamacat.httpd.core.HttpHandler;
-import org.tamacat.httpd.core.HttpHandlerFactory;
 
 /**
  * <p>It is setting of the service URL.
@@ -21,7 +18,6 @@ public class ServiceUrl {
 	private ReverseUrl reverseUrl;
 	private ServiceType type;
 	private final ServerConfig serverConfig;
-	private HttpHandlerFactory factory;
 	
 	/**
 	 * <p>Constructor for ServiceConfig.
@@ -30,40 +26,13 @@ public class ServiceUrl {
 	public ServiceUrl(ServerConfig serverConfig) {
 		this.serverConfig = serverConfig;
 	}
-	
-	/**
-	 * <p>Set the {@link HttpHandlerFactory}.
-	 * @param factory
-	 */
-	public void setHttpHandlerFactory(HttpHandlerFactory factory) {
-		this.factory = factory;
-	}
-	
-	/**
-	 * <p>Returns the {@link HttpHandlerFactory}.
-	 * If unset, use the {@link DefaultHttpHandlerFactory}. 
-	 * @return
-	 */
-	protected HttpHandlerFactory getHttpHandlerFactory() {
-		if (factory == null) {
-			factory = new DefaultHttpHandlerFactory();
-		}
-		return factory;
-	}
+
 	/**
 	 * <p>Returns the URL of host.
 	 * @return URL of host.
 	 */
 	public URL getHost() {
 		return host;
-	}
-
-	/**
-	 * <p>Returns the HttpHandler from {@link HttpHandlerFactory#getHttpHandler}.
-	 * @return HttpHandler
-	 */
-	public HttpHandler getHttpHandler() {
-		return getHttpHandlerFactory().getHttpHandler(this, getHandlerName());
 	}
 
 	/**

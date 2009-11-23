@@ -63,6 +63,7 @@ public class VelocityPage {
    			template.merge(context, writer);
    			return writer.toString();
     	} catch (ResourceNotFoundException e) {
+    		LOG.debug(e.getMessage());
     		throw new NotFoundException(e);
     	} catch (Exception e) {
     		throw new ServiceUnavailableException(e);
