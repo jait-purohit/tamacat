@@ -223,7 +223,12 @@ public class BeanCreator {
                 BeanDefine def, String param) {
         Method method = prop.getMethod();
         if (method != null) {
-            ClassUtils.invoke(method, instance, param);
+        	StringValueConverter<?> converter = prop.getStringValueConverter();
+        	if (converter != null) {
+        		ClassUtils.invoke(method, instance, converter.convert(param));
+        	} else {
+        		ClassUtils.invoke(method, instance, param);
+        	}
             return instance;
         } else {
             PropertyValueHandler handler = new PropertyValueHandler(def.getType(), prop);

@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.core.Core;
 import org.tamacat.core.SampleCore;
 import org.tamacat.di.define.BeanDefine;
 import org.tamacat.di.define.BeanDefineMap;
@@ -55,5 +56,17 @@ public class DITest {
 	public void testDI() {
 		DI di = ClassUtils.newInstance(DI.class);
 		assertNull(di);
+	}
+	
+	@Test
+	public void testRepeat() {
+		DIContainer di = DI.configure("test.xml");
+		Core core = di.getBean("Core3", Core.class);
+		assertEquals("CoreName", core.getCoreName());
+		
+		Core core2 = di.getBean("Core3", Core.class);
+		assertEquals("CoreName", core2.getCoreName());
+		
+		assertNotSame(core, core2);
 	}
 }

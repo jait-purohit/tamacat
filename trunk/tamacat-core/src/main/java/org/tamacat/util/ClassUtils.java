@@ -169,9 +169,14 @@ public abstract class ClassUtils {
     static
       public <T>Object invoke(Method method, T instance, Object... params) {
         try {
-            return method.invoke(instance, params);
+        	if (params == null) {
+        		return method.invoke(instance);
+        	} else {
+        		return method.invoke(instance, params);
+        	}
         } catch (Exception e) {
-            return null;//throw new ClassUtilsException(e);
+            return null;
+            //throw new ClassUtilsException(e);
         }
     }
 
