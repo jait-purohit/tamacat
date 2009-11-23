@@ -27,7 +27,7 @@
   </bean>
     
   <!-- ref bean test -->
-  <bean id="Core3" class="org.tamacat.core.SampleCore">
+  <bean id="Core3" class="org.tamacat.core.SampleCore" scope="protptype">
     <property name="core">
       <ref bean="Core2" />
     </property>

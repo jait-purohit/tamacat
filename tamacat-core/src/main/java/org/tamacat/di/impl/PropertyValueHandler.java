@@ -112,9 +112,9 @@ public class PropertyValueHandler {
         }
         public Boolean convert(String param) {
             if ("true".equalsIgnoreCase(param)) {
-                return Boolean.TRUE;
+                return Boolean.TRUE.booleanValue();
             } else if ("false".equalsIgnoreCase(param)) {
-                return Boolean.FALSE;
+                return Boolean.FALSE.booleanValue();
             } else {
                 throw new RuntimeException("can not convert boolean.");
             }
@@ -178,6 +178,7 @@ public class PropertyValueHandler {
                     @SuppressWarnings("unused")
                     Object result = ClassUtils.invoke(m, instance, value);
                     if (param.isRegistMethod() == false) {
+                    	param.setStringValueConverter(cv);
                         param.setMethod(m);
                         param.setParamType(cv.getType());
                     }

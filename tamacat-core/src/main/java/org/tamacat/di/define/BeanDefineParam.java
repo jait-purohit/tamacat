@@ -6,6 +6,7 @@ package org.tamacat.di.define;
 
 import java.lang.reflect.Method;
 
+import org.tamacat.di.impl.StringValueConverter;
 import org.tamacat.util.ClassUtils;
 
 public class BeanDefineParam implements Cloneable {
@@ -18,6 +19,7 @@ public class BeanDefineParam implements Cloneable {
     private String value;
 
     private Method method;
+    private StringValueConverter<?> converter;
 
     public String getName() {
         return name;
@@ -81,6 +83,14 @@ public class BeanDefineParam implements Cloneable {
 
     public void setParamType(Class<?> paramType) {
         this.paramType = paramType;
+    }
+    
+    public void setStringValueConverter(StringValueConverter<?> converter) {
+    	this.converter = converter;
+    }
+    
+    public StringValueConverter<?> getStringValueConverter() {
+    	return converter;
     }
     
     @Override
