@@ -15,8 +15,7 @@ public interface HttpHandlerFactory {
 	/**
 	 * <p>Returns the {@code HttpHandler}.
 	 * @param serviceUrl
-	 * @param handlerName
 	 * @return HttpHandler
 	 */
-	HttpHandler getHttpHandler(ServiceUrl serviceUrl, String handlerName);
+	HttpHandler getHttpHandler(ServiceUrl serviceUrl);
 }

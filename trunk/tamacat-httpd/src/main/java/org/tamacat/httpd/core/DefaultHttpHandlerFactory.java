@@ -17,8 +17,8 @@ public class DefaultHttpHandlerFactory implements HttpHandlerFactory {
 	static DIContainer di = DI.configure("components.xml");
 
 	@Override
-	public HttpHandler getHttpHandler(ServiceUrl serviceUrl, String handlerName) {
-		HttpHandler httpHandler = di.getBean(handlerName, HttpHandler.class);
+	public HttpHandler getHttpHandler(ServiceUrl serviceUrl) {
+		HttpHandler httpHandler = di.getBean(serviceUrl.getHandlerName(), HttpHandler.class);
 		httpHandler.setServiceUrl(serviceUrl);
 		return httpHandler;
 	}

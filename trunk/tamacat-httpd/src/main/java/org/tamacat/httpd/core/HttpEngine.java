@@ -44,7 +44,6 @@ public class HttpEngine implements JMXReloadableHttpd {
 	static final Log LOG = LogFactory.getLog(HttpEngine.class);
 
 	private ServerConfig serverConfig;
-	private HttpRequestHandlerRegistry registry = new HttpRequestHandlerRegistry();
 	private DefaultHttpService service;
 	
 	private SSLContextCreator sslContextCreator;
@@ -57,6 +56,8 @@ public class HttpEngine implements JMXReloadableHttpd {
     private List<HttpResponseInterceptor> interceptors
     	= new ArrayList<HttpResponseInterceptor>();
     
+	private boolean isMXServerStarted;
+
     /**
      * <p>This method called by {@link #start}.
      */
@@ -66,18 +67,23 @@ public class HttpEngine implements JMXReloadableHttpd {
 			paramsBuilder = new HttpParamsBuilder();
 	        paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
 	          .socketBufferSize(serverConfig.getSocketBufferSize());
-			service = new DefaultHttpService();
-			for (HttpResponseInterceptor interceptor : interceptors) {
-				service.setHttpResponseInterceptor(interceptor);
-			}	        
-	        registryMXServer();
 		}
-
-		//Register services and service URLs.
+		if (isMXServerStarted == false) {
+			registryMXServer();
+		}
+		service = new DefaultHttpService();
+		for (HttpResponseInterceptor interceptor : interceptors) {
+			service.setHttpResponseInterceptor(interceptor);
+		}
+		//Register the services and service URLs.
 		ServiceConfig serviceConfig
 			= new ServiceConfigXmlParser(serverConfig).getServiceConfig();
+		HttpRequestHandlerRegistry registry = new HttpRequestHandlerRegistry();
+		HttpHandlerFactory factory = new DefaultHttpHandlerFactory();
 		for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
-			registry.register(serviceUrl.getPath() + "*", serviceUrl.getHttpHandler());
+			HttpHandler handler = factory.getHttpHandler(serviceUrl);
+			LOG.info(serviceUrl.getPath() + " - " + handler);
+			registry.register(serviceUrl.getPath() + "*", handler);
 		}
         service.setHandlerResolver(registry);
 	}
@@ -100,14 +106,13 @@ public class HttpEngine implements JMXReloadableHttpd {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-        executors = new ThreadExecutorFactory(serverConfig).getExecutorService();
+		executors = new ThreadExecutorFactory(serverConfig).getExecutorService();
 
 		LOG.info("Listen: " + serverConfig.getPort());
         while (!Thread.interrupted()) {
             try {
                 //socket accept -> execute WorkerThrad.
                 Socket insocket = serversocket.accept();
-                
                 executors.execute(new WorkerThread(
                 	service, insocket, paramsBuilder.buildParams(), counter)
                 );
@@ -134,9 +139,10 @@ public class HttpEngine implements JMXReloadableHttpd {
 	public void stop() {
 		try {
 			serversocket.close();
-			executors.shutdown();
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
+		} finally {
+			executors.shutdown();
 		}
 	}
 	
@@ -172,7 +178,7 @@ public class HttpEngine implements JMXReloadableHttpd {
 	public void setHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
 		interceptors.add(interceptor);
 	}
-	
+
 	//install
 	//http://ws-jmx-connector.dev.java.net/files/documents/4956/114781/jsr262-ri.jar
 	//https://jax-ws.dev.java.net/2.1.1/JAXWS2.1.1_20070501.jar
@@ -195,6 +201,7 @@ public class HttpEngine implements JMXReloadableHttpd {
 	        	JMXConnectorServer sv = JMXConnectorServerFactory.newJMXConnectorServer(
 	                new JMXServiceURL(jmxUrl), null, server);
 	        	sv.start();
+	        	isMXServerStarted = true;
 			}
 		} catch (Exception e) {
 			LOG.error(e.getMessage());
