@@ -65,15 +65,15 @@ public class DigestAuthProcessor extends AbstractAuthProcessor implements Reques
 					String hash1 = encode(getMD5(a1));
 					
 					//A2 = Method:URI
-					String a2 = request.getRequestLine().getMethod()	+ ":" + request.getRequestLine().getUri();
+					String a2 = request.getRequestLine().getMethod()
+						+ ":" + request.getRequestLine().getUri();
 					String hash2 = encode(getMD5(a2));
 
 					//Digest = A1:nonce:nonce-count:cnonce:qop:A2
 					String digestPassword = hash1 + ":" + digest.getNonce() 
 					  + ":" + digest.getNc() + ":" + digest.getCnonce()
 					  + ":" + digest.getQop() + ":" + hash2;
-					String hash3 = encode(getMD5(digestPassword));
-					hashedPassword = hash3; //user.setAuthPassword(hash3);
+					hashedPassword = encode(getMD5(digestPassword));
 				}
 				String username = digest.getUsername();
 				String password = digest.getResponse();
@@ -197,7 +197,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor implements Reques
      * @param binaryData array containing the digest
      * @return encoded MD5, or <CODE>null</CODE> if encoding failed
      */
-    private static String encode(byte[] binaryData) {
+    static String encode(byte[] binaryData) {
         int n = binaryData.length; 
         char[] buffer = new char[n * 2];
         for (int i = 0; i < n; i++) {
@@ -206,11 +206,10 @@ public class DigestAuthProcessor extends AbstractAuthProcessor implements Reques
             buffer[i * 2] = HEXADECIMAL[high];
             buffer[(i * 2) + 1] = HEXADECIMAL[low];
         }
-
         return new String(buffer);
     }
     
-	public byte[] getMD5(String plainText) {
+	private static byte[] getMD5(String plainText) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			return md.digest(plainText.getBytes());
