@@ -7,6 +7,8 @@ import org.apache.http.StatusLine;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 public class HttpObjectFactory {
 
@@ -19,5 +21,9 @@ public class HttpObjectFactory {
 		StatusLine statusLine = new BasicStatusLine(
 			new ProtocolVersion(protocol,1,1), status, reason);
 		return new BasicHttpResponse(statusLine);
+	}
+	
+	public static HttpContext createHttpContext() {
+		return new BasicHttpContext();
 	}
 }

@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class TypeTest {
+public class ServiceTypeTest {
 
 	@Test
 	public void testFind() {
