@@ -36,7 +36,7 @@ public class SessionCookieFilterTest {
 	@Test
 	public void testDoFilter() {
 		HttpRequest request = HttpObjectFactory.createHttpRequest("GET", "/test/");
-		HttpResponse response = HttpObjectFactory.createHttpResponse("http", 200, "OK");
+		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = HttpObjectFactory.createHttpContext();
 		filter.doFilter(request, response, context, null);
 		Session session = (Session) context.getAttribute(SESSION_ATTRIBUTE_KEY);

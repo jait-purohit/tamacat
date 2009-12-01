@@ -100,7 +100,7 @@ public class AccessLogUtils {
 	 * @return
 	 */
 	public static String getRemoteIPAddress(HttpContext context) {
-		InetAddress address= (InetAddress) context.getAttribute(REMOTE_ADDRESS);
+		InetAddress address = (InetAddress) context.getAttribute(REMOTE_ADDRESS);
 		if (address != null) return address.getHostAddress();
 		else return "";
 	}

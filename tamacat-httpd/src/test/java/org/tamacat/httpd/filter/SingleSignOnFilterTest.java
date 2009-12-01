@@ -26,7 +26,7 @@ public class SingleSignOnFilterTest {
 	@Test
 	public void testDoFilter() {
 		HttpRequest request = HttpObjectFactory.createHttpRequest("GET", "/test/");
-		HttpResponse response = HttpObjectFactory.createHttpResponse("http", 200, "OK");
+		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = HttpObjectFactory.createHttpContext();
 		context.setAttribute(filter.remoteUserKey, "admin");
 		

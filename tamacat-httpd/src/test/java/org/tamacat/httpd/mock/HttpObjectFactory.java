@@ -16,10 +16,9 @@ public class HttpObjectFactory {
 		return new BasicHttpRequest(method, uri);
 	}
 	
-	public static HttpResponse createHttpResponse(
-			String protocol, int status, String reason) {
+	public static HttpResponse createHttpResponse(int status, String reason) {
 		StatusLine statusLine = new BasicStatusLine(
-			new ProtocolVersion(protocol,1,1), status, reason);
+			new ProtocolVersion("HTTP",1,1), status, reason);
 		return new BasicHttpResponse(statusLine);
 	}
 	
