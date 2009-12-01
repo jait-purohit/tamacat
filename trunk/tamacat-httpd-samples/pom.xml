@@ -31,6 +31,12 @@
     </dependency>
     
     <dependency>
+      <groupId>org.tamacat</groupId>
+      <artifactId>tamacat-nio</artifactId>
+      <version>0.5</version>
+    </dependency>
+    
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.14</version>

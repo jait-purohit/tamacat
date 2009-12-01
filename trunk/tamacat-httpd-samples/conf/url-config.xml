@@ -11,5 +11,6 @@
       <reverse>http://localhost:8080/lb1/</reverse>
       <reverse>http://localhost:8088/lb2/</reverse>
     </url>
+    <url path="/maven2/" type="normal" handler="Maven2Handler" />
   </service>
 </service-config>
