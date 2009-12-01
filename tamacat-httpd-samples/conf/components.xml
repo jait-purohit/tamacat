@@ -50,7 +50,7 @@
   <bean id="VelocityHandler" 
      class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
     <property name="docsRoot">
-      <value>htdocs</value>
+      <value>${server.home}/htdocs/web</value>
     </property>
     <property name="requestFilter">
       <ref bean="DigestAuthFilter" />
@@ -63,7 +63,7 @@
   <bean id="WebServiceHandler" 
      class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
     <property name="docsRoot">
-      <value>htdocs</value>
+      <value>${server.home}/htdocs/api</value>
     </property>
     <property name="requestFilter">
       <ref bean="WSSEAuthFilter" />
@@ -89,6 +89,16 @@
     </property>
     <property name="httpResponseInterceptor" mode="add">
       <ref bean="html" />
+    </property>
+  </bean>
+
+  <bean id="Maven2Handler"
+     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
+    <property name="docsRoot">
+      <value>${server.home}/htdocs</value>
+    </property>
+    <property name="listings">
+      <value>true</value>
     </property>
   </bean>
   

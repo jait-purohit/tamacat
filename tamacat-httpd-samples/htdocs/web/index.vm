@@ -1,9 +1,9 @@
-#parse("htdocs/common/html-start.vm")
+#parse("common/html-start.vm")
 <body>
   <div id="contents">
     <div id="header">TOP</div>
     
-    #parse("htdocs/common/left-menu.vm")
+    #parse("common/left-menu.vm")
     <div id="main">
       <h1>Top page.</h1>
       <p>This is top page.</p>
@@ -33,7 +33,7 @@
     </p>
    </div>
     
-    #parse("htdocs/common/footer.vm")
+    #parse("common/footer.vm")
   </div>
 </body>
-#parse("htdocs/common/html-end.vm")
+#parse("common/html-end.vm")

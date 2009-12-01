@@ -1,8 +1,8 @@
-#parse("htdocs/common/html-start.vm")
+#parse("common/html-start.vm")
 <body>
   <div id="contents">
     <div id="header">DOWNLOAD</div>
-    #parse("htdocs/common/left-menu.vm")
+    #parse("common/left-menu.vm")
     <div id="main">
       <h1>Download page.</h1>
       <ul>
@@ -21,7 +21,7 @@
         </ul>
        </div>
     </div>
-    #parse("htdocs/common/footer.vm")
+    #parse("common/footer.vm")
   </div>
 </body>
-#parse("htdocs/common/html-end.vm")
+#parse("common/html-end.vm")
