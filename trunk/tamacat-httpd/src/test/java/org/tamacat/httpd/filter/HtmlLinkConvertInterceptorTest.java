@@ -24,7 +24,7 @@ public class HtmlLinkConvertInterceptorTest {
 
 	@Test
 	public void testProcess() {
-		HttpResponse response = HttpObjectFactory.createHttpResponse("http", 200, "OK");
+		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = HttpObjectFactory.createHttpContext();
 		try {
 			target.process(response, context);
