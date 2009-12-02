@@ -86,17 +86,15 @@ public enum HttpStatus {
 		this.reasonPhrase = reasonPhrase;
 	}
 	
-	static HashMap<Integer,HttpStatus> find;
+	static HashMap<Integer,HttpStatus> find = new HashMap<Integer, HttpStatus>();
 	
-	public static HttpStatus getHttpStatus(int statusCode) {
-		if (find == null) {
-			synchronized(HttpStatus.class) {
-				find = new HashMap<Integer, HttpStatus>();
-				for (HttpStatus s : values()) {
-					find.put(Integer.valueOf(s.getStatusCode()), s);
-				}
-			}
-		}		
+	static {
+		for (HttpStatus s : values()) {
+			find.put(Integer.valueOf(s.getStatusCode()), s);
+		}
+	}
+	
+	public static HttpStatus getHttpStatus(int statusCode) {	
 		HttpStatus status = find.get(Integer.valueOf(statusCode));
 		if (status != null) return status;
 		else return SC_UNKNOWN;
