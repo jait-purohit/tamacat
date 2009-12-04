@@ -17,6 +17,7 @@ import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityPage;
+import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ResponseUtils;
 
 /**
@@ -36,23 +37,9 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	@Override
 	protected void doRequest(HttpRequest request, HttpResponse response,
 			HttpContext context) throws HttpException, IOException {
+		RequestUtils.setParameters(request, context);
+		
 		String path = request.getRequestLine().getUri();
-		//String path = docsRoot + request.getRequestLine().getUri();
-		if (path.indexOf('?') >= 0) {
-			String[] requestParams = path.split("\\?");
-			path = requestParams[0];
-//set request parameters for Custom HttpRequest.
-//			if (requestParams.length >= 2) {
-//				String params = requestParams[1];
-//				String[] param = params.split("&");
-//				for (String kv : param) {
-//					String[] p = kv.split("=");
-//					if (p.length >=2) {
-//						//request.setParameter(p[0], p[1]);
-//					}
-//				}
-//			}
-		}
 		int idx = path.lastIndexOf(".html");
 		if (idx >= 0) {
 			//delete the extention of file name. (index.html -> index)
