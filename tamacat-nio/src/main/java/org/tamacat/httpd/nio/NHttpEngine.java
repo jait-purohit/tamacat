@@ -1,0 +1,228 @@
+/*
+ * Copyright (c) 2009, TamaCat.org
+ * All rights reserved.
+ */
+package org.tamacat.httpd.nio;
+
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.lang.management.ManagementFactory;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.rmi.registry.LocateRegistry;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
+import javax.net.ssl.SSLContext;
+
+import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.impl.nio.DefaultServerIOEventDispatch;
+import org.apache.http.impl.nio.reactor.DefaultListeningIOReactor;
+import org.apache.http.nio.protocol.AsyncNHttpServiceHandler;
+import org.apache.http.nio.protocol.NHttpRequestHandlerRegistry;
+import org.apache.http.nio.reactor.IOEventDispatch;
+import org.apache.http.nio.reactor.ListeningIOReactor;
+import org.tamacat.httpd.config.ServerConfig;
+import org.tamacat.httpd.config.ServiceConfig;
+import org.tamacat.httpd.config.ServiceConfigXmlParser;
+import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.core.HttpParamsBuilder;
+import org.tamacat.httpd.core.HttpProcessorBuilder;
+import org.tamacat.httpd.jmx.BasicCounter;
+import org.tamacat.httpd.jmx.BasicHttpMonitor;
+import org.tamacat.httpd.ssl.SSLContextCreator;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
+import org.tamacat.util.ExceptionUtils;
+import org.tamacat.util.StringUtils;
+
+/**
+ * <p>It is implements of the multi thread server.
+ */
+public class NHttpEngine implements BasicHttpMonitor {
+
+	static final Log LOG = LogFactory.getLog(NHttpEngine.class);
+
+	private ServerConfig serverConfig;
+	private NHttpRequestHandlerRegistry registry = new NHttpRequestHandlerRegistry();
+	private AsyncNHttpServiceHandler service;
+	
+	private SSLContextCreator sslContextCreator;
+    private HttpParamsBuilder paramsBuilder;
+
+    private boolean isInitalized;
+    
+    private static BasicCounter counter = new BasicCounter();
+    private List<HttpResponseInterceptor> interceptors
+    	= new ArrayList<HttpResponseInterceptor>();
+    
+    /**
+     * <p>This method called by {@link #start}.
+     */
+	protected void init() {
+		if (isInitalized == false) {
+			serverConfig = new ServerConfig();
+	        paramsBuilder = new HttpParamsBuilder();
+	        paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
+	          .socketBufferSize(serverConfig.getSocketBufferSize());
+	        HttpProcessorBuilder httpprocBuilder = new HttpProcessorBuilder();
+			try {
+//				int port = serverConfig.getPort();
+//				if (serverConfig.useHttps()) {					
+//					serversocket = createSecureServerSocket(port);
+//				} else {
+//					serversocket = new ServerSocket(port);
+//				}
+				service = new DefaultAsyncNHttpServiceHandler(
+					httpprocBuilder.build(), paramsBuilder.buildParams());
+//				for (HttpResponseInterceptor interceptor : interceptors) {
+//					service.setHttpResponseInterceptor(interceptor);
+//				}
+				registryMXServer();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			isInitalized = true;
+		}
+	}
+
+	/**
+	 * <p>Start the http server.
+	 */
+	public void start() {
+		//Initalize engine.
+		init();
+		
+		//Register services and service URLs.
+		ServiceConfig serviceConfig
+			= new ServiceConfigXmlParser(serverConfig).getServiceConfig();
+		NHttpHandlerFactory factory = new DefaultNHttpHandlerFactory();
+		for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
+			registry.register(serviceUrl.getPath() + "*", 
+				factory.getNHttpRequestHandler(serviceUrl, serviceUrl.getHandlerName())
+			);
+		}
+        service.setHandlerResolver(registry);
+        
+        IOEventDispatch ioEventDispatch
+        	= new DefaultServerIOEventDispatch(service, paramsBuilder.buildParams());
+        service.setEventListener(new LoggingEventListener());
+        
+        try {
+	        ListeningIOReactor listeningIOReactor
+	        	= new DefaultListeningIOReactor(serverConfig.getMaxThreads(), paramsBuilder.buildParams());
+
+	        listeningIOReactor.listen(new InetSocketAddress(serverConfig.getPort()));
+			LOG.info("Listen: " + serverConfig.getPort());
+	        listeningIOReactor.execute(ioEventDispatch);
+	
+        }  catch (InterruptedIOException e) {
+        	counter.error();
+        	LOG.error(e.getMessage());
+        } catch (IOException e) {
+        	counter.error();
+        	LOG.error(e.getMessage());
+        } catch (Exception e) {
+        	counter.error();
+        	LOG.error(e.getMessage(), e);
+        }
+	}
+	
+	/**
+	 * <p>Set the {@link SSLContextCreator},
+	 * when customize the configration of https (SSL/TSL).
+	 * When I did not set it, it is generated by a {@code createSecureServerSocket}.
+	 * @param sslContextCreator
+	 */
+	public void setSSLContextCreator(SSLContextCreator sslContextCreator) {
+		this.sslContextCreator = sslContextCreator;
+	}
+	
+	/**
+	 * <p>Create the secure {@link ServerSocket}.
+	 * @param port HTTPS listen port.
+	 * @return created the {@link ServerSocket} 
+	 * @throws IOException
+	 */
+	protected ServerSocket createSecureServerSocket(int port) throws IOException {
+		if (sslContextCreator == null) {
+			sslContextCreator = new SSLContextCreator(serverConfig);
+		}
+		SSLContext ctx = sslContextCreator.getSSLContext();
+        return ctx.getServerSocketFactory().createServerSocket(port);
+	}
+	
+	/**
+	 * <p>Add the response interceptor.
+	 * @param interceptor
+	 * @since 0.5
+	 */
+	public void setHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
+		interceptors.add(interceptor);
+	}
+	
+	//install
+	//http://ws-jmx-connector.dev.java.net/files/documents/4956/114781/jsr262-ri.jar
+	//https://jax-ws.dev.java.net/2.1.1/JAXWS2.1.1_20070501.jar
+	void registryMXServer() {
+		try {
+			//"service:jmx:rmi:///jndi/rmi://localhost/httpd";
+			//"ws", "localhost", 9999, "/admin"
+			String jmxUrl = serverConfig.getParam("JMX.server-url");
+			if (StringUtils.isNotEmpty(jmxUrl)) {
+				String objectName = serverConfig.getParam(
+						"JMX.objectname","org.tamacat.httpd:type=HttpEngine");
+				int rmiPort = serverConfig.getParam("JMX.rmi.port", -1);
+				if (rmiPort > 0) {
+					LocateRegistry.createRegistry(rmiPort);
+				}
+				MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
+	        	ObjectName name = new ObjectName(objectName);
+	        	server.registerMBean(this, name);
+	        	
+	        	JMXConnectorServer sv = JMXConnectorServerFactory.newJMXConnectorServer(
+	                new JMXServiceURL(jmxUrl), null, server);
+	        	sv.start();
+			}
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
+			LOG.trace(ExceptionUtils.getStackTrace(e));
+		}
+	}
+
+	@Override
+	public int getActiveConnections() {
+		return counter.getActiveConnections();
+	}
+
+	@Override
+	public long getAccessCount() {
+		return counter.getAccessCount();
+	}
+
+	@Override
+	public long getErrorCount() {
+		return counter.getErrorCount();
+	}
+
+	@Override
+	public Date getStartedTime() {
+		return counter.getStartedTime();
+	}
+
+	@Override
+	public void resetAccessCount() {
+		counter.resetAccessCount();
+	}
+
+	@Override
+	public void resetErrorCount() {
+		counter.resetErrorCount();
+    }
+}
