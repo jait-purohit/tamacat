@@ -33,14 +33,15 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.auth.AuthComponent;
-import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.core.RequestParameters;
 import org.tamacat.httpd.util.RequestUtils;
+import org.tamacat.servlet.HttpCoreServletContext;
+import org.tamacat.servlet.HttpCoreServletRequest;
 import org.tamacat.servlet.util.ServletUtils;
 
-public class HttpServletRequestImpl implements HttpServletRequest {
+public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
-	protected ServiceUrl serviceUrl;
+	HttpCoreServletContext servletContext;
 	protected HttpRequest request;
 	protected HttpContext context;
 	
@@ -53,17 +54,19 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 	private Set<String> roles = new HashSet<String>();
 	
 	public HttpServletRequestImpl(
-			ServiceUrl serviceUrl, HttpRequest request, HttpContext context) {
-		this.serviceUrl = serviceUrl;
+			HttpCoreServletContext servletContext,
+			HttpRequest request, HttpContext context) {
+		this.servletContext = servletContext;
 		this.request = request;
 		this.context = context;
 	}
 	
-	
+	@Override
 	public void setParameter(String name, String... values) {
 		RequestUtils.getParameters(context).setParameter(name, values);
 	}
 	
+	@Override
 	public void addUserInRole(String role) {
 		roles.add(role);
 	}
@@ -93,7 +96,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
 	@Override
 	public String getContextPath() {
-		return serviceUrl.getPath();
+		return servletContext.getServiceUrl().getPath();
 	}
 
 	@Override
@@ -186,8 +189,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
 	@Override
 	public String getPathTranslated() {
-		// TODO Auto-generated method stub
-		return null;
+		return servletContext.getRealPath(getPathInfo());
 	}
 
 	@Override
@@ -202,8 +204,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
 	@Override
 	public String getRequestURI() {
-		// TODO Auto-generated method stub
-		return null;
+		return request.getRequestLine().getUri();
 	}
 
 	@Override
@@ -458,22 +459,23 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
 	@Override
 	public String getScheme() {
-		return serviceUrl.getHost().getProtocol();
+		return servletContext.getServiceUrl().getHost().getProtocol();
 	}
 
 	@Override
 	public String getServerName() {
-		return serviceUrl.getServerConfig().getParam("ServerName");
+		return servletContext.getServiceUrl().getServerConfig().getParam("ServerName");
 	}
 
 	@Override
 	public int getServerPort() {
-		return serviceUrl.getServerConfig().getPort();
+		return servletContext.getServiceUrl().getServerConfig().getPort();
 	}
 
 	@Override
 	public boolean isSecure() {
-		return "true".equalsIgnoreCase(serviceUrl.getServerConfig().getParam("https"));
+		return "true".equalsIgnoreCase(
+			servletContext.getServiceUrl().getServerConfig().getParam("https"));
 	}
 
 	@Override
