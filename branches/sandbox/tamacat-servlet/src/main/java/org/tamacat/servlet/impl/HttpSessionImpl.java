@@ -6,9 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
 
-public class HttpSessionImpl implements HttpSession {
+import org.tamacat.servlet.HttpCoreServletSession;
+
+public class HttpSessionImpl implements HttpCoreServletSession {
 
 	protected Map<String, Object> attributes = new LinkedHashMap<String, Object>();
 	private boolean isNew;

@@ -6,9 +6,10 @@ import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 
-public class HttpServletResponseImpl implements HttpServletResponse {
+import org.tamacat.servlet.HttpCoreServletResponse;
+
+public class HttpServletResponseImpl implements HttpCoreServletResponse {
 
 	@Override
 	public void addCookie(Cookie arg0) {

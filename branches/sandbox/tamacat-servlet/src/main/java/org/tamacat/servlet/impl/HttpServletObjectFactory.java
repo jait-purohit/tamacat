@@ -1,25 +1,24 @@
 package org.tamacat.servlet.impl;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.http.HttpRequest;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.servlet.HttpCoreServletContext;
+import org.tamacat.servlet.HttpCoreServletRequest;
 
 public class HttpServletObjectFactory {
 	
-	private ServiceUrl serviceUrl;
+	private HttpCoreServletContext servletContext;
 	
 	HttpServletObjectFactory(ServiceUrl serviceUrl) {
-		this.serviceUrl = serviceUrl;
+		this.servletContext = new ServletContextImpl(serviceUrl);
 	}
 	
-	public ServletContext createServletContext(ServiceUrl serviceUrl) {
-		return new ServletContextImpl(serviceUrl);
+	public HttpCoreServletContext getServletContext(ServiceUrl serviceUrl) {
+		return servletContext;
 	}
 	
-	public HttpServletRequest createRequest(HttpRequest request, HttpContext context) {
-		return new HttpServletRequestImpl(serviceUrl, request, context);
+	public HttpCoreServletRequest createRequest(HttpRequest request, HttpContext context) {
+		return new HttpServletRequestImpl(servletContext, request, context);
 	}
 }

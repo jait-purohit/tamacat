@@ -17,8 +17,9 @@ import javax.servlet.ServletException;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.servlet.HttpCoreServletContext;
 
-public class ServletContextImpl implements ServletContext {
+public class ServletContextImpl implements HttpCoreServletContext {
 
 	private static final Log LOG = LogFactory.getLog(ServletContextImpl.class);
 	
@@ -31,6 +32,11 @@ public class ServletContextImpl implements ServletContext {
 	
 	ServletContextImpl(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
+	}
+	
+	@Override
+	public ServiceUrl getServiceUrl() {
+		return serviceUrl;
 	}
 	
 	@Override
