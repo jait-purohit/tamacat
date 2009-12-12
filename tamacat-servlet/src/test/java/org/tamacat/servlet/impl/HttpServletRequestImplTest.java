@@ -24,26 +24,25 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.config.ServerConfig;
-import org.tamacat.httpd.config.ServiceConfig;
 import org.tamacat.httpd.config.ServiceConfigXmlParser;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.servlet.HttpCoreServletRequest;
 
 public class HttpServletRequestImplTest {
 
+	ServiceUrl serviceUrl;
 	HttpRequest req;
 	HttpContext context;
-	HttpServletRequestImpl request;
+	HttpCoreServletRequest request;
 	
 	@Before
 	public void setUp() throws Exception {
 		req = new BasicHttpRequest("GET", "/test/index.html?id=amdin&type=user");
 		context = new BasicHttpContext();
-		ServerConfig serverConfig = new ServerConfig();
-		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
-		ServiceConfigXmlParser parser = new ServiceConfigXmlParser(serverConfig);
-		ServiceConfig serviceConfig = parser.getServiceConfig();
-		serviceUrl = serviceConfig.getServiceUrl("/test/");
-		request = (HttpServletRequestImpl)new HttpServletObjectFactory(serviceUrl).createRequest(req, context);
+
+		ServiceConfigXmlParser parser = new ServiceConfigXmlParser(new ServerConfig());
+		serviceUrl = parser.getServiceConfig().getServiceUrl("/test/");
+		request = new HttpServletObjectFactory(serviceUrl).createRequest(req, context);
 	}
 
 	@After
@@ -363,6 +362,8 @@ public class HttpServletRequestImplTest {
 		
 		Enumeration<?> names = request.getParameterNames();
 		assertNotNull(names);
+		assertEquals("id", names.nextElement());
+		assertEquals("type", names.nextElement());
 		assertEquals("a", names.nextElement());
 		assertEquals("b", names.nextElement());
 		assertEquals("c", names.nextElement());
