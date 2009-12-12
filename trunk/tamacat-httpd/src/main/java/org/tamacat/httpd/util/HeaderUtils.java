@@ -4,10 +4,14 @@
  */
 package org.tamacat.httpd.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.http.Header;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.cookie.BasicClientCookie;
 
 /**
  * <p>The utility class for HTTP request and response Headers.
@@ -30,6 +34,36 @@ public final class HeaderUtils {
 		} else {
 			return target.getName().equalsIgnoreCase(other.getName());
 		}
+	}
+
+	/**
+	 * <p>Get the Cookie value from Cookie header line.
+	 * @param cookie header line.
+	 * @param name Cookie name
+	 * @return value of Cookie name in header line.
+	 */
+	public static List<Cookie> getCookies(String cookie) {
+		List<Cookie> cookies = new ArrayList<Cookie>();
+		StringTokenizer token = new StringTokenizer(cookie, ";");
+		if (token != null) {
+			while (token.hasMoreTokens()) {
+				String line = token.nextToken();
+				String[] nameValue = line.split("=");
+				if (nameValue != null && nameValue.length > 0) {
+					String key = nameValue[0].trim();
+					String value = "";
+					if (nameValue.length >= 2) {
+						value = nameValue[1];
+						if (value != null) {
+							value = value.trim();
+						}
+					}
+					Cookie c = new BasicClientCookie(key, value);
+					cookies.add(c);
+				}
+			}
+		}
+		return cookies;
 	}
 	
 	/**
