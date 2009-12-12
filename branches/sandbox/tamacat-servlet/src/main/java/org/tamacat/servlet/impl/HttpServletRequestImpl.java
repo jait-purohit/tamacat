@@ -59,6 +59,7 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 		this.servletContext = servletContext;
 		this.request = request;
 		this.context = context;
+		RequestUtils.setParameters(request, context);
 	}
 	
 	@Override
