@@ -43,6 +43,10 @@ public class RequestParameters {
 		return params.keySet();
 	}
 	
+	public Map<String, List<String>> getParameterMap() {
+		return params;
+	}
+	
 	private List<String> getValueList(String name) {
 		List<String> valueList = params.get(name);
 		if (valueList == null) {
