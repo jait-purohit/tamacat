@@ -24,14 +24,16 @@ public class ServletEngine {
 	static final String WEB_XML_PATH = "WEB-INF/web.xml";
 	
 	ServiceUrl serviceUrl;
-	WebApp webapp;
-	Map<String, Servlet> servlets = new HashMap<String, Servlet>();
 	HttpServletObjectFactory factory;
+
+	Map<String, Servlet> servlets;
 	
 	public ServletEngine(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
-		loadWebXml(WEB_XML_PATH);
+		WebApp webapp = new WebXmlParser().parse(WEB_XML_PATH);
 		factory = new HttpServletObjectFactory(serviceUrl);
+		
+		createServletInstances(webapp);
 	}
 
 	public void processServlet(
@@ -48,9 +50,9 @@ public class ServletEngine {
 	protected Servlet getServlet(String name) {
 		return servlets.get(name);
 	}
-	
-	private void loadWebXml(String path) {
-		webapp = new WebXmlParser().parse(path);
+
+	protected void createServletInstances(WebApp webapp) {
+		servlets = new HashMap<String, Servlet>();
 		List<ServletDefine> servletDefines = webapp.getServlets();
 		for (ServletDefine define : servletDefines) {
 			Class<?> servletClass = ClassUtils.forName(define.getServletClass());
@@ -58,5 +60,4 @@ public class ServletEngine {
 			servlets.put(define.getServletName(), servlet);
 		}
 	}
-	
 }

@@ -7,152 +7,196 @@ import java.util.Locale;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
+import org.tamacat.httpd.exception.HttpException;
+import org.tamacat.httpd.exception.HttpStatus;
+import org.tamacat.servlet.HttpCoreServletContext;
 import org.tamacat.servlet.HttpCoreServletResponse;
+import org.tamacat.servlet.util.ServletUtils;
+import org.tamacat.util.StringUtils;
 
 public class HttpServletResponseImpl implements HttpCoreServletResponse {
 
-	@Override
-	public void addCookie(Cookie arg0) {
-		// TODO Auto-generated method stub
+	protected HttpCoreServletContext servletContext;
+	protected HttpResponse response;
+	protected HttpContext context;
+	
+	protected ServletOutputStream out;
+	protected PrintWriter pw;
+	protected HttpEntity entity;
 
+	private String characterEncoding;
+	private int bufferSize;
+	private Locale locale;
+	
+	HttpServletResponseImpl(HttpCoreServletContext servletContext,
+			HttpResponse response, HttpContext context) {
+		this.servletContext = servletContext;
+		this.response = response;
+		this.context = context;
+		this.entity = response.getEntity();
+	}
+	
+	@Override
+	public void addCookie(Cookie cookie) {
+		if (cookie != null && 
+			(cookie.getSecure()== false || cookie.getSecure() )) {
+			String name = cookie.getName();
+			
+			String value = cookie.getValue();
+			String domain = cookie.getDomain();
+			String path = cookie.getPath();
+			int maxAge = cookie.getMaxAge();
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append(name + "=" + (value != null ? value : ""));
+			
+			if (maxAge >= 0) {
+				sb.append("; expires=" + (System.currentTimeMillis() + maxAge));
+			}
+			if (StringUtils.isNotEmpty(domain)) {
+				sb.append("; domain=" + domain);
+			}
+			if (StringUtils.isNotEmpty(path)) {
+				sb.append("; path=" + path);
+			}
+			response.addHeader("Set-Cookie", sb.toString());
+		}
 	}
 
 	@Override
-	public void addDateHeader(String arg0, long arg1) {
-		// TODO Auto-generated method stub
-
+	public void addDateHeader(String name, long time) {
+		response.addHeader(name, ServletUtils.getDate(time));
 	}
 
 	@Override
-	public void addHeader(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-
+	public void addHeader(String name, String value) {
+		response.addHeader(name, value);
 	}
 
 	@Override
-	public void addIntHeader(String arg0, int arg1) {
-		// TODO Auto-generated method stub
-
+	public void addIntHeader(String name, int value) {
+		response.addHeader(name, String.valueOf(value));
 	}
 
 	@Override
-	public boolean containsHeader(String arg0) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean containsHeader(String name) {
+		return response.containsHeader(name);
 	}
 
 	@Override
-	public String encodeRedirectURL(String arg0) {
+	public String encodeRedirectURL(String url) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String encodeRedirectUrl(String arg0) {
+	public String encodeRedirectUrl(String url) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String encodeURL(String arg0) {
+	public String encodeURL(String url) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String encodeUrl(String arg0) {
+	public String encodeUrl(String url) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void sendError(int arg0) throws IOException {
+	public void sendError(int statusCode) throws IOException {
+		throw new HttpException(HttpStatus.getHttpStatus(statusCode));
+	}
+
+	@Override
+	public void sendError(int statusCode, String message) throws IOException {
+		throw new HttpException(HttpStatus.getHttpStatus(statusCode), message);
+	}
+
+	@Override
+	public void sendRedirect(String path) throws IOException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void sendError(int arg0, String arg1) throws IOException {
-		// TODO Auto-generated method stub
-
+	public void setDateHeader(String name, long time) {
+		response.setHeader(name, ServletUtils.getDate(time));
 	}
 
 	@Override
-	public void sendRedirect(String arg0) throws IOException {
-		// TODO Auto-generated method stub
-
+	public void setHeader(String name, String value) {
+		response.setHeader(name, value);
 	}
 
 	@Override
-	public void setDateHeader(String arg0, long arg1) {
-		// TODO Auto-generated method stub
-
+	public void setIntHeader(String name, int value) {
+		response.setHeader(name, String.valueOf(value));
 	}
 
 	@Override
-	public void setHeader(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-
+	public void setStatus(int statusCode) {
+		response.setStatusCode(statusCode);
 	}
 
 	@Override
-	public void setIntHeader(String arg0, int arg1) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setStatus(int arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setStatus(int arg0, String arg1) {
-		// TODO Auto-generated method stub
-
+	public void setStatus(int statusCode, String reason) {
+		response.setStatusCode(statusCode);
+		response.setReasonPhrase(reason);
 	}
 
 	@Override
 	public void flushBuffer() throws IOException {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public int getBufferSize() {
-		// TODO Auto-generated method stub
-		return 0;
+		return bufferSize;
 	}
 
 	@Override
 	public String getCharacterEncoding() {
-		// TODO Auto-generated method stub
-		return null;
+		return characterEncoding;
 	}
 
 	@Override
 	public String getContentType() {
-		// TODO Auto-generated method stub
-		return null;
+		Header header = response.getFirstHeader(HTTP.CONTENT_TYPE);
+		return header != null ? header.getValue() : null;
 	}
 
 	@Override
 	public Locale getLocale() {
-		// TODO Auto-generated method stub
-		return null;
+		return locale;
 	}
 
 	@Override
 	public ServletOutputStream getOutputStream() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		if (pw != null) throw new IllegalStateException();
+		if (out == null) {
+			out = new ServletOutputStreamImpl(entity.getContent(), getBufferSize());
+		}
+		return out;
 	}
 
 	@Override
 	public PrintWriter getWriter() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		if (out != null) throw new IllegalStateException();
+		if (pw == null) {
+			pw = new PrintWriter(
+				new ServletOutputStreamImpl(entity.getContent(), getBufferSize()));
+		}
+		return pw;
 	}
 
 	@Override
@@ -174,33 +218,27 @@ public class HttpServletResponseImpl implements HttpCoreServletResponse {
 	}
 
 	@Override
-	public void setBufferSize(int arg0) {
-		// TODO Auto-generated method stub
-
+	public void setBufferSize(int bufferSize) {
+		this.bufferSize = bufferSize;
 	}
 
 	@Override
-	public void setCharacterEncoding(String arg0) {
-		// TODO Auto-generated method stub
-
+	public void setCharacterEncoding(String characterEncoding) {
+		this.characterEncoding = characterEncoding;
 	}
 
 	@Override
-	public void setContentLength(int arg0) {
-		// TODO Auto-generated method stub
-
+	public void setContentLength(int length) {
+		response.setHeader(HTTP.CONTENT_LEN, String.valueOf(length));
 	}
 
 	@Override
-	public void setContentType(String arg0) {
-		// TODO Auto-generated method stub
-
+	public void setContentType(String value) {
+		response.setHeader(HTTP.CONTENT_TYPE, value);
 	}
 
 	@Override
-	public void setLocale(Locale arg0) {
-		// TODO Auto-generated method stub
-
+	public void setLocale(Locale locale) {
+		this.locale = locale;
 	}
-
 }

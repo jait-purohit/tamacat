@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.security.Principal;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -41,13 +40,14 @@ import org.tamacat.servlet.util.ServletUtils;
 
 public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
-	HttpCoreServletContext servletContext;
+	protected HttpCoreServletContext servletContext;
 	protected HttpRequest request;
 	protected HttpContext context;
 	
 	protected Map<String, Object> attributes = new LinkedHashMap<String, Object>();
 	protected ServletInputStream in;
 	protected BufferedReader reader;
+	
 	private String characterEncoding;
 	private boolean usedInputStream;
 	private boolean usedReader;
@@ -109,14 +109,7 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 	public long getDateHeader(String name) {
 		Header header = request.getFirstHeader(name);
 		if (header != null) {
-			String value = header.getValue();
-			try {
-				SimpleDateFormat df
-					= new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-				return df.parse(value).getTime();
-			} catch (Exception e) {
-				throw new IllegalArgumentException(e);
-			}
+			return ServletUtils.getTime(header.getValue());
 		}
 		return -1;
 	}
