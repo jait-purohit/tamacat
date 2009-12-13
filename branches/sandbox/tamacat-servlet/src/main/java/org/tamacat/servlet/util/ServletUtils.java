@@ -1,7 +1,10 @@
 package org.tamacat.servlet.util;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.Cookie;
@@ -50,5 +53,21 @@ public class ServletUtils {
 			}
 		}
 		return cookies.toArray(new Cookie[cookies.size()]);
+	}
+	
+	public static long getTime(String value) {
+		try {
+			SimpleDateFormat df = new SimpleDateFormat(
+				"EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+			return df.parse(value).getTime();
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+	
+	public static String getDate(long time) {
+		SimpleDateFormat df = new SimpleDateFormat(
+				"EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+		return df.format(new Date(time));
 	}
 }
