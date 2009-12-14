@@ -18,8 +18,11 @@ import org.junit.Test;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfigXmlParser;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.servlet.HttpCoreServletRequest;
 import org.tamacat.servlet.HttpCoreServletResponse;
+import org.tamacat.servlet.util.ServletUtils;
+import org.tamacat.util.StringUtils;
 
 public class HttpServletResponseImplTest {
 
@@ -56,27 +59,45 @@ public class HttpServletResponseImplTest {
 		cookie.setSecure(false);
 		response.addCookie(cookie);
 		
-		System.out.println(res.getFirstHeader("Set-Cookie"));
+		//"test1=value1; expires=1260794052265; domain=www.example.com; path=/"
+		String cookieLine = res.getFirstHeader("Set-Cookie").getValue();
+		assertEquals("value1", HeaderUtils.getCookieValue(cookieLine, "test1"));
+		assertEquals("www.example.com", HeaderUtils.getCookieValue(cookieLine, "domain"));
+		assertEquals("/", HeaderUtils.getCookieValue(cookieLine, "path"));
 	}
 
 	@Test
 	public void testAddDateHeader() {
-		fail("Not yet implemented");
+		String value = "Tue, 11 Jun 2002 15:33:25 GMT";
+		long time = ServletUtils.getTime(value);
+		
+		response.addDateHeader("If-Modified-Since", time);
+		assertEquals(value,	res.getFirstHeader("If-Modified-Since").getValue());
 	}
 
 	@Test
 	public void testAddHeader() {
-		fail("Not yet implemented");
+		String value = "Value1";
+		
+		response.addHeader("Test", value);
+		assertEquals(value,	res.getFirstHeader("Test").getValue());
 	}
 
 	@Test
 	public void testAddIntHeader() {
-		fail("Not yet implemented");
+		int value = 123;
+		
+		response.addIntHeader("Test", value);
+		assertEquals(value,	StringUtils.parse(res.getFirstHeader("Test").getValue(),-1));
 	}
 
 	@Test
 	public void testContainsHeader() {
-		fail("Not yet implemented");
+		String value = "Value1";
+		response.addHeader("Test", value);
+
+		assertEquals(true, response.containsHeader("Test"));
+		assertEquals(false, response.containsHeader("Test2"));
 	}
 
 	@Test
@@ -116,17 +137,27 @@ public class HttpServletResponseImplTest {
 
 	@Test
 	public void testSetDateHeader() {
-		fail("Not yet implemented");
+		String value = "Tue, 11 Jun 2002 15:33:25 GMT";
+		long time = ServletUtils.getTime(value);
+		
+		response.setDateHeader("If-Modified-Since", time);
+		assertEquals(value,	res.getFirstHeader("If-Modified-Since").getValue());
 	}
 
 	@Test
 	public void testSetHeader() {
-		fail("Not yet implemented");
+		String value = "Value1";
+		
+		response.setHeader("Test", value);
+		assertEquals(value,	res.getFirstHeader("Test").getValue());
 	}
 
 	@Test
 	public void testSetIntHeader() {
-		fail("Not yet implemented");
+		int value = 123;
+		
+		response.setIntHeader("Test", value);
+		assertEquals(value,	StringUtils.parse(res.getFirstHeader("Test").getValue(),-1));
 	}
 
 	@Test

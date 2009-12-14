@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 
 import javax.servlet.http.Cookie;
 
@@ -68,6 +69,7 @@ public class ServletUtils {
 	public static String getDate(long time) {
 		SimpleDateFormat df = new SimpleDateFormat(
 				"EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+		df.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return df.format(new Date(time));
 	}
 }
