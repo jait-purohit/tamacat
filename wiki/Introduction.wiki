@@ -2,6 +2,10 @@
 
 =Introduction=
 
+== Download ==
+ * Download the archive file and extract.
+   * http://tamacat.googlecode.com/files/tamacat-httpd-0.5-20091216.zip
+
 == Configuring httpd ==
 
 Please make the following configuration files for the place where in CLASSPATH. 
