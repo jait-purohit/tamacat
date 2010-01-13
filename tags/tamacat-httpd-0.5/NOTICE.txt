@@ -1,0 +1,9 @@
+TamaCat httpd
+Copyright 2009 TamaCat.org.
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+  - Apache HttpComponents Core - HttpCore
+  - Apache HttpComponents Client - HttpClient
+  - Log4J (optional)
