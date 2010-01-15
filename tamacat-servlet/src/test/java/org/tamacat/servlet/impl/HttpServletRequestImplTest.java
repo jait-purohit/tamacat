@@ -42,7 +42,8 @@ public class HttpServletRequestImplTest {
 
 		ServiceConfigXmlParser parser = new ServiceConfigXmlParser(new ServerConfig());
 		serviceUrl = parser.getServiceConfig().getServiceUrl("/test/");
-		request = new HttpServletObjectFactory(serviceUrl).createRequest(req, context);
+		request = new HttpServletObjectFactory(
+				new ServletContextImpl(serviceUrl)).createRequest(req, context);
 	}
 
 	@After
@@ -157,12 +158,15 @@ public class HttpServletRequestImplTest {
 
 	@Test
 	public void testGetRequestURI() {
-		assertEquals("/test/index.html", request.getQueryString());
+		assertEquals("/test/index.html", request.getRequestURI());
 	}
 
 	@Test
 	public void testGetRequestURL() {
-		fail("Not yet implemented");
+		req.addHeader("Host", "www.example.com");
+		
+		StringBuffer url = request.getRequestURL();
+		assertEquals("http://www.example.com/test/index.html", url.toString());
 	}
 
 	@Test
@@ -419,6 +423,7 @@ public class HttpServletRequestImplTest {
 	@Test
 	public void testGetRealPath() {
 		fail("Not yet implemented");
+		//assertEquals("", request.getRealPath(""));
 	}
 
 	@Test
@@ -452,7 +457,8 @@ public class HttpServletRequestImplTest {
 
 	@Test
 	public void testGetServerName() {
-		assertEquals("tamacat-httpd", request.getServerName());
+		req.addHeader("Host", "tamacat.org");
+		assertEquals("tamacat.org", request.getServerName());
 	}
 
 	@Test

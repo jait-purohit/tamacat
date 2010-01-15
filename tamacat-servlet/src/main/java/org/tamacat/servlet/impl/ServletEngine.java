@@ -1,7 +1,7 @@
 package org.tamacat.servlet.impl;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +12,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.BasicHttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.servlet.HttpCoreServletContext;
 import org.tamacat.servlet.HttpCoreServletRequest;
 import org.tamacat.servlet.HttpCoreServletResponse;
 import org.tamacat.servlet.xml.ServletDefine;
@@ -24,15 +25,14 @@ public class ServletEngine {
 	static final String WEB_XML_PATH = "WEB-INF/web.xml";
 	
 	ServiceUrl serviceUrl;
+	HttpCoreServletContext servletContext;
 	HttpServletObjectFactory factory;
 
-	Map<String, Servlet> servlets;
+	Map<String, Servlet> servlets = new LinkedHashMap<String, Servlet>();
 	
 	public ServletEngine(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
 		WebApp webapp = new WebXmlParser().parse(WEB_XML_PATH);
-		factory = new HttpServletObjectFactory(serviceUrl);
-		
 		createServletInstances(webapp);
 	}
 
@@ -52,12 +52,14 @@ public class ServletEngine {
 	}
 
 	protected void createServletInstances(WebApp webapp) {
-		servlets = new HashMap<String, Servlet>();
+		this.servletContext = new ServletContextImpl(serviceUrl);
 		List<ServletDefine> servletDefines = webapp.getServlets();
 		for (ServletDefine define : servletDefines) {
 			Class<?> servletClass = ClassUtils.forName(define.getServletClass());
 			Servlet servlet = (Servlet)	ClassUtils.newInstance(servletClass);
 			servlets.put(define.getServletName(), servlet);
+			servletContext.addServlet(define.getServletName(), servlet);
 		}
+		factory = new HttpServletObjectFactory(servletContext);
 	}
 }
