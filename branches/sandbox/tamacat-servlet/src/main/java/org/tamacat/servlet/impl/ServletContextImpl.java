@@ -30,8 +30,21 @@ public class ServletContextImpl implements HttpCoreServletContext {
 
 	protected Map<String, String> initParams = new LinkedHashMap<String, String>();
 	
+	ServletContextImpl(ServletEngine caller) {
+		this.servlets = caller.servlets;
+		this.serviceUrl = caller.serviceUrl;
+	}
+	
 	ServletContextImpl(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
+	}
+	
+	public void addServlet(String servletName, Servlet servlet) {
+		servlets.put(servletName, servlet);
+	}
+	
+	public void removeServlet(String servletName) {
+		servlets.remove(servletName);
 	}
 	
 	@Override

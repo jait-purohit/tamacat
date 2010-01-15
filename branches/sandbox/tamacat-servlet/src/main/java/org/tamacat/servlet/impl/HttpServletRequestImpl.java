@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -52,6 +53,8 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 	private boolean usedInputStream;
 	private boolean usedReader;
 	private Set<String> roles = new HashSet<String>();
+	private String serverName;
+	private int serverPort = -1;
 	
 	public HttpServletRequestImpl(
 			HttpCoreServletContext servletContext,
@@ -198,13 +201,26 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
 	@Override
 	public String getRequestURI() {
-		return request.getRequestLine().getUri();
+		String uri = request.getRequestLine().getUri();
+		if (uri != null && uri.indexOf('?') >= 0) {
+			uri = uri.split("\\?")[0];
+		}
+		return uri;
 	}
 
 	@Override
 	public StringBuffer getRequestURL() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuffer url = new StringBuffer();
+        String scheme = getScheme();
+        int port = getServerPort();
+        url.append(scheme + "://" + getServerName());
+        if (port > 0 &&
+        	    ("http".equalsIgnoreCase(scheme) && port != 80) || 
+                ("https".equalsIgnoreCase(scheme) && port != 443)) {
+            url.append(":" + port);
+        }
+        url.append(getRequestURI());
+        return url;
 	}
 
 	@Override
@@ -321,32 +337,43 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 		return in;
 	}
 
+	private HttpInetConnection getHttpInetConnection() {
+		HttpServerConnection conn = getHttpServerConnection();
+    	if (conn instanceof HttpInetConnection) {
+			return (HttpInetConnection)conn;
+		}
+    	return null;
+	}
+	
+	private HttpServerConnection getHttpServerConnection() {
+    	HttpServerConnection conn = (HttpServerConnection)
+		context.getAttribute(ExecutionContext.HTTP_CONNECTION);
+    	return conn;
+	}
+	
 	@Override
 	public String getLocalAddr() {
-    	HttpServerConnection conn = (HttpServerConnection)
-				context.getAttribute(ExecutionContext.HTTP_CONNECTION);
-		if (conn instanceof HttpInetConnection) {
-			return ((HttpInetConnection)conn).getLocalAddress().getHostAddress();
+		HttpInetConnection conn = getHttpInetConnection();
+    	if (conn != null) {
+			return conn.getLocalAddress().getHostAddress();
 		}
 		return null;
 	}
 
 	@Override
 	public String getLocalName() {
-    	HttpServerConnection conn = (HttpServerConnection)
-				context.getAttribute(ExecutionContext.HTTP_CONNECTION);
-		if (conn instanceof HttpInetConnection) {
-			return ((HttpInetConnection)conn).getLocalAddress().getHostName();
+		HttpInetConnection conn = getHttpInetConnection();
+		if (conn != null) {
+			return conn.getLocalAddress().getHostName();
 		}
 		return null;
 	}
 
 	@Override
 	public int getLocalPort() {
-    	HttpServerConnection conn = (HttpServerConnection)
-    			context.getAttribute(ExecutionContext.HTTP_CONNECTION);
-		if (conn instanceof HttpInetConnection) {
-			return ((HttpInetConnection)conn).getLocalPort();
+		HttpInetConnection conn = getHttpInetConnection();
+		if (conn != null) {
+			return conn.getLocalPort();
 		}
 		return -1;
 	}
@@ -420,8 +447,7 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
 	@Override
 	public String getRealPath(String path) {
-		// TODO Auto-generated method stub
-		return null;
+		return servletContext.getRealPath(path);
 	}
 
 	@Override
@@ -458,12 +484,36 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
 	@Override
 	public String getServerName() {
-		return servletContext.getServiceUrl().getServerConfig().getParam("ServerName");
+		if (serverName != null) {
+			return serverName;
+		}
+		Header host = request.getFirstHeader("Host");
+		if (host != null) {
+			serverName = host.getValue();
+		} else {
+			HttpInetConnection conn = getHttpInetConnection();
+			if (conn != null) {
+				serverName = conn.getLocalAddress().getHostName();
+			}
+			if (serverName == null) {
+				try {
+					serverName = InetAddress.getLocalHost().getHostAddress();
+				} catch (UnknownHostException e) {
+				}
+			}
+		}
+		return serverName;
 	}
 
 	@Override
 	public int getServerPort() {
-		return servletContext.getServiceUrl().getServerConfig().getPort();
+		HttpInetConnection conn = getHttpInetConnection();
+		if (serverPort == -1 && conn != null) {
+			serverPort = conn.getLocalPort();	
+		} else {
+			serverPort = servletContext.getServiceUrl().getServerConfig().getPort();
+		}
+		return serverPort;
 	}
 
 	@Override

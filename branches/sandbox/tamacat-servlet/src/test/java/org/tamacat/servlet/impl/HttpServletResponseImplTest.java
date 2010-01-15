@@ -18,7 +18,9 @@ import org.junit.Test;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfigXmlParser;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.util.HeaderUtils;
+import org.tamacat.servlet.HttpCoreServletContext;
 import org.tamacat.servlet.HttpCoreServletRequest;
 import org.tamacat.servlet.HttpCoreServletResponse;
 import org.tamacat.servlet.util.ServletUtils;
@@ -30,6 +32,7 @@ public class HttpServletResponseImplTest {
 	HttpRequest req;
 	HttpResponse res;
 	HttpContext context;
+	HttpCoreServletContext servletContext;
 	HttpCoreServletRequest request;
 	HttpCoreServletResponse response;
 	
@@ -42,8 +45,9 @@ public class HttpServletResponseImplTest {
 
 		ServiceConfigXmlParser parser = new ServiceConfigXmlParser(new ServerConfig());
 		serviceUrl = parser.getServiceConfig().getServiceUrl("/test/");
-		request = new HttpServletObjectFactory(serviceUrl).createRequest(req, context);
-		response = new HttpServletObjectFactory(serviceUrl).createResponse(res, context);
+		servletContext = new ServletContextImpl(serviceUrl);
+		request = new HttpServletObjectFactory(servletContext).createRequest(req, context);
+		response = new HttpServletObjectFactory(servletContext).createResponse(res, context);
 	}
 
 	@After
@@ -122,12 +126,22 @@ public class HttpServletResponseImplTest {
 
 	@Test
 	public void testSendErrorInt() {
-		fail("Not yet implemented");
+		try {
+			response.sendError(500);
+		} catch (Exception e) {
+			assertEquals(true, (e instanceof HttpException));
+			assertEquals(null, e.getMessage());
+		}
 	}
 
 	@Test
 	public void testSendErrorIntString() {
-		fail("Not yet implemented");
+		try {
+			response.sendError(500, "server error");
+		} catch (Exception e) {
+			assertEquals(true, (e instanceof HttpException));
+			assertEquals("server error", e.getMessage());
+		}
 	}
 
 	@Test
@@ -162,12 +176,16 @@ public class HttpServletResponseImplTest {
 
 	@Test
 	public void testSetStatusInt() {
-		fail("Not yet implemented");
+		response.setStatus(500);
+		assertEquals(500, res.getStatusLine().getStatusCode());
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testSetStatusIntString() {
-		fail("Not yet implemented");
+		response.setStatus(404, "Not Found");
+		assertEquals(404, res.getStatusLine().getStatusCode());
+		assertEquals("Not Found", res.getStatusLine().getReasonPhrase());
 	}
 
 	@Test

@@ -12,8 +12,8 @@ public class HttpServletObjectFactory {
 	
 	private HttpCoreServletContext servletContext;
 	
-	HttpServletObjectFactory(ServiceUrl serviceUrl) {
-		this.servletContext = new ServletContextImpl(serviceUrl);
+	HttpServletObjectFactory(HttpCoreServletContext servletContext) {
+		this.servletContext = servletContext;
 	}
 	
 	public HttpCoreServletContext getServletContext(ServiceUrl serviceUrl) {
