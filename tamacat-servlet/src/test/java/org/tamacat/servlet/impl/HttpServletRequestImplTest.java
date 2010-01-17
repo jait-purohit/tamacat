@@ -43,7 +43,7 @@ public class HttpServletRequestImplTest {
 		ServiceConfigXmlParser parser = new ServiceConfigXmlParser(new ServerConfig());
 		serviceUrl = parser.getServiceConfig().getServiceUrl("/test/");
 		request = new HttpServletObjectFactory(
-				new ServletContextImpl(serviceUrl)).createRequest(req, context);
+				new ServletContextImpl("test", serviceUrl)).createRequest(req, context);
 	}
 
 	@After

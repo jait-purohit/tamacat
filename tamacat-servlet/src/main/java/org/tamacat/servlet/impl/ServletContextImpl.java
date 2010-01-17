@@ -1,10 +1,13 @@
 package org.tamacat.servlet.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,24 +26,51 @@ public class ServletContextImpl implements HttpCoreServletContext {
 
 	private static final Log LOG = LogFactory.getLog(ServletContextImpl.class);
 	
+	private String contextRoot;
 	protected ServiceUrl serviceUrl;
 	protected Map<String, Object> attributes = new LinkedHashMap<String, Object>();
 	protected Map<String, Servlet> servlets = new LinkedHashMap<String, Servlet>();
 	protected Map<String, String> servletInfo = new LinkedHashMap<String, String>();
-
-	protected Map<String, String> initParams = new LinkedHashMap<String, String>();
+	private Map<String, String> mimeTypes = new HashMap<String,String>();
+	private Map<String, String> initParams = new LinkedHashMap<String, String>();
 	
-	ServletContextImpl(ServletEngine caller) {
-		this.servlets = caller.servlets;
-		this.serviceUrl = caller.serviceUrl;
-	}
+	private String servletContextName;
+	private String serverInfo;
 	
-	ServletContextImpl(ServiceUrl serviceUrl) {
+	ServletContextImpl(String contextRoot, ServiceUrl serviceUrl) {
+		this.contextRoot = contextRoot;
 		this.serviceUrl = serviceUrl;
 	}
 	
+	public String getContextRoot() {
+		if (contextRoot == null) {
+			contextRoot = System.getProperty("user.dir") + "/webapps/"
+			  + serviceUrl.getPath().replaceFirst("^/", "").replaceFirst("/$", "");
+		}
+		return contextRoot;
+	}
+	
+	public void setServletContextName(String servletContextName) {
+		this.servletContextName = servletContextName;
+	}
+	
+	public void setServerInfo(String serverInfo) {
+		this.serverInfo = serverInfo;
+	}
+	
+	public void addInitParam(String name, String value) {
+		initParams.put(name, value);
+	}
+	
 	public void addServlet(String servletName, Servlet servlet) {
-		servlets.put(servletName, servlet);
+		if (servlet != null) {
+			servlets.put(servletName, servlet);
+			servletInfo.put(servletName, servlet.getServletInfo());
+		}
+	}
+	
+	public void addMimeType(String file, String mimeType) {
+		mimeTypes.put(file, mimeType);
 	}
 	
 	public void removeServlet(String servletName) {
@@ -74,8 +104,8 @@ public class ServletContextImpl implements HttpCoreServletContext {
 
 	@Override
 	public ServletContext getContext(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		//TODO support cross context
+		return this;
 	}
 
 	@Override
@@ -95,50 +125,66 @@ public class ServletContextImpl implements HttpCoreServletContext {
 
 	@Override
 	public int getMajorVersion() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 2;
 	}
-
+	
 	@Override
-	public String getMimeType(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getMimeType(String fileName) {
+		if (fileName == null) return null;
+		String mimeType = mimeTypes.get(fileName);
+		if (mimeType == null && fileName.indexOf('.') >= 0) {
+			String[] f = fileName.split("\\.");
+			if (f.length >= 1) {
+				String ext = f[f.length-1];
+				mimeType = mimeTypes.get(ext);
+			}
+		}
+		return mimeType;
 	}
 
 	@Override
 	public int getMinorVersion() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 5;
 	}
-
+	
 	@Override
-	public RequestDispatcher getNamedDispatcher(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public RequestDispatcher getNamedDispatcher(String servletName) {
+		RequestDispatcher rd = new NamedRequestDispatcherImpl(servletName);
+		return rd;
 	}
 
 	@Override
 	public String getRealPath(String path) {
-		// TODO Auto-generated method stub
-		return null;
+		if (path.indexOf("../") >= 0) {
+			return null;
+			//throw new IllegalArgumentException("The path format is invalid. [../]");
+		}
+		String p = getContextRoot() + "/" + path.replaceFirst("^/", "");
+		return normalizePath(p);
 	}
 
 	@Override
 	public RequestDispatcher getRequestDispatcher(String path) {
-		// TODO Auto-generated method stub
-		return null;
+		RequestDispatcher rd = new RequestDispatcherImpl(path);
+		return rd;
 	}
 
 	@Override
 	public URL getResource(String path) throws MalformedURLException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!(path.startsWith("/")) || path.indexOf("../") >= 0) {
+			throw new IllegalArgumentException("The path format is invalid. [../]");
+		}
+		return getClass().getResource(
+				normalizePath(getContextRoot() + path));
 	}
 
 	@Override
 	public InputStream getResourceAsStream(String path) {
-		// TODO Auto-generated method stub
-		return null;
+		if (!(path.startsWith("/")) || path.indexOf("../") >= 0) {
+			throw new IllegalArgumentException("The path format is invalid. [../]");
+		}
+		return getClass().getResourceAsStream(
+				normalizePath(getContextRoot() + path));
 	}
 
 	@Override
@@ -149,8 +195,7 @@ public class ServletContextImpl implements HttpCoreServletContext {
 
 	@Override
 	public String getServerInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return serverInfo;
 	}
 
 	@Override
@@ -160,8 +205,7 @@ public class ServletContextImpl implements HttpCoreServletContext {
 
 	@Override
 	public String getServletContextName() {
-		// TODO Auto-generated method stub
-		return null;
+		return servletContextName;
 	}
 
 	@Override
@@ -187,5 +231,17 @@ public class ServletContextImpl implements HttpCoreServletContext {
 	@Override
 	public void log(String message, Throwable cause) {
 		LOG.error(message, cause);
+	}
+	
+	static final char SEPARATOR = File.separatorChar;
+	static final char TARGET_SEPARATOR = SEPARATOR == '\\' ? '/' :'\\'; 
+	
+	static String normalizePath(String path) {
+		try {
+			return new File(path).getCanonicalPath();
+		} catch (IOException e) {
+			return path;
+		}
+		//path.replace(TARGET_SEPARATOR, SEPARATOR);
 	}
 }
