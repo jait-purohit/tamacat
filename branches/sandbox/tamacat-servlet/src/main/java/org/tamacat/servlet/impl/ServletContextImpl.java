@@ -1,14 +1,18 @@
 package org.tamacat.servlet.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -174,23 +178,24 @@ public class ServletContextImpl implements HttpCoreServletContext {
 		if (!(path.startsWith("/")) || path.indexOf("../") >= 0) {
 			throw new IllegalArgumentException("The path format is invalid. [../]");
 		}
-		return getClass().getResource(
-				normalizePath(getContextRoot() + path));
+		return new URL("file:" + getRealPath(path));
 	}
 
 	@Override
 	public InputStream getResourceAsStream(String path) {
-		if (!(path.startsWith("/")) || path.indexOf("../") >= 0) {
-			throw new IllegalArgumentException("The path format is invalid. [../]");
+		try {
+			File file = new File(getRealPath(path));
+			return new FileInputStream(file);
+		} catch (Exception e) {
+			return null;
 		}
-		return getClass().getResourceAsStream(
-				normalizePath(getContextRoot() + path));
 	}
 
 	@Override
 	public Set<?> getResourcePaths(String path) {
-		// TODO Auto-generated method stub
-		return null;
+		File file = new File(getRealPath(path));
+		List<String> list = Arrays.asList(file.list());
+		return new HashSet<String>(list);
 	}
 
 	@Override
