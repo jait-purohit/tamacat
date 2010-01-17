@@ -9,6 +9,12 @@ public interface HttpCoreServletContext extends ServletContext {
 
 	ServiceUrl getServiceUrl();
 	
+	void setServletContextName(String servletContextName);
+	
+	void setServerInfo(String serverInfo);
+	
 	void addServlet(String servletName, Servlet servlet);
 	void removeServlet(String servletName);
+	
+	void addMimeType(String file, String mimeType);
 }

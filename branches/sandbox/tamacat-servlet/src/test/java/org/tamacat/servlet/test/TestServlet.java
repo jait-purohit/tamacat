@@ -11,6 +11,7 @@ public class TestServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	protected void doGet(
 		HttpServletRequest request, HttpServletResponse response) 
 		throws IOException, ServletException {
@@ -18,9 +19,15 @@ public class TestServlet extends HttpServlet {
 		System.out.println("execute doGet() id=" + id);
 	}
 	
+	@Override
 	protected void doPost(
 			HttpServletRequest request, HttpServletResponse response) 
 			throws IOException, ServletException {
 		System.out.println("execute doPost()");
 	}
+	
+	@Override
+    public String getServletInfo() {
+    	return "TestServlet";
+    }
 }

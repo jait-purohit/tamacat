@@ -24,15 +24,27 @@ public class ServletEngine {
 
 	static final String WEB_XML_PATH = "WEB-INF/web.xml";
 	
-	ServiceUrl serviceUrl;
-	HttpCoreServletContext servletContext;
-	HttpServletObjectFactory factory;
+	private String path;
+	private ServiceUrl serviceUrl;
+	private HttpCoreServletContext servletContext;
+	private HttpServletObjectFactory factory;
 
-	Map<String, Servlet> servlets = new LinkedHashMap<String, Servlet>();
+	private Map<String, Servlet> servlets = new LinkedHashMap<String, Servlet>();
 	
 	public ServletEngine(ServiceUrl serviceUrl) {
+		this(null, serviceUrl);
+	}
+	
+	public ServletEngine(String path, ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
-		WebApp webapp = new WebXmlParser().parse(WEB_XML_PATH);
+		if (path == null) {
+			this.path = serviceUrl.getPath()
+				.replaceFirst("^/","").replaceFirst("/$", "");
+		} else {
+			this.path = path;
+		}
+		String xml = this.path + "/" + WEB_XML_PATH;
+		WebApp webapp = new WebXmlParser().parse(xml);
 		createServletInstances(webapp);
 	}
 
@@ -52,7 +64,11 @@ public class ServletEngine {
 	}
 
 	protected void createServletInstances(WebApp webapp) {
-		this.servletContext = new ServletContextImpl(serviceUrl);
+		this.servletContext = new ServletContextImpl(path, serviceUrl);
+		servletContext.setServletContextName(webapp.getDisplayName());
+		String serverInfo = serviceUrl.getServerConfig().getParam("ServerName");
+		servletContext.setServerInfo(serverInfo);
+		
 		List<ServletDefine> servletDefines = webapp.getServlets();
 		for (ServletDefine define : servletDefines) {
 			Class<?> servletClass = ClassUtils.forName(define.getServletClass());
