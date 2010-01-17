@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Set;
 
 import javax.servlet.Servlet;
 
@@ -190,12 +191,6 @@ public class ServletContextImplTest {
 
 	@Test
 	public void testGetResource() throws Exception {
-		System.out.println(
-			new File(
-				context.getContextRoot() + "/index.html"
-			).getCanonicalPath()
-		);
-
 		URL url = context.getResource("/index.html");
 		assertNotNull(url);
 	}
@@ -204,11 +199,16 @@ public class ServletContextImplTest {
 	public void testGetResourceAsStream() throws Exception {
 		InputStream in = context.getResourceAsStream("/index.html");
 		assertNotNull(in);
+		in.close();
 	}
 
 	@Test
 	public void testGetResourcePaths() {
-		fail("Not yet implemented");
+		Set<?> set = context.getResourcePaths("/");
+		assertNotNull(set);
+		for (Object path : set) {
+			System.out.println(path);
+		}
 	}
 
 	@Test
