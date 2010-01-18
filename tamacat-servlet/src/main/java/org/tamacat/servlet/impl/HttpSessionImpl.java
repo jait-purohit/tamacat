@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 
 import org.tamacat.servlet.HttpCoreServletSession;
+import org.tamacat.util.UniqueCodeGenerator;
 
 public class HttpSessionImpl implements HttpCoreServletSession {
 
@@ -16,11 +17,17 @@ public class HttpSessionImpl implements HttpCoreServletSession {
 	private int maxInactiveInterval;
 	private ServletContext servletContext;
 	private long creationTime;
+	private long lastAccessedTime;
 	private String id;
 	
 	public HttpSessionImpl(ServletContext servletContext) {
 		this.servletContext = servletContext;
+		this.id = UniqueCodeGenerator.generate();
 		this.creationTime = System.currentTimeMillis();
+	}
+	
+	public void updateLastAccessedTime() {
+		this.lastAccessedTime = System.currentTimeMillis();
 	}
 	
 	@Override
@@ -45,8 +52,7 @@ public class HttpSessionImpl implements HttpCoreServletSession {
 
 	@Override
 	public long getLastAccessedTime() {
-		// TODO Auto-generated method stub
-		return 0;
+		return lastAccessedTime;
 	}
 
 	@Override

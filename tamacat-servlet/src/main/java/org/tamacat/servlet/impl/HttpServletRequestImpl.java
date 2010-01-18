@@ -34,13 +34,17 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.core.RequestParameters;
+import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.servlet.HttpCoreServletContext;
 import org.tamacat.servlet.HttpCoreServletRequest;
 import org.tamacat.servlet.util.ServletUtils;
+import org.tamacat.util.StringUtils;
 
 public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
+	private static final String JSESSIONID = "jsessionid";
+	
 	protected HttpCoreServletContext servletContext;
 	protected HttpRequest request;
 	protected HttpContext context;
@@ -55,6 +59,7 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 	private Set<String> roles = new HashSet<String>();
 	private String serverName;
 	private int serverPort = -1;
+	private String sessionId;
 	
 	public HttpServletRequestImpl(
 			HttpCoreServletContext servletContext,
@@ -225,8 +230,8 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
 	@Override
 	public String getRequestedSessionId() {
-		// TODO Auto-generated method stub
-		return null;
+		HttpSession session = getSession(false);
+		return session != null ? session.getId() : null;
 	}
 
 	@Override
@@ -237,14 +242,18 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
 	@Override
 	public HttpSession getSession() {
-		// TODO Auto-generated method stub
-		return null;
+		return getSession(true);
 	}
 
 	@Override
 	public HttpSession getSession(boolean create) {
-		// TODO Auto-generated method stub
-		return null;
+		if (sessionId == null) {
+			String header = getHeader("Cookie");
+			sessionId = header != null ?
+				HeaderUtils.getCookieValue(header, JSESSIONID) : null;
+		}
+		return HttpSessionFacade.getInstance(servletContext)
+			.getSession(sessionId, create);
 	}
 
 	@Override
@@ -255,7 +264,12 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
 	@Override
 	public boolean isRequestedSessionIdFromCookie() {
-		// TODO Auto-generated method stub
+		if (sessionId == null) {
+			String header = getHeader("Cookie");
+			sessionId = header != null ?
+					HeaderUtils.getCookieValue(header, JSESSIONID) : null;
+			return StringUtils.isNotEmpty(sessionId);
+		}
 		return false;
 	}
 
