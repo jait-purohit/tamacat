@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.message.BasicHttpRequest;
@@ -171,7 +172,8 @@ public class HttpServletRequestImplTest {
 
 	@Test
 	public void testGetRequestedSessionId() {
-		fail("Not yet implemented");
+		HttpSession session = request.getSession(true);
+		assertEquals(session.getId(), request.getRequestedSessionId());
 	}
 
 	@Test
@@ -181,12 +183,17 @@ public class HttpServletRequestImplTest {
 
 	@Test
 	public void testGetSession() {
-		fail("Not yet implemented");
+		HttpSession session = request.getSession();
+		assertNotNull(session);
 	}
 
 	@Test
 	public void testGetSessionBoolean() {
-		fail("Not yet implemented");
+		HttpSession session = request.getSession(false);
+		assertNull(session);
+		
+		HttpSession session2 = request.getSession(true);
+		assertNotNull(session2);
 	}
 
 	@Test
