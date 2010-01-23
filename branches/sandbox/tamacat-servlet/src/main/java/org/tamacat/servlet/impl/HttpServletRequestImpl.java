@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,6 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.core.RequestParameters;
-import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.servlet.HttpCoreServletContext;
 import org.tamacat.servlet.HttpCoreServletRequest;
@@ -43,7 +43,7 @@ import org.tamacat.util.StringUtils;
 
 public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
-	private static final String JSESSIONID = "jsessionid";
+	private static final String JSESSIONID = "JSESSIONID";
 	
 	protected HttpCoreServletContext servletContext;
 	protected HttpRequest request;
@@ -60,11 +60,16 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 	private String serverName;
 	private int serverPort = -1;
 	private String sessionId;
+	private boolean isRequestedSessionIdFromCookie;
+	private Servlet callerServlet;
+	private Principal principal;
 	
 	public HttpServletRequestImpl(
 			HttpCoreServletContext servletContext,
+			Servlet callerServlet,
 			HttpRequest request, HttpContext context) {
 		this.servletContext = servletContext;
+		this.callerServlet = callerServlet;
 		this.request = request;
 		this.context = context;
 		RequestUtils.setParameters(request, context);
@@ -185,7 +190,7 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
 	@Override
 	public String getPathInfo() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -230,14 +235,15 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
 	@Override
 	public String getRequestedSessionId() {
+		if (StringUtils.isNotEmpty(sessionId)) return sessionId;
 		HttpSession session = getSession(false);
-		return session != null ? session.getId() : null;
+		return session != null ? session.getId() : sessionId;
 	}
 
 	@Override
 	public String getServletPath() {
-		// TODO Auto-generated method stub
-		return null;
+		String name = callerServlet.getServletConfig().getServletName();
+		return name;
 	}
 
 	@Override
@@ -248,47 +254,68 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 	@Override
 	public HttpSession getSession(boolean create) {
 		if (sessionId == null) {
-			String header = getHeader("Cookie");
-			sessionId = header != null ?
-				HeaderUtils.getCookieValue(header, JSESSIONID) : null;
+			Cookie[] cookies = getCookies();
+			for (Cookie cookie : cookies) {
+				if (JSESSIONID.equalsIgnoreCase(cookie.getName())) {
+					sessionId = cookie.getValue();
+					break;
+				}
+			}
+			if (StringUtils.isNotEmpty(sessionId)) {
+				isRequestedSessionIdFromCookie = true;
+			}
 		}
-		return HttpSessionFacade.getInstance(servletContext)
+		HttpSession session = HttpSessionFacade.getInstance(servletContext)
 			.getSession(sessionId, create);
+		if (session != null) {
+			sessionId = session.getId();
+		}
+		return session;
 	}
 
 	@Override
 	public Principal getUserPrincipal() {
-		// TODO Auto-generated method stub
-		return null;
+		if (principal == null) {
+			String remoteUser = (String) context.getAttribute(AuthComponent.REMOTE_USER_KEY);
+			if (StringUtils.isNotEmpty(remoteUser)) {
+				principal = new PrincipalImpl(remoteUser);
+			}
+		}
+		return principal;
 	}
-
+	
 	@Override
 	public boolean isRequestedSessionIdFromCookie() {
-		if (sessionId == null) {
-			String header = getHeader("Cookie");
-			sessionId = header != null ?
-					HeaderUtils.getCookieValue(header, JSESSIONID) : null;
-			return StringUtils.isNotEmpty(sessionId);
+		if (isRequestedSessionIdFromCookie) {
+			return isRequestedSessionIdFromCookie;
 		}
-		return false;
+		Cookie[] cookies = getCookies();
+		for (Cookie cookie : cookies) {
+			if (JSESSIONID.equalsIgnoreCase(cookie.getName())) {
+				sessionId = cookie.getValue();
+				break;
+			}
+		}
+		if (StringUtils.isNotEmpty(sessionId)) {
+			isRequestedSessionIdFromCookie = true;
+			return true;
+		}
+		return isRequestedSessionIdFromCookie;
 	}
 
 	@Override
 	public boolean isRequestedSessionIdFromURL() {
-		// TODO Auto-generated method stub
-		return false;
+		return ! isRequestedSessionIdFromCookie();
 	}
 
 	@Override
 	public boolean isRequestedSessionIdFromUrl() {
-		// TODO Auto-generated method stub
-		return false;
+		return isRequestedSessionIdFromURL();
 	}
 
 	@Override
 	public boolean isRequestedSessionIdValid() {
-		// TODO Auto-generated method stub
-		return false;
+		return getSession(false) != null;
 	}
 
 	@Override

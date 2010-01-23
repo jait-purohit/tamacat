@@ -23,6 +23,7 @@ import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.servlet.HttpCoreServletContext;
 import org.tamacat.servlet.HttpCoreServletRequest;
 import org.tamacat.servlet.HttpCoreServletResponse;
+import org.tamacat.servlet.test.TestServlet;
 import org.tamacat.servlet.util.ServletUtils;
 import org.tamacat.util.StringUtils;
 
@@ -46,7 +47,8 @@ public class HttpServletResponseImplTest {
 		ServiceConfigXmlParser parser = new ServiceConfigXmlParser(new ServerConfig());
 		serviceUrl = parser.getServiceConfig().getServiceUrl("/test/");
 		servletContext = new ServletContextImpl("test", serviceUrl);
-		request = new HttpServletObjectFactory(servletContext).createRequest(req, context);
+		request = new HttpServletObjectFactory(servletContext)
+			.createRequest(new TestServlet(), req, context);
 		response = new HttpServletObjectFactory(servletContext).createResponse(res, context);
 	}
 

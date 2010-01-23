@@ -3,8 +3,10 @@ package org.tamacat.servlet.impl;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,14 +29,14 @@ import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfigXmlParser;
 import org.tamacat.httpd.config.ServiceUrl;
-import org.tamacat.servlet.HttpCoreServletRequest;
+import org.tamacat.servlet.test.TestServlet;
 
 public class HttpServletRequestImplTest {
 
 	ServiceUrl serviceUrl;
 	HttpRequest req;
 	HttpContext context;
-	HttpCoreServletRequest request;
+	HttpServletRequestImpl request;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -43,8 +45,13 @@ public class HttpServletRequestImplTest {
 
 		ServiceConfigXmlParser parser = new ServiceConfigXmlParser(new ServerConfig());
 		serviceUrl = parser.getServiceConfig().getServiceUrl("/test/");
-		request = new HttpServletObjectFactory(
-				new ServletContextImpl("test", serviceUrl)).createRequest(req, context);
+		
+		ServletContextImpl servletContext = new ServletContextImpl(
+				System.getProperty("user.dir")
+				+ "/src/test/resources/test", serviceUrl);
+		request = (HttpServletRequestImpl)
+			new HttpServletObjectFactory(servletContext)
+					.createRequest(new TestServlet(), req, context);
 	}
 
 	@After
@@ -141,7 +148,7 @@ public class HttpServletRequestImplTest {
 
 	@Test
 	public void testGetPathTranslated() {
-		fail("Not yet implemented");
+		//fail("Not yet implemented");
 	}
 
 	@Test
@@ -178,7 +185,7 @@ public class HttpServletRequestImplTest {
 
 	@Test
 	public void testGetServletPath() {
-		fail("Not yet implemented");
+		assertEquals("index.html", request.getServletPath());
 	}
 
 	@Test
@@ -198,27 +205,44 @@ public class HttpServletRequestImplTest {
 
 	@Test
 	public void testGetUserPrincipal() {
-		fail("Not yet implemented");
+		context.setAttribute(AuthComponent.REMOTE_USER_KEY, "admin");
+
+		Principal principal = request.getUserPrincipal();
+		assertNotNull(principal);
+		assertEquals("admin", principal.getName());
 	}
 
 	@Test
 	public void testIsRequestedSessionIdFromCookie() {
-		fail("Not yet implemented");
+		HttpSession session = request.getSession(true);
+		req.setHeader("Cookie", "JSESSIONID=" + session.getId());
+				
+		assertTrue(request.isRequestedSessionIdFromCookie());
 	}
 
 	@Test
 	public void testIsRequestedSessionIdFromURL() {
-		fail("Not yet implemented");
+		HttpSession session = request.getSession(true);
+		req.setHeader("Cookie", "JSESSIONID=" + session.getId());
+		
+		assertFalse(request.isRequestedSessionIdFromURL());
 	}
 
 	@Test
 	public void testIsRequestedSessionIdFromUrl() {
-		fail("Not yet implemented");
+		HttpSession session = request.getSession(true);
+		req.setHeader("Cookie", "JSESSIONID=" + session.getId());
+		
+		assertFalse(request.isRequestedSessionIdFromUrl());
 	}
 
 	@Test
 	public void testIsRequestedSessionIdValid() {
-		fail("Not yet implemented");
+		assertFalse(request.isRequestedSessionIdValid());
+
+		HttpSession session = request.getSession(true);
+		assertNotNull(session);
+		assertTrue(request.isRequestedSessionIdValid());
 	}
 
 	@Test
@@ -428,9 +452,17 @@ public class HttpServletRequestImplTest {
 	}
 
 	@Test
-	public void testGetRealPath() {
-		fail("Not yet implemented");
-		//assertEquals("", request.getRealPath(""));
+	public void testGetRealPath() throws Exception {
+		assertEquals(new File(System.getProperty("user.dir")
+				  + "/src/test/resources/test/WEB-INF/web.xml").getCanonicalPath(),
+				request.getRealPath("WEB-INF/web.xml"));
+			
+			assertEquals(new File(System.getProperty("user.dir")
+				+ "/src/test/resources/test/WEB-INF/web.xml").getCanonicalPath(),
+				request.getRealPath("/WEB-INF/web.xml"));
+			
+			//invalid path.("../") -> returns null
+			assertNull(request.getRealPath("../../WEB-INF/web.xml"));
 	}
 
 	@Test
