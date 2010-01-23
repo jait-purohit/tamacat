@@ -1,5 +1,8 @@
 package org.tamacat.servlet.xml;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -29,6 +32,7 @@ public class WebXmlParser {
 			xpath = XPathFactory.newInstance().newXPath();
 			loadDisplayName();
 			loadDescription();
+			loadContextParames();
 			loadServlet();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -48,11 +52,44 @@ public class WebXmlParser {
 		webApp.setDescription(description);
 	}
 	
+	void loadContextParames() throws XPathExpressionException {
+		XPathExpression expr = xpath.compile("//web-app/context-param/node()");
+		NodeList nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+		Map<String,String> params = getParams(nodes);
+		webApp.setContextParams(params);
+	}
+	
 	void loadServlet() throws XPathExpressionException {
 		XPathExpression expr = xpath.compile("//web-app/servlet/node()");
 		NodeList nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
 		ServletDefine servletDefine = getServletDefine(nodes);
 		webApp.getServlets().add(servletDefine);
+	}
+	
+	void loadServletMapping() throws XPathExpressionException {
+		XPathExpression expr = xpath.compile("//web-app/servlet-mapping/node()");
+		NodeList nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+		ServletMapping mapping = getServletMapping(nodes);
+		webApp.addServletMapping(mapping);
+	}
+	
+	Map<String,String> getParams(NodeList nodes) {
+		Map<String,String> params = new LinkedHashMap<String, String>();
+		String name = null;
+		for (int i=0; i<nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			String tagName = node.getNodeName();
+			if ("param-name".equals(tagName)) {
+				name = node.getTextContent();
+			} else if ("param-value".equals(tagName)) {
+				String value = node.getTextContent();
+				if (name != null) {
+					params.put(name, value);
+				}
+				name = null;
+			}
+		}
+		return params;
 	}
 	
 	ServletDefine getServletDefine(NodeList nodes) {
@@ -67,9 +104,30 @@ public class WebXmlParser {
 			} else if ("servlet-class".equals(tagName)) {
 				String servletClass = node.getTextContent();
 				servletDefine.setServletClass(servletClass);
+			} else if ("init-param".equals(tagName)) {
+				NodeList nlist = node.getChildNodes();
+				Map<String,String> params = getParams(nlist);
+				servletDefine.setInitParams(params);
 			}
 		}
 		return servletDefine;
+	}
+	
+	ServletMapping getServletMapping(NodeList nodes) {
+		ServletMapping mapping = new ServletMapping();
+		for (int i=0; i<nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			String tagName = node.getNodeName();
+			if ("servlet-name".equals(tagName)) {
+				String servletName = node.getTextContent();
+				mapping.setServletName(servletName);
+				
+			} else if ("url-pattern".equals(tagName)) {
+				String urlPattern = node.getTextContent();
+				mapping.setUrlPattern(urlPattern);
+			}
+		}
+		return mapping;
 	}
 	
 	static class WebXml {
@@ -77,6 +135,10 @@ public class WebXmlParser {
 			web_app("web-app"),
 			display_name("display-name"),
 			description("description"),
+			init_param("init-param"),
+			param_name("param-name"),
+			param_value("param-value"),
+			context_param("context-param"),
 			servlet("servlet"),
 			servlet_mapping("servlet-mapping"),
 			servlet_name("servlet-name"),

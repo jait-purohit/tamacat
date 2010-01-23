@@ -8,9 +8,18 @@
     Test servlets
   </description>
 
+  <context-param>
+    <param-name>context-param1</param-name>
+    <param-value>value1</param-value>
+  </context-param>
+  
   <servlet>
     <servlet-name>test1</servlet-name>
     <servlet-class>org.tamacat.servlet.test.TestServlet</servlet-class>
+    <init-param>
+      <param-name>init-param1</param-name>
+      <param-value>value1</param-value>
+    </init-param>
   </servlet>
 
   <servlet-mapping>
