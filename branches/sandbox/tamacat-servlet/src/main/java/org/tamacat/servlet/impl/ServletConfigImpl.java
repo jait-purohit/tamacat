@@ -46,5 +46,4 @@ public class ServletConfigImpl implements ServletConfig {
 	public String getServletName() {
 		return servletName;
 	}
-
 }

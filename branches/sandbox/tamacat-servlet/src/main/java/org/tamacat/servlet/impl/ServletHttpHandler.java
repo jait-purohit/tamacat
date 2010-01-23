@@ -5,15 +5,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 
+import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.UriPatternMatcher;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.core.HttpHandler;
+import org.tamacat.httpd.exception.HttpStatus;
+import org.tamacat.httpd.exception.NotFoundException;
+import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.servlet.HttpCoreServletContext;
 import org.tamacat.servlet.HttpCoreServletRequest;
 import org.tamacat.servlet.HttpCoreServletResponse;
@@ -22,9 +28,8 @@ import org.tamacat.servlet.xml.ServletMapping;
 import org.tamacat.servlet.xml.WebApp;
 import org.tamacat.servlet.xml.WebXmlParser;
 import org.tamacat.util.ClassUtils;
-import org.tamacat.util.StringUtils;
 
-public class ServletEngine {
+public class ServletHttpHandler implements HttpHandler {
 
 	static final String WEB_XML_PATH = "WEB-INF/web.xml";
 	
@@ -33,41 +38,61 @@ public class ServletEngine {
 	private HttpCoreServletContext servletContext;
 	private HttpServletObjectFactory factory;
 
-	private Map<String, Servlet> servlets = new LinkedHashMap<String, Servlet>();
-	private Map<String, ServletUrl> servletMappings = new LinkedHashMap<String, ServletUrl>();
+	private Map<String, HttpServlet> servlets = new LinkedHashMap<String, HttpServlet>();
+	private UriPatternMatcher matcher = new UriPatternMatcher();
 	
-	public ServletEngine(ServiceUrl serviceUrl) {
-		this(null, serviceUrl);
+	public ServletHttpHandler() {}
+	
+	public ServletHttpHandler(String path) {
+		this.path = path;
 	}
 	
-	public ServletEngine(String path, ServiceUrl serviceUrl) {
+	@Override
+	public void setRequestFilter(RequestFilter filter) {
+	}
+
+	@Override
+	public void setServiceUrl(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
+		init();
+	}
+	
+	@Override
+	public void handle(HttpRequest request, HttpResponse response,
+			HttpContext context) throws HttpException, IOException {
+		HttpServlet servlet = getServlet(request.getRequestLine().getUri());
+		if (servlet != null) {
+			HttpCoreServletRequest req
+				= factory.createRequest(servlet, request, context);
+			HttpCoreServletResponse res = null;
+			try {
+				servlet.service(req, res);
+			} catch (ServletException e) {
+				throw new org.tamacat.httpd.exception.HttpException(
+						HttpStatus.SC_INTERNAL_SERVER_ERROR, e);
+			}
+		} else {
+			throw new NotFoundException();
+		}
+	}
+
+	void init() {
 		if (path == null) {
 			this.path = serviceUrl.getPath()
 				.replaceFirst("^/","").replaceFirst("/$", "");
-		} else {
-			this.path = path;
 		}
 		String xml = this.path + "/" + WEB_XML_PATH;
 		WebApp webapp = new WebXmlParser().parse(xml);
 		createServletInstances(webapp);
 	}
-
-	public void processServlet(
-				String servletName, HttpRequest req, HttpResponse res)
-			throws IOException, ServletException {
-		Servlet servlet = getServlet(servletName);
-		if (servlet != null) {
-			HttpCoreServletRequest request = factory.createRequest(
-					servlet, req, new BasicHttpContext());
-			HttpCoreServletResponse response = null;
-			servlet.service(request, response);
-		}
+	
+	protected HttpServlet getServlet(String path) {
+		ServletUrl url = (ServletUrl) matcher.lookup(path);
+		return url != null ? url.getServlet() : null;
 	}
 	
-	protected Servlet getServlet(String name) {
-		ServletUrl url = servletMappings.get(name);
-		return url != null ? url.getServlet() : null;
+	protected HttpServlet getServletFromName(String name) {
+		return servlets.get(name);
 	}
 
 	protected void createServletInstances(WebApp webapp) {
@@ -76,7 +101,7 @@ public class ServletEngine {
 		for (ServletDefine define : servletDefines) {
 			ServletConfig config = createServletConfig(define, servletContext);
 			try {
-				Servlet servlet = createServlet(define);
+				HttpServlet servlet = createServlet(define);
 				servlet.init(config);
 				servlets.put(define.getServletName(), servlet);
 				servletContext.addServlet(define.getServletName(), servlet);
@@ -84,14 +109,13 @@ public class ServletEngine {
 				e.printStackTrace();
 			}
 		}
-		
+
 		List<ServletMapping> mappings = webapp.getServletMapping();
 		for (ServletMapping mapping : mappings) {
 			ServletUrl servletUrl = getServletUrl(mapping);
-			//@SuppressWarnings("unused")
-			//Servlet servlet = servlets.get(mapping.getServletName());
-			//servlet.setServletMapping(mapping);
-			servletMappings.put(mapping.getServletName(), servletUrl);
+			HttpServlet servlet = servlets.get(mapping.getServletName());
+			servletUrl.setServlet(servlet);
+			matcher.register(mapping.getUrlPattern(), servletUrl);
 		}
 		factory = new HttpServletObjectFactory(servletContext);
 	}
@@ -111,9 +135,9 @@ public class ServletEngine {
 		return config;
 	}
 	
-	protected Servlet createServlet(ServletDefine define) throws ServletException {
+	protected HttpServlet createServlet(ServletDefine define) throws ServletException {
 		Class<?> servletClass = ClassUtils.forName(define.getServletClass());
-		Servlet servlet = (Servlet)	ClassUtils.newInstance(servletClass);
+		HttpServlet servlet = (HttpServlet)	ClassUtils.newInstance(servletClass);
 		return servlet;
 	}
 	
@@ -123,11 +147,4 @@ public class ServletEngine {
 		servletUrl.setServletName(mapping.getServletName());
 		return servletUrl;
 	}
-	
-    String normalizePattern(String p) {
-        if (StringUtils.isNotEmpty(p) && !p.startsWith("/")
-        		&& !p.startsWith("*"))
-            return "/" + p;
-        return p;
-    }
 }

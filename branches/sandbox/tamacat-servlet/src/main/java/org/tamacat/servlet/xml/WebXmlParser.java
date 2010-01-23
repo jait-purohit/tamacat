@@ -1,6 +1,8 @@
 package org.tamacat.servlet.xml;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -33,7 +35,8 @@ public class WebXmlParser {
 			loadDisplayName();
 			loadDescription();
 			loadContextParames();
-			loadServlet();
+			loadServlets();
+			loadServletMappings();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -59,18 +62,18 @@ public class WebXmlParser {
 		webApp.setContextParams(params);
 	}
 	
-	void loadServlet() throws XPathExpressionException {
+	void loadServlets() throws XPathExpressionException {
 		XPathExpression expr = xpath.compile("//web-app/servlet/node()");
 		NodeList nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
-		ServletDefine servletDefine = getServletDefine(nodes);
-		webApp.getServlets().add(servletDefine);
+		List<ServletDefine> defines = getServletDefines(nodes);
+		webApp.setServlets(defines);
 	}
 	
-	void loadServletMapping() throws XPathExpressionException {
+	void loadServletMappings() throws XPathExpressionException {
 		XPathExpression expr = xpath.compile("//web-app/servlet-mapping/node()");
 		NodeList nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
-		ServletMapping mapping = getServletMapping(nodes);
-		webApp.addServletMapping(mapping);
+		List<ServletMapping> mappings = getServletMappings(nodes);
+		webApp.setServletMappings(mappings);
 	}
 	
 	Map<String,String> getParams(NodeList nodes) {
@@ -92,42 +95,51 @@ public class WebXmlParser {
 		return params;
 	}
 	
-	ServletDefine getServletDefine(NodeList nodes) {
-		ServletDefine servletDefine = new ServletDefine();
+	List<ServletDefine> getServletDefines(NodeList nodes) {
+		List<ServletDefine> defines = new ArrayList<ServletDefine>();
+		ServletDefine define = null;
 		for (int i=0; i<nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			String tagName = node.getNodeName();
 			if ("servlet-name".equals(tagName)) {
+				if (define != null) {
+					defines.add(define);
+				}
+				define = new ServletDefine();
 				String servletName = node.getTextContent();
-				servletDefine.setServletName(servletName);
-				
+				define.setServletName(servletName);
 			} else if ("servlet-class".equals(tagName)) {
 				String servletClass = node.getTextContent();
-				servletDefine.setServletClass(servletClass);
+				define.setServletClass(servletClass);
 			} else if ("init-param".equals(tagName)) {
 				NodeList nlist = node.getChildNodes();
 				Map<String,String> params = getParams(nlist);
-				servletDefine.setInitParams(params);
+				define.setInitParams(params);
 			}
 		}
-		return servletDefine;
+		if (define != null) {
+			defines.add(define);
+		}
+		return defines;
 	}
 	
-	ServletMapping getServletMapping(NodeList nodes) {
-		ServletMapping mapping = new ServletMapping();
+	List<ServletMapping> getServletMappings(NodeList nodes) {
+		List<ServletMapping> mappings = new ArrayList<ServletMapping>();
+		String servletName = null;
 		for (int i=0; i<nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			String tagName = node.getNodeName();
 			if ("servlet-name".equals(tagName)) {
-				String servletName = node.getTextContent();
-				mapping.setServletName(servletName);
-				
+				servletName = node.getTextContent();
 			} else if ("url-pattern".equals(tagName)) {
 				String urlPattern = node.getTextContent();
+				ServletMapping mapping = new ServletMapping();
+				mapping.setServletName(servletName);
 				mapping.setUrlPattern(urlPattern);
+				mappings.add(mapping);
 			}
 		}
-		return mapping;
+		return mappings;
 	}
 	
 	static class WebXml {

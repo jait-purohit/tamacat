@@ -55,7 +55,7 @@ public class WebApp {
 		return servletMappings;
 	}
 	
-	public void addServletMapping(ServletMapping servletMapping) {
-		this.servletMappings.add(servletMapping);
+	public void setServletMappings(List<ServletMapping> servletMappings) {
+		this.servletMappings = servletMappings;
 	}
 }
