@@ -15,15 +15,15 @@ public class ServletConfigImpl implements ServletConfig {
 
 	private Map<String,String> initParams = new LinkedHashMap<String,String>();
 
-	ServletConfigImpl(ServletContext context) {
+	public ServletConfigImpl(ServletContext context) {
 		this.context = context;
 	}
 
-	void setServletName(String servletName) {
+	public void setServletName(String servletName) {
 		this.servletName = servletName;
 	}
 	
-	void setInitParams(Map<String,String> initParams) {
+	public void setInitParams(Map<String,String> initParams) {
 		this.initParams = initParams;
 	}
 	

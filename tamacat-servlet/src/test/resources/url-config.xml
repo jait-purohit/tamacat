@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <service-config>
   <service host="http://localhost">
-    <url path="/" type="normal" handler="DefaultHandler" />
     <url path="/test/" type="normal" handler="ServletHandler" />
-    <url path="/docs/" type="normal" handler="DocsHandler" />
   </service>
 </service-config>

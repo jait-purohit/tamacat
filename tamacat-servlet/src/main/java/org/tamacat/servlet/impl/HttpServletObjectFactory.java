@@ -14,7 +14,7 @@ public class HttpServletObjectFactory {
 	
 	private HttpCoreServletContext servletContext;
 	
-	HttpServletObjectFactory(HttpCoreServletContext servletContext) {
+	public HttpServletObjectFactory(HttpCoreServletContext servletContext) {
 		this.servletContext = servletContext;
 	}
 	

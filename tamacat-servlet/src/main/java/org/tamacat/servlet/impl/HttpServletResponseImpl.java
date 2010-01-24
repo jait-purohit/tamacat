@@ -1,7 +1,10 @@
 package org.tamacat.servlet.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
@@ -10,6 +13,10 @@ import javax.servlet.http.Cookie;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpServerConnection;
+import org.apache.http.entity.ContentProducer;
+import org.apache.http.entity.EntityTemplate;
+import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.exception.HttpException;
@@ -24,7 +31,7 @@ public class HttpServletResponseImpl implements HttpCoreServletResponse {
 	protected HttpCoreServletContext servletContext;
 	protected HttpResponse response;
 	protected HttpContext context;
-	
+
 	protected ServletOutputStream out;
 	protected PrintWriter pw;
 	protected HttpEntity entity;
@@ -32,7 +39,7 @@ public class HttpServletResponseImpl implements HttpCoreServletResponse {
 	private String characterEncoding;
 	private int bufferSize;
 	private Locale locale;
-	
+
 	HttpServletResponseImpl(HttpCoreServletContext servletContext,
 			HttpResponse response, HttpContext context) {
 		this.servletContext = servletContext;
@@ -40,21 +47,27 @@ public class HttpServletResponseImpl implements HttpCoreServletResponse {
 		this.context = context;
 		this.entity = response.getEntity();
 	}
+
+	HttpServerConnection getHttpServerConnection() {
+    	HttpServerConnection conn = (HttpServerConnection)
+		context.getAttribute(ExecutionContext.HTTP_CONNECTION);
+    	return conn;
+	}
 	
 	@Override
 	public void addCookie(Cookie cookie) {
-		if (cookie != null && 
-			(cookie.getSecure()== false || cookie.getSecure() )) {
+		if (cookie != null
+				&& (cookie.getSecure() == false || cookie.getSecure())) {
 			String name = cookie.getName();
-			
+
 			String value = cookie.getValue();
 			String domain = cookie.getDomain();
 			String path = cookie.getPath();
 			int maxAge = cookie.getMaxAge();
-			
+
 			StringBuilder sb = new StringBuilder();
 			sb.append(name + "=" + (value != null ? value : ""));
-			
+
 			if (maxAge >= 0) {
 				sb.append("; expires=" + (System.currentTimeMillis() + maxAge));
 			}
@@ -166,6 +179,9 @@ public class HttpServletResponseImpl implements HttpCoreServletResponse {
 
 	@Override
 	public String getCharacterEncoding() {
+		if (characterEncoding == null) {
+			characterEncoding = "ISO_8859_1";
+		}
 		return characterEncoding;
 	}
 
@@ -182,19 +198,44 @@ public class HttpServletResponseImpl implements HttpCoreServletResponse {
 
 	@Override
 	public ServletOutputStream getOutputStream() throws IOException {
-		if (pw != null) throw new IllegalStateException();
+		if (pw != null) {
+			throw new IllegalStateException();
+		}
 		if (out == null) {
-			out = new ServletOutputStreamImpl(entity.getContent(), getBufferSize());
+			final ByteArrayOutputStream o = new ByteArrayOutputStream();
+			ContentProducer producer = new ContentProducer() {
+				public void writeTo(OutputStream out) throws IOException {
+					out.write(o.toByteArray());
+				}
+			};
+			HttpEntity entity = new EntityTemplate(producer);
+			response.setEntity(entity);
+			this.out = new ServletOutputStream() {
+				@Override
+				public void write(int b) throws IOException {
+					o.write((int)b);
+				}
+			};
 		}
 		return out;
 	}
 
 	@Override
 	public PrintWriter getWriter() throws IOException {
-		if (out != null) throw new IllegalStateException();
+		if (out != null) {
+			throw new IllegalStateException();
+		}
 		if (pw == null) {
-			pw = new PrintWriter(
-				new ServletOutputStreamImpl(entity.getContent(), getBufferSize()));
+			final PrintWriterImpl writer = new PrintWriterImpl(
+					new StringWriter());
+			ContentProducer producer = new ContentProducer() {
+				public void writeTo(OutputStream out) throws IOException {
+					out.write(writer.getWriter().toString().getBytes(getCharacterEncoding()));
+				}
+			};
+			HttpEntity entity = new EntityTemplate(producer);
+			response.setEntity(entity);
+			pw = writer;
 		}
 		return pw;
 	}

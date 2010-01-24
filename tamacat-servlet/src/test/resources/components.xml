@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+  <bean id="ServletHandler"
+     class="org.tamacat.servlet.ServletHttpHandler" singleton="false">
+    <property name="docsRoot">
+      <value>${server.home}/src/test/resources/test</value>
+    </property>
+  </bean>
+
+  <bean id="server" class="org.tamacat.httpd.core.HttpEngine" />
+  
+</beans>
