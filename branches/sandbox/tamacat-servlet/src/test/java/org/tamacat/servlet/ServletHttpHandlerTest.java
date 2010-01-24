@@ -1,4 +1,4 @@
-package org.tamacat.servlet.impl;
+package org.tamacat.servlet;
 
 import static org.junit.Assert.*;
 
@@ -14,6 +14,7 @@ import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfig;
 import org.tamacat.httpd.config.ServiceConfigXmlParser;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.servlet.ServletHttpHandler;
 
 public class ServletHttpHandlerTest {
 

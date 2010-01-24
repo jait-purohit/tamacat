@@ -41,7 +41,7 @@ public class ServletContextImpl implements HttpCoreServletContext {
 	private String servletContextName;
 	private String serverInfo;
 	
-	ServletContextImpl(String contextRoot, ServiceUrl serviceUrl) {
+	public ServletContextImpl(String contextRoot, ServiceUrl serviceUrl) {
 		this.contextRoot = contextRoot;
 		this.serviceUrl = serviceUrl;
 	}

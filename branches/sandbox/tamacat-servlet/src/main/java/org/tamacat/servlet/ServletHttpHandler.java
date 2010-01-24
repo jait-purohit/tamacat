@@ -1,6 +1,8 @@
-package org.tamacat.servlet.impl;
+package org.tamacat.servlet;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,31 +12,31 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import org.apache.http.HttpException;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.UriPatternMatcher;
 import org.tamacat.httpd.config.ServiceUrl;
-import org.tamacat.httpd.core.HttpHandler;
+import org.tamacat.httpd.core.AbstractHttpHandler;
 import org.tamacat.httpd.exception.HttpStatus;
 import org.tamacat.httpd.exception.NotFoundException;
-import org.tamacat.httpd.filter.RequestFilter;
-import org.tamacat.servlet.HttpCoreServletContext;
-import org.tamacat.servlet.HttpCoreServletRequest;
-import org.tamacat.servlet.HttpCoreServletResponse;
+import org.tamacat.servlet.impl.HttpServletObjectFactory;
+import org.tamacat.servlet.impl.ServletConfigImpl;
+import org.tamacat.servlet.impl.ServletContextImpl;
+import org.tamacat.servlet.impl.ServletUrl;
 import org.tamacat.servlet.xml.ServletDefine;
 import org.tamacat.servlet.xml.ServletMapping;
 import org.tamacat.servlet.xml.WebApp;
 import org.tamacat.servlet.xml.WebXmlParser;
 import org.tamacat.util.ClassUtils;
 
-public class ServletHttpHandler implements HttpHandler {
+public class ServletHttpHandler extends AbstractHttpHandler {
 
 	static final String WEB_XML_PATH = "WEB-INF/web.xml";
 	
-	private String path;
-	private ServiceUrl serviceUrl;
 	private HttpCoreServletContext servletContext;
 	private HttpServletObjectFactory factory;
 
@@ -42,14 +44,6 @@ public class ServletHttpHandler implements HttpHandler {
 	private UriPatternMatcher matcher = new UriPatternMatcher();
 	
 	public ServletHttpHandler() {}
-	
-	public ServletHttpHandler(String path) {
-		this.path = path;
-	}
-	
-	@Override
-	public void setRequestFilter(RequestFilter filter) {
-	}
 
 	@Override
 	public void setServiceUrl(ServiceUrl serviceUrl) {
@@ -58,18 +52,24 @@ public class ServletHttpHandler implements HttpHandler {
 	}
 	
 	@Override
-	public void handle(HttpRequest request, HttpResponse response,
-			HttpContext context) throws HttpException, IOException {
+	public void doRequest(HttpRequest request, HttpResponse response, HttpContext context) {
 		HttpServlet servlet = getServlet(request.getRequestLine().getUri());
 		if (servlet != null) {
 			HttpCoreServletRequest req
 				= factory.createRequest(servlet, request, context);
-			HttpCoreServletResponse res = null;
+			HttpCoreServletResponse res
+				= factory.createResponse(response, context);
 			try {
 				servlet.service(req, res);
 			} catch (ServletException e) {
 				throw new org.tamacat.httpd.exception.HttpException(
 						HttpStatus.SC_INTERNAL_SERVER_ERROR, e);
+			} catch (IOException e) {
+				throw new org.tamacat.httpd.exception.HttpException(
+						HttpStatus.SC_INTERNAL_SERVER_ERROR, e);
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+				throw e;
 			}
 		} else {
 			throw new NotFoundException();
@@ -77,11 +77,11 @@ public class ServletHttpHandler implements HttpHandler {
 	}
 
 	void init() {
-		if (path == null) {
-			this.path = serviceUrl.getPath()
-				.replaceFirst("^/","").replaceFirst("/$", "");
+		if (docsRoot == null) {
+			setDocsRoot(serviceUrl.getPath()
+				.replaceFirst("^/","").replaceFirst("/$", ""));
 		}
-		String xml = this.path + "/" + WEB_XML_PATH;
+		String xml = docsRoot + "/" + WEB_XML_PATH;
 		WebApp webapp = new WebXmlParser().parse(xml);
 		createServletInstances(webapp);
 	}
@@ -121,7 +121,7 @@ public class ServletHttpHandler implements HttpHandler {
 	}
 	
 	protected HttpCoreServletContext createServletContext(WebApp webapp) {
-		HttpCoreServletContext servletContext = new ServletContextImpl(path, serviceUrl);
+		HttpCoreServletContext servletContext = new ServletContextImpl(docsRoot, serviceUrl);
 		servletContext.setServletContextName(webapp.getDisplayName());
 		String serverInfo = serviceUrl.getServerConfig().getParam("ServerName");
 		servletContext.setServerInfo(serverInfo);
@@ -146,5 +146,22 @@ public class ServletHttpHandler implements HttpHandler {
 		servletUrl.setUrlPattern(mapping.getUrlPattern());
 		servletUrl.setServletName(mapping.getServletName());
 		return servletUrl;
+	}
+
+	@Override
+	protected HttpEntity getEntity(String html) {
+		StringEntity body = null;
+		try {
+			body = new StringEntity(html);
+			body.setContentType(DEFAULT_CONTENT_TYPE);
+		} catch (UnsupportedEncodingException e) {
+		}
+        return body;
+	}
+	
+	@Override
+	protected HttpEntity getFileEntity(File file) {
+		FileEntity body = new FileEntity(file, getContentType(file));
+        return body;
 	}
 }

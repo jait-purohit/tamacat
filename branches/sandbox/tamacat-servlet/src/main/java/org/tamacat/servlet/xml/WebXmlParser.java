@@ -1,5 +1,6 @@
 package org.tamacat.servlet.xml;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,8 +22,8 @@ import org.w3c.dom.NodeList;
 public class WebXmlParser {
 
 	private WebApp webApp = new WebApp();
-	Document document;
-	XPath xpath;
+	private Document document;
+	private XPath xpath;
 	
 	public WebXmlParser() {}
 	
@@ -30,7 +31,12 @@ public class WebXmlParser {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			document = builder.parse(ClassUtils.getURL(path).openStream());
+			URL url = ClassUtils.getURL(path);
+			if (url == null) {
+				url = new URL("file:" + path);
+			}
+			
+			document = builder.parse(url.openStream());
 			xpath = XPathFactory.newInstance().newXPath();
 			loadDisplayName();
 			loadDescription();
