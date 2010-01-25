@@ -67,22 +67,18 @@ public abstract class ClassUtils {
     @SuppressWarnings("unchecked")
     static
       public <T> T newInstance(Class<T> type, Object... args) {
-        try {
-            T instance = null;
-            Constructor<?>[] cons = type.getConstructors();
-            for (Constructor<?> c : cons) {
-                Class<?>[] types = c.getParameterTypes();
-                if (types.length == args.length) {
-                    try {
-                        instance = (T) c.newInstance(args);
-                        break;
-                    } catch (Exception e) {}
-                }
+        T instance = null;
+        Constructor<?>[] cons = type.getConstructors();
+        for (Constructor<?> c : cons) {
+            Class<?>[] types = c.getParameterTypes();
+            if (types.length == args.length) {
+                try {
+                    instance = (T) c.newInstance(args);
+                    break;
+                } catch (Exception e) {}
             }
-            return instance;
-        } catch (Exception e) {
-            return null;//throw new ClassUtilsException(e);
         }
+        return instance;
     }
     
     static

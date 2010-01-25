@@ -101,7 +101,7 @@ public class PropertyValueHandler {
             return Character.TYPE;
         }
         public Character convert(String param) {
-            return new Character(param.charAt(0));
+            return Character.valueOf(param.charAt(0));
         }
     }
 

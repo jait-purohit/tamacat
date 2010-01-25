@@ -13,7 +13,7 @@ public class IOUtils {
 	static
 	  public void close(Object target) {
 		if (target != null) {
-			if (target instanceof Cloneable) {
+			if (target instanceof Closeable) {
 				close((Closeable)target);
 			} else {
 				try {
