@@ -55,6 +55,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 			File home = new File(serverHome);
 			serverHome = home.getCanonicalPath();
 		} catch (Exception e) {
+			LOG.error(e);
 		}
     }
     

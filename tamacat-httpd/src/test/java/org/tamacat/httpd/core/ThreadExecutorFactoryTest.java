@@ -50,7 +50,7 @@ public class ThreadExecutorFactoryTest {
 		executor.shutdown();
 	}
 	
-	class CallbackImpl implements Callable<Long> {
+	static class CallbackImpl implements Callable<Long> {
 
 		private long time;
 		public CallbackImpl() {

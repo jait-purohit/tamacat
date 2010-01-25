@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.tamacat</groupId>
   <artifactId>tamacat-httpd</artifactId>
-  <version>0.5</version>
+  <version>0.6</version>
   <packaging>jar</packaging>
   <name>tamacat-httpd components</name>
   <url>http://code.google.com/p/tamacat/</url>
@@ -27,13 +27,13 @@
     <dependency>
       <groupId>org.tamacat</groupId>
       <artifactId>tamacat-core</artifactId>
-      <version>0.5</version>
+      <version>0.6</version>
     </dependency>
     
     <dependency>
       <groupId>org.apache.velocity</groupId>
       <artifactId>velocity</artifactId>
-      <version>1.6.2</version>
+      <version>1.6.3</version>
     </dependency>
     
     <dependency>
@@ -46,7 +46,7 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.0</version>
+      <version>4.0.1</version>
       <scope>compile</scope>
     </dependency>
             
