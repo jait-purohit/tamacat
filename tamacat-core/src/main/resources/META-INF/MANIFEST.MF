@@ -1,8 +1,8 @@
 Implementation-Title: tamacat-core(DI Container)
-Implementation-Version: 0.5
+Implementation-Version: 0.6
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: tamacat-core
 Bundle-Name: tamacat-core
 Bundle-Vendor: TAMACAT.ORG
-Export-Package: org.tamacat;version=0.5
-Bundle-Version: 0.5
+Export-Package: org.tamacat;version=0.6
+Bundle-Version: 0.6
