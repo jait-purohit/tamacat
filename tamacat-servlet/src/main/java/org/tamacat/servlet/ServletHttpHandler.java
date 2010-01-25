@@ -53,10 +53,11 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 	
 	@Override
 	public void doRequest(HttpRequest request, HttpResponse response, HttpContext context) {
-		HttpServlet servlet = getServlet(request.getRequestLine().getUri());
-		if (servlet != null) {
+		ServletUrl servletUrl = getServletUrl(request.getRequestLine().getUri());
+		if (servletUrl != null) {
+			HttpServlet servlet = servletUrl.getServlet();
 			HttpCoreServletRequest req
-				= factory.createRequest(servlet, request, context);
+				= factory.createRequest(servletUrl, request, context);
 			HttpCoreServletResponse res
 				= factory.createResponse(response, context);
 			try {
@@ -86,9 +87,9 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 		createServletInstances(webapp);
 	}
 	
-	protected HttpServlet getServlet(String path) {
+	protected ServletUrl getServletUrl(String path) {
 		ServletUrl url = (ServletUrl) matcher.lookup(path);
-		return url != null ? url.getServlet() : null;
+		return url;
 	}
 	
 	protected HttpServlet getServletFromName(String name) {

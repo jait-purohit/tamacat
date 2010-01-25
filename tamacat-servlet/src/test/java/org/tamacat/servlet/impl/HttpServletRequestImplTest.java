@@ -49,9 +49,14 @@ public class HttpServletRequestImplTest {
 		ServletContextImpl servletContext = new ServletContextImpl(
 				System.getProperty("user.dir")
 				+ "/src/test/resources/test", serviceUrl);
+		
+		ServletUrl servletUrl = new ServletUrl();
+		servletUrl.setServlet(new TestServlet());
+		servletUrl.setUrlPattern("/index.html");
+		servletUrl.setServletName("TestServlet");
 		request = (HttpServletRequestImpl)
 			new HttpServletObjectFactory(servletContext)
-					.createRequest(new TestServlet(), req, context);
+					.createRequest(servletUrl, req, context);
 	}
 
 	@After
@@ -65,7 +70,7 @@ public class HttpServletRequestImplTest {
 
 	@Test
 	public void testGetContextPath() {
-		assertEquals("/test/", request.getContextPath());
+		assertEquals("/test", request.getContextPath());
 	}
 
 	@Test
@@ -185,7 +190,7 @@ public class HttpServletRequestImplTest {
 
 	@Test
 	public void testGetServletPath() {
-		assertEquals("index.html", request.getServletPath());
+		assertEquals("/index.html", request.getServletPath());
 	}
 
 	@Test

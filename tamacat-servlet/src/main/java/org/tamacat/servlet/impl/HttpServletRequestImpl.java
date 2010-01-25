@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -61,18 +60,28 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 	private int serverPort = -1;
 	private String sessionId;
 	private boolean isRequestedSessionIdFromCookie;
-	private Servlet callerServlet;
+	private ServletUrl servletUrl;
 	private Principal principal;
 	
 	public HttpServletRequestImpl(
 			HttpCoreServletContext servletContext,
-			Servlet callerServlet,
+			ServletUrl servletUrl,
 			HttpRequest request, HttpContext context) {
 		this.servletContext = servletContext;
-		this.callerServlet = callerServlet;
+		this.servletUrl = servletUrl;
 		this.request = request;
 		this.context = context;
 		RequestUtils.setParameters(request, context);
+	}
+	
+	@Override
+	public HttpRequest getHttpRequest() {
+		return request;
+	}
+	
+	@Override
+	public HttpContext getHttpContext() {
+		return context;
 	}
 	
 	@Override
@@ -110,7 +119,7 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
 	@Override
 	public String getContextPath() {
-		return servletContext.getServiceUrl().getPath();
+		return servletContext.getServiceUrl().getPath().replaceFirst("/$", "");
 	}
 
 	@Override
@@ -242,8 +251,7 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 
 	@Override
 	public String getServletPath() {
-		String name = callerServlet.getServletConfig().getServletName();
-		return name;
+		return servletUrl.getServletPath(getRequestURI());
 	}
 
 	@Override

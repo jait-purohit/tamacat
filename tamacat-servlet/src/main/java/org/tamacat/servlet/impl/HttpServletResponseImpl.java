@@ -48,6 +48,15 @@ public class HttpServletResponseImpl implements HttpCoreServletResponse {
 		this.entity = response.getEntity();
 	}
 
+	@Override
+	public HttpResponse getHttpResponse() {
+		return response;
+	}
+	
+	@Override
+	public HttpContext getHttpContext() {
+		return context;
+	}
 	HttpServerConnection getHttpServerConnection() {
     	HttpServerConnection conn = (HttpServerConnection)
 		context.getAttribute(ExecutionContext.HTTP_CONNECTION);

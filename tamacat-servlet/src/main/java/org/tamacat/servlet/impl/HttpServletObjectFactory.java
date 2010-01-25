@@ -1,7 +1,5 @@
 package org.tamacat.servlet.impl;
 
-import javax.servlet.Servlet;
-
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
@@ -22,8 +20,8 @@ public class HttpServletObjectFactory {
 		return servletContext;
 	}
 	
-	public HttpCoreServletRequest createRequest(Servlet caller, HttpRequest request, HttpContext context) {
-		return new HttpServletRequestImpl(servletContext, caller, request, context);
+	public HttpCoreServletRequest createRequest(ServletUrl servletUrl, HttpRequest request, HttpContext context) {
+		return new HttpServletRequestImpl(servletContext, servletUrl, request, context);
 	}
 	
 	public HttpCoreServletResponse createResponse(HttpResponse response, HttpContext context) {

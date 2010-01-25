@@ -15,6 +15,7 @@ import org.tamacat.httpd.config.ServiceConfig;
 import org.tamacat.httpd.config.ServiceConfigXmlParser;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.servlet.ServletHttpHandler;
+import org.tamacat.servlet.impl.ServletUrl;
 
 public class ServletHttpHandlerTest {
 
@@ -59,16 +60,16 @@ public class ServletHttpHandlerTest {
 		ServletHttpHandler engine = new ServletHttpHandler(); 
 		engine.setServiceUrl(serviceUrl);
 
-		HttpServlet servlet = engine.getServlet("/test1/test.html");
+		HttpServlet servlet = engine.getServletUrl("/test1/test.html").getServlet();
 		assertNotNull(servlet);
 		
-		HttpServlet servlet2 = engine.getServlet("/test2/test.html");
+		HttpServlet servlet2 = engine.getServletUrl("/test2/test.html").getServlet();
 		assertNotNull(servlet2);
 		
-		HttpServlet servlet3 = engine.getServlet("/test/test.do");
+		HttpServlet servlet3 = engine.getServletUrl("/test/test.do").getServlet();
 		assertNotNull(servlet3);
 		
-		HttpServlet nullServlet = engine.getServlet("/test/");
+		ServletUrl nullServlet = engine.getServletUrl("/test/");
 		assertNull(nullServlet);
 	}
 }

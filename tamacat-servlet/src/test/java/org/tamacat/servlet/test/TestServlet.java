@@ -22,7 +22,7 @@ public class TestServlet extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 		
 		String id = request.getParameter("id");
-		System.out.println("execute doGet() id=" + id);
+		//System.out.println("execute doGet() id=" + id);
 
 		String method = request.getParameter("method");
 		if (StringUtils.isEmpty(method)) method = "get";
@@ -43,6 +43,7 @@ public class TestServlet extends HttpServlet {
 			HttpServletRequest request, HttpServletResponse response) 
 			throws IOException, ServletException {
 		String id = request.getParameter("id");
+		//System.out.println("execute doPost() id=" + id);
 
 		ServletOutputStream out = response.getOutputStream();
 		out.println("<html><body>");

@@ -47,8 +47,13 @@ public class HttpServletResponseImplTest {
 		ServiceConfigXmlParser parser = new ServiceConfigXmlParser(new ServerConfig());
 		serviceUrl = parser.getServiceConfig().getServiceUrl("/test/");
 		servletContext = new ServletContextImpl("test", serviceUrl);
+		
+		ServletUrl servletUrl = new ServletUrl();
+		servletUrl.setServlet(new TestServlet());
+		servletUrl.setUrlPattern("/index.html");
+		servletUrl.setServletName("TestServlet");
 		request = new HttpServletObjectFactory(servletContext)
-			.createRequest(new TestServlet(), req, context);
+			.createRequest(servletUrl, req, context);
 		response = new HttpServletObjectFactory(servletContext).createResponse(res, context);
 	}
 
