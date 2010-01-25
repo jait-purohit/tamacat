@@ -18,7 +18,7 @@ class DefaultSession implements Session, Serializable {
 	private String id;
 	private HashMap<String, Object> attributes;
 	private int maxInactiveInterval; // = 30 * 60 * 1000; //30min.
-	private SessionListener listener;
+	private transient SessionListener listener;
 	
 	public DefaultSession(SessionListener listener) {
 		this.creationDate = new Date();

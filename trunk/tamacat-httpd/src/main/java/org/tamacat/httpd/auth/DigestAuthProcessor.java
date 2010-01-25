@@ -57,7 +57,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor implements Reques
 			if (authComponent != null) {
 				AuthUser user = authComponent.getAuthUser(digest.getUsername(),	context);
 				String hashedPassword = null;
-				if (user == null) new UnauthorizedException();
+				if (user == null) throw new UnauthorizedException();
 				if (user.isEncrypted() == false) {
 					//A1 = username:realm:password
 					String a1 = user.getAuthUsername() + ":"
