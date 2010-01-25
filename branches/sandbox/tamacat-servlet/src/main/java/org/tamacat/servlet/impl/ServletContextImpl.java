@@ -169,7 +169,8 @@ public class ServletContextImpl implements HttpCoreServletContext {
 
 	@Override
 	public RequestDispatcher getRequestDispatcher(String path) {
-		RequestDispatcher rd = new RequestDispatcherImpl(path);
+		RequestDispatcherImpl rd = new RequestDispatcherImpl(path);
+		rd.setServiceUrl(serviceUrl);
 		return rd;
 	}
 
