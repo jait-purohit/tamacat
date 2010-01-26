@@ -25,7 +25,34 @@ public class ClassUtilsTest extends TestCase {
         super.setUp();
     }
 
+    @Test
+    public void testGetDefaultClassLoader() {
+    	assertNotNull(ClassUtils.getDefaultClassLoader());
+    	assertEquals(
+    		Thread.currentThread().getContextClassLoader(),
+    		ClassUtils.getDefaultClassLoader()
+    	);
+    }
+    
+    @Test
+    public void testGetStream() {
+    	assertNotNull(ClassUtils.getStream(""));
+    }
+    
+    @Test
+    public void testGetURL() {
+    	assertNotNull(ClassUtils.getURL(""));
+    }
+    
+    @Test
+    public void testGetURLAndClassLoader() {
+    	assertNotNull(ClassUtils.getURL("", Thread.currentThread().getContextClassLoader()));
+    }
+    
+    @Test
     public void testNewInstance() {
+    	assertEquals("", ClassUtils.newInstance(String.class));
+    	assertEquals(null, ClassUtils.newInstance(ClassUtils.class));
     }
 
     public void testForName() {
@@ -37,6 +64,9 @@ public class ClassUtilsTest extends TestCase {
         Method m = ClassUtils.getMethod(type, "setCore", Core.class);
         assertNotNull(m);
         assertEquals("setCore", m.getName());
+        
+        Method m2 = ClassUtils.getMethod(type, "", Core.class);
+        assertNull(m2);
     }
 
 
@@ -48,19 +78,50 @@ public class ClassUtilsTest extends TestCase {
         assertEquals("createCore", m.getName());
     }
 
+    @Test
+    public void testGetDeclaredMethod() {
+        Class<?> type = SampleCore.class;
+        Method m = ClassUtils.getDeclaredMethod(type, "setCore", Core.class);
+        assertNotNull(m);
+        assertEquals("setCore", m.getName());
+        
+        Method m2 = ClassUtils.getDeclaredMethod(type, "", Core.class);
+        assertNull(m2);
+    }
+    
     public void testInvoke() {
     }
 
     @Test
+    public void testGetAdderMethodName() {
+        assertEquals("addCoreName", ClassUtils.getAdderMethodName("coreName"));
+        assertEquals("addName", ClassUtils.getAdderMethodName("name"));
+        
+        assertEquals("add", ClassUtils.getAdderMethodName(""));
+    }
+    
+    @Test
+    public void testGetRemoveMethodName() {
+        assertEquals("removeCoreName", ClassUtils.getRemoveMethodName("coreName"));
+        assertEquals("removeName", ClassUtils.getRemoveMethodName("name"));
+        
+        assertEquals("remove", ClassUtils.getRemoveMethodName(""));
+    }
+    
+    @Test
     public void testGetSetterMethodName() {
         assertEquals("setCoreName", ClassUtils.getSetterMethodName("coreName"));
         assertEquals("setName", ClassUtils.getSetterMethodName("name"));
+        
+        assertEquals("set", ClassUtils.getSetterMethodName(""));
     }
     
     @Test
     public void testGetGetterMethodName() {
         assertEquals("getCoreName", ClassUtils.getGetterMethodName("coreName"));
         assertEquals("getName", ClassUtils.getGetterMethodName("name"));
+        
+        assertEquals("get", ClassUtils.getGetterMethodName(""));
     }
     
     @Test
@@ -76,7 +137,7 @@ public class ClassUtilsTest extends TestCase {
     }
     
     @Test
-    public void testIsType() {
+    public void testIsTypeOf() {
     	assertTrue(ClassUtils.isTypeOf(String.class, Object.class));
     	assertTrue(ClassUtils.isTypeOf(ArrayList.class, List.class));
     	assertTrue(ClassUtils.isTypeOf(ArrayList.class, ArrayList.class));
@@ -85,6 +146,10 @@ public class ClassUtilsTest extends TestCase {
     	
     	assertFalse(ClassUtils.isTypeOf(List.class, ArrayList.class));
     	assertFalse(ClassUtils.isTypeOf(HashMap.class, List.class));
+    
+    	assertFalse(ClassUtils.isTypeOf(null, List.class));
+    	assertFalse(ClassUtils.isTypeOf(HashMap.class, null));
+    	assertTrue(ClassUtils.isTypeOf(null, null));
     }
     
     @Test
@@ -96,7 +161,7 @@ public class ClassUtilsTest extends TestCase {
         		"java.util.ArrayList<java.lang.String>",
             	type.toString());
     	}
-
+    	assertEquals(0, ClassUtils.getGenericType(Object.class).length);
     }
     
     @Test
@@ -105,6 +170,7 @@ public class ClassUtilsTest extends TestCase {
     	if(type != null) {
     		assertEquals(String.class, type.getActualTypeArguments()[0]);
     	}
+    	assertNull(ClassUtils.getParameterizedType(null));
     }
     
     @Test
@@ -134,5 +200,8 @@ public class ClassUtilsTest extends TestCase {
     static class StringList extends ArrayList<String> {
 		private static final long serialVersionUID = 1L;
 	}
-
+    
+    static class StringMap extends HashMap<String,String> {
+		private static final long serialVersionUID = 1L;
+	}
 }

@@ -275,6 +275,7 @@ public abstract class ClassUtils {
 
     static
       public String getCamelCaseName(String name) {
+    	if (name.length() <= 1) return name;
         return name.substring(0,1).toUpperCase() + name.substring(1, name.length());
     }
 
@@ -283,7 +284,7 @@ public abstract class ClassUtils {
         if (src == dist) {
             return true;
         } else {
-        	if (src != null) {
+        	if (src != null && dist != null) {
         		return dist.isAssignableFrom(src);
         	} else {
         		return false;
@@ -293,6 +294,7 @@ public abstract class ClassUtils {
     
     static
       public Type[] getGenericType(Class<?> target) {
+    	if (target == null) return new Type[0];
     	Type[] types = target.getGenericInterfaces();
     	if (types.length > 0) {
     		return types;

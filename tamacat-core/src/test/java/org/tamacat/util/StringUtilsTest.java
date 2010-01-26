@@ -45,6 +45,31 @@ public class StringUtilsTest {
     }
     
     @Test
+    public void testToLowerCase() {
+    	assertEquals("test", StringUtils.toLowerCase("TEST"));
+    	assertEquals("test", StringUtils.toLowerCase("test"));
+    	
+    	assertNull(StringUtils.toLowerCase(null));
+    }
+    
+    @Test
+    public void testToUpperCase() {
+    	assertEquals("TEST", StringUtils.toUpperCase("test"));
+    	assertEquals("TEST", StringUtils.toUpperCase("TEST"));
+    	
+    	assertNull(StringUtils.toUpperCase(null));
+    }
+    
+    @Test
+    public void testTrim() {
+    	assertEquals("test", StringUtils.trim(" test"));
+    	assertEquals("test", StringUtils.trim("test "));
+    	assertEquals("te st", StringUtils.trim("te st"));
+
+    	assertNull(StringUtils.trim(null));
+    }
+    
+    @Test
     public void testToStringArray() {
         Collection<String> collection = new ArrayList<String>();
         collection.add("1");
@@ -62,6 +87,9 @@ public class StringUtilsTest {
 
     @Test
     public void testParse() {
+    	assertEquals("100", StringUtils.parse("100", "123"));
+    	assertEquals("123", StringUtils.parse(null, "123"));
+    	
         assertEquals(100, StringUtils.parse("100", 123));
         assertEquals(200L, StringUtils.parse("200", 123L));
         assertEquals(100.00f, StringUtils.parse("100.00", 123.456f));
@@ -84,5 +112,40 @@ public class StringUtilsTest {
         
         assertEquals(null, StringUtils.parse(null, null));
         assertEquals(null, StringUtils.parse("TEST", null));
+    }
+    
+    @Test
+    public void testDecode() {
+    	assertEquals("test", StringUtils.decode("test", ""));
+    	assertEquals("test", StringUtils.decode("test", "UTF-8"));
+    	
+    	assertEquals("test", StringUtils.decode("test", "abc"));
+    	assertEquals(null, StringUtils.decode(null, null));
+    	assertEquals("", StringUtils.decode("", null));
+    }
+    
+    @Test
+    public void testEncode() {
+    	assertEquals("test", StringUtils.encode("test", ""));
+    	assertEquals("test", StringUtils.encode("test", "UTF-8"));
+    	
+    	assertEquals("test", StringUtils.encode("test", "abc"));
+    	assertEquals(null, StringUtils.encode(null, null));
+    	assertEquals("", StringUtils.encode("", null));
+    }
+    
+    @Test
+    public void testDump() {
+    	assertEquals("74657374", StringUtils.dump("test".getBytes()));
+
+    	assertEquals(null, StringUtils.dump(null));
+    	assertEquals("", StringUtils.dump("".getBytes()));
+    }
+    
+    @Test
+    public void testConstructor() {
+    	StringUtils util = new StringUtils() {
+		};
+		assertNotNull(util);
     }
 }
