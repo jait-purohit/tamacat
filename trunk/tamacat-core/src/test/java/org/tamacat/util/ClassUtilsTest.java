@@ -55,9 +55,50 @@ public class ClassUtilsTest extends TestCase {
     	assertEquals(null, ClassUtils.newInstance(ClassUtils.class));
     }
 
+    @Test
+    public void testNewInstanceClassAndObjectArgs() {
+    	assertEquals(null, ClassUtils.newInstance(String.class, new Class[]{String.class}, (Object[])null));
+    	assertEquals(null, ClassUtils.newInstance(ClassUtils.class, new Class[]{null}, (Object[])null));
+    	
+    	assertEquals("test", ClassUtils.newInstance(String.class, new Class[]{String.class}, "test"));
+    	assertEquals(null, ClassUtils.newInstance(String.class, new Class[]{String.class}, new Object()));
+    }
+    
+    @Test
+    public void testNewInstanceObjectArgs() {
+    	assertEquals("", ClassUtils.newInstance(String.class, (Object[])null));
+    	assertEquals(null, ClassUtils.newInstance(ClassUtils.class, (Object[])null));
+    	
+    	assertEquals("test", ClassUtils.newInstance(String.class, "test"));
+    	assertEquals(null, ClassUtils.newInstance(String.class, new Object()));
+    }
+    
+    @Test
     public void testForName() {
+    	assertEquals(String.class, ClassUtils.forName("java.lang.String"));
+    	assertEquals(null, ClassUtils.forName(null));
     }
 
+    @Test
+    public void testForNameClassLoader() {
+    	assertEquals(String.class, ClassUtils.forName("java.lang.String", Thread.currentThread().getContextClassLoader()));
+    	assertEquals(null, ClassUtils.forName(null, Thread.currentThread().getContextClassLoader()));
+    	assertEquals(null, ClassUtils.forName(null, null));
+    }
+    
+    @Test
+    public void testFindMethod() {
+        Class<?> type = SampleCore.class;
+        Method[] m = ClassUtils.findMethods(type, "setCore");
+        assertNotNull(m);
+        assertEquals("setCore", m[0].getName());
+        
+        assertNull(ClassUtils.findMethods(type, null));
+        assertNull(ClassUtils.findMethods(type, ""));
+        assertNull(ClassUtils.findMethods(null, null));
+        //assertNull(ClassUtils.findMethods(type, "abc"));
+    }
+    
     @Test
     public void testGetMethod() {
         Class<?> type = SampleCore.class;
