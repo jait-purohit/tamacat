@@ -67,6 +67,9 @@ public abstract class ClassUtils {
     @SuppressWarnings("unchecked")
     static
       public <T> T newInstance(Class<T> type, Object... args) {
+    	if (args == null) {
+    		return newInstance(type);
+    	}
         T instance = null;
         Constructor<?>[] cons = type.getConstructors();
         for (Constructor<?> c : cons) {
@@ -120,6 +123,9 @@ public abstract class ClassUtils {
 
     static
       public Method[] findMethods(Class<?> type, String methodName) {
+    	if (type == null || methodName == null || methodName.length() == 0) {
+    		return null;
+    	}
         try {
             Method[] methods = type.getMethods();
             HashSet<Method> findMethods = new HashSet<Method>();
