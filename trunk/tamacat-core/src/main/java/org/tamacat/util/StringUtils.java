@@ -117,6 +117,7 @@ public abstract class StringUtils {
     
     static
       public String dump(byte[] str) {
+    	if (str == null) return null;
     	StringBuilder data = new StringBuilder();
     	for(byte b : str) {
     		String hex = Integer.toHexString((int)b);
