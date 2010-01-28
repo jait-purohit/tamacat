@@ -105,19 +105,27 @@ public abstract class ClassUtils {
 
     static
       public <T> Method getMethod(Class<T> type, String methodName, Class<?>... params) {
-        try {
-            return type.getMethod(methodName, params);
-        } catch (NoSuchMethodException e) {
-        }
+    	if (type != null && methodName != null && methodName.length() > 0) {
+    		try {
+    			if (params.length > 0 && params[0] != null) {
+    				return type.getMethod(methodName, params);
+    			} else {
+    				return type.getMethod(methodName);
+    			}
+        	} catch (NoSuchMethodException e) {
+        	}
+    	}
         return null;
     }
 
     static
       public <T> Method getDeclaredMethod(Class<T> type, String methodName, Class<?>... params) {
-        try {
-            return type.getDeclaredMethod(methodName, params);
-        } catch (NoSuchMethodException e) {
-        }
+    	if (type != null && methodName != null && methodName.length() > 0) {
+    		try {
+    			return type.getDeclaredMethod(methodName, params);
+    		} catch (NoSuchMethodException e) {
+    		}
+    	}
         return null;
     }
 
@@ -134,7 +142,9 @@ public abstract class ClassUtils {
                     findMethods.add(method);
                 }
             }
-            return findMethods.toArray(new Method[findMethods.size()]);
+            if (findMethods.size() > 0) {
+            	return findMethods.toArray(new Method[findMethods.size()]);
+            }
         } catch (Exception e) {
         }
         return null;
@@ -142,6 +152,9 @@ public abstract class ClassUtils {
 
     static
       public Method[] findDeclaredMethods(Class<?> type, String methodName) {
+    	if (type == null || methodName == null || methodName.length() == 0) {
+    		return null;
+    	}
         try {
             Method[] methods = type.getDeclaredMethods();
             HashSet<Method> findMethods = new HashSet<Method>();
@@ -150,7 +163,9 @@ public abstract class ClassUtils {
                     findMethods.add(method);
                 }
             }
-            return findMethods.toArray(new Method[findMethods.size()]);
+            if (findMethods.size() > 0) {
+            	return findMethods.toArray(new Method[findMethods.size()]);
+            }
         } catch (Exception e) {
         }
         return null;
@@ -184,9 +199,12 @@ public abstract class ClassUtils {
 
     static
       public Method searchMethod(Method[] methods, String methodName, Class<?>... paramType) {
+        if (methods == null || methods.length == 0) return null;
         for (Method method : methods) {
             Class<?>[] m = method.getParameterTypes();
-            if (m.length == paramType.length) {
+            if (methods.length == 1 && m.length == 0) {
+            	return method;
+            } else if (m.length == paramType.length) {
                 for (int i=0; i<paramType.length; i++) {
                     if (m[i].equals(paramType[i])) {
                         return method;
@@ -199,7 +217,8 @@ public abstract class ClassUtils {
 
     static
       public Method searchMethod(Class<?> type, String methodName, Class<?>... paramType) {
-        Method m = getMethod(type, methodName, paramType);
+        Method m = paramType.length > 0 && paramType[0] != null ?
+        	getMethod(type, methodName, paramType) : getMethod(type, methodName);
         if (m != null) return m;
         //paramType is interface?
         if (paramType != null && paramType.length > 0 && paramType[0] != null) {

@@ -96,7 +96,20 @@ public class ClassUtilsTest extends TestCase {
         assertNull(ClassUtils.findMethods(type, null));
         assertNull(ClassUtils.findMethods(type, ""));
         assertNull(ClassUtils.findMethods(null, null));
-        //assertNull(ClassUtils.findMethods(type, "abc"));
+        assertNull(ClassUtils.findMethods(type, "abc"));
+    }
+    
+    @Test
+    public void testFindDeclaredMethod() {
+        Class<?> type = SampleCore.class;
+        Method[] m = ClassUtils.findDeclaredMethods(type, "setCore");
+        assertNotNull(m);
+        assertEquals("setCore", m[0].getName());
+        
+        assertNull(ClassUtils.findDeclaredMethods(type, null));
+        assertNull(ClassUtils.findDeclaredMethods(type, ""));
+        assertNull(ClassUtils.findDeclaredMethods(null, null));
+        assertNull(ClassUtils.findDeclaredMethods(type, "abc"));
     }
     
     @Test
@@ -110,13 +123,15 @@ public class ClassUtilsTest extends TestCase {
         assertNull(m2);
     }
 
-
     @Test
     public void testGetStaticMethod() {
         Class<?> type = CoreFactory.class;
         Method m = ClassUtils.getStaticMethod(type, "createCore", (Class[]) null);
         assertNotNull(m);
         assertEquals("createCore", m.getName());
+        
+        Method m2 = ClassUtils.getStaticMethod(type, "", Core.class);
+        assertNull(m2);
     }
 
     @Test
@@ -130,9 +145,38 @@ public class ClassUtilsTest extends TestCase {
         assertNull(m2);
     }
     
+    @Test
     public void testInvoke() {
+        Class<?> type = SampleCore.class;
+        Method method = ClassUtils.getMethod(type, "setCore", Core.class);
+
+    	ClassUtils.invoke(method, new SampleCore(), "");
+    	ClassUtils.invoke(method, new SampleCore(), (Object) null);
     }
 
+    @Test
+    public void testSearchMethodForClassArgs() {
+    	assertNull(ClassUtils.searchMethod((Class<?>)null, "getCore", (Class<?>)null));
+    	
+    	Class<?> type = SampleCore.class;
+    	Method[] m = ClassUtils.findMethods(type, "getCore");
+    	
+    	assertNotNull(ClassUtils.searchMethod(m, "getCore", (Class<?>)null));
+    	assertNotNull(ClassUtils.searchMethod(m, "getCore", new Class<?>[]{}));
+
+    	Method[] m2 = ClassUtils.findMethods(type, "setCoreName");
+    	assertNotNull(ClassUtils.searchMethod(m2, "setCoreName", String.class));
+    }
+    
+    @Test
+    public void testSearchMethodForMethodArrayArgs() {
+    	Class<?> type = SampleCore.class;
+    	assertNotNull(ClassUtils.searchMethod(type, "setCoreName", String.class));
+    	assertNotNull(ClassUtils.searchMethod(type, "getCore", (Class<?>)null));
+    	
+    	assertNull(ClassUtils.searchMethod(type, "xxxxxx", String.class));
+    }
+    
     @Test
     public void testGetAdderMethodName() {
         assertEquals("addCoreName", ClassUtils.getAdderMethodName("coreName"));
