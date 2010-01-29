@@ -107,7 +107,7 @@ public abstract class ClassUtils {
       public <T> Method getMethod(Class<T> type, String methodName, Class<?>... params) {
     	if (type != null && methodName != null && methodName.length() > 0) {
     		try {
-    			if (params.length > 0 && params[0] != null) {
+    			if (params != null && params.length > 0 && params[0] != null) {
     				return type.getMethod(methodName, params);
     			} else {
     				return type.getMethod(methodName);
