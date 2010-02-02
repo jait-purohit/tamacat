@@ -170,7 +170,7 @@ public class ReverseUtils {
      * @param context
      */
     public static void setXForwardedFor(HttpRequest request, HttpContext context) {
-    	request.setHeader("X-Forwarded-For", AccessLogUtils.getRemoteIPAddress(context));
+    	request.setHeader("X-Forwarded-For", RequestUtils.getRemoteIPAddress(context));
     }
 	
 	/**

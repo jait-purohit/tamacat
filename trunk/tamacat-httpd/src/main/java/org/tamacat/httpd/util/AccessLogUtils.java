@@ -4,15 +4,12 @@
  */
 package org.tamacat.httpd.util;
 
-import java.net.InetAddress;
 import java.util.Locale;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpServerConnection;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -42,7 +39,6 @@ public class AccessLogUtils {
 	
 	static final Log ACCESS_LOG = LogFactory.getLog("Access");
     static final DiagnosticContext DC = LogFactory.getDiagnosticContext(ACCESS_LOG);
-	static final String REMOTE_ADDRESS = "remote_address";
 	
 	/**
 	 * Write the access log.
@@ -59,7 +55,7 @@ public class AccessLogUtils {
         int statusCode = response.getStatusLine().getStatusCode();
         String reasonPhrase = response.getStatusLine().getReasonPhrase();
         String proto = request.getProtocolVersion().toString();
-        String ip = getRemoteIPAddress(context);
+        String ip = RequestUtils.getRemoteIPAddress(context);
         if (ip == null) ip = ""; 
         String remoteUser = (String) context.getAttribute(AuthComponent.REMOTE_USER_KEY);
         if (StringUtils.isEmpty(remoteUser)) remoteUser = "-";
@@ -80,28 +76,5 @@ public class AccessLogUtils {
         	DC.remove("ip");
         	DC.remove("user");
         }
-	}
-	
-	/**
-	 * Set the remote IP address to {@code HttpContext}.
-	 * @param context
-	 * @param conn instance of HttpInetConnection
-	 */
-	public static void setRemoteAddress(HttpContext context, HttpServerConnection conn) {
-		if (conn instanceof HttpInetConnection) {
-			InetAddress address = ((HttpInetConnection)conn).getRemoteAddress();
-			context.setAttribute(REMOTE_ADDRESS, address);
-		}
-	}
-	
-	/**
-	 * Get the remote IP address in {@code HttpContext}.
-	 * @param context
-	 * @return
-	 */
-	public static String getRemoteIPAddress(HttpContext context) {
-		InetAddress address = (InetAddress) context.getAttribute(REMOTE_ADDRESS);
-		if (address != null) return address.getHostAddress();
-		else return "";
 	}
 }
