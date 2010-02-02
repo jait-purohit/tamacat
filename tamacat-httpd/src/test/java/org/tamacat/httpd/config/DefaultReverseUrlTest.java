@@ -54,6 +54,10 @@ public class DefaultReverseUrlTest {
 			"http://localhost:8080/test2/abc.html", 
 			reverseUrl.getReverseUrl("/test/abc.html").toString()
 		);
+		
+		assertNull(reverseUrl.getReverseUrl(null));
+		
+		assertNull(reverseUrl.getReverseUrl("te://*@\\({}[]st test"));
 	}
 
 	@Test

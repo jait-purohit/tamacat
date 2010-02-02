@@ -32,6 +32,7 @@ import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.httpd.util.AccessLogUtils;
+import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
@@ -102,7 +103,7 @@ public class DefaultHttpService extends HttpService {
             final HttpContext context) throws IOException, HttpException {
 		long start = System.currentTimeMillis();
 		try {
-			AccessLogUtils.setRemoteAddress(context, conn);
+			RequestUtils.setRemoteAddress(context, conn);
 			super.setHttpProcessor(procBuilder.build());
 			super.handleRequest(conn, context);
 		} finally {

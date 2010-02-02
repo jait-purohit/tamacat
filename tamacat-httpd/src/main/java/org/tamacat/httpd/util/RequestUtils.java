@@ -4,12 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.util.Set;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpServerConnection;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.core.RequestParameters;
@@ -18,6 +21,8 @@ import org.tamacat.httpd.exception.HttpStatus;
 import org.tamacat.util.IOUtils;
 
 public class RequestUtils {
+
+	public static final String REMOTE_ADDRESS = "remote_address";
 
 	static final String CONTENT_TYPE_FORM_URLENCODED = "application/x-www-form-urlencoded";
 	static final String REQUEST_PARAMETERS_CONTEXT_KEY = "RequestParameters";
@@ -102,5 +107,29 @@ public class RequestUtils {
 	public static Set<String> getParameterNames(HttpContext context) {
 		RequestParameters params = getParameters(context);
 		return params != null ? params.getParameterNames() : null;
+	}
+	
+
+	/**
+	 * Set the remote IP address to {@code HttpContext}.
+	 * @param context
+	 * @param conn instance of HttpInetConnection
+	 */
+	public static void setRemoteAddress(HttpContext context, HttpServerConnection conn) {
+		if (conn instanceof HttpInetConnection) {
+			InetAddress address = ((HttpInetConnection)conn).getRemoteAddress();
+			context.setAttribute(REMOTE_ADDRESS, address);
+		}
+	}
+	
+	/**
+	 * Get the remote IP address in {@code HttpContext}.
+	 * @param context
+	 * @return
+	 */
+	public static String getRemoteIPAddress(HttpContext context) {
+		InetAddress address = (InetAddress) context.getAttribute(REMOTE_ADDRESS);
+		if (address != null) return address.getHostAddress();
+		else return "";
 	}
 }
