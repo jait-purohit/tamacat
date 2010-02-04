@@ -244,16 +244,19 @@ public abstract class ClassUtils {
 	  Set<Class<?>> getAllClasses(Set<Class<?>> classes, Class<?> type) {
 		Class<?>[] list = type.getClasses();
 		for (Class<?> t : list) {
+			classes = getAllClasses(classes, t);
 			classes.add(t);
 		}
 		Class<?>[] interfaces = type.getInterfaces();
 		for (Class<?> t : interfaces) {
+			classes = getAllClasses(classes, t);
 			classes.add(t);
 		}
 		Class<?> superClass = type.getSuperclass();
 		if (superClass != null && superClass != Object.class) {
 			Set<Class<?>> superClasses = getAllClasses(classes, superClass);
 			for (Class<?> t : superClasses) {
+				classes = getAllClasses(classes, t);
 				classes.add(t);
 			}
 		}
