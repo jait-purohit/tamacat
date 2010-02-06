@@ -175,7 +175,15 @@ public class ClassUtilsTest extends TestCase {
     	assertNotNull(ClassUtils.searchMethod(type, "getCore", (Class<?>)null));
     	
     	assertNull(ClassUtils.searchMethod(type, "xxxxxx", String.class));
+    	
+    	assertNotNull(ClassUtils.searchMethod(C.class, "get", Integer.TYPE));
     }
+    
+    static interface A extends List<String> {}
+    @SuppressWarnings("serial")
+	static class B extends ArrayList<String> implements A {}
+    @SuppressWarnings("serial")
+    static class C extends B implements A, List<String> {}
     
     @Test
     public void testGetAdderMethodName() {
