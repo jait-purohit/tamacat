@@ -11,7 +11,7 @@ import org.apache.http.HttpResponse;
  * <p>The utility class for HTTP response.
  */
 public class ResponseUtils {
-
+	
 	/**
 	 * <p>Set the HttpEntity to response.
 	 * Set the Content-Type, Content-Encoding and Content-Length response headers.

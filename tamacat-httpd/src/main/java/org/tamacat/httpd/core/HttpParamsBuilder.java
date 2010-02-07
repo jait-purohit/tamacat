@@ -21,7 +21,7 @@ public class HttpParamsBuilder {
 	private int serverSocketBufferSize = 8*1024;
 	private boolean staleConnectionCheck = false;
 	private boolean tcpNoDelay = true;
-	private String originServer = "tamacat-httpd-0.4";
+	private String originServer = "tamacat-httpd";
 	
 	/**
 	 * <p>Set a server socket timeout, default {@code 30000} ms.
@@ -66,7 +66,7 @@ public class HttpParamsBuilder {
 	/**
 	 * <p>Set a origin server name.
 	 * @param originServer
-	 * @return default "tamacat-httpd-$version"
+	 * @return default "tamacat-httpd"
 	 */
 	public HttpParamsBuilder originServer(String originServer) {
 		this.originServer = originServer;

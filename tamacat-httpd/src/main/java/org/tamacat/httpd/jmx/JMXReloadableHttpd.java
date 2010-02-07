@@ -6,7 +6,7 @@ import javax.management.MXBean;
  * <p>Support the monitor, reload and restart operation of JMX for Httpd.
  */
 @MXBean
-public interface JMXReloadableHttpd extends Reloadable, BasicHttpMonitor {
+public interface JMXReloadableHttpd	extends Reloadable, BasicHttpMonitor, PerformanceCounter {
 
 	/**
 	 * <p>start the Httpd.

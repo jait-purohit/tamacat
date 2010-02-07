@@ -78,13 +78,13 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
         ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
         	//(ReverseUrl) context.getAttribute("reverseUrl");
         ReverseUtils.copyHttpResponse(targetResponse, response);
-        ReverseUtils.rewriteContentLocationHeader(response, reverseUrl);
+        ReverseUtils.rewriteContentLocationHeader(request, response, reverseUrl);
         
         // Location Header convert. //
-        ReverseUtils.rewriteLocationHeader(response, reverseUrl);
+        ReverseUtils.rewriteLocationHeader(request, response, reverseUrl);
         
         // Set-Cookie Header convert. //
-        ReverseUtils.rewriteSetCookieHeader(response, reverseUrl);
+        ReverseUtils.rewriteSetCookieHeader(request, response, reverseUrl);
         
         // Set the entity and response headers from targetResponse.
         response.setEntity(targetResponse.getEntity());
@@ -124,7 +124,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 
 	        ReverseHttpRequest targetRequest = null;
 	        if (request instanceof HttpEntityEnclosingRequest) {
-	        	targetRequest = new ReverseHttpEntityEnclosingRequest(request, reverseUrl);
+	        	targetRequest = new ReverseHttpEntityEnclosingRequest(request, context, reverseUrl);
 	        } else {
 	        	URL url = reverseUrl.getReverseUrl(request.getRequestLine().getUri());
 		        if (url == null) {
@@ -135,7 +135,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     		    		url.toString(),
     		    		request.getRequestLine().getProtocolVersion());
 	        	targetRequest = new ReverseHttpRequest(line, reverseUrl);
-	        	targetRequest.setRequest(request);
+	        	targetRequest.setRequest(request, context);
 	        }
 	        
 	        httpexecutor.preProcess(targetRequest, httpproc, context);

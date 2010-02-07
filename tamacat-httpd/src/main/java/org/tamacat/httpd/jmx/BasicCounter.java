@@ -9,13 +9,15 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class BasicCounter implements BasicHttpMonitor, Serializable {
+public class BasicCounter implements BasicHttpMonitor, PerformanceCounter, Serializable {
 	private static final long serialVersionUID = 6089725451626828983L;
 	
 	private AtomicInteger activeConnections = new AtomicInteger();
 	private AtomicLong accessCount = new AtomicLong();
 	private AtomicLong errorCount = new AtomicLong();
-
+	private AtomicLong responseTimes = new AtomicLong();
+	private AtomicLong max = new AtomicLong();
+	
 	private final Date startedTime = new Date();
 	
 	public int getActiveConnections() {
@@ -61,5 +63,21 @@ public class BasicCounter implements BasicHttpMonitor, Serializable {
 	@Override
 	public Date getStartedTime() {
 		return startedTime;
+	}
+	
+	@Override
+	public long getAverageResponseTime() {
+		return accessCount.get() > 0 ? responseTimes.get() / accessCount.get() : 0;
+	}
+
+	@Override
+	public long getMaximumResponseTime() {
+		return max.get();
+	}
+	
+	public void setResponseTime(long time) {
+		responseTimes.addAndGet(time);
+		accessCount.incrementAndGet();
+		if (max.get() < time) max.set(time);
 	}
 }

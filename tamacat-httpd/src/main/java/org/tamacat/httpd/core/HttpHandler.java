@@ -6,6 +6,7 @@ package org.tamacat.httpd.core;
 
 import org.apache.http.protocol.HttpRequestHandler;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.filter.HttpFilter;
 import org.tamacat.httpd.filter.RequestFilter;
 
 /**
@@ -24,5 +25,5 @@ public interface HttpHandler extends HttpRequestHandler {
 	 * and execute {@link RequestFilter#init()}.
 	 * @param filter
 	 */
-	void setRequestFilter(RequestFilter filter);
+	void setHttpFilter(HttpFilter filter);
 }

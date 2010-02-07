@@ -113,7 +113,8 @@ public class ReverseUtils {
      * @param response
      * @param reverseUrl
      */
-    public static void rewriteContentLocationHeader(HttpResponse response, ReverseUrl reverseUrl) {
+    public static void rewriteContentLocationHeader(
+    		HttpRequest request, HttpResponse response, ReverseUrl reverseUrl) {
         Header[] locationHeaders = response.getHeaders("Content-Location");
         response.removeHeaders("Content-Location");
         for (Header location : locationHeaders) {
@@ -130,7 +131,8 @@ public class ReverseUtils {
      * @param response
      * @param reverseUrl
      */
-    public static void rewriteLocationHeader(HttpResponse response, ReverseUrl reverseUrl) {
+    public static void rewriteLocationHeader(
+    		HttpRequest request, HttpResponse response, ReverseUrl reverseUrl) {
     	Header[] locationHeaders = response.getHeaders("Location");
     	response.removeHeaders("Location");
         for (Header location : locationHeaders) {
@@ -147,12 +149,14 @@ public class ReverseUtils {
      * @param response
      * @param reverseUrl
      */
-    public static void rewriteSetCookieHeader(HttpResponse response, ReverseUrl reverseUrl) {
+    public static void rewriteSetCookieHeader(
+    		HttpRequest request, HttpResponse response, ReverseUrl reverseUrl) {
         Header[] cookies = response.getHeaders("Set-Cookie");
         ArrayList<String> newValues = new ArrayList<String>();
         for (Header h : cookies) {
         	String value = h.getValue();
-        	String newValue = ReverseUtils.getConvertedSetCookieHeader(reverseUrl, value);
+        	String newValue = ReverseUtils.getConvertedSetCookieHeader(
+        			request, reverseUrl, value);
         	if (StringUtils.isNotEmpty(newValue)) {
         		newValues.add(newValue);
             	response.removeHeader(h);
@@ -179,10 +183,11 @@ public class ReverseUtils {
 	 * @param line cookie header line.
 	 * @return converted Set-Cookie response header line.
 	 */
-	public static String getConvertedSetCookieHeader(ReverseUrl reverseUrl, String line) {
+	public static String getConvertedSetCookieHeader(
+			HttpRequest request, ReverseUrl reverseUrl, String line) {
 		if (line == null) return "";
 		String dist = reverseUrl.getReverse().getHost();
-		String src =reverseUrl.getHost().getHost();
+		String src = RequestUtils.getRequestURL(request, null).getHost();//reverseUrl.getHost().getHost();
 		return getConvertedSetCookieHeader(
 				reverseUrl.getReverse().getPath(),
 				reverseUrl.getServiceUrl().getPath(),

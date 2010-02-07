@@ -50,16 +50,21 @@
     </property>
   </bean>
   
+  <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" />
+  
   <bean id="VelocityHandler" 
      class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
     <property name="docsRoot">
       <value>htdocs</value>
     </property>
-    <property name="requestFilter">
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+    <property name="httpFilter">
       <ref bean="BasicAuthFilter" />
     </property>
     <!--
-    <property name="requestFilter">
+    <property name="httpFilter">
       <ref bean="AccessControlFilter" />
     </property>
     -->
@@ -70,19 +75,39 @@
     <property name="docsRoot">
       <value>htdocs</value>
     </property>
-    <property name="requestFilter">
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+    <property name="httpFilter">
       <ref bean="WSSEAuthFilter" />
     </property>
     <!--
-    <property name="requestFilter">
+    <property name="httpFilter">
       <ref bean="AccessControlFilter" />
     </property>
     -->
   </bean>
   
   <bean id="DefaultHandler"
-     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false" />
+     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
+        <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+  </bean>
 
+  <bean id="DefaultHandler2"
+     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
+    <property name="docsRoot">
+      <value>../htdocs/api/</value>
+    </property>
+    <property name="listings">
+      <value>true</value>
+    </property>
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+  </bean>
+  
   <bean id="DocsHandler"
      class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
     <property name="docsRoot">
@@ -91,20 +116,26 @@
     <property name="listings">
       <value>true</value>
     </property>
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
   </bean>
   
   <bean id="ReverseHandler"
      class="org.tamacat.httpd.core.ReverseProxyHandler" singleton="false">
-    <property name="requestFilter" >
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+    <property name="httpFilter" >
       <ref bean="BasicAuthFilter" />
     </property>
-    <property name="requestFilter">
+    <property name="httpFilter">
       <ref bean="SSOFilter" />
     </property>
-    <property name="requestFilter">
+    <property name="httpFilter">
       <ref bean="SessionFilter" />
     </property>
-    <property name="requestFilter">
+    <property name="httpFilter">
       <ref bean="AccessControlFilter" />
     </property>
     <property name="httpResponseInterceptor" mode="add">

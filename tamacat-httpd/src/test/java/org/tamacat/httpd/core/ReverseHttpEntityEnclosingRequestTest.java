@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.protocol.BasicHttpContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +47,7 @@ public class ReverseHttpEntityEnclosingRequestTest {
 		ReverseHttpEntityEnclosingRequest request =
 			new ReverseHttpEntityEnclosingRequest(
 					new BasicHttpRequest("GET","/test2/test.jsp"),
+					new BasicHttpContext(),
 					reverseUrl);
 		request.setEntity(new StringEntity("test"));
 		
