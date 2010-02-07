@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Set;
 
 import org.apache.http.Header;
@@ -13,8 +15,10 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpServerConnection;
+import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.core.RequestParameters;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.HttpStatus;
@@ -109,7 +113,10 @@ public class RequestUtils {
 		return params != null ? params.getParameterNames() : null;
 	}
 	
-
+	public static HttpServerConnection getHttpServerConnection(HttpContext context) {
+		return (HttpServerConnection) context.getAttribute(ExecutionContext.HTTP_CONNECTION);
+	}
+	
 	/**
 	 * Set the remote IP address to {@code HttpContext}.
 	 * @param context
@@ -131,5 +138,72 @@ public class RequestUtils {
 		InetAddress address = (InetAddress) context.getAttribute(REMOTE_ADDRESS);
 		if (address != null) return address.getHostAddress();
 		else return "";
+	}
+
+	public static String getRequestHostURL(
+			HttpRequest request, HttpContext context) {
+		URL host = getRequestURL(request, context);
+		return host != null ? host.getProtocol()
+				+ "://" + host.getAuthority() : null;
+	}
+	
+	public static String getRequestHostURL(
+			HttpRequest request, HttpContext context, ServiceUrl url) {
+		URL host = getRequestURL(request, context, url);
+		return host != null ? host.getProtocol()
+				+ "://" + host.getAuthority() : null;
+	}
+	
+	public static URL getRequestURL(HttpRequest request, HttpContext context) {
+		return getRequestURL(request, context, null);
+	}
+	
+	public static URL getRequestURL(HttpRequest request, HttpContext context, ServiceUrl url) {
+		String protocol = "http";
+		String hostName = null;
+		int port = -1;
+		Header hostHeader = request.getFirstHeader(HTTP.TARGET_HOST);
+		if (hostHeader != null) {
+			hostName = hostHeader.getValue();
+		}
+		if (url != null) {
+			URL configureHost = url.getHost();
+			if (configureHost != null) {
+				protocol = configureHost.getProtocol();
+				if (hostName == null) {
+					hostName = configureHost.getHost();
+				}
+			}
+			if (url.getServerConfig().useHttps()) {
+				protocol = "https";
+			}
+			port = url.getServerConfig().getPort();
+			if (context != null) {
+			HttpServerConnection con = getHttpServerConnection(context);
+				if (con instanceof HttpInetConnection) {
+					port = ((HttpInetConnection)con).getRemotePort();
+					InetAddress addr = ((HttpInetConnection)con).getLocalAddress();
+					if (hostName == null && addr != null) {
+						hostName = addr.getHostName();
+					}
+				}
+			}
+		}
+		if (("http".equalsIgnoreCase(protocol) && port == 80) 
+			|| ("https".equalsIgnoreCase(protocol) && port == 443)){
+			port = -1;
+		}
+		if (hostName != null) {
+			try {
+				URL hostUrl = new URL(protocol, hostName, port,
+						request.getRequestLine().getUri());
+//				HttpHost httpHost = new HttpHost(hostName, port);
+//				context.setAttribute(ExecutionContext.HTTP_TARGET_HOST, httpHost);
+				return hostUrl;
+			} catch (MalformedURLException e) {
+				//e.printStackTrace();
+			}
+		}
+		return null;
 	}
 }

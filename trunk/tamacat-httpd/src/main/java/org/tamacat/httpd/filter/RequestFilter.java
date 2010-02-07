@@ -13,9 +13,7 @@ import org.tamacat.httpd.config.ServiceUrl;
  * <p>{@core RequestFilter} is execute from
  * {@link HttpHandler#handleRequest} method.
  */
-public interface RequestFilter {
-	
-	void init();
+public interface RequestFilter extends HttpFilter {
 	
 	void doFilter(HttpRequest request, HttpResponse response, 
 		HttpContext context, ServiceUrl serviceUrl);

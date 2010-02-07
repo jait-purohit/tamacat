@@ -19,7 +19,9 @@ import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
+import org.tamacat.httpd.filter.HttpFilter;
 import org.tamacat.httpd.filter.RequestFilter;
+import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
@@ -68,18 +70,24 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     protected String docsRoot;
     
     protected List<RequestFilter> requestFilters = new ArrayList<RequestFilter>();
-
+    protected List<ResponseFilter> responseFilters = new ArrayList<ResponseFilter>();
+    
 	@Override
     public void setServiceUrl(ServiceUrl serviceUrl) {
     	this.serviceUrl = serviceUrl;
     }
     
 	@Override
-	public void setRequestFilter(RequestFilter filter) {
+	public void setHttpFilter(HttpFilter filter) {
 		filter.init();
-		requestFilters.add(filter);
+		if (filter instanceof RequestFilter) {
+			requestFilters.add((RequestFilter)filter);
+		}
+		if (filter instanceof ResponseFilter) {
+			responseFilters.add((ResponseFilter) filter);
+		}
 	}
-
+	
 	/**
 	 * <p>Set the path of document root.
 	 * @param docsRoot
@@ -91,12 +99,17 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	@Override
 	public void handle(HttpRequest request, HttpResponse response, 
 			HttpContext context) {
+		
 		try {
 			for (RequestFilter filter : requestFilters) {
 				filter.doFilter(request, response, context, serviceUrl);
 			}
 
 			doRequest(request, response, context);
+			
+			for (ResponseFilter filter : responseFilters) {
+				filter.afterResponse(request, response, context, serviceUrl);
+			}
 		} catch (Exception e) {
 			handleException(request, response, e);
 		}

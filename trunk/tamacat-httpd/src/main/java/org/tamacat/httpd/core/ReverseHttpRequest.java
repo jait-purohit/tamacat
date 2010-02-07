@@ -4,6 +4,8 @@
  */
 package org.tamacat.httpd.core;
 
+import java.net.URL;
+
 import org.apache.http.Header;
 
 import org.apache.http.HttpRequest;
@@ -12,8 +14,10 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicRequestLine;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 
 import org.tamacat.httpd.config.ReverseUrl;
+import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -43,22 +47,22 @@ public class ReverseHttpRequest extends BasicHttpRequest {
 	 * @param request
 	 * @param reverseUrl
 	 */
-	public ReverseHttpRequest(HttpRequest request, ReverseUrl reverseUrl) {
+	public ReverseHttpRequest(HttpRequest request, HttpContext context, ReverseUrl reverseUrl) {
 		super(new BasicRequestLine(
 	    		request.getRequestLine().getMethod(),
 	    		reverseUrl.getReverseUrl(request.getRequestLine().getUri()).toString(),
 	    		request.getRequestLine().getProtocolVersion())
 		);
 		this.reverseUrl = reverseUrl;
-		setRequest(request);
+		setRequest(request, context);
 	}
 	
 	/**
 	 * <p>Set the original request.
 	 * @param request
 	 */
-	public void setRequest(HttpRequest request) {
-        rewriteHostHeader(request);
+	public void setRequest(HttpRequest request, HttpContext context) {
+        rewriteHostHeader(request, context);
         
         setHeaders(request.getAllHeaders());
         setParams(request.getParams());
@@ -66,12 +70,13 @@ public class ReverseHttpRequest extends BasicHttpRequest {
 	}
 	
 	//rewrite Host Header
-	private void rewriteHostHeader(HttpRequest request) {
+	private void rewriteHostHeader(HttpRequest request, HttpContext context) {
         Header[] hostHeaders = request.getHeaders(HTTP.TARGET_HOST);
         for (Header hostHeader : hostHeaders) {
         	String value = hostHeader.getValue();
-        	String before = reverseUrl.getHost().getHost();
-        	int beforePort = reverseUrl.getHost().getPort();
+        	URL host = RequestUtils.getRequestURL(request, context);
+        	String before = host.getAuthority();
+        	int beforePort = host.getPort();
         	if (beforePort != 80 && beforePort > 0) {
         		before = before + ":" + beforePort;
         	}

@@ -31,7 +31,6 @@ import org.apache.http.protocol.ResponseServer;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.page.VelocityErrorPage;
-import org.tamacat.httpd.util.AccessLogUtils;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -46,8 +45,9 @@ public class DefaultHttpService extends HttpService {
     static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
 	private HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
     private HttpRequestHandlerResolver handlerResolver;
+    private HostRequestHandlerResolver hostResolver;
 	private VelocityErrorPage errorPage = new VelocityErrorPage();
-
+	
     /**
      * default.
      */
@@ -75,8 +75,12 @@ public class DefaultHttpService extends HttpService {
     }
 
     @Override
-    public void setHandlerResolver(final HttpRequestHandlerResolver handlerResolver) {
+    public void setHandlerResolver(HttpRequestHandlerResolver handlerResolver) {
         this.handlerResolver = handlerResolver;
+    }
+    
+    public void setHostHandlerResolver(HostRequestHandlerResolver hostResolver) {
+        this.hostResolver = hostResolver;
     }
     
     /**
@@ -101,15 +105,9 @@ public class DefaultHttpService extends HttpService {
     public final void handleRequest(
             final HttpServerConnection conn, 
             final HttpContext context) throws IOException, HttpException {
-		long start = System.currentTimeMillis();
-		try {
-			RequestUtils.setRemoteAddress(context, conn);
-			super.setHttpProcessor(procBuilder.build());
-			super.handleRequest(conn, context);
-		} finally {
-			AccessLogUtils.writeAccessLog(context, 
-				System.currentTimeMillis() - start);
-		}
+		RequestUtils.setRemoteAddress(context, conn);
+		super.setHttpProcessor(procBuilder.build());
+		super.handleRequest(conn, context);
 	}
 	
 	@Override
@@ -120,7 +118,8 @@ public class DefaultHttpService extends HttpService {
 			HttpRequestHandler handler = null;
 			if (handlerResolver != null) {
 				handler = handlerResolver.lookup(request.getRequestLine().getUri());
-				LOG.trace("handler: " + handler);
+			} else if (hostResolver != null) {
+				handler = hostResolver.lookup(request, context);
 			}
 	        if (handler != null) {
 	        	handler.handle(request, response, context);

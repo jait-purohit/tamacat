@@ -26,8 +26,9 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.protocol.HttpRequestHandlerRegistry;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfig;
-import org.tamacat.httpd.config.ServiceConfigXmlParser;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.config.VirtualHostConfig;
+import org.tamacat.httpd.config.VirtualHostConfigXmlParser;
 import org.tamacat.httpd.jmx.BasicCounter;
 import org.tamacat.httpd.jmx.JMXReloadableHttpd;
 import org.tamacat.httpd.ssl.SSLContextCreator;
@@ -66,26 +67,44 @@ public class HttpEngine implements JMXReloadableHttpd {
 			serverConfig = new ServerConfig();
 			paramsBuilder = new HttpParamsBuilder();
 	        paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
-	          .socketBufferSize(serverConfig.getSocketBufferSize());
+	          .socketBufferSize(serverConfig.getSocketBufferSize())
+	          .originServer(serverConfig.getParam("ServerName"));
 		}
+		service = new DefaultHttpService();
 		if (isMXServerStarted == false) {
 			registryMXServer();
 		}
-		service = new DefaultHttpService();
 		for (HttpResponseInterceptor interceptor : interceptors) {
 			service.setHttpResponseInterceptor(interceptor);
 		}
-		//Register the services and service URLs.
-		ServiceConfig serviceConfig
-			= new ServiceConfigXmlParser(serverConfig).getServiceConfig();
-		HttpRequestHandlerRegistry registry = new HttpRequestHandlerRegistry();
 		HttpHandlerFactory factory = new DefaultHttpHandlerFactory();
-		for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
-			HttpHandler handler = factory.getHttpHandler(serviceUrl);
-			LOG.info(serviceUrl.getPath() + " - " + handler);
-			registry.register(serviceUrl.getPath() + "*", handler);
+
+		//Register the services and service URLs.
+//		HttpRequestHandlerRegistry registry = new HttpRequestHandlerRegistry();
+//		ServiceConfig serviceConfig
+//			= new ServiceConfigXmlParser(serverConfig).getServiceConfig();
+//		for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
+//		HttpHandler handler = factory.getHttpHandler(serviceUrl);
+//		LOG.info(serviceUrl.getPath() + " - " + handler);
+//		registry.register(serviceUrl.getPath() + "*", handler);
+//	}
+		HostRequestHandlerResolver hostResolver = new HostRequestHandlerResolver();
+		VirtualHostConfig hostConfig = new VirtualHostConfigXmlParser(serverConfig).getVirtualHostConfig();
+		for (String host : hostConfig.getHosts()) {
+			HttpRequestHandlerRegistry registry = new HttpRequestHandlerRegistry();
+			ServiceConfig serviceConfig = hostConfig.getServiceConfig(host);
+			for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
+				HttpHandler handler = factory.getHttpHandler(serviceUrl);
+				if (handler != null) {
+					LOG.info(serviceUrl.getPath() + " - " + handler.getClass());
+					registry.register(serviceUrl.getPath() + "*", handler);
+				} else {
+					LOG.warn(serviceUrl.getPath() + " HttpHandler is not found.");
+				}
+			}
+			hostResolver.setHostRequestHandlerResolver(host, registry);
 		}
-        service.setHandlerResolver(registry);
+        service.setHostHandlerResolver(hostResolver);
 	}
 
 	/**
@@ -116,7 +135,7 @@ public class HttpEngine implements JMXReloadableHttpd {
                 executors.execute(new WorkerThread(
                 	service, insocket, paramsBuilder.buildParams(), counter)
                 );
-                counter.access();
+                //counter.access();
             } catch (InterruptedIOException e) {
             	counter.error();
             	LOG.error(e.getMessage());
@@ -205,7 +224,7 @@ public class HttpEngine implements JMXReloadableHttpd {
 			}
 		} catch (Exception e) {
 			LOG.error(e.getMessage());
-			LOG.trace(ExceptionUtils.getStackTrace(e));
+			LOG.warn(ExceptionUtils.getStackTrace(e));
 		}
 	}
 
@@ -243,5 +262,15 @@ public class HttpEngine implements JMXReloadableHttpd {
 	public void reload() {
 		init();
 		LOG.info("reloaded.");
+	}
+
+	@Override
+	public long getAverageResponseTime() {
+		return counter.getAverageResponseTime();
+	}
+
+	@Override
+	public long getMaximumResponseTime() {
+		return counter.getMaximumResponseTime();
 	}
 }

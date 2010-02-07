@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 
 import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.protocol.BasicHttpContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +43,7 @@ public class ReverseHttpRequestTest {
 		ReverseHttpRequest request =
 			new ReverseHttpRequest(
 					new BasicHttpRequest("GET","/test2/test.jsp"),
+					new BasicHttpContext(),
 					reverseUrl);
 		
 		assertNotNull(request.getAllHeaders());
