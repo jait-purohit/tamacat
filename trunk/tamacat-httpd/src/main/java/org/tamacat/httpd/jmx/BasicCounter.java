@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class BasicCounter implements BasicHttpMonitor, PerformanceCounter, Serializable {
 	private static final long serialVersionUID = 6089725451626828983L;
 	
+	private ThreadLocal<Long> time = new ThreadLocal<Long>();
 	private AtomicInteger activeConnections = new AtomicInteger();
 	private AtomicLong accessCount = new AtomicLong();
 	private AtomicLong errorCount = new AtomicLong();
@@ -26,9 +27,15 @@ public class BasicCounter implements BasicHttpMonitor, PerformanceCounter, Seria
 
 	public void countUp() {
 		activeConnections.incrementAndGet();
+		time.set(System.currentTimeMillis());
 	}
 	
 	public void countDown() {
+		Long start = time.get();
+		if (start != null) {
+			setResponseTime(System.currentTimeMillis() - start);
+		}
+		time.remove();
 		activeConnections.decrementAndGet();
 	}
 
