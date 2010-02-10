@@ -10,7 +10,6 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.auth.AuthComponent;
@@ -47,9 +46,8 @@ public class AccessLogUtils {
 	 */
 	static
 	  public void writeAccessLog(
+			  HttpRequest request, HttpResponse response,
 			  HttpContext context, long time) {
-		HttpRequest request =(HttpRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
-		HttpResponse response = (HttpResponse) context.getAttribute(ExecutionContext.HTTP_RESPONSE);
 		String method = request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH);
         String uri = request.getRequestLine().getUri();
         int statusCode = response.getStatusLine().getStatusCode();

@@ -5,6 +5,10 @@
 package org.tamacat.httpd.session;
 
 import java.util.HashMap;
+import java.util.Set;
+
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public final class SessionManager implements SessionListener {
 
@@ -26,8 +30,15 @@ public final class SessionManager implements SessionListener {
 		return SELF;
 	}
 	
+	public
+	  static void setDefaultMaxInactiveInterval(int max) {
+		defaultMaxInactiveInterval = max;
+	}
+	
 	private
-	  SessionManager() {}
+	  SessionManager() {
+		new Thread(new SessionCleaner(), "Cleaner").start();
+	}
 	
 	public Session getSession(String id) {
 		return getSession(id, true);
@@ -66,5 +77,50 @@ public final class SessionManager implements SessionListener {
 	@Override
 	public void invalidate(Session session) {
 		MANAGER.remove(session.getId());		
+	}
+	
+	static class SessionCleaner implements Runnable {
+		static final Log LOG = LogFactory.getLog(SessionCleaner.class);
+		private int checkInterval =  60 * 1000; //60sec.
+		
+		void setCheckInterval(int checkInterval) {
+			this.checkInterval = checkInterval;
+		}
+		
+		@Override
+		public void run() {
+			while(true) {
+				try {
+					LOG.trace("clean check.");
+					Set<String> ids = MANAGER.keySet();
+					for (String id : ids) {
+						checkAndCleanup(MANAGER.get(id));
+					}
+					Thread.sleep(checkInterval);
+				} catch (Exception e) {
+					LOG.warn(e.getMessage());
+				}
+			}
+		}
+		
+		void checkAndCleanup(Session session) {
+			if (session != null) {
+				if (LOG.isTraceEnabled()) {
+					LOG.info(System.currentTimeMillis()
+						- session.getCreationDate().getTime()
+						+ " > " + session.getMaxInactiveInterval());
+				}
+				if (System.currentTimeMillis() - session.getCreationDate().getTime()
+					> session.getMaxInactiveInterval()) {
+					try {
+						String id = session.getId();
+						session.invalidate();
+						LOG.debug("cleanup: " + id);
+					} catch (Exception e) {
+						LOG.warn(e.getMessage());
+					}
+				}
+			}
+		}
 	}
 }

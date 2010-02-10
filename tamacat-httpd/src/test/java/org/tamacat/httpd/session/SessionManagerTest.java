@@ -13,6 +13,7 @@ public class SessionManagerTest {
 
 	@Before
 	public void setUp() throws Exception {
+		SessionManager.setDefaultMaxInactiveInterval(10000);
 	}
 
 	@After
@@ -22,14 +23,14 @@ public class SessionManagerTest {
 	@Test
 	public void testGetSession() throws Exception {
 		Session session = SessionManager.getInstance().createSession();
-		session.setMaxInactiveInterval(10000);
+		session.setMaxInactiveInterval(1000);
 		String id = session.getId();
 		System.out.println(id);
 		
 		//Thread.sleep(5000);
 		
 		Session session2 = SessionManager.getInstance().getSession(id);
-		System.out.print(session != null ? session2.getId() : null);
+		System.out.print(session2 != null ? session2.getId() : null);
 	}
 
 }

@@ -10,9 +10,15 @@ import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
+/**
+ * <p>The {@link HttpRequestHandlerResolver} for a virtual host.<br>
+ * With this HandlerResolver, I acquire virtual host setting based on 
+ * a Host request header and return a supporting {@link HttpRequestHandler}.
+ */
 public class HostRequestHandlerResolver {
 	static final Log LOG = LogFactory.getLog(HostRequestHandlerResolver.class);
 
+	/** default key for empty host.*/
 	static final String DEFAULT_HOST = "default";
 	
 	private HashMap<String, HttpRequestHandlerResolver> hostHandler
@@ -20,6 +26,11 @@ public class HostRequestHandlerResolver {
 	
 	private boolean useVirtualHost = false;
 	
+	/**
+	 * <p>Set the Host and {@link HttpRequestHandlerResolver}.
+	 * @param host parameter is null then set the default {@link HttpRequestHandlerResolver}.
+	 * @param resolver
+	 */
 	public void setHostRequestHandlerResolver(String host, HttpRequestHandlerResolver resolver) {
 		if (host == null) {
 			host = DEFAULT_HOST;
@@ -28,11 +39,17 @@ public class HostRequestHandlerResolver {
 			useVirtualHost = true;
 		}
 		if (host.equals(DEFAULT_HOST) == false) {
-			LOG.info("add virtual host: " + host + "=" + resolver.getClass());
+			LOG.info("add virtual host: " + host + "=" + resolver.getClass().getName());
 		}
 		hostHandler.put(host, resolver);
 	}
 	
+	/**
+	 * <p>Lookup the HttpRequestHandler for Host request header.
+	 * @param request
+	 * @param context
+	 * @return HttpRequestHandler
+	 */
 	public HttpRequestHandler lookup(HttpRequest request, HttpContext context) {
 		HttpRequestHandlerResolver resolver = null;
 		if (useVirtualHost) {
@@ -46,7 +63,7 @@ public class HostRequestHandlerResolver {
 			resolver = hostHandler.get(DEFAULT_HOST);
 		}
 		if (LOG.isTraceEnabled() && resolver != null) {
-			LOG.trace("handler: " + resolver.getClass());
+			LOG.trace("handler: " + resolver.getClass().getName());
 		}
 		return resolver != null ? 
 			resolver.lookup(request.getRequestLine().getUri()) : null;

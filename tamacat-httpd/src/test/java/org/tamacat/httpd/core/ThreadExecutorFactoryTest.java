@@ -5,24 +5,18 @@
 package org.tamacat.httpd.core;
 
 import static org.junit.Assert.*;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.tamacat.httpd.config.ServerConfig;
-
 public class ThreadExecutorFactoryTest {
-
-	ServerConfig config;
 	
 	@Before
 	public void setUp() throws Exception {
-		config = new ServerConfig();
 	}
 
 	@After
@@ -31,8 +25,8 @@ public class ThreadExecutorFactoryTest {
 
 	@Test
 	public void testGetExecutorService() {
-		ThreadExecutorFactory factory = new ThreadExecutorFactory(config);
-		ExecutorService executor = factory.getExecutorService();
+		ThreadExecutorFactory factory = new ThreadExecutorFactory("httpd");
+		ExecutorService executor = factory.getExecutorService(10);
 		assertNotNull(executor);
 //		executor.execute(new Thread(){
 //			public void run() {
