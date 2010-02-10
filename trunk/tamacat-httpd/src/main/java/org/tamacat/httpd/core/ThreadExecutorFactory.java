@@ -5,10 +5,8 @@
 package org.tamacat.httpd.core;
 
 import java.util.concurrent.ExecutorService;
-
 import java.util.concurrent.Executors;
 
-import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.util.DefaultThreadFactory;
 
 /**
@@ -17,14 +15,14 @@ import org.tamacat.httpd.util.DefaultThreadFactory;
  */
 public class ThreadExecutorFactory {
 
-	private final ServerConfig serverConfig;
+	private final String threadName;
 	
 	/**
-	 * <p>Constructs with the specified {@link ServerConfig}.
-	 * @param serverConfig
+	 * <p>Constructs with the specified worker thread name.
+	 * @param threadName
 	 */
-	public ThreadExecutorFactory(ServerConfig serverConfig) {
-		this.serverConfig = serverConfig;
+	public ThreadExecutorFactory(String threadName) {
+		this.threadName = threadName;
 	}
 	
 	/**
@@ -33,12 +31,11 @@ public class ThreadExecutorFactory {
 	 * of {@code ExecutorService}.
 	 * @return {@link ThreadPoolExecutor}
 	 */
-	public ExecutorService getExecutorService() {
-		int maxThreads = serverConfig.getMaxThreads();
+	public ExecutorService getExecutorService(int maxThreads) {
 		if (maxThreads > 0) {
-			return Executors.newFixedThreadPool(maxThreads, new DefaultThreadFactory("Proxy"));
+			return Executors.newFixedThreadPool(maxThreads, new DefaultThreadFactory(threadName));
 		} else {
-			return Executors.newCachedThreadPool(new DefaultThreadFactory("Proxy"));
+			return Executors.newCachedThreadPool(new DefaultThreadFactory(threadName));
 		}
 	}
 }

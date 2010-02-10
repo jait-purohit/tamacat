@@ -17,4 +17,8 @@ public interface JMXReloadableHttpd	extends Reloadable, BasicHttpMonitor, Perfor
 	 * <p>stop the Httpd.
 	 */
 	void stop();
+	
+	int getMaxServerThreads();
+	
+	void setMaxServerThreads(int max);
 }

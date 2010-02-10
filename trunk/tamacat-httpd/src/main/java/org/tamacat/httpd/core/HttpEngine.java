@@ -53,7 +53,7 @@ public class HttpEngine implements JMXReloadableHttpd {
 
     private ExecutorService executors;
     
-    private static BasicCounter counter = new BasicCounter();
+    private BasicCounter counter = new BasicCounter();
     private List<HttpResponseInterceptor> interceptors
     	= new ArrayList<HttpResponseInterceptor>();
     
@@ -79,15 +79,6 @@ public class HttpEngine implements JMXReloadableHttpd {
 		}
 		HttpHandlerFactory factory = new DefaultHttpHandlerFactory();
 
-		//Register the services and service URLs.
-//		HttpRequestHandlerRegistry registry = new HttpRequestHandlerRegistry();
-//		ServiceConfig serviceConfig
-//			= new ServiceConfigXmlParser(serverConfig).getServiceConfig();
-//		for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
-//		HttpHandler handler = factory.getHttpHandler(serviceUrl);
-//		LOG.info(serviceUrl.getPath() + " - " + handler);
-//		registry.register(serviceUrl.getPath() + "*", handler);
-//	}
 		HostRequestHandlerResolver hostResolver = new HostRequestHandlerResolver();
 		VirtualHostConfig hostConfig = new VirtualHostConfigXmlParser(serverConfig).getVirtualHostConfig();
 		for (String host : hostConfig.getHosts()) {
@@ -96,7 +87,7 @@ public class HttpEngine implements JMXReloadableHttpd {
 			for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
 				HttpHandler handler = factory.getHttpHandler(serviceUrl);
 				if (handler != null) {
-					LOG.info(serviceUrl.getPath() + " - " + handler.getClass());
+					LOG.info(serviceUrl.getPath() + " - " + handler.getClass().getName());
 					registry.register(serviceUrl.getPath() + "*", handler);
 				} else {
 					LOG.warn(serviceUrl.getPath() + " HttpHandler is not found.");
@@ -116,6 +107,7 @@ public class HttpEngine implements JMXReloadableHttpd {
 		init();
 		
 		try {
+			//setup the server port. 
 			int port = serverConfig.getPort();
 			if (serverConfig.useHttps()) {					
 				serversocket = createSecureServerSocket(port);
@@ -125,7 +117,13 @@ public class HttpEngine implements JMXReloadableHttpd {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		executors = new ThreadExecutorFactory(serverConfig).getExecutorService();
+
+		//set the maximun worker threads.
+		int maxThreads = serverConfig.getMaxThreads();
+		LOG.info("MaxServerThreads: " + maxThreads);
+		String threadName = serverConfig.getParam("WorkerThreadName", "httpd");
+		//create the ExecutorService.
+		executors = new ThreadExecutorFactory(threadName).getExecutorService(maxThreads);
 
 		LOG.info("Listen: " + serverConfig.getPort());
         while (!Thread.interrupted()) {
@@ -272,5 +270,15 @@ public class HttpEngine implements JMXReloadableHttpd {
 	@Override
 	public long getMaximumResponseTime() {
 		return counter.getMaximumResponseTime();
+	}
+
+	@Override
+	public int getMaxServerThreads() {
+		return serverConfig.getMaxThreads();
+	}
+
+	@Override
+	public void setMaxServerThreads(int max) {
+		serverConfig.setParam("MaxServerThreads",String.valueOf(max));
 	}
 }

@@ -99,14 +99,13 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	@Override
 	public void handle(HttpRequest request, HttpResponse response, 
 			HttpContext context) {
-		
 		try {
 			for (RequestFilter filter : requestFilters) {
 				filter.doFilter(request, response, context, serviceUrl);
 			}
 
 			doRequest(request, response, context);
-			
+
 			for (ResponseFilter filter : responseFilters) {
 				filter.afterResponse(request, response, context, serviceUrl);
 			}
