@@ -6,6 +6,7 @@ package org.tamacat.httpd.session;
 
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,14 +24,45 @@ public class SessionManagerTest {
 	@Test
 	public void testGetSession() throws Exception {
 		Session session = SessionManager.getInstance().createSession();
-		session.setMaxInactiveInterval(1000);
 		String id = session.getId();
-		System.out.println(id);
+		Assert.assertNotNull(id);
+		session.invalidate();
+		//Thread.sleep(1500);
 		
-		//Thread.sleep(5000);
-		
+		//get the new session.
 		Session session2 = SessionManager.getInstance().getSession(id);
-		System.out.print(session2 != null ? session2.getId() : null);
+		String id2 = session2 != null ? session2.getId() : null;
+		Assert.assertNotNull(id2);
 	}
 
+	@Test
+	public void testRelease() throws Exception {
+		Session session = SessionManager.getInstance().createSession();
+		String id = session.getId();
+		Assert.assertNotNull(id);
+		
+		SessionManager.getInstance().release();
+		
+		//get the new session.
+		Session session2 = SessionManager.getInstance().getSession(id);
+		String id2 = session2 != null ? session2.getId() : null;
+		Assert.assertNotNull(id2);
+	}
+	
+	@Test
+	public void testSerialize() throws Exception {
+		Session session = SessionManager.getInstance().createSession();
+		String id = session.getId();
+		Assert.assertNotNull(id);
+		SessionManager.getInstance().serialize();
+		
+		SessionManager.getInstance().release();
+		
+		SessionManager.getInstance().deserialize();
+
+		Session session2 = SessionManager.getInstance().getSession(id);
+		String id2 = session2 != null ? session2.getId() : null;
+		Assert.assertNotNull(id2);
+		Assert.assertEquals(id, id2);
+	}
 }
