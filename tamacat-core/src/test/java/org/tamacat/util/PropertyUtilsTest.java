@@ -57,11 +57,66 @@ public class PropertyUtilsTest {
     public void testGetPropertiesNotFound() {
         try {
             Properties props4 = PropertyUtils.getProperties(path4);
-            System.out.println(props4);
-            fail();
+            fail("Should be throws ResourceNotFoundException. : " + props4);
         } catch (Exception e) {
             assertEquals(ResourceNotFoundException.class, e.getClass());
         }
     }
+    
+    @Test
+    public void testMarge() {
+    	Properties props = PropertyUtils.marge("test1.properties", "test2.properties");
+    	//marge
+    	assertEquals(props.getProperty("name1"), "1");
+    	assertEquals(props.getProperty("name2"), "2");
+    	assertEquals(props.getProperty("name3"), "3");
 
+    	//override
+    	assertEquals(props.getProperty("name10"), "ABC");
+    	
+    	//add
+    	assertEquals(props.getProperty("name99"), "99");
+    	
+    	//empty value (-> marge)
+    	assertEquals(props.getProperty("test1"), "");
+    	assertEquals(props.getProperty("test2"), "");
+    	
+    	//comment out (-> do not marge)
+    	assertEquals(props.getProperty("test3"), null);
+    }
+    
+    @Test
+    public void testMargeDefault() {
+    	Properties props = PropertyUtils.marge("test1.properties", "no-file.properties");
+    	//marge
+    	assertEquals(props.getProperty("name1"), "1");
+    	assertEquals(props.getProperty("name2"), "2");
+    	assertEquals(props.getProperty("name3"), "3");
+
+    	//default only
+    	assertEquals(props.getProperty("name10"), "10");
+    	assertEquals(props.getProperty("name99"), null);
+    }
+    
+    @Test
+    public void testMargeNotDefault() {
+    	Properties props = PropertyUtils.marge("no-file.properties", "test2.properties");
+    	//marge
+    	assertEquals(props.getProperty("name1"), null);
+    	assertEquals(props.getProperty("name2"), null);
+    	assertEquals(props.getProperty("name3"), null);
+
+    	//default only
+    	assertEquals(props.getProperty("name10"), "ABC");
+    	assertEquals(props.getProperty("name99"), "99");
+    }
+    
+    @Test
+    public void testMargeNotFound() {
+    	Properties props1 = PropertyUtils.marge("no-file.properties", "no-file.properties");
+    	assertEquals(props1.size(), 0);
+    	
+    	Properties props2 = PropertyUtils.marge(null, null);
+    	assertEquals(props2.size(), 0);
+    }
 }
