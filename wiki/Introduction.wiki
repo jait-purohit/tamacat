@@ -15,9 +15,13 @@ Please make the following configuration files for the place where in CLASSPATH.
   * server.properties
   * components.xml
   * url-config.xml
+  * velocity.properties (use by default it)
+  * log4j.properties (use by default it)
+  * mime-types.properties (option)
 
 ==== server.properties (required) ====
 {{{
+ServerName=tamacat-httpd
 Port=80
 https=false
 https.keyStoreFile=test.keystore
@@ -32,14 +36,6 @@ url-config.file=url-config.xml
 JMX.server-url=service:jmx:rmi:///jndi/rmi://localhost/httpd
 JMX.objectname=org.tamacat.httpd:type=HttpEngine
 JMX.rmi.port=1099
-
-# Velocity Engine configuration.
-resource.loader=file
-file.resource.loader.description=Velocity Classpath Resource Loader
-file.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
-file.resource.loader.path=.
-file.resource.loader.cache=false
-file.resource.loader.modificationCheckInterval=2
 }}}
 || *key* || *value* || *description* ||
 || Port  || 80      ||  Httpd Listen Port ||
