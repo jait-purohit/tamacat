@@ -42,7 +42,7 @@ public abstract class AbstractAccessControlFilter implements RequestFilter {
 	}
 	
 	@Override
-	public void init() {
+	public void init(ServiceUrl serviceUrl) {
 		if (cacheSize > 0 && cacheExpire > 0) {
 			cache = new AccessUrlCache(cacheSize, cacheExpire);
 		}

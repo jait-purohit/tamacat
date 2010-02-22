@@ -57,6 +57,6 @@ public class SessionCookieFilter implements RequestFilter {
 	}
 
 	@Override
-	public void init() {	
+	public void init(ServiceUrl serviceUrl) {	
 	}
 }

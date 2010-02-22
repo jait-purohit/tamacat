@@ -5,11 +5,15 @@
 package org.tamacat.httpd.jmx;
 
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class BasicCounter implements BasicHttpMonitor, PerformanceCounter, Serializable {
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
+public class BasicCounter implements PerformanceCounterMonitor, Serializable {
 	private static final long serialVersionUID = 6089725451626828983L;
 	
 	private ThreadLocal<Long> time = new ThreadLocal<Long>();
@@ -20,6 +24,15 @@ public class BasicCounter implements BasicHttpMonitor, PerformanceCounter, Seria
 	private AtomicLong max = new AtomicLong();
 	
 	private final Date startedTime = new Date();
+	private String path;
+	
+	public void setPath(String path) {
+		this.path = path;
+	}
+	
+	public String getPath() {
+		return path;
+	}
 	
 	public int getActiveConnections() {
 		return activeConnections.get();
@@ -86,5 +99,16 @@ public class BasicCounter implements BasicHttpMonitor, PerformanceCounter, Seria
 		responseTimes.addAndGet(time);
 		accessCount.incrementAndGet();
 		if (max.get() < time) max.set(time);
+	}
+	
+	public void register() {
+		try {
+			String name = "org.tamacat.httpd:type=Counter";
+			ObjectName oname = new ObjectName(name);			
+			MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
+        	server.registerMBean(this, oname);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

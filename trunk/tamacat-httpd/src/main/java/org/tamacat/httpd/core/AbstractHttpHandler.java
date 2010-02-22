@@ -41,16 +41,12 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	private static String serverHome;
 
 	/*
-	 * 1. using first mime-types.properties in CLASSPATH. (optional)
-	 * 2. using org/tamacat/httpd/mime-types.properties} in jar archive.
+	 * 1. using org/tamacat/httpd/mime-types.properties} in jar archive.
+	 * 2. override or add the mime-types.properties in CLASSPATH. (optional)
 	 */
     static {
-    	try {
-    		mimeTypes = PropertyUtils.getProperties("mime-types.properties");
-    	} catch (Exception e) {
-    		//use default mime-types.
-    		mimeTypes = PropertyUtils.getProperties("org/tamacat/httpd/mime-types.properties");
-    	}
+    	mimeTypes = PropertyUtils.marge(
+    			"org/tamacat/httpd/mime-types.properties", "mime-types.properties");
 		try {
 			serverHome = System.getProperty("server.home");
 			if (serverHome == null) serverHome = System.getProperty("user.dir");
@@ -69,17 +65,21 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     protected ServiceUrl serviceUrl;
     protected String docsRoot;
     
+    protected List<HttpFilter> filters = new ArrayList<HttpFilter>();
     protected List<RequestFilter> requestFilters = new ArrayList<RequestFilter>();
     protected List<ResponseFilter> responseFilters = new ArrayList<ResponseFilter>();
     
 	@Override
     public void setServiceUrl(ServiceUrl serviceUrl) {
     	this.serviceUrl = serviceUrl;
+    	for (HttpFilter filter : filters) {
+    		filter.init(serviceUrl);
+    	}
     }
     
 	@Override
 	public void setHttpFilter(HttpFilter filter) {
-		filter.init();
+		filters.add(filter);
 		if (filter instanceof RequestFilter) {
 			requestFilters.add((RequestFilter)filter);
 		}
@@ -103,14 +103,14 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 			for (RequestFilter filter : requestFilters) {
 				filter.doFilter(request, response, context, serviceUrl);
 			}
-
 			doRequest(request, response, context);
-
+		} catch (Exception e) {
+			LOG.trace(e.getMessage());
+			handleException(request, response, e);
+		} finally {
 			for (ResponseFilter filter : responseFilters) {
 				filter.afterResponse(request, response, context, serviceUrl);
 			}
-		} catch (Exception e) {
-			handleException(request, response, e);
 		}
 	}
 	
@@ -123,7 +123,6 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	 * @param e
 	 */
 	protected void handleException(HttpRequest request, HttpResponse response, Exception e) {
-		//e.printStackTrace();
 		String html = null;
 		if (e instanceof HttpException) {
 			html = errorPage.getErrorPage(request, response, (HttpException)e);
