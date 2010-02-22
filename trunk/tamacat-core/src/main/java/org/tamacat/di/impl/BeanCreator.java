@@ -199,7 +199,8 @@ public class BeanCreator {
     private <T> T setterInjection(T instance, BeanDefineParam prop, BeanDefine def, Object param) {
         Method method = prop.getMethod();
         if (method == null) {
-            method = ClassUtils.searchMethod(def.getType(), prop.getName(), param.getClass());
+        	Class<?> p = param != null ? param.getClass() : null;
+            method = ClassUtils.searchMethod(def.getType(), prop.getName(), p);
             if (method == null) throw new ClassUtilsException("method is null. [" + prop.getName() + ":" + param + "] in " + instance);
         }
         ClassUtils.invoke(method, instance, param);
