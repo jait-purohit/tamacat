@@ -14,7 +14,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
-import org.tamacat.httpd.jmx.BasicCounter;
+import org.tamacat.httpd.jmx.PerformanceCounter;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.ExceptionUtils;
@@ -27,7 +27,7 @@ public class WorkerThread extends Thread {
 	
     private HttpService service;
     private DefaultHttpServerConnection conn;
-    private BasicCounter counter;
+    private PerformanceCounter counter;
     
     /**
      * <p>Constructs with the specified {@link HttpService}.
@@ -38,7 +38,7 @@ public class WorkerThread extends Thread {
      */
     public WorkerThread(
     		HttpService service, Socket insocket, 
-    		HttpParams params, BasicCounter counter) throws IOException {
+    		HttpParams params, PerformanceCounter counter) throws IOException {
     	this.service = service;
     	this.conn = new DefaultHttpServerConnection();
     	this.conn.bind(insocket, params);

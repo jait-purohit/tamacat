@@ -11,7 +11,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -133,7 +132,6 @@ public class HttpEngine implements JMXReloadableHttpd {
                 executors.execute(new WorkerThread(
                 	service, insocket, paramsBuilder.buildParams(), counter)
                 );
-                //counter.access();
             } catch (InterruptedIOException e) {
             	counter.error();
             	LOG.error(e.getMessage());
@@ -207,6 +205,7 @@ public class HttpEngine implements JMXReloadableHttpd {
 			if (StringUtils.isNotEmpty(jmxUrl)) {
 				String objectName = serverConfig.getParam(
 						"JMX.objectname","org.tamacat.httpd:type=HttpEngine");
+				
 				int rmiPort = serverConfig.getParam("JMX.rmi.port", -1);
 				if (rmiPort > 0) {
 					LocateRegistry.createRegistry(rmiPort);
@@ -220,6 +219,7 @@ public class HttpEngine implements JMXReloadableHttpd {
 	        	sv.start();
 	        	isMXServerStarted = true;
 			}
+			counter.register();
 		} catch (Exception e) {
 			LOG.error(e.getMessage());
 			LOG.warn(ExceptionUtils.getStackTrace(e));
@@ -227,49 +227,9 @@ public class HttpEngine implements JMXReloadableHttpd {
 	}
 
 	@Override
-	public int getActiveConnections() {
-		return counter.getActiveConnections();
-	}
-
-	@Override
-	public long getAccessCount() {
-		return counter.getAccessCount();
-	}
-
-	@Override
-	public long getErrorCount() {
-		return counter.getErrorCount();
-	}
-
-	@Override
-	public Date getStartedTime() {
-		return counter.getStartedTime();
-	}
-
-	@Override
-	public void resetAccessCount() {
-		counter.resetAccessCount();
-	}
-
-	@Override
-	public void resetErrorCount() {
-		counter.resetErrorCount();
-	}
-	
-	@Override
 	public void reload() {
 		init();
 		LOG.info("reloaded.");
-	}
-
-	@Override
-	public long getAverageResponseTime() {
-		return counter.getAverageResponseTime();
-	}
-
-	@Override
-	public long getMaximumResponseTime() {
-		return counter.getMaximumResponseTime();
 	}
 
 	@Override

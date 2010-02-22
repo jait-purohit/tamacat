@@ -1,6 +1,8 @@
 package org.tamacat.httpd.filter;
 
+import org.tamacat.httpd.config.ServiceUrl;
+
 public interface HttpFilter {
 	
-	void init();
+	void init(ServiceUrl serviceUrl);
 }

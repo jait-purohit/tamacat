@@ -90,7 +90,7 @@ public class VelocityListingsPage {
    			template.merge(context, writer);
    			return writer.toString();
     	} catch (Exception e) {
-    		LOG.debug(e.getMessage());
+    		LOG.trace(e.getMessage());
     		return DEFAULT_ERROR_500_HTML;
     	}
     }

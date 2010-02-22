@@ -53,7 +53,7 @@ public class ClientIPAccessControlFilter implements RequestFilter {
 	}
 
 	@Override
-	public void init() {}
+	public void init(ServiceUrl serviceUrl) {}
 
 	public void setAllow(String address) {
 		setPattern(address, true);

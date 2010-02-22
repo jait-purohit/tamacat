@@ -33,7 +33,7 @@ public class SingleSignOnFilter implements RequestFilter {
 	}
 	
 	@Override
-	public void init() {
+	public void init(ServiceUrl serviceUrl) {
 	}
 	
 	@Override

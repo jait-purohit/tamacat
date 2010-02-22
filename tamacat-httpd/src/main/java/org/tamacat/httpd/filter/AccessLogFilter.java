@@ -19,7 +19,7 @@ public class AccessLogFilter implements RequestFilter, ResponseFilter {
 	}
 
 	@Override
-	public void init() {}
+	public void init(ServiceUrl serviceUrl) {}
 
 	@Override
 	public void afterResponse(HttpRequest request, HttpResponse response,

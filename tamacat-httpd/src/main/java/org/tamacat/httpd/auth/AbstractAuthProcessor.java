@@ -4,6 +4,7 @@
  */
 package org.tamacat.httpd.auth;
 
+import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.filter.RequestFilter;
 
 /**
@@ -15,7 +16,7 @@ public abstract class AbstractAuthProcessor implements RequestFilter {
 	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
 	
 	@Override
-	public void init() {
+	public void init(ServiceUrl serviceUrl) {
 		if (authComponent != null) {
 			authComponent.init();
 		}
