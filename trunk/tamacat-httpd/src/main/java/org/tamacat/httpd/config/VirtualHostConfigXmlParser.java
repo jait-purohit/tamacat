@@ -131,6 +131,7 @@ public class VirtualHostConfigXmlParser {
 					if (StringUtils.isNotEmpty(handler)) {					
 						serviceUrl.setHandlerName(handler.getNodeValue());
 					}
+					serviceUrl.setHost(getURL(host));
 				}
 				//<reverse>xxx</reverse>
 				if (serviceUrl.isType(ServiceType.REVERSE)) {

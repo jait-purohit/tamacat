@@ -1,5 +1,7 @@
 package org.tamacat.httpd.filter;
 
+import java.net.URL;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
@@ -24,19 +26,26 @@ public class PerformanceCounterFilter implements RequestFilter, ResponseFilter {
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context, ServiceUrl serviceUrl) {
-		BasicCounter counter = urlCounter.getCounter(serviceUrl.getPath());
+		BasicCounter counter = urlCounter.getCounter(getPath(serviceUrl));
 		if (counter != null) counter.countUp();
 	}
 
 	@Override
 	public void init(ServiceUrl serviceUrl) {
-		urlCounter.register(serviceUrl.getPath());
+		urlCounter.register(getPath(serviceUrl));
 	}
 
 	@Override
 	public void afterResponse(HttpRequest request, HttpResponse response,
 			HttpContext context, ServiceUrl serviceUrl) {
-		BasicCounter counter = urlCounter.getCounter(serviceUrl.getPath());
+		BasicCounter counter = urlCounter.getCounter(getPath(serviceUrl));
 		if (counter != null) counter.countDown();
+	}
+	
+	private static String getPath(ServiceUrl serviceUrl) {
+		URL host = serviceUrl.getHost();
+		String name = host != null? 
+			host.getHost() + serviceUrl.getPath() : serviceUrl.getPath();
+		return name; 
 	}
 }

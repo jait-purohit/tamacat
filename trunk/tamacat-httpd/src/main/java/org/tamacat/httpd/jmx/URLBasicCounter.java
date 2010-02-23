@@ -19,7 +19,7 @@ public class URLBasicCounter {
 		= new LinkedHashMap<String, ObjectName>();
 	
 	private static final Map<String, BasicCounter> counters = new HashMap<String, BasicCounter>();
-	private String objectName = "org.tamacat.httpd:type=URL";
+	private String objectName = "org.tamacat.httpd:type=URL/";
 	
 	public BasicCounter getCounter(String url) {
 		return counters.get(url);
