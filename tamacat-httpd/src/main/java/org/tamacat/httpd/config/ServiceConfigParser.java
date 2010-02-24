@@ -39,7 +39,7 @@ import org.w3c.dom.NodeList;
  * }
  * </pre>
  */
-public class VirtualHostConfigXmlParser {
+public class ServiceConfigParser {
 
 	static final String REVERSE_CONFIG = "service-config";
 	static final String SERVICE = "service";
@@ -59,7 +59,7 @@ public class VirtualHostConfigXmlParser {
 	 * <p>Constructs with the specified {@link ServerConfig}.
 	 * @param serverConfig
 	 */
-	public VirtualHostConfigXmlParser(ServerConfig serverConfig) {
+	public ServiceConfigParser(ServerConfig serverConfig) {
 		this.serverConfig = serverConfig;
 	}
 	

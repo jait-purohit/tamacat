@@ -7,6 +7,10 @@ package org.tamacat.httpd.config;
 import java.util.HashMap;
 import java.util.Set;
 
+/**
+ * <p>It is the service configuration for Virtual host.
+ * The mapping of hostname and ${@link ServiceConfig}.
+ */
 public class VirtualHostConfig {
 
 	private HashMap<String,ServiceConfig> serviceConfigs
