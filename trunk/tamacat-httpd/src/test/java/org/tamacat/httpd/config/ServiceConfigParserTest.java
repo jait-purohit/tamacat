@@ -12,15 +12,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ServiceConfigXmlParserTest {
+public class ServiceConfigParserTest {
 
-	ServiceConfigXmlParser parser;
+	ServiceConfigParser parser;
 	
 	@Before
 	public void setUp() throws Exception {
 		ServerConfig serverConfig = new ServerConfig();
 		serverConfig.setParam("url-config.file", "url-config.xml");
-		parser = new ServiceConfigXmlParser(serverConfig);
+		parser = new ServiceConfigParser(serverConfig);
 	}
 
 	@After
@@ -29,9 +29,9 @@ public class ServiceConfigXmlParserTest {
 
 	@Test
 	public void testGetServiceConfig() {
-		ServiceConfig config = parser.getServiceConfig();
-		List<ServiceUrl> list = config.getServiceUrlList();
+		VirtualHostConfig config = parser.getVirtualHostConfig();
+		ServiceConfig serviceConfig = config.getDefaultServiceConfig();
+		List<ServiceUrl> list = serviceConfig.getServiceUrlList();
 		Assert.assertTrue(list.size() > 0);
 	}
-
 }

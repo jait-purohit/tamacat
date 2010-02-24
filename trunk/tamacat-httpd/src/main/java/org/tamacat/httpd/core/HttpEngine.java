@@ -27,7 +27,7 @@ import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfig;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.config.VirtualHostConfig;
-import org.tamacat.httpd.config.VirtualHostConfigXmlParser;
+import org.tamacat.httpd.config.ServiceConfigParser;
 import org.tamacat.httpd.jmx.BasicCounter;
 import org.tamacat.httpd.jmx.JMXReloadableHttpd;
 import org.tamacat.httpd.ssl.SSLContextCreator;
@@ -79,7 +79,7 @@ public class HttpEngine implements JMXReloadableHttpd {
 		HttpHandlerFactory factory = new DefaultHttpHandlerFactory();
 
 		HostRequestHandlerResolver hostResolver = new HostRequestHandlerResolver();
-		VirtualHostConfig hostConfig = new VirtualHostConfigXmlParser(serverConfig).getVirtualHostConfig();
+		VirtualHostConfig hostConfig = new ServiceConfigParser(serverConfig).getVirtualHostConfig();
 		for (String host : hostConfig.getHosts()) {
 			HttpRequestHandlerRegistry registry = new HttpRequestHandlerRegistry();
 			ServiceConfig serviceConfig = hostConfig.getServiceConfig(host);
