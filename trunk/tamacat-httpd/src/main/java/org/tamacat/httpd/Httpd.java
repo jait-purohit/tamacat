@@ -22,6 +22,7 @@ public class Httpd {
 		if (di == null) throw new IllegalArgumentException(config + " is not found.");
 		HttpEngine server = di.getBean("server", HttpEngine.class);
 		if (server == null) throw new IllegalArgumentException();
-		server.start();
+		Thread t = new Thread(server);
+		t.start();
 	}
 }

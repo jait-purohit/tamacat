@@ -11,7 +11,7 @@ import java.util.Set;
  * <p>It is the service configuration for Virtual host.
  * The mapping of hostname and ${@link ServiceConfig}.
  */
-public class VirtualHostConfig {
+public class HostServiceConfig {
 
 	private HashMap<String,ServiceConfig> serviceConfigs
 		= new HashMap<String, ServiceConfig>();

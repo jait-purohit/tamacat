@@ -53,7 +53,7 @@ public class ServiceConfigParser {
 	static final String URL_CONFIG = "url-config.xml";
 	protected ServerConfig serverConfig;
 	
-	protected VirtualHostConfig config = new VirtualHostConfig();
+	protected HostServiceConfig config = new HostServiceConfig();
 
 	/**
 	 * <p>Constructs with the specified {@link ServerConfig}.
@@ -67,7 +67,7 @@ public class ServiceConfigParser {
 	 * <p>Returns the {@link ServiceConfig}.
 	 * @return mapping to ServiceConfig.
 	 */
-	public VirtualHostConfig getVirtualHostConfig() {
+	public HostServiceConfig getVirtualHostConfig() {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -79,7 +79,7 @@ public class ServiceConfigParser {
 		}
 	}
 	
-	VirtualHostConfig parse(Document doc) {
+	HostServiceConfig parse(Document doc) {
 		Element root = doc.getDocumentElement();
 		NodeList services = root.getChildNodes();
 		parseServices(services);
