@@ -9,8 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -21,8 +21,8 @@ public final class SessionManager implements SessionListener {
 	  static final SessionManager SELF = new SessionManager();
 	
 	private
-	  static HashMap<String, Session> MANAGER
-	  	= new HashMap<String, Session>();
+	  static ConcurrentHashMap<String, Session> MANAGER
+	  	= new ConcurrentHashMap<String, Session>();
 
 	private static int defaultMaxInactiveInterval;
 
@@ -103,7 +103,7 @@ public final class SessionManager implements SessionListener {
 		serializer.deserialize();
 	}
 	
-	public void release() {
+	public synchronized void release() {
 		CLEANER.interrupt();
 		MANAGER.clear();
 	}
@@ -128,27 +128,31 @@ public final class SessionManager implements SessionListener {
 		
 		@Override
 		public void serialize() throws IOException {
-			ObjectOutputStream out = new ObjectOutputStream(
+			synchronized (MANAGER) {
+				ObjectOutputStream out = new ObjectOutputStream(
 						new FileOutputStream(fileName));
-			out.writeObject(MANAGER);
-			out.close();
+				out.writeObject(MANAGER);
+				out.close();
+			}
 		}
 		
 		@Override
 		public void deserialize() throws IOException {
-			ObjectInputStream in = new ObjectInputStream(
+			synchronized (MANAGER) {
+				ObjectInputStream in = new ObjectInputStream(
 						new FileInputStream(fileName));
-			try {
-				@SuppressWarnings("unchecked")
-				HashMap<String, Session> manager
-					= (HashMap) in.readObject();
-				if (manager != null) {
-					MANAGER = manager;
+				try {
+					@SuppressWarnings("unchecked")
+					ConcurrentHashMap<String, Session> manager
+						= (ConcurrentHashMap) in.readObject();
+					if (manager != null) {
+						MANAGER = manager;
+					}
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
 				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				in.close();
 			}
-			in.close();
 		}
 	}
 	
@@ -182,6 +186,7 @@ public final class SessionManager implements SessionListener {
 		
 		void checkAndCleanup(Session session) {
 			if (session != null) {
+				String id = session.getId();
 				if (LOG.isTraceEnabled()) {
 					LOG.info(System.currentTimeMillis()
 						- session.getCreationDate().getTime()
@@ -190,7 +195,6 @@ public final class SessionManager implements SessionListener {
 				if (System.currentTimeMillis() - session.getCreationDate().getTime()
 					> session.getMaxInactiveInterval()) {
 					try {
-						String id = session.getId();
 						session.invalidate();
 						LOG.debug("cleanup: " + id);
 					} catch (Exception e) {

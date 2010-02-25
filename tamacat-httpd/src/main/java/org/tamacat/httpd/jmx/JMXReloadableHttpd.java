@@ -11,12 +11,14 @@ public interface JMXReloadableHttpd	extends Reloadable {
 	/**
 	 * <p>start the Httpd.
 	 */
-	void start();
+	void startHttpd();
 	
 	/**
 	 * <p>stop the Httpd.
 	 */
-	void stop();
+	void stopHttpd();
+	
+	void restartHttpd();
 	
 	int getMaxServerThreads();
 	

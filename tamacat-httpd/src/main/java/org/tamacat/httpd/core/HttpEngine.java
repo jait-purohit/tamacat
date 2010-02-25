@@ -26,7 +26,7 @@ import org.apache.http.protocol.HttpRequestHandlerRegistry;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfig;
 import org.tamacat.httpd.config.ServiceUrl;
-import org.tamacat.httpd.config.VirtualHostConfig;
+import org.tamacat.httpd.config.HostServiceConfig;
 import org.tamacat.httpd.config.ServiceConfigParser;
 import org.tamacat.httpd.jmx.BasicCounter;
 import org.tamacat.httpd.jmx.JMXReloadableHttpd;
@@ -39,7 +39,7 @@ import org.tamacat.util.StringUtils;
 /**
  * <p>It is implements of the multi thread server.
  */
-public class HttpEngine implements JMXReloadableHttpd {
+public class HttpEngine implements JMXReloadableHttpd, Runnable {
 
 	static final Log LOG = LogFactory.getLog(HttpEngine.class);
 
@@ -79,7 +79,7 @@ public class HttpEngine implements JMXReloadableHttpd {
 		HttpHandlerFactory factory = new DefaultHttpHandlerFactory();
 
 		HostRequestHandlerResolver hostResolver = new HostRequestHandlerResolver();
-		VirtualHostConfig hostConfig = new ServiceConfigParser(serverConfig).getVirtualHostConfig();
+		HostServiceConfig hostConfig = new ServiceConfigParser(serverConfig).getVirtualHostConfig();
 		for (String host : hostConfig.getHosts()) {
 			HttpRequestHandlerRegistry registry = new HttpRequestHandlerRegistry();
 			ServiceConfig serviceConfig = hostConfig.getServiceConfig(host);
@@ -101,7 +101,7 @@ public class HttpEngine implements JMXReloadableHttpd {
 	 * <p>Start the http server.
 	 */
 	@Override
-	public void start() {
+	public void startHttpd() {
 		//Initalize engine.
 		init();
 		
@@ -151,13 +151,30 @@ public class HttpEngine implements JMXReloadableHttpd {
 	}
 	
 	@Override
-	public void stop() {
+	public void stopHttpd() {
 		try {
 			serversocket.close();
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 		} finally {
 			executors.shutdown();
+		}
+	}
+	
+	@Override
+	public void restartHttpd() {
+		for (;;) {
+			if (counter.getActiveConnections() == 0) {
+				stopHttpd();
+				startHttpd();
+				break;
+			} else {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
@@ -240,5 +257,10 @@ public class HttpEngine implements JMXReloadableHttpd {
 	@Override
 	public void setMaxServerThreads(int max) {
 		serverConfig.setParam("MaxServerThreads",String.valueOf(max));
+	}
+
+	@Override
+	public void run() {
+		startHttpd();
 	}
 }

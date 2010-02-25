@@ -29,7 +29,7 @@ public class ServiceConfigParserTest {
 
 	@Test
 	public void testGetServiceConfig() {
-		VirtualHostConfig config = parser.getVirtualHostConfig();
+		HostServiceConfig config = parser.getVirtualHostConfig();
 		ServiceConfig serviceConfig = config.getDefaultServiceConfig();
 		List<ServiceUrl> list = serviceConfig.getServiceUrlList();
 		Assert.assertTrue(list.size() > 0);
