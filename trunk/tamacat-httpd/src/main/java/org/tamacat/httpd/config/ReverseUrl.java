@@ -25,6 +25,12 @@ public interface ReverseUrl {
 	URL getHost();
 
 	/**
+	 * <p>Set the host URL.
+	 * @param host
+	 */
+	void setHost(URL host);
+	
+	/**
 	 * <p>Returns the URL of backend server.
 	 * @return URL
 	 */

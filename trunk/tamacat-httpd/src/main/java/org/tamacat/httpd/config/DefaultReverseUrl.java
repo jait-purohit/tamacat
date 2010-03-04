@@ -37,6 +37,11 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 	public URL getHost() {
 		return serviceUrl.getHost();
 	}
+	
+	@Override
+	public void setHost(URL host) {
+		serviceUrl.setHost(host);
+	}
 
 	@Override
 	public URL getReverse() {
@@ -74,10 +79,11 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 
 	@Override
 	public String getConvertRequestedUrl(String path) {
-    	if (path != null) {
+		URL host = getHost();
+    	if (path != null && host != null) {
     		return path.replaceFirst(
     				reverseUrl.toString(),
-    				getHost().toString()
+    				host.toString()
     		);
     	} else {
     		return path;
