@@ -3,7 +3,7 @@
 
 = Release Notes =
 
-== 0.5 release (2009-12-15)
+==0.5 release (2009-12-15)==
 ------------------------
 The highlights in the tamacat-httpd-0.5 are the following:
 
@@ -13,7 +13,7 @@ The highlights in the tamacat-httpd-0.5 are the following:
   * Gzip compression with content-type header.
 
 
-== 0.4 release (2009-08-25)
+==0.4 release (2009-08-25)==
 ------------------------
 The highlights in the tamacat-httpd-0.4 are the following:
 
@@ -21,7 +21,7 @@ The highlights in the tamacat-httpd-0.4 are the following:
   * Load Balancer support.(Round Robin)
   * Changed to DI container (springframework -> tamacat-core)
 
-== 0.3 release (2009-07-29)
+==0.3 release (2009-07-29)==
 ------------------------
 The first development release of tamacat-httpd:
 
