@@ -3,27 +3,27 @@
 
 = Release Notes =
 
-* 0.5 release (2009-12-15)
+== 0.5 release (2009-12-15)
 ------------------------
 The highlights in the tamacat-httpd-0.5 are the following:
 
-- Reloadable configuration file using JMX.
-- Add the JMX stop/start remote operations.
-- HTML link conversion on reverse proxy.
-- Gzip compression with content-type header.
+* Reloadable configuration file using JMX.
+* Add the JMX stop/start remote operations.
+* HTML link conversion on reverse proxy.
+* Gzip compression with content-type header.
 
 
-* 0.4 release (2009-08-25)
+== 0.4 release (2009-08-25)
 ------------------------
 The highlights in the tamacat-httpd-0.4 are the following:
 
-- Add directory listings page. (velocity template)
-- Load Balancer support.(Round Robin)
-- Changed to DI container (springframework -> tamacat-core)
+* Add directory listings page. (velocity template)
+* Load Balancer support.(Round Robin)
+* Changed to DI container (springframework -> tamacat-core)
 
-* 0.3 release (2009-07-29)
+== 0.3 release (2009-07-29)
 ------------------------
 The first development release of tamacat-httpd:
 
-- Implements http/https server with reverse proxy.
-- Customizable HTML page with velocity template.
+* Implements http/https server with reverse proxy.
+* Customizable HTML page with velocity template.
