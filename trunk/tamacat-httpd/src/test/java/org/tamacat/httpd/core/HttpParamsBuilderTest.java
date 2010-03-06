@@ -27,7 +27,7 @@ public class HttpParamsBuilderTest {
 	public void testBuildDefault() {
 		HttpParamsBuilder builder = new HttpParamsBuilder();
 		HttpParams params = builder.buildParams();
-		assertEquals(30000, params.getParameter(CoreConnectionPNames.SO_TIMEOUT));
+		assertEquals(5000, params.getParameter(CoreConnectionPNames.SO_TIMEOUT));
 		assertEquals((8*1024), params.getParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE));
 		assertEquals(false, params.getParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK));
 		assertEquals(true, params.getParameter(CoreConnectionPNames.TCP_NODELAY));
@@ -37,14 +37,16 @@ public class HttpParamsBuilderTest {
 	@Test
 	public void testBuild() {
 		HttpParamsBuilder builder = new HttpParamsBuilder();
-		builder.socketTimeout(5000);
+		builder.socketTimeout(3000);
+		builder.connectionTimeout(10000);
 		builder.socketBufferSize((4*1024));
 		builder.staleConnectionCheck(true);
 		builder.tcpNoDelay(false);
 		builder.originServer("TEST/1.1");
 		
 		HttpParams params = builder.buildParams();
-		assertEquals(5000, params.getParameter(CoreConnectionPNames.SO_TIMEOUT));
+		assertEquals(3000, params.getParameter(CoreConnectionPNames.SO_TIMEOUT));
+		assertEquals(10000, params.getParameter(CoreConnectionPNames.CONNECTION_TIMEOUT));
 		assertEquals((4*1024), params.getParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE));
 		assertEquals(true, params.getParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK));
 		assertEquals(false, params.getParameter(CoreConnectionPNames.TCP_NODELAY));

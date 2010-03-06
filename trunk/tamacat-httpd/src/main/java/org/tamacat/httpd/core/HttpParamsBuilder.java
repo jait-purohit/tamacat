@@ -17,19 +17,31 @@ import org.apache.http.params.HttpParams;
  */
 public class HttpParamsBuilder {
 
-	private int serverSocketTimeout = 30000;
-	private int serverSocketBufferSize = 8*1024;
+	//default
+	private int serverSocketTimeout = 5000; //5ms
+	private int connectionTimeout = 30000; //30ms
+	private int serverSocketBufferSize = 8*1024; //8192
 	private boolean staleConnectionCheck = false;
 	private boolean tcpNoDelay = true;
 	private String originServer = "tamacat-httpd";
 	
 	/**
-	 * <p>Set a server socket timeout, default {@code 30000} ms.
+	 * <p>Set a server socket timeout, default {@code 5000} ms.
 	 * @param serverSocketTimeout
 	 * @return milli seconds of server socket timeout.
 	 */
 	public HttpParamsBuilder socketTimeout(int serverSocketTimeout) {
 		this.serverSocketTimeout = serverSocketTimeout;
+		return this;
+	}
+	
+	/**
+	 * <p>Set a connection timeout, default {@code 30000} ms.
+	 * @param connectionTimeout
+	 * @return milli seconds of connection timeout.
+	 */
+	public HttpParamsBuilder connectionTimeout(int connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
 		return this;
 	}
 	
@@ -80,6 +92,7 @@ public class HttpParamsBuilder {
 	public HttpParams buildParams() {
 		return new BasicHttpParams()
 			.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, serverSocketTimeout)
+			.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connectionTimeout)
 			.setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, serverSocketBufferSize)
 			.setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, staleConnectionCheck)
 			.setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, tcpNoDelay)

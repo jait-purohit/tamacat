@@ -16,6 +16,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultHttpClientConnection;
@@ -51,7 +52,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     private HttpProcessor httpproc;
     private HttpParamsBuilder builder = new HttpParamsBuilder();
 	private HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
-
+	private PlainSocketFactory socketFactory = PlainSocketFactory.getSocketFactory();
+	
 	/**
 	 * <p>Default constructor.
 	 */
@@ -60,10 +62,22 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		setDefaultHttpRequestInterceptor();
 	}
 	
+	/**
+	 * <p>Get the backend server configuration parameters
+	 * from the server.properties.
+	 * 
+	 * <p> default value is:
+	 * <pre>
+	 * BackEndSocketTimeout=5000
+	 * BackEndConnectionTimeout=10000
+	 * BackEndSocketBufferSize=8192
+	 * </pre>
+	 */
 	@Override
     public void setServiceUrl(ServiceUrl serviceUrl) {
     	this.serviceUrl = serviceUrl;
-    	builder.socketTimeout(serviceUrl.getServerConfig().getParam("BackEndSocketTimeout", 30000))
+    	builder.socketTimeout(serviceUrl.getServerConfig().getParam("BackEndSocketTimeout", 5000))
+    	  .connectionTimeout(serviceUrl.getServerConfig().getParam("BackEndConnectionTimeout", 10000))
           .socketBufferSize(serviceUrl.getServerConfig().getParam("BackEndSocketBufferSize", (8*1024)));
     }
 	
@@ -110,10 +124,14 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        }
 	        context.setAttribute("reverseUrl", reverseUrl);
 	        ReverseUtils.setXForwardedFor(request, context);
-
-	        outsocket = new Socket(
-					reverseUrl.getTargetAddress().getHostName(),
-					reverseUrl.getTargetAddress().getPort());
+	        outsocket = socketFactory.createSocket();
+	        socketFactory.connectSocket(outsocket, 
+	        	reverseUrl.getTargetAddress().getHostName(),
+	        	reverseUrl.getTargetAddress().getPort(),
+	        	null, -1, builder.buildParams());
+	        //outsocket = new Socket(
+			//		reverseUrl.getTargetAddress().getHostName(),
+			//		reverseUrl.getTargetAddress().getPort());
 			DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
 	        conn.bind(outsocket, builder.buildParams());
 	        

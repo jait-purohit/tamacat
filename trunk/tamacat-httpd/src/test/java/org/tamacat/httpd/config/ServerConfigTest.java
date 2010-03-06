@@ -24,6 +24,22 @@ public class ServerConfigTest {
 	}
 
 	@Test
+	public void testGetSocketTimeout() {
+		assertEquals(config.getSocketTimeout(), 5000);
+		
+		config.setParam("ServerSocketTimeout", "30000");
+		assertEquals(config.getSocketTimeout(), 30000);
+	}
+	
+	@Test
+	public void testGetConnectionTimeout() {
+		assertEquals(config.getConnectionTimeout(), 10000);
+		
+		config.setParam("ConnectionTimeout", "30000");
+		assertEquals(config.getConnectionTimeout(), 30000);
+	}
+	
+	@Test
 	public void testGetParamString() {
 		assertEquals("url-config.xml", config.getParam("url-config.file"));
 		assertEquals(null, config.getParam("none"));
