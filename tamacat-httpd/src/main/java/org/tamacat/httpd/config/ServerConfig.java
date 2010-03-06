@@ -65,12 +65,21 @@ public class ServerConfig {
 	/**
 	 * <p>Returns the Socket timeout (ms).
 	 * @return Get the parameter value key of "ServerSocketTimeout",
-	 * if value is null then returns {@code 30000}.
+	 * if value is null then returns {@code 5000}.
 	 */
 	public int getSocketTimeout() {
-		return getParam("ServerSocketTimeout", 30000);
+		return getParam("ServerSocketTimeout", 5000);
 	}
 
+	/**
+	 * <p>Returns the Connection timeout (ms).
+	 * @return Get the parameter value key of "ConnectionTimeout",
+	 * if value is null then returns {@code 10000}.
+	 */
+	public int getConnectionTimeout() {
+		return getParam("ConnectionTimeout", 10000);
+	}
+	
 	/**
 	 * <p>Returns the Socket buffer size.
 	 * @return Get the parameter value key of "ServerSocketBufferSize",
