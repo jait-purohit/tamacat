@@ -35,7 +35,7 @@
   </bean>
   
   <bean id="SessionFilter" class="org.tamacat.httpd.filter.SessionCookieFilter">
-    <property name="essionCookieName">
+    <property name="sessionCookieName">
       <value>tamacat-httpd-Session</value>
     </property>
   </bean>

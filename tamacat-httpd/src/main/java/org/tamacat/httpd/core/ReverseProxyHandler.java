@@ -75,7 +75,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	 */
 	@Override
     public void setServiceUrl(ServiceUrl serviceUrl) {
-    	this.serviceUrl = serviceUrl;
+    	super.setServiceUrl(serviceUrl);
     	builder.socketTimeout(serviceUrl.getServerConfig().getParam("BackEndSocketTimeout", 5000))
     	  .connectionTimeout(serviceUrl.getServerConfig().getParam("BackEndConnectionTimeout", 10000))
           .socketBufferSize(serviceUrl.getServerConfig().getParam("BackEndSocketBufferSize", (8*1024)));
