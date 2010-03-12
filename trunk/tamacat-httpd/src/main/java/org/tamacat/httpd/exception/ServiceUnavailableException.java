@@ -4,6 +4,8 @@
  */
 package org.tamacat.httpd.exception;
 
+import org.tamacat.httpd.core.BasicHttpStatus;
+
 /**
  * <p>Throws 503 Service Unavailable.
  */
@@ -12,19 +14,19 @@ public class ServiceUnavailableException extends HttpException {
 	private static final long serialVersionUID = 1L;
 
 	public ServiceUnavailableException() {
-		super(HttpStatus.SC_SERVICE_UNAVAILABLE);
+		super(BasicHttpStatus.SC_SERVICE_UNAVAILABLE);
 	}
 
 	public ServiceUnavailableException(Throwable cause) {
-		super(HttpStatus.SC_SERVICE_UNAVAILABLE, cause);
+		super(BasicHttpStatus.SC_SERVICE_UNAVAILABLE, cause);
 	}
 
 	public ServiceUnavailableException(String message) {
-		super(HttpStatus.SC_SERVICE_UNAVAILABLE, message);
+		super(BasicHttpStatus.SC_SERVICE_UNAVAILABLE, message);
 	}
 
 	public ServiceUnavailableException(String message,
 			Throwable cause) {
-		super(HttpStatus.SC_SERVICE_UNAVAILABLE, message, cause);
+		super(BasicHttpStatus.SC_SERVICE_UNAVAILABLE, message, cause);
 	}
 }

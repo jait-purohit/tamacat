@@ -11,8 +11,8 @@ import org.apache.velocity.VelocityContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.exception.HttpException;
-import org.tamacat.httpd.exception.HttpStatus;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 
 public class VelocityErrorPageTest {
@@ -33,7 +33,7 @@ public class VelocityErrorPageTest {
 		
 		try {
 			HttpException exception = new HttpException(
-				HttpStatus.SC_INTERNAL_SERVER_ERROR, "Test Error.");
+				BasicHttpStatus.SC_INTERNAL_SERVER_ERROR, "Test Error.");
 			String html = page.getErrorPage(request, response, exception);
 			assertNotNull(html);
 		} catch (Exception e) {

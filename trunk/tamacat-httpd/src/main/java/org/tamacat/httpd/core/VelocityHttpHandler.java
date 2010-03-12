@@ -37,7 +37,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	@Override
 	protected void doRequest(HttpRequest request, HttpResponse response,
 			HttpContext context) throws HttpException, IOException {
-		RequestUtils.setParameters(request, context);
+		RequestUtils.setParameters(request, context, "UTF-8");
 		
 		String path = request.getRequestLine().getUri();
 		int idx = path.lastIndexOf(".html");

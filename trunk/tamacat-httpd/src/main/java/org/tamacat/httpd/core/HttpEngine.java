@@ -79,7 +79,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		HttpHandlerFactory factory = new DefaultHttpHandlerFactory();
 
 		HostRequestHandlerResolver hostResolver = new HostRequestHandlerResolver();
-		HostServiceConfig hostConfig = new ServiceConfigParser(serverConfig).getVirtualHostConfig();
+		HostServiceConfig hostConfig = new ServiceConfigParser(serverConfig).getConfig();
 		for (String host : hostConfig.getHosts()) {
 			HttpRequestHandlerRegistry registry = new HttpRequestHandlerRegistry();
 			ServiceConfig serviceConfig = hostConfig.getServiceConfig(host);

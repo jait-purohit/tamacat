@@ -2,7 +2,7 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.exception;
+package org.tamacat.httpd.core;
 
 import java.util.HashMap;
 
@@ -11,7 +11,7 @@ import java.util.HashMap;
  * RFC 2616 Hypertext Transfer Protocol -- HTTP/1.1 (June 1999)
  * @see {@link http://www.ietf.org/rfc/rfc2616.txt}
  */
-public enum HttpStatus {
+public enum BasicHttpStatus implements HttpStatus {
 	
 	//RFC 2616(HTTP/1.1) Informational 1xx
 	SC_CONTINUE(100, "Continue"),
@@ -81,12 +81,12 @@ public enum HttpStatus {
 	private final int statusCode;
 	private final String reasonPhrase;
 	
-	HttpStatus(int statusCode, String reasonPhrase) {
+	BasicHttpStatus(int statusCode, String reasonPhrase) {
 		this.statusCode = statusCode;
 		this.reasonPhrase = reasonPhrase;
 	}
 	
-	static HashMap<Integer,HttpStatus> find = new HashMap<Integer, HttpStatus>();
+	static HashMap<Integer,HttpStatus> find = new HashMap<Integer,HttpStatus>();
 	
 	static {
 		for (HttpStatus s : values()) {

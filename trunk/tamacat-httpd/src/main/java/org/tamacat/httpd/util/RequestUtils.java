@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2009, TamaCat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.util;
 
 import java.io.BufferedReader;
@@ -7,6 +11,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Set;
 
 import org.apache.http.Header;
@@ -19,9 +24,9 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.core.RequestParameters;
 import org.tamacat.httpd.exception.HttpException;
-import org.tamacat.httpd.exception.HttpStatus;
 import org.tamacat.util.IOUtils;
 
 public class RequestUtils {
@@ -36,10 +41,12 @@ public class RequestUtils {
 		parameters.setParameter(name, values);
 	}
 	
-	public static void setParameters(HttpRequest request, HttpContext context) {
+	public static void setParameters(
+			HttpRequest request, HttpContext context, String encoding) {
 		String path = request.getRequestLine().getUri();
 		//String path = docsRoot + request.getRequestLine().getUri();
 		RequestParameters parameters = getParameters(context);
+
 		if (path.indexOf('?') >= 0) {
 			String[] requestParams = path.split("\\?");
 			path = requestParams[0];
@@ -50,7 +57,7 @@ public class RequestUtils {
 				for (String kv : param) {
 					String[] p = kv.split("=");
 					if (p.length >=2) {
-						parameters.setParameter(p[0], p[1]);
+						parameters.setParameter(p[0], decode(p[1], encoding));
 					}
 				}
 			}
@@ -74,11 +81,12 @@ public class RequestUtils {
 						for (String param : params) {
 							String[] keyValue = param.split("=");
 							if (keyValue.length >= 2) {
-								parameters.setParameter(keyValue[0], keyValue[1]);
+								parameters.setParameter(keyValue[0], 
+										decode(keyValue[1], encoding));
 							}
 						}
 					} catch (IOException e) {
-						throw new HttpException(HttpStatus.SC_BAD_REQUEST, e);
+						throw new HttpException(BasicHttpStatus.SC_BAD_REQUEST, e);
 					} finally {
 						IOUtils.close(in);
 					}
@@ -205,5 +213,15 @@ public class RequestUtils {
 			}
 		}
 		return null;
+	}
+	
+	private static String decode(String value, String encoding) {
+		String decode = null;
+		try {
+			decode = URLDecoder.decode(value, encoding);
+		} catch (Exception e) {
+			decode = value;
+		}
+		return decode;
 	}
 }

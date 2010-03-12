@@ -2,7 +2,7 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.config;
+package org.tamacat.httpd.monitor;
 
 /**
  * <p>It is the setting of the monitor for health check.

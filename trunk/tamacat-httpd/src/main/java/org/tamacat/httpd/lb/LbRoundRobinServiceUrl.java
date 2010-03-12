@@ -7,11 +7,12 @@ package org.tamacat.httpd.lb;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tamacat.httpd.config.MonitorConfig;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
+import org.tamacat.httpd.monitor.HttpMonitor;
+import org.tamacat.httpd.monitor.MonitorConfig;
 import org.tamacat.httpd.util.DefaultThreadFactory;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;

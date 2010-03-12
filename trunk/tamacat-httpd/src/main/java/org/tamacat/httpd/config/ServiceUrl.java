@@ -16,7 +16,7 @@ public class ServiceUrl {
 	private String handlerName;
 	private String path;
 	private ReverseUrl reverseUrl;
-	private ServiceType type;
+	private UrlType type;
 	private final ServerConfig serverConfig;
 	
 	/**
@@ -61,9 +61,9 @@ public class ServiceUrl {
 
 	/**
 	 * <p>Returns the type of Service URL.
-	 * @return ServiceType
+	 * @return UrlType
 	 */
-	public ServiceType getType() {
+	public UrlType getType() {
 		return type;
 	}
 	
@@ -72,7 +72,7 @@ public class ServiceUrl {
 	 * @param type
 	 * @return if ServiceType is equals, returns true
 	 */
-	public boolean isType(ServiceType type) {
+	public boolean isType(UrlType type) {
 		if (this.type == null) return false;
 		return this.type.equals(type);
 	}
@@ -102,10 +102,10 @@ public class ServiceUrl {
 	}
 
 	/**
-	 * <p>Set the {@link ServiceType}.
+	 * <p>Set the {@link UrlType}.
 	 * @param type
 	 */
-	public void setType(ServiceType type) {
+	public void setType(UrlType type) {
 		this.type = type;
 	}
 
