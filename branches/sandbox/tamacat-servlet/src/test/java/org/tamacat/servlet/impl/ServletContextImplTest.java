@@ -14,7 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.httpd.config.ServerConfig;
-import org.tamacat.httpd.config.ServiceConfigXmlParser;
+import org.tamacat.httpd.config.ServiceConfigParser;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.servlet.test.TestServlet;
 
@@ -25,8 +25,8 @@ public class ServletContextImplTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		ServiceConfigXmlParser parser = new ServiceConfigXmlParser(new ServerConfig());
-		serviceUrl = parser.getServiceConfig().getServiceUrl("/test/");
+		ServiceConfigParser parser = new ServiceConfigParser(new ServerConfig());
+		serviceUrl = parser.getConfig().getDefaultServiceConfig().getServiceUrl("/test/");
 		context = new ServletContextImpl(
 			System.getProperty("user.dir")
 			+ "/src/test/resources/test", serviceUrl);

@@ -21,7 +21,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.UriPatternMatcher;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.core.AbstractHttpHandler;
-import org.tamacat.httpd.exception.HttpStatus;
+import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.servlet.impl.HttpServletObjectFactory;
 import org.tamacat.servlet.impl.ServletConfigImpl;
@@ -64,10 +64,10 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 				servlet.service(req, res);
 			} catch (ServletException e) {
 				throw new org.tamacat.httpd.exception.HttpException(
-						HttpStatus.SC_INTERNAL_SERVER_ERROR, e);
+						BasicHttpStatus.SC_INTERNAL_SERVER_ERROR, e);
 			} catch (IOException e) {
 				throw new org.tamacat.httpd.exception.HttpException(
-						HttpStatus.SC_INTERNAL_SERVER_ERROR, e);
+						BasicHttpStatus.SC_INTERNAL_SERVER_ERROR, e);
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 				throw e;

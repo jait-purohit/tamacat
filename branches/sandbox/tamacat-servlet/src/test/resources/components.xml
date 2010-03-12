@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
+
+  <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" />
+
   <bean id="ServletHandler"
      class="org.tamacat.servlet.ServletHttpHandler" singleton="false">
     <property name="docsRoot">
       <value>${server.home}/src/test/resources/test</value>
+    </property>
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
     </property>
   </bean>
 

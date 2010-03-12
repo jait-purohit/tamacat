@@ -19,8 +19,8 @@ import org.apache.http.entity.EntityTemplate;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.exception.HttpException;
-import org.tamacat.httpd.exception.HttpStatus;
 import org.tamacat.servlet.HttpCoreServletContext;
 import org.tamacat.servlet.HttpCoreServletResponse;
 import org.tamacat.servlet.util.ServletUtils;
@@ -136,12 +136,12 @@ public class HttpServletResponseImpl implements HttpCoreServletResponse {
 
 	@Override
 	public void sendError(int statusCode) throws IOException {
-		throw new HttpException(HttpStatus.getHttpStatus(statusCode));
+		throw new HttpException(BasicHttpStatus.getHttpStatus(statusCode));
 	}
 
 	@Override
 	public void sendError(int statusCode, String message) throws IOException {
-		throw new HttpException(HttpStatus.getHttpStatus(statusCode), message);
+		throw new HttpException(BasicHttpStatus.getHttpStatus(statusCode), message);
 	}
 
 	@Override

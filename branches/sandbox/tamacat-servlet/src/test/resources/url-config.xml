@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <service-config>
-  <service host="http://localhost">
+  <service>
     <url path="/test/" type="normal" handler="ServletHandler" />
   </service>
 </service-config>

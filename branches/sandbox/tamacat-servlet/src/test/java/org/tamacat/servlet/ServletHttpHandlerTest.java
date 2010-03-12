@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfig;
-import org.tamacat.httpd.config.ServiceConfigXmlParser;
+import org.tamacat.httpd.config.ServiceConfigParser;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.servlet.ServletHttpHandler;
 import org.tamacat.servlet.impl.ServletUrl;
@@ -25,9 +25,9 @@ public class ServletHttpHandlerTest {
 	@Before
 	public void setUp() throws Exception {
 		req = new BasicHttpRequest("GET", "/test/index.html?id=amdin&type=user");
-		ServiceConfigXmlParser parser
-			= new ServiceConfigXmlParser(new ServerConfig());
-		ServiceConfig serviceConfig = parser.getServiceConfig();
+		ServiceConfigParser parser
+			= new ServiceConfigParser(new ServerConfig());
+		ServiceConfig serviceConfig = parser.getConfig().getDefaultServiceConfig();
 		serviceUrl = serviceConfig.getServiceUrl("/test/");
 	}
 
