@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.config.ServerConfig;
-import org.tamacat.httpd.config.ServiceConfigXmlParser;
+import org.tamacat.httpd.config.ServiceConfigParser;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.servlet.test.TestServlet;
 
@@ -43,8 +43,8 @@ public class HttpServletRequestImplTest {
 		req = new BasicHttpRequest("GET", "/test/index.html?id=amdin&type=user");
 		context = new BasicHttpContext();
 
-		ServiceConfigXmlParser parser = new ServiceConfigXmlParser(new ServerConfig());
-		serviceUrl = parser.getServiceConfig().getServiceUrl("/test/");
+		ServiceConfigParser parser = new ServiceConfigParser(new ServerConfig());
+		serviceUrl = parser.getConfig().getDefaultServiceConfig().getServiceUrl("/test/");
 		
 		ServletContextImpl servletContext = new ServletContextImpl(
 				System.getProperty("user.dir")

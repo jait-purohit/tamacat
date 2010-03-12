@@ -5,7 +5,7 @@ import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServerConfig;
-import org.tamacat.httpd.config.ServiceConfigXmlParser;
+import org.tamacat.httpd.config.ServiceConfigParser;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.servlet.HttpCoreServletRequest;
 import org.tamacat.servlet.test.TestServlet;
@@ -24,8 +24,8 @@ public class MockRequestFactory {
 		req = new BasicHttpRequest("GET", contextPath + url);
 		context = new BasicHttpContext();
 
-		ServiceConfigXmlParser parser = new ServiceConfigXmlParser(new ServerConfig());
-		ServiceUrl serviceUrl = parser.getServiceConfig().getServiceUrl(contextPath);
+		ServiceConfigParser parser = new ServiceConfigParser(new ServerConfig());
+		ServiceUrl serviceUrl = parser.getConfig().getDefaultServiceConfig().getServiceUrl(contextPath);
 		
 		ServletContextImpl servletContext = new ServletContextImpl(
 				System.getProperty("user.dir")

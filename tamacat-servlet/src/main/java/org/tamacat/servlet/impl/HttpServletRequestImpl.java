@@ -71,7 +71,7 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 		this.servletUrl = servletUrl;
 		this.request = request;
 		this.context = context;
-		RequestUtils.setParameters(request, context);
+		RequestUtils.setParameters(request, context, "UTF-8"); //TODO
 	}
 	
 	@Override
