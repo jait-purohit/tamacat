@@ -4,6 +4,8 @@
  */
 package org.tamacat.httpd.exception;
 
+import org.tamacat.httpd.core.HttpStatus;
+
 /**
  * <p>The {@code HttpException} exception represents a HTTP fault.
  */

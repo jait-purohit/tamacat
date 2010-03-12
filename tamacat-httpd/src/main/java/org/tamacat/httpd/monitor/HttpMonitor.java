@@ -2,14 +2,13 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.lb;
+package org.tamacat.httpd.monitor;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.tamacat.httpd.config.MonitorConfig;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
@@ -24,13 +23,13 @@ public class HttpMonitor<T> implements Runnable {
 	
 	private MonitorConfig config;
 	private T target;
-	private HealthCheckSupport<T> healthCheckTarget;
+	private MonitorEvent<T> checkTarget;
 	private boolean isNormal = true;
 	private boolean isStarted;
 	
 	public void setHealthCheckTarget(
-			HealthCheckSupport<T> healthCheckTarget) {
-		this.healthCheckTarget = healthCheckTarget;
+			MonitorEvent<T> checkTarget) {
+		this.checkTarget = checkTarget;
 	}
 	
 	public void setTarget(T target) {
@@ -46,14 +45,14 @@ public class HttpMonitor<T> implements Runnable {
 		while (true) {
 			try {
 				if (isStarted) {
-					synchronized(healthCheckTarget) {
+					synchronized(checkTarget) {
 						boolean result = check();
 						if (isNormal == true && result == false) {
-							healthCheckTarget.removeTarget(target);
+							checkTarget.removeTarget(target);
 							isNormal = false;
 							LOG.warn("check: " + config.getUrl() + " is down.");
 						} else if (isNormal == false && result == true){
-							healthCheckTarget.addTarget(target);
+							checkTarget.addTarget(target);
 							isNormal = true;
 							LOG.warn("check: " + config.getUrl() + " is up.");
 						}

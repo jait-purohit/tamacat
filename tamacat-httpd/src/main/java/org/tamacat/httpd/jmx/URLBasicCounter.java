@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2010, TamaCat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.jmx;
 
 import java.lang.management.ManagementFactory;

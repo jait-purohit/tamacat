@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2010, TamaCat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.filter;
 
 import java.util.HashMap;

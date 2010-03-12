@@ -67,7 +67,7 @@ public class ServiceConfigParser {
 	 * <p>Returns the {@link ServiceConfig}.
 	 * @return mapping to ServiceConfig.
 	 */
-	public HostServiceConfig getVirtualHostConfig() {
+	public HostServiceConfig getConfig() {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -100,70 +100,22 @@ public class ServiceConfigParser {
 	//  <reverse>xxx</reverse>
 	void parseServiceNode(Node service) {
 		//<service host="xxx">
-		NamedNodeMap attr = service.getAttributes();
-		String host = null;
-		if (attr != null) {
-			Node hostNode = attr.getNamedItem(HOST);
-			if (hostNode != null) {
-				host = hostNode.getNodeValue();
-			}
-		}
+		String host = getHost(service);
 		ServiceConfig serviceConfig = new ServiceConfig();
 		//<url>xxx</url>
 		NodeList urlNodes = service.getChildNodes();
 		for (int i=0; i<urlNodes.getLength(); i++) {
-			ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
-			//serviceUrl.setHost(getURL(host));
 			Node urlNode = urlNodes.item(i);
+			ServiceUrl serviceUrl = getServiceUrl(urlNode, host);
 			//<url path="xxx">
 			if (URL.equals(urlNode.getNodeName())) {
-				NamedNodeMap urlAttrs = urlNode.getAttributes();
-				if (urlAttrs != null) {
-					Node path = urlAttrs.getNamedItem(PATH);
-					if (StringUtils.isNotEmpty(path)) {
-						serviceUrl.setPath(path.getNodeValue());
-					}
-					Node type = urlAttrs.getNamedItem(TYPE);
-					if (StringUtils.isNotEmpty(type)) {
-						serviceUrl.setType(ServiceType.find(type.getNodeValue()));
-					}
-					Node handler = urlAttrs.getNamedItem(HANDLER);
-					if (StringUtils.isNotEmpty(handler)) {					
-						serviceUrl.setHandlerName(handler.getNodeValue());
-					}
-					serviceUrl.setHost(getURL(host));
-				}
 				//<reverse>xxx</reverse>
 				if (serviceUrl.isType(ServiceType.REVERSE)) {
-					ReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
-					NodeList reverseNodes = urlNode.getChildNodes();
-					REV: for (int j=0; j<reverseNodes.getLength(); j++) {
-						Node reverseNode = reverseNodes.item(j);
-						if (REVERSE.equals(reverseNode.getNodeName())) {
-							String reverse = reverseNode.getTextContent();
-							reverseUrl.setReverse(getURL(reverse));
-							break REV;
-						}
-					}
-					serviceUrl.setReverseUrl(reverseUrl);
-				} else if (serviceUrl.isType(ServiceType.LB)) { //Load Balancer
-					LbRoundRobinServiceUrl lbServiceUrl = new LbRoundRobinServiceUrl(serverConfig);
-					lbServiceUrl.setPath(serviceUrl.getPath());
-					lbServiceUrl.setHandlerName(serviceUrl.getHandlerName());
-					lbServiceUrl.setType(serviceUrl.getType());
-					lbServiceUrl.setHost(getURL(host));
-					NodeList reverseNodes = urlNode.getChildNodes();
-					for (int j=0; j<reverseNodes.getLength(); j++) {
-						ReverseUrl reverseUrl = new DefaultReverseUrl(lbServiceUrl);
-						Node reverseNode = reverseNodes.item(j);
-						if (REVERSE.equals(reverseNode.getNodeName())) {
-							String reverse = reverseNode.getTextContent();
-							reverseUrl.setReverse(getURL(reverse));
-							lbServiceUrl.setReverseUrl(reverseUrl);
-						}
-					}
-					lbServiceUrl.startHealthCheck();
-					serviceUrl = lbServiceUrl;
+					serviceUrl = getReverseUrl(serviceUrl, urlNode);
+				} else
+				//Load Balancer
+				if (serviceUrl.isType(ServiceType.LB)) {
+					serviceUrl = getLbServiceUrl(serviceUrl, urlNode, host);
 				}
 				serviceConfig.addServiceUrl(serviceUrl);
 			}
@@ -173,6 +125,73 @@ public class ServiceConfigParser {
 		} else {
 			config.setServiceConfig(host, serviceConfig);
 		}
+	}
+	
+	private String getHost(Node service) {
+		NamedNodeMap attr = service.getAttributes();
+		if (attr != null) {
+			Node hostNode = attr.getNamedItem(HOST);
+			if (hostNode != null) {
+				return hostNode.getNodeValue();
+			}
+		}
+		return null;
+	}
+	
+	private ServiceUrl getServiceUrl(Node urlNode, String host) {
+		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
+		NamedNodeMap urlAttrs = urlNode.getAttributes();
+		if (urlAttrs != null) {
+			Node path = urlAttrs.getNamedItem(PATH);
+			if (StringUtils.isNotEmpty(path)) {
+				serviceUrl.setPath(path.getNodeValue());
+			}
+			Node type = urlAttrs.getNamedItem(TYPE);
+			if (StringUtils.isNotEmpty(type)) {
+				serviceUrl.setType(ServiceType.find(type.getNodeValue()));
+			}
+			Node handler = urlAttrs.getNamedItem(HANDLER);
+			if (StringUtils.isNotEmpty(handler)) {					
+				serviceUrl.setHandlerName(handler.getNodeValue());
+			}
+			serviceUrl.setHost(getURL(host));
+		}
+		return serviceUrl;
+	}
+	
+	private ServiceUrl getReverseUrl(ServiceUrl serviceUrl, Node urlNode) {
+		ReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
+		NodeList reverseNodes = urlNode.getChildNodes();
+		REV: for (int j=0; j<reverseNodes.getLength(); j++) {
+			Node reverseNode = reverseNodes.item(j);
+			if (REVERSE.equals(reverseNode.getNodeName())) {
+				String reverse = reverseNode.getTextContent();
+				reverseUrl.setReverse(getURL(reverse));
+				break REV;
+			}
+		}
+		serviceUrl.setReverseUrl(reverseUrl);
+		return serviceUrl;
+	}
+	
+	private ServiceUrl getLbServiceUrl(ServiceUrl serviceUrl, Node urlNode, String host) {
+		LbRoundRobinServiceUrl lbServiceUrl = new LbRoundRobinServiceUrl(serverConfig);
+		lbServiceUrl.setPath(serviceUrl.getPath());
+		lbServiceUrl.setHandlerName(serviceUrl.getHandlerName());
+		lbServiceUrl.setType(serviceUrl.getType());
+		lbServiceUrl.setHost(getURL(host));
+		NodeList reverseNodes = urlNode.getChildNodes();
+		for (int j=0; j<reverseNodes.getLength(); j++) {
+			ReverseUrl reverseUrl = new DefaultReverseUrl(lbServiceUrl);
+			Node reverseNode = reverseNodes.item(j);
+			if (REVERSE.equals(reverseNode.getNodeName())) {
+				String reverse = reverseNode.getTextContent();
+				reverseUrl.setReverse(getURL(reverse));
+				lbServiceUrl.setReverseUrl(reverseUrl);
+			}
+		}
+		lbServiceUrl.startHealthCheck();
+		return lbServiceUrl;
 	}
 	
 	protected URL getURL(String url) {

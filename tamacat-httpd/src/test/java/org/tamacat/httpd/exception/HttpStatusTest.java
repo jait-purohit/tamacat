@@ -2,55 +2,56 @@ package org.tamacat.httpd.exception;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import org.tamacat.httpd.core.BasicHttpStatus;
 
 public class HttpStatusTest {
 
 	@Test
 	public void testGetHttpStatus() {
-		assertEquals(HttpStatus.SC_OK, HttpStatus.getHttpStatus(200));
-		assertEquals(HttpStatus.SC_NOT_FOUND, HttpStatus.getHttpStatus(404));
-		assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, HttpStatus.getHttpStatus(500));
+		assertEquals(BasicHttpStatus.SC_OK, BasicHttpStatus.getHttpStatus(200));
+		assertEquals(BasicHttpStatus.SC_NOT_FOUND, BasicHttpStatus.getHttpStatus(404));
+		assertEquals(BasicHttpStatus.SC_INTERNAL_SERVER_ERROR, BasicHttpStatus.getHttpStatus(500));
 	}
 
 	@Test
 	public void testGetStatusCode() {
-		assertEquals(200, HttpStatus.SC_OK.getStatusCode());
-		assertEquals(404, HttpStatus.SC_NOT_FOUND.getStatusCode());
+		assertEquals(200, BasicHttpStatus.SC_OK.getStatusCode());
+		assertEquals(404, BasicHttpStatus.SC_NOT_FOUND.getStatusCode());
 	}
 
 	@Test
 	public void testGetReasonPhrase() {
-		assertEquals("OK", HttpStatus.SC_OK.getReasonPhrase());
+		assertEquals("OK", BasicHttpStatus.SC_OK.getReasonPhrase());
 	}
 
 	@Test
 	public void testIsInformational() {
-		assertEquals(true, HttpStatus.SC_CONTINUE.isInformational());
-		assertEquals(false, HttpStatus.SC_NOT_FOUND.isInformational());
+		assertEquals(true, BasicHttpStatus.SC_CONTINUE.isInformational());
+		assertEquals(false, BasicHttpStatus.SC_NOT_FOUND.isInformational());
 	}
 
 	@Test
 	public void testIsSuccess() {
-		assertEquals(true, HttpStatus.SC_OK.isSuccess());
-		assertEquals(false, HttpStatus.SC_NOT_FOUND.isSuccess());
+		assertEquals(true, BasicHttpStatus.SC_OK.isSuccess());
+		assertEquals(false, BasicHttpStatus.SC_NOT_FOUND.isSuccess());
 	}
 
 	@Test
 	public void testIsRedirection() {
-		assertEquals(true, HttpStatus.SC_MOVED_PERMANENTLY.isRedirection());
-		assertEquals(false, HttpStatus.SC_OK.isRedirection());
+		assertEquals(true, BasicHttpStatus.SC_MOVED_PERMANENTLY.isRedirection());
+		assertEquals(false, BasicHttpStatus.SC_OK.isRedirection());
 	}
 
 	@Test
 	public void testIsClientError() {
-		assertEquals(true, HttpStatus.SC_NOT_FOUND.isClientError());
-		assertEquals(false, HttpStatus.SC_INTERNAL_SERVER_ERROR.isClientError());
+		assertEquals(true, BasicHttpStatus.SC_NOT_FOUND.isClientError());
+		assertEquals(false, BasicHttpStatus.SC_INTERNAL_SERVER_ERROR.isClientError());
 	}
 
 	@Test
 	public void testIsServerError() {
-		assertEquals(true, HttpStatus.SC_INTERNAL_SERVER_ERROR.isServerError());
-		assertEquals(true, HttpStatus.SC_SERVICE_UNAVAILABLE.isServerError());
-		assertEquals(false, HttpStatus.SC_NOT_FOUND.isServerError());
+		assertEquals(true, BasicHttpStatus.SC_INTERNAL_SERVER_ERROR.isServerError());
+		assertEquals(true, BasicHttpStatus.SC_SERVICE_UNAVAILABLE.isServerError());
+		assertEquals(false, BasicHttpStatus.SC_NOT_FOUND.isServerError());
 	}
 }

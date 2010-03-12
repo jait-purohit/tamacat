@@ -7,7 +7,7 @@ package org.tamacat.httpd.config;
 /**
  * <p>The type of service URL.
  */
-public enum ServiceType {
+public enum ServiceType implements UrlType {
 	
 	/**
 	 * <p>The service url type of normal http server.
@@ -36,5 +36,10 @@ public enum ServiceType {
 	 */
 	public static ServiceType find(String name) {
 		return valueOf(name.toUpperCase());
+	}
+	
+	@Override
+	public String getType() {
+		return toString();
 	}
 }
