@@ -88,7 +88,7 @@ JMX.rmi.port=1099
 }}}
 
 || *name* || *value* || * description* ||
-|| type || normal/reverse/lb || "normal" is standard web server. "reverse" is Reverse proxy. "lb" is Load balancing with reverse proxy. ||
+|| type || normal, reverse, lb || "normal" is standard web server. "reverse" is Reverse proxy. "lb" is Load balancing with reverse proxy. ||
 || handler || The name of handler in components.xml || The Bean name in components.xml. ||
 
 ex. Virtual host (using HTTP Host request header)
