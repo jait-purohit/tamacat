@@ -3,7 +3,20 @@
 
 = Release Notes =
 
-==0.5 release (2009-12-15)==
+==0.6 release (2010-03-16)==
+------------------------
+The highlights in the tamacat-httpd-0.6 are the following:
+
+ * Virtual host configurations.
+ * Client IP address access control.
+ * Access and performance counter using JMX.
+ * Refactoring for customizable access logging.
+ * Add the response filter.
+ * Implements session manager.(use from SessionCookieFilter)
+ * URL based access counter.
+
+
+==0.5 release (2009-12-16)==
 ------------------------
 The highlights in the tamacat-httpd-0.5 are the following:
 
