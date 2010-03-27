@@ -17,6 +17,7 @@ import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityListingsPage;
+import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -68,7 +69,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 	
 	@Override
 	public void doRequest(HttpRequest request, HttpResponse response, HttpContext context) {
-		String uri = request.getRequestLine().getUri();
+		String uri = RequestUtils.getRequestPath(request);
 		if (uri.endsWith("/") && useDirectoryListings() == false) {
 			uri = uri + welcomeFile;
 		}
