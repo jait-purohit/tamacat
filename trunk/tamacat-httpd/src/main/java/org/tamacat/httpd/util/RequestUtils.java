@@ -36,6 +36,15 @@ public class RequestUtils {
 	static final String CONTENT_TYPE_FORM_URLENCODED = "application/x-www-form-urlencoded";
 	static final String REQUEST_PARAMETERS_CONTEXT_KEY = "RequestParameters";
 
+	public static String getRequestPath(HttpRequest request) {
+		String path = request.getRequestLine().getUri();
+		if (path.indexOf('?') >= 0) {
+			String[] requestParams = path.split("\\?");
+			return requestParams[0];
+		}
+		return path;
+	}
+	
 	public static void setParameter(HttpContext context, String name, String... values) throws IOException {
 		RequestParameters parameters = getParameters(context);
 		parameters.setParameter(name, values);

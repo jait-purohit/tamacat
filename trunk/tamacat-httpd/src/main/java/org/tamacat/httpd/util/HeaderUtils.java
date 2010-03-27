@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.http.Header;
+import org.apache.http.HttpRequest;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
@@ -20,6 +21,34 @@ public final class HeaderUtils {
 
 	/** Cannot instantiate. */
 	private HeaderUtils() {}
+
+	/**
+	 * <p>Get the first header value.
+	 * @see {@link org.apache.http.HtpRequest#getFirstHeader}
+	 * @param request
+	 * @param name
+	 * @return first header value.
+	 */
+	public static String getHeader(
+			HttpRequest request, String name) {
+		Header header = request.getFirstHeader(name);
+		return header != null ? header.getValue() : null;
+	}
+	
+	/**
+	 * <p>Get the first header value.
+	 * When header is null, returns default value.
+	 * @see {@link org.apache.http.HtpRequest#getFirstHeader}
+	 * @param request
+	 * @param name
+	 * @param defaultValue
+	 * @return first header value.
+	 */
+	public static String getHeader(
+			HttpRequest request, String name, String defaultValue) {
+		Header header = request.getFirstHeader(name);
+		return header != null ? header.getValue() : defaultValue;
+	}
 	
 	/**
 	 * <p>when each other's header names are equal returns true.

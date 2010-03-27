@@ -9,7 +9,7 @@ import java.util.Set;
 
 /**
  * <p>It is the service configuration for Virtual host.
- * The mapping of hostname and ${@link ServiceConfig}.
+ * The mapping of hostname and {@link ServiceConfig}.
  */
 public class HostServiceConfig {
 

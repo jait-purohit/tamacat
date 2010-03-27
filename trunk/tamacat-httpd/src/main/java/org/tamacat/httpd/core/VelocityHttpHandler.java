@@ -39,7 +39,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			HttpContext context) throws HttpException, IOException {
 		RequestUtils.setParameters(request, context, "UTF-8");
 		
-		String path = request.getRequestLine().getUri();
+		String path = RequestUtils.getRequestPath(request);
 		int idx = path.lastIndexOf(".html");
 		if (idx >= 0) {
 			//delete the extention of file name. (index.html -> index)
