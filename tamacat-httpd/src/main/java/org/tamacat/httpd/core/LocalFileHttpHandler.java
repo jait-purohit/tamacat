@@ -74,16 +74,16 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 			uri = uri + welcomeFile;
 		}
 		File file = new File(docsRoot, getDecodeUri(uri));
-		// /// 404 NOT FOUND /////
+		///// 404 NOT FOUND /////
 		if (!file.exists()) {
 			LOG.trace("File " + file.getPath() + " not found");
 			throw new NotFoundException();
 		}
-		// /// 403 FORBIDDEN /////
+		///// 403 FORBIDDEN /////
 		else if (!file.canRead() || file.isDirectory()) {
 			if (file.isDirectory() && useDirectoryListings()) {
-				String html = listingPage.getListingsPage(request, response,
-						file);
+				String html = listingPage.getListingsPage(
+						request, response, file);
 				response.setStatusCode(HttpStatus.SC_OK);
 				ResponseUtils.setEntity(response, getEntity(html));
 			} else {
@@ -91,7 +91,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 				throw new ForbiddenException();
 			}
 		}
-		// /// 200 OK /////
+		///// 200 OK /////
 		else {
 			LOG.trace("File " + file.getPath() + " found");
 			response.setStatusCode(HttpStatus.SC_OK);

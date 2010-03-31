@@ -23,6 +23,7 @@ import org.tamacat.httpd.filter.HttpFilter;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.page.VelocityErrorPage;
+import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -99,6 +100,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	@Override
 	public void handle(HttpRequest request, HttpResponse response, 
 			HttpContext context) {
+		RequestUtils.setParameters(request, context, "UTF-8");
 		try {
 			for (RequestFilter filter : requestFilters) {
 				filter.doFilter(request, response, context, serviceUrl);
