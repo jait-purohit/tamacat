@@ -14,6 +14,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
+import org.apache.velocity.VelocityContext;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityPage;
@@ -37,24 +38,25 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	@Override
 	protected void doRequest(HttpRequest request, HttpResponse response,
 			HttpContext context) throws HttpException, IOException {
-		RequestUtils.setParameters(request, context, "UTF-8");
-		
+		VelocityContext ctx = (VelocityContext) context.getAttribute(VelocityContext.class.getName());
+		if (ctx == null) ctx = new VelocityContext();
 		String path = RequestUtils.getRequestPath(request);
+		ctx.put("param", RequestUtils.getParameters(context).getParameterMap());
 		int idx = path.lastIndexOf(".html");
 		if (idx >= 0) {
 			//delete the extention of file name. (index.html -> index)
-			setEntity(request, response, path.replace(".html", ""));
+			setEntity(request, response, ctx, path.replace(".html", ""));
 		} else if (path.endsWith("/")) {
 			//directory -> index page.
-			setEntity(request, response, path + "index");
+			setEntity(request, response, ctx, path + "index");
 		} else {
 			//get the file in this server.
 			setFileEntity(request, response, path);
 		}
 	}
 	
-	private void setEntity(HttpRequest request, HttpResponse response, String path) {
-		String html = getVelocityPage().getPage(request, response, path);
+	private void setEntity(HttpRequest request, HttpResponse response, VelocityContext ctx, String path) {
+		String html = getVelocityPage().getPage(request, response, ctx, path);
 		ResponseUtils.setEntity(response, getEntity(html));
 	}
 	
@@ -73,7 +75,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	@Override
 	protected HttpEntity getEntity(String html) {
 		try {
-			StringEntity entity = new StringEntity(html);
+			StringEntity entity = new StringEntity(html, "UTF-8");
 			entity.setContentType(DEFAULT_CONTENT_TYPE);
 			return entity;
 		} catch (UnsupportedEncodingException e1) {
