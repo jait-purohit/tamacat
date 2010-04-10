@@ -22,7 +22,13 @@ import javax.management.remote.JMXServiceURL;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.impl.DefaultConnectionReuseStrategy;
+import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.protocol.HttpRequestHandlerRegistry;
+import org.apache.http.protocol.ResponseConnControl;
+import org.apache.http.protocol.ResponseContent;
+import org.apache.http.protocol.ResponseDate;
+import org.apache.http.protocol.ResponseServer;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfig;
 import org.tamacat.httpd.config.ServiceUrl;
@@ -49,7 +55,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	private SSLContextCreator sslContextCreator;
     private ServerSocket serversocket;
     private HttpParamsBuilder paramsBuilder;
-
+    HttpProcessorBuilder procBuilder;
     private ExecutorService executors;
     
     private BasicCounter counter = new BasicCounter();
@@ -68,14 +74,26 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	        paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
 	          .socketBufferSize(serverConfig.getSocketBufferSize())
 	          .originServer(serverConfig.getParam("ServerName"));
+	        procBuilder = new HttpProcessorBuilder();
 		}
-		service = new DefaultHttpService();
+		//default interceptors
+		procBuilder.addInterceptor(new ResponseDate());
+		procBuilder.addInterceptor(new ResponseServer());
+		procBuilder.addInterceptor(new ResponseContent());
+		procBuilder.addInterceptor(new ResponseConnControl());
+		
+		//add interceptors
+		for (HttpResponseInterceptor interceptor : interceptors) {
+			procBuilder.addInterceptor(interceptor);
+		}
+		service = new DefaultHttpService(
+				procBuilder, new DefaultConnectionReuseStrategy(), 
+	        	new DefaultHttpResponseFactory(), null, null,
+	        	paramsBuilder.buildParams());
 		if (isMXServerStarted == false) {
 			registryMXServer();
 		}
-		for (HttpResponseInterceptor interceptor : interceptors) {
-			service.setHttpResponseInterceptor(interceptor);
-		}
+
 		HttpHandlerFactory factory = new DefaultHttpHandlerFactory();
 
 		HostRequestHandlerResolver hostResolver = new HostRequestHandlerResolver();

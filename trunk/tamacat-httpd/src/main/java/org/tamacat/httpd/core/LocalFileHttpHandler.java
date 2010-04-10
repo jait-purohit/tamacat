@@ -69,11 +69,11 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 	
 	@Override
 	public void doRequest(HttpRequest request, HttpResponse response, HttpContext context) {
-		String uri = RequestUtils.getRequestPath(request);
-		if (uri.endsWith("/") && useDirectoryListings() == false) {
-			uri = uri + welcomeFile;
+		String path = RequestUtils.getRequestPath(request);
+		if (path.endsWith("/") && useDirectoryListings() == false) {
+			path = path + welcomeFile;
 		}
-		File file = new File(docsRoot, getDecodeUri(uri));
+		File file = new File(docsRoot, getDecodeUri(path));
 		///// 404 NOT FOUND /////
 		if (!file.exists()) {
 			LOG.trace("File " + file.getPath() + " not found");

@@ -13,21 +13,15 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseFactory;
-import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpServerConnection;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.DefaultConnectionReuseStrategy;
-import org.apache.http.impl.DefaultHttpResponseFactory;
-import org.apache.http.protocol.BasicHttpProcessor;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
+import org.apache.http.protocol.HttpExpectationVerifier;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.protocol.HttpRequestHandlerResolver;
 import org.apache.http.protocol.HttpService;
-import org.apache.http.protocol.ResponseConnControl;
-import org.apache.http.protocol.ResponseContent;
-import org.apache.http.protocol.ResponseDate;
-import org.apache.http.protocol.ResponseServer;
+
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.page.VelocityErrorPage;
@@ -43,36 +37,19 @@ public class DefaultHttpService extends HttpService {
 	static final Log LOG = LogFactory.getLog(DefaultHttpService.class);
 
     static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
-	private HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
     private HttpRequestHandlerResolver handlerResolver;
     private HostRequestHandlerResolver hostResolver;
 	private VelocityErrorPage errorPage = new VelocityErrorPage();
 	
-    /**
-     * default.
-     */
-	public DefaultHttpService() {
-		super(new BasicHttpProcessor(),
-				new DefaultConnectionReuseStrategy(), 
-        	new DefaultHttpResponseFactory()
-		);
-		setDefaultHttpResponseInterceptors();
+	public DefaultHttpService(HttpProcessorBuilder procBuilder,
+			ConnectionReuseStrategy connStrategy,
+			HttpResponseFactory responseFactory,
+			HttpRequestHandlerResolver handlerResolver,
+			HttpExpectationVerifier verifier,
+			HttpParams params) {
+		super(procBuilder.build(), connStrategy, responseFactory,
+			handlerResolver, verifier, params);
 	}
-	
-	/**
-	 * <p>For using custom {@link HttpProcessor},{@link ConnectionReuseStrategy}
-	 *  and {@link HttpResponseFactory}.
-	 * @param proc
-	 * @param connStrategy
-	 * @param responseFactory
-	 */
-    public DefaultHttpService(
-            HttpProcessor proc,
-            ConnectionReuseStrategy connStrategy,
-            HttpResponseFactory responseFactory) {
-    	super(proc, connStrategy, responseFactory);
-    	setDefaultHttpResponseInterceptors();
-    }
 
     @Override
     public void setHandlerResolver(HttpRequestHandlerResolver handlerResolver) {
@@ -82,37 +59,18 @@ public class DefaultHttpService extends HttpService {
     public void setHostHandlerResolver(HostRequestHandlerResolver hostResolver) {
         this.hostResolver = hostResolver;
     }
-    
-    /**
-     * <p>default preset the response interceptors.
-     */
-	private void setDefaultHttpResponseInterceptors() {
-		procBuilder.addInterceptor(new ResponseDate());
-		procBuilder.addInterceptor(new ResponseServer());
-		procBuilder.addInterceptor(new ResponseContent());
-		procBuilder.addInterceptor(new ResponseConnControl());
-	}
-	
-	/**
-	 * <p>Add the response interceptor.
-	 * @param interceptor
-	 */
-	public void setHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
-		procBuilder.addInterceptor(interceptor);
-	}
 	
 	@Override
     public final void handleRequest(
             final HttpServerConnection conn, 
             final HttpContext context) throws IOException, HttpException {
 		RequestUtils.setRemoteAddress(context, conn);
-		super.setHttpProcessor(procBuilder.build());
 		super.handleRequest(conn, context);
 	}
 	
 	@Override
 	//handleRequest() -> doService() -> service()
-	public void doService(HttpRequest request, HttpResponse response, HttpContext context) {
+	protected void doService(HttpRequest request, HttpResponse response, HttpContext context) {
 		try {
 			LOG.trace("doService() >> " + request.getRequestLine().getUri());
 			HttpRequestHandler handler = null;
