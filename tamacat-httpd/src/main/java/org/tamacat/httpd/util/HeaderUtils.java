@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.http.Header;
-import org.apache.http.HttpRequest;
+import org.apache.http.HttpMessage;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
@@ -24,29 +24,29 @@ public final class HeaderUtils {
 
 	/**
 	 * <p>Get the first header value.
-	 * @see {@link org.apache.http.HtpRequest#getFirstHeader}
-	 * @param request
+	 * @see {@link org.apache.http.HttpMessage#getFirstHeader}
+	 * @param message
 	 * @param name
 	 * @return first header value.
 	 */
 	public static String getHeader(
-			HttpRequest request, String name) {
-		Header header = request.getFirstHeader(name);
+			HttpMessage message, String name) {
+		Header header = message.getFirstHeader(name);
 		return header != null ? header.getValue() : null;
 	}
 	
 	/**
 	 * <p>Get the first header value.
 	 * When header is null, returns default value.
-	 * @see {@link org.apache.http.HtpRequest#getFirstHeader}
-	 * @param request
+	 * @see {@link org.apache.http.HttpMessage#getFirstHeader}
+	 * @param message
 	 * @param name
 	 * @param defaultValue
 	 * @return first header value.
 	 */
 	public static String getHeader(
-			HttpRequest request, String name, String defaultValue) {
-		Header header = request.getFirstHeader(name);
+			HttpMessage message, String name, String defaultValue) {
+		Header header = message.getFirstHeader(name);
 		return header != null ? header.getValue() : defaultValue;
 	}
 	
@@ -144,5 +144,9 @@ public final class HeaderUtils {
 				return false;
 			}
 		}
+	}
+	
+	public static boolean isMultipart(String line) {
+		return line != null && line.toLowerCase().startsWith("multipart/");
 	}
 }

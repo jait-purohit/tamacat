@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.tamacat</groupId>
   <artifactId>tamacat-httpd</artifactId>
-  <version>0.6</version>
+  <version>0.7</version>
   <packaging>jar</packaging>
   <name>tamacat-httpd components</name>
   <url>http://code.google.com/p/tamacat/</url>
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.tamacat</groupId>
       <artifactId>tamacat-core</artifactId>
-      <version>0.6</version>
+      <version>0.7</version>
     </dependency>
     
     <dependency>
@@ -39,7 +39,7 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>4.0.1</version>
+      <version>4.1-beta1</version>
       <scope>compile</scope>
     </dependency>
 
@@ -50,14 +50,12 @@
       <scope>compile</scope>
     </dependency>
             
-    <!-- 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpmime</artifactId>
       <version>4.0</version>
       <scope>compile</scope>
     </dependency>
-    -->
     
     <dependency>
       <groupId>log4j</groupId>

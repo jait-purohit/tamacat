@@ -74,31 +74,29 @@ public class RequestUtils {
 		Header contentType = request.getFirstHeader(HTTP.CONTENT_TYPE);
 		if (contentType != null
 		  && CONTENT_TYPE_FORM_URLENCODED.equalsIgnoreCase(contentType.getValue())) {
-			if (request instanceof HttpEntityEnclosingRequest) {
-				HttpEntity entity = ((HttpEntityEnclosingRequest)request).getEntity();
-				if (entity != null) {
-					InputStream in = null;
-					try {
-						in = entity.getContent();
-						BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-						String s;
-						StringBuilder sb = new StringBuilder();
-						while ((s = reader.readLine()) != null) {
-							sb.append(s);
-						}
-						String[] params = sb.toString().split("&");
-						for (String param : params) {
-							String[] keyValue = param.split("=");
-							if (keyValue.length >= 2) {
-								parameters.setParameter(keyValue[0], 
-										decode(keyValue[1], encoding));
-							}
-						}
-					} catch (IOException e) {
-						throw new HttpException(BasicHttpStatus.SC_BAD_REQUEST, e);
-					} finally {
-						IOUtils.close(in);
+			HttpEntity entity = getEntity(request);
+			if (entity != null) {
+				InputStream in = null;
+				try {
+					in = entity.getContent();
+					BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+					String s;
+					StringBuilder sb = new StringBuilder();
+					while ((s = reader.readLine()) != null) {
+						sb.append(s);
 					}
+					String[] params = sb.toString().split("&");
+					for (String param : params) {
+						String[] keyValue = param.split("=");
+						if (keyValue.length >= 2) {
+							parameters.setParameter(keyValue[0], 
+									decode(keyValue[1], encoding));
+						}
+					}
+				} catch (IOException e) {
+					throw new HttpException(BasicHttpStatus.SC_BAD_REQUEST, e);
+				} finally {
+					IOUtils.close(in);
 				}
 			}
 		}
@@ -232,5 +230,30 @@ public class RequestUtils {
 			decode = value;
 		}
 		return decode;
+	}
+	
+	public static boolean isEntityEnclosingRequest(HttpRequest request) {
+		return request != null && request instanceof HttpEntityEnclosingRequest;
+	}
+	
+	public static HttpEntity getEntity(HttpRequest request) {
+		if (isEntityEnclosingRequest(request)) {
+			return ((HttpEntityEnclosingRequest)request).getEntity();
+		} else {
+			return null;
+		}
+	}
+	
+	public static InputStream getInputStream(HttpRequest request) throws IOException {
+		HttpEntity entity = getEntity(request);
+		return entity != null? entity.getContent() : null;
+	}
+	
+	public static boolean isMultipart(HttpRequest request) {
+		if ("post".equalsIgnoreCase(request.getRequestLine().getMethod())) {
+			return HeaderUtils.isMultipart(
+				HeaderUtils.getHeader(request, HTTP.CONTENT_TYPE));
+		}
+		return false;
 	}
 }
