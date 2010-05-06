@@ -25,6 +25,7 @@ public class DefaultIoEventDispatch
 		super(handler, params);
 	}
 	
+	@Override
     public void connected(IOSession session) {
         System.out.println("connected");
         session.setEventMask(EventMask.READ);
