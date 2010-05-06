@@ -24,13 +24,18 @@ import javax.net.ssl.SSLContext;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.impl.nio.DefaultServerIOEventDispatch;
 import org.apache.http.impl.nio.reactor.DefaultListeningIOReactor;
-import org.apache.http.nio.protocol.AsyncNHttpServiceHandler;
+import org.apache.http.nio.protocol.NHttpRequestHandler;
 import org.apache.http.nio.protocol.NHttpRequestHandlerRegistry;
 import org.apache.http.nio.reactor.IOEventDispatch;
 import org.apache.http.nio.reactor.ListeningIOReactor;
+import org.apache.http.protocol.ResponseConnControl;
+import org.apache.http.protocol.ResponseContent;
+import org.apache.http.protocol.ResponseDate;
+import org.apache.http.protocol.ResponseServer;
+import org.tamacat.httpd.config.HostServiceConfig;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfig;
-import org.tamacat.httpd.config.ServiceConfigXmlParser;
+import org.tamacat.httpd.config.ServiceConfigParser;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.core.HttpParamsBuilder;
 import org.tamacat.httpd.core.HttpProcessorBuilder;
@@ -50,14 +55,14 @@ public class NHttpEngine implements BasicHttpMonitor {
 	static final Log LOG = LogFactory.getLog(NHttpEngine.class);
 
 	private ServerConfig serverConfig;
-	private NHttpRequestHandlerRegistry registry = new NHttpRequestHandlerRegistry();
-	private AsyncNHttpServiceHandler service;
+	private DefaultAsyncNHttpServiceHandler service;
 	
 	private SSLContextCreator sslContextCreator;
+//    private ServerSocket serversocket;
     private HttpParamsBuilder paramsBuilder;
+    HttpProcessorBuilder procBuilder;
+	private boolean isMXServerStarted;
 
-    private boolean isInitalized;
-    
     private static BasicCounter counter = new BasicCounter();
     private List<HttpResponseInterceptor> interceptors
     	= new ArrayList<HttpResponseInterceptor>();
@@ -66,29 +71,45 @@ public class NHttpEngine implements BasicHttpMonitor {
      * <p>This method called by {@link #start}.
      */
 	protected void init() {
-		if (isInitalized == false) {
+		if (serverConfig == null) {
 			serverConfig = new ServerConfig();
-	        paramsBuilder = new HttpParamsBuilder();
+			paramsBuilder = new HttpParamsBuilder();
 	        paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
-	          .socketBufferSize(serverConfig.getSocketBufferSize());
-	        HttpProcessorBuilder httpprocBuilder = new HttpProcessorBuilder();
-			try {
-//				int port = serverConfig.getPort();
-//				if (serverConfig.useHttps()) {					
-//					serversocket = createSecureServerSocket(port);
-//				} else {
-//					serversocket = new ServerSocket(port);
-//				}
-				service = new DefaultAsyncNHttpServiceHandler(
-					httpprocBuilder.build(), paramsBuilder.buildParams());
-//				for (HttpResponseInterceptor interceptor : interceptors) {
-//					service.setHttpResponseInterceptor(interceptor);
-//				}
-				registryMXServer();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+	          .socketBufferSize(serverConfig.getSocketBufferSize())
+	          .originServer(serverConfig.getParam("ServerName"));
+	        procBuilder = new HttpProcessorBuilder();
+		}
+		//default interceptors
+		procBuilder.addInterceptor(new ResponseDate());
+		procBuilder.addInterceptor(new ResponseServer());
+		procBuilder.addInterceptor(new ResponseContent());
+		procBuilder.addInterceptor(new ResponseConnControl());
+		
+		//add interceptors
+		for (HttpResponseInterceptor interceptor : interceptors) {
+			procBuilder.addInterceptor(interceptor);
+		}
+		service = new DefaultAsyncNHttpServiceHandler(
+				procBuilder.build(), paramsBuilder.buildParams());
+		if (isMXServerStarted == false) {
+			registryMXServer();
+		}
+		//Register services and service URLs.
+		HostServiceConfig hostConfig = new ServiceConfigParser(serverConfig).getConfig();
+		for (String host : hostConfig.getHosts()) {
+			NHttpRequestHandlerRegistry registry = new NHttpRequestHandlerRegistry();
+			ServiceConfig serviceConfig = hostConfig.getServiceConfig(host);
+			for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
+				NHttpHandlerFactory factory = new DefaultNHttpHandlerFactory();
+				NHttpRequestHandler handler = factory.getNHttpRequestHandler(serviceUrl, serviceUrl.getHandlerName());
+				if (handler != null) {
+					LOG.info(serviceUrl.getPath() + " - " + handler.getClass().getName());
+					registry.register(serviceUrl.getPath() + "*", handler);
+				} else {
+					LOG.warn(serviceUrl.getPath() + " HttpHandler is not found.");
+				}
 			}
-			isInitalized = true;
+			service.setHandlerResolver(registry);
 		}
 	}
 
@@ -98,17 +119,17 @@ public class NHttpEngine implements BasicHttpMonitor {
 	public void start() {
 		//Initalize engine.
 		init();
-		
-		//Register services and service URLs.
-		ServiceConfig serviceConfig
-			= new ServiceConfigXmlParser(serverConfig).getServiceConfig();
-		NHttpHandlerFactory factory = new DefaultNHttpHandlerFactory();
-		for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
-			registry.register(serviceUrl.getPath() + "*", 
-				factory.getNHttpRequestHandler(serviceUrl, serviceUrl.getHandlerName())
-			);
-		}
-        service.setHandlerResolver(registry);
+//		try {
+//			//setup the server port. 
+//			int port = serverConfig.getPort();
+//			if (serverConfig.useHttps()) {					
+//				serversocket = createSecureServerSocket(port);
+//			} else {
+//				serversocket = new ServerSocket(port);
+//			}
+//		} catch (IOException e) {
+//			throw new RuntimeException(e);
+//		}
         
         IOEventDispatch ioEventDispatch
         	= new DefaultServerIOEventDispatch(service, paramsBuilder.buildParams());

@@ -6,7 +6,7 @@ package org.tamacat.httpd.nio;
 
 import org.apache.http.nio.protocol.NHttpRequestHandler;
 import org.tamacat.httpd.config.ServiceUrl;
-import org.tamacat.httpd.filter.RequestFilter;
+import org.tamacat.httpd.filter.HttpFilter;
 
 /**
  * <p>{@code NHttpHandler} is NIO request handling interface.
@@ -20,9 +20,9 @@ public interface NHttpHandler extends NHttpRequestHandler {
 	void setServiceUrl(ServiceUrl serviceUrl);
 	
 	/**
-	 * <p>Set the {@code RequestFilter}.(Add RequestFilter)<br>
-	 * and execute {@link RequestFilter#init()}.
+	 * <p>Set the {@code HttpFilter}.(Add HttpFilter)<br>
+	 * and execute {@link HttpFilter#init()}.
 	 * @param filter
 	 */
-	void setRequestFilter(RequestFilter filter);
+	void setHttpFilter(HttpFilter filter);
 }

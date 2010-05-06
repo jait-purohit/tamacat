@@ -15,9 +15,12 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpProcessor;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public class DefaultAsyncNHttpServiceHandler extends AsyncNHttpServiceHandler {
-
+    static final Log LOG = LogFactory.getLog(DefaultAsyncNHttpServiceHandler.class);
+    
 	public DefaultAsyncNHttpServiceHandler(HttpProcessor httpProcessor,
 			HttpResponseFactory responseFactory,
 			ConnectionReuseStrategy connStrategy, HttpParams params) {
@@ -31,7 +34,13 @@ public class DefaultAsyncNHttpServiceHandler extends AsyncNHttpServiceHandler {
         		params
         );
 	}
-
+    
+//	@Override
+//    public void requestReceived(final NHttpServerConnection conn) {
+//		LOG.info("#requestReceived() >> " + conn.getHttpRequest().getRequestLine().getUri());
+//		super.requestReceived(conn);
+//	}
+	
     @Override
     protected void responseComplete(HttpResponse response, HttpContext context) {
         //System.out.println("#responseComplete()");

@@ -24,8 +24,11 @@ import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
+import org.tamacat.httpd.filter.HttpFilter;
 import org.tamacat.httpd.filter.RequestFilter;
+import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.page.VelocityErrorPage;
+import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -67,17 +70,27 @@ public abstract class AbstractNHttpHandler implements NHttpHandler {
     protected ServiceUrl serviceUrl;
     protected String docsRoot;
     
+    protected List<HttpFilter> filters = new ArrayList<HttpFilter>();
     protected List<RequestFilter> requestFilters = new ArrayList<RequestFilter>();
-
+    protected List<ResponseFilter> responseFilters = new ArrayList<ResponseFilter>();
+    
 	@Override
     public void setServiceUrl(ServiceUrl serviceUrl) {
     	this.serviceUrl = serviceUrl;
+    	for (HttpFilter filter : filters) {
+    		filter.init(serviceUrl);
+    	}
     }
     
 	@Override
-	public void setRequestFilter(RequestFilter filter) {
-		filter.init();
-		requestFilters.add(filter);
+	public void setHttpFilter(HttpFilter filter) {
+		filters.add(filter);
+		if (filter instanceof RequestFilter) {
+			requestFilters.add((RequestFilter)filter);
+		}
+		if (filter instanceof ResponseFilter) {
+			responseFilters.add((ResponseFilter) filter);
+		}
 	}
 
 	/**
@@ -96,6 +109,7 @@ public abstract class AbstractNHttpHandler implements NHttpHandler {
             
             @Override
             public void run() {
+        		RequestUtils.setParameters(request, context, "UTF-8");
 				try {
 					for (RequestFilter filter : requestFilters) {
 						filter.doFilter(request, response, context, serviceUrl);
@@ -107,6 +121,9 @@ public abstract class AbstractNHttpHandler implements NHttpHandler {
 						trigger.handleException((org.apache.http.HttpException)e);
 					}
 				} finally {
+					for (ResponseFilter filter : responseFilters) {
+						filter.afterResponse(request, response, context, serviceUrl);
+					}
 					// Submit response immediately for simplicity
 			        trigger.submitResponse(response);
 				}
