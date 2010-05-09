@@ -4,8 +4,10 @@
  */
 package org.tamacat.httpd.lb;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.config.ServerConfig;
@@ -16,6 +18,9 @@ import org.tamacat.httpd.monitor.MonitorConfig;
 import org.tamacat.httpd.util.DefaultThreadFactory;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.PropertyUtils;
+import org.tamacat.util.ResourceNotFoundException;
+import org.tamacat.util.StringUtils;
 
 /**
  * <p>It is service URL setting of the round robin type load balancer.
@@ -32,17 +37,51 @@ import org.tamacat.log.LogFactory;
  *   </service>
  * </service-config>}
  * </pre>
+ * 
+ * <pre>ex. monitor.properties
+ * {@code
+ * default.url=check.html
+ * default.interval=15000
+ * default.timeout=5000
+ * 
+ * /lb/.url=test/check.html
+ * /lb/.interval=60000
+ * /lb/.timeout=15000
+ * }
+ * </pre>
  */
 public class LbRoundRobinServiceUrl extends ServiceUrl
 		implements HealthCheckSupport<ReverseUrl> {
 	
 	static final Log LOG = LogFactory.getLog(LbRoundRobinServiceUrl.class);
-
+	private static final String MONITOR_PROPERTIES = "monitor.properties";
+	private static final String DEFAULT_URL_KEY = "default.url";
+	private static final String DEFAULT_INTERVAL_KEY = "default.interval";
+	private static final String DEFAULT_TIMEOUT_KEY = "default.timeout";
+	
 	private List<ReverseUrl> reverseUrls = new ArrayList<ReverseUrl>();
 	private int next;
 	
+	private Properties monitorProps;
+	private int defaultInterval = 15000;
+	private int defaultTimeout = 5000;
+	private String defaultCheckUrl = "check.html";
+	
 	public LbRoundRobinServiceUrl(ServerConfig serverConfig) {
 		super(serverConfig);
+		try {
+			monitorProps = PropertyUtils.getProperties(MONITOR_PROPERTIES);
+			defaultCheckUrl = monitorProps.getProperty(DEFAULT_URL_KEY, defaultCheckUrl);
+			defaultInterval = StringUtils.parse(
+				monitorProps.getProperty(DEFAULT_INTERVAL_KEY), defaultInterval);
+			defaultTimeout = StringUtils.parse(
+				monitorProps.getProperty(DEFAULT_TIMEOUT_KEY), defaultTimeout);
+		} catch (ResourceNotFoundException e) {
+			monitorProps = new Properties();
+			monitorProps.setProperty(DEFAULT_URL_KEY, defaultCheckUrl);
+			monitorProps.setProperty(DEFAULT_INTERVAL_KEY, String.valueOf(defaultInterval));
+			monitorProps.setProperty(DEFAULT_TIMEOUT_KEY, String.valueOf(defaultTimeout));
+		}
 	}
 	
 	@Override
@@ -72,13 +111,13 @@ public class LbRoundRobinServiceUrl extends ServiceUrl
 
 	@Override
 	public void addTarget(ReverseUrl target) {
-		LOG.trace("add: "+target.getReverse());
+		LOG.trace("add: " + target.getReverse());
 		reverseUrls.add(target);
 	}
 
 	@Override
 	public void removeTarget(ReverseUrl target) {
-		LOG.trace("del: "+target.getReverse());
+		LOG.trace("del: " + target.getReverse());
 		reverseUrls.remove(target);
 	}
 
@@ -87,14 +126,35 @@ public class LbRoundRobinServiceUrl extends ServiceUrl
 		for (ReverseUrl url : reverseUrls) {
 			HttpMonitor<ReverseUrl> monitor = new HttpMonitor<ReverseUrl>();
 			monitor.setHealthCheckTarget(this);
-			MonitorConfig config = new MonitorConfig();
-			config.setInterval(15000);
-			config.setTimeout(5000);
-			config.setUrl(url.getReverse().toString() + "check.html");
-			monitor.setMonitorConfig(config);
+			monitor.setMonitorConfig(getMonitorConfig(url));
 			monitor.setTarget(url);
 			new DefaultThreadFactory("Monitor").newThread(monitor).start();
 			monitor.startMonitor();
 		}
+	}
+	
+	MonitorConfig getMonitorConfig(ReverseUrl url) {
+		String key = url.getServiceUrl().getPath();
+		if (key == null) {
+			key = "default";
+		}
+		MonitorConfig config = new MonitorConfig();
+		String checkUrl = monitorProps.getProperty(key + ".url");
+		URL u = url.getReverse();
+		if (checkUrl == null) {
+			checkUrl = defaultCheckUrl;
+		}
+		if (checkUrl.startsWith("http://")==false
+			&& checkUrl.startsWith("https://")==false) {
+			checkUrl = u != null ? u.toString() + checkUrl : checkUrl;
+		}
+		config.setUrl(checkUrl);
+		config.setInterval(StringUtils.parse(
+			monitorProps.getProperty(key + ".interval"), defaultInterval)
+		);
+		config.setTimeout(StringUtils.parse(
+			monitorProps.getProperty(key + ".timeout"), defaultTimeout)
+		);
+		return config;
 	}
 }

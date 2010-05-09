@@ -116,8 +116,8 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		} catch (Exception e) {
 			throw new NotFoundException(e);
 		}
-		
 	}
+	
 	private void setEntity(HttpRequest request, HttpResponse response, VelocityContext ctx, String path) {
 		String html = getVelocityPage().getPage(request, response, ctx, path);
 		ResponseUtils.setEntity(response, getEntity(html));
