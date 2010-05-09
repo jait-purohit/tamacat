@@ -16,6 +16,7 @@ import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
 public final class SessionManager implements SessionListener {
+	static final Log LOG = LogFactory.getLog(SessionManager.class);
 
 	private
 	  static final SessionManager SELF = new SessionManager();
@@ -160,7 +161,6 @@ public final class SessionManager implements SessionListener {
 	 * <p>The internal class of session invalidate.
 	 */
 	static class SessionCleaner implements Runnable {
-		static final Log LOG = LogFactory.getLog(SessionCleaner.class);
 		private int checkInterval =  30 * 1000; //default 30sec.
 		
 		void setCheckInterval(int checkInterval) {

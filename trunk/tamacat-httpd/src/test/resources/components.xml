@@ -55,7 +55,7 @@
   <bean id="VelocityHandler" 
      class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
     <property name="docsRoot">
-      <value>htdocs</value>
+      <value>${server.home}/src/test/resources/htdocs</value>
     </property>
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
@@ -71,16 +71,18 @@
   </bean>
   
   <bean id="WebServiceHandler" 
-     class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
+     class="org.tamacat.httpd.websocket.WebSocketHandler" singleton="false">
     <property name="docsRoot">
-      <value>htdocs</value>
+      <value>${server.home}/src/test/resources/htdocs</value>
     </property>
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
+    <!-- 
     <property name="httpFilter">
       <ref bean="WSSEAuthFilter" />
     </property>
+    -->
     <!--
     <property name="httpFilter">
       <ref bean="AccessControlFilter" />
@@ -90,7 +92,7 @@
   
   <bean id="DefaultHandler"
      class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
-        <property name="httpFilter">
+    <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
   </bean>
