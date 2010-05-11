@@ -17,6 +17,8 @@ public class PerformanceCounterFilter implements RequestFilter, ResponseFilter {
 
 	private static final URLBasicCounter urlCounter = new URLBasicCounter();
 
+	private ServiceUrl serviceUrl;
+	
 	/**
 	 * <p>Set the base ObjectName for JMX.
 	 * ObjectName is append the URL path.<br>
@@ -29,19 +31,20 @@ public class PerformanceCounterFilter implements RequestFilter, ResponseFilter {
 	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
-			HttpContext context, ServiceUrl serviceUrl) {
+			HttpContext context) {
 		BasicCounter counter = urlCounter.getCounter(getPath(serviceUrl));
 		if (counter != null) counter.countUp();
 	}
 
 	@Override
 	public void init(ServiceUrl serviceUrl) {
+		this.serviceUrl = serviceUrl;
 		urlCounter.register(getPath(serviceUrl));
 	}
 
 	@Override
 	public void afterResponse(HttpRequest request, HttpResponse response,
-			HttpContext context, ServiceUrl serviceUrl) {
+			HttpContext context) {
 		BasicCounter counter = urlCounter.getCounter(getPath(serviceUrl));
 		if (counter != null) counter.countDown();
 	}

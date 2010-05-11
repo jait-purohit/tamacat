@@ -16,6 +16,7 @@ import org.tamacat.util.StringUtils;
 
 public class SessionCookieFilter implements RequestFilter {
 
+	protected ServiceUrl serviceUrl;
 	private static final String SESSION_ATTRIBUTE_KEY = Session.class.getName();
 	private String sessionCookieName = "Session";
 	
@@ -31,7 +32,7 @@ public class SessionCookieFilter implements RequestFilter {
 	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
-			HttpContext context, ServiceUrl serviceUrl) {
+			HttpContext context) {
 		Header[] headers = request.getHeaders("Cookie");
 		synchronized(MANAGER) {
 			Session session = null;
@@ -58,5 +59,6 @@ public class SessionCookieFilter implements RequestFilter {
 
 	@Override
 	public void init(ServiceUrl serviceUrl) {	
+		this.serviceUrl = serviceUrl;
 	}
 }

@@ -7,7 +7,6 @@ package org.tamacat.httpd.filter;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
-import org.tamacat.httpd.config.ServiceUrl;
 
 /**
  * <p>{@core RequestFilter} is execute from
@@ -16,5 +15,5 @@ import org.tamacat.httpd.config.ServiceUrl;
 public interface RequestFilter extends HttpFilter {
 	
 	void doFilter(HttpRequest request, HttpResponse response, 
-		HttpContext context, ServiceUrl serviceUrl);
+		HttpContext context);
 }

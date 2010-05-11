@@ -21,6 +21,7 @@ public class SingleSignOnFilter implements RequestFilter {
 
 	static final Log LOG = LogFactory.getLog(SingleSignOnFilter.class);
 
+	protected ServiceUrl serviceUrl;
 	protected String singleSignOnCookieName;
 	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
 	
@@ -34,11 +35,12 @@ public class SingleSignOnFilter implements RequestFilter {
 	
 	@Override
 	public void init(ServiceUrl serviceUrl) {
+		this.serviceUrl = serviceUrl;
 	}
 	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
-			HttpContext context, ServiceUrl serviceUrl) {
+			HttpContext context) {
 		String remoteUser = (String) context.getAttribute(remoteUserKey);
 		if (StringUtils.isNotEmpty(remoteUser)) {
 			Header[] cookieHeaders = request.getHeaders("Cookie");

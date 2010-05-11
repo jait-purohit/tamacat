@@ -18,10 +18,11 @@ public class ClientIPAccessControlFilter implements RequestFilter {
 
 	private HashMap<String, Integer> allows = new HashMap<String, Integer>();
 	private HashMap<String, Integer> denies = new HashMap<String, Integer>();
+	protected ServiceUrl serviceUrl;
 
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
-			HttpContext context, ServiceUrl serviceUrl) {
+			HttpContext context) {
 		String client = RequestUtils.getRemoteIPAddress(context);
 		String[] searchIp = client.split("\\."); 
 		String[] matcher = new String[4];
@@ -57,7 +58,9 @@ public class ClientIPAccessControlFilter implements RequestFilter {
 	}
 
 	@Override
-	public void init(ServiceUrl serviceUrl) {}
+	public void init(ServiceUrl serviceUrl) {
+		this.serviceUrl = serviceUrl;
+	}
 
 	public void setAllow(String address) {
 		setPattern(address, true);

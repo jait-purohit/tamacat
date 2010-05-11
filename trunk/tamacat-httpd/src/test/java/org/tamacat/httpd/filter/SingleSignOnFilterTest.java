@@ -8,6 +8,8 @@ import org.apache.http.protocol.HttpContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.httpd.config.ServerConfig;
+import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 
 public class SingleSignOnFilterTest {
@@ -17,6 +19,9 @@ public class SingleSignOnFilterTest {
 	@Before
 	public void setUp() throws Exception {
 		filter = new SingleSignOnFilter();
+		ServerConfig config = new ServerConfig();
+		ServiceUrl serviceUrl = new ServiceUrl(config);
+		filter.init(serviceUrl);
 	}
 
 	@After
@@ -30,7 +35,7 @@ public class SingleSignOnFilterTest {
 		HttpContext context = HttpObjectFactory.createHttpContext();
 		context.setAttribute(filter.remoteUserKey, "admin");
 		
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 		assertEquals("SingleSignOnUser=admin; Path=/",
 				response.getFirstHeader("Set-Cookie").getValue());
 	}

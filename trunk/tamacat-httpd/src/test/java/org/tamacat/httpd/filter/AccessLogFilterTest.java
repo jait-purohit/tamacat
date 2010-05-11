@@ -35,6 +35,7 @@ public class AccessLogFilterTest {
 		context.setAttribute(AuthComponent.REMOTE_USER_KEY, "admin");
 		ServerConfig config = new ServerConfig();
 		serviceUrl = new ServiceUrl(config);
+		filter.init(serviceUrl);
 	}
 
 	@After
@@ -44,8 +45,8 @@ public class AccessLogFilterTest {
 	@Test
 	public void testDoFilter() {
 		try {
-			filter.doFilter(request, response, context, serviceUrl);
-			filter.afterResponse(request, response, context, serviceUrl);
+			filter.doFilter(request, response, context);
+			filter.afterResponse(request, response, context);
 		} catch (Exception e) {
 			fail();
 		}

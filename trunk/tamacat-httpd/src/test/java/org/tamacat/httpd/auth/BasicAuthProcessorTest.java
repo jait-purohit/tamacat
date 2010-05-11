@@ -26,7 +26,10 @@ public class BasicAuthProcessorTest {
 	@Before
 	public void setUp() throws Exception {
 		config = new ServerConfig();
+		ServiceUrl serviceUrl = new ServiceUrl(config);
 		auth = new BasicAuthProcessor();
+		auth.init(serviceUrl);
+		
 		TestAuthComponent authComponent = new TestAuthComponent();
 		authComponent.setAuthPassword("pass");
 		auth.setAuthComponent(authComponent);
@@ -41,9 +44,8 @@ public class BasicAuthProcessorTest {
 
 	@Test
 	public void testDoFilter() {
-		ServiceUrl serviceUrl = new ServiceUrl(config);
 		try {
-			auth.doFilter(request, response, context, serviceUrl);
+			auth.doFilter(request, response, context);
 		} catch (UnauthorizedException e) {
 			assertTrue(true);
 		}
@@ -51,7 +53,7 @@ public class BasicAuthProcessorTest {
 		String idpass = new String(new Base64().encode("admin:pass".getBytes()));
 		request.setHeader(BasicAuthProcessor.AUTHORIZATION, "Basic " + idpass);
 		try {
-			auth.doFilter(request, response, context, serviceUrl);
+			auth.doFilter(request, response, context);
 		} catch (UnauthorizedException e) {
 			fail();
 		}
