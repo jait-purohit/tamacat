@@ -18,6 +18,7 @@ import org.tamacat.util.StringUtils;
  */
 public abstract class AbstractAccessControlFilter implements RequestFilter {
 	
+	protected ServiceUrl serviceUrl;
 	protected AccessUrlCache cache;
 	
 	private int cacheSize = 100;
@@ -43,6 +44,7 @@ public abstract class AbstractAccessControlFilter implements RequestFilter {
 	
 	@Override
 	public void init(ServiceUrl serviceUrl) {
+		this.serviceUrl = serviceUrl;
 		if (cacheSize > 0 && cacheExpire > 0) {
 			cache = new AccessUrlCache(cacheSize, cacheExpire);
 		}
@@ -50,7 +52,7 @@ public abstract class AbstractAccessControlFilter implements RequestFilter {
 	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
-			HttpContext context, ServiceUrl serviceUrl) {
+			HttpContext context) {
 		String remoteUser = (String) context.getAttribute(remoteUserKey);
         if (remoteUser != null && serviceUrl != null) {
         	String accessUrl = serviceUrl.getPath();

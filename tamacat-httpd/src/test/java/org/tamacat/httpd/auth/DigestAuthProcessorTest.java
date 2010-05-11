@@ -32,7 +32,11 @@ public class DigestAuthProcessorTest {
 	@Before
 	public void setUp() throws Exception {
 		config = new ServerConfig();
+		ServiceUrl serviceUrl = new ServiceUrl(config);
+
 		auth = new DigestAuthProcessor();
+		auth.init(serviceUrl);
+		
 		auth.setRealm("Authentication required 20091124");
 		TestAuthComponent authComponent = new TestAuthComponent();
 		authComponent.setAuthPassword("pass");
@@ -48,16 +52,15 @@ public class DigestAuthProcessorTest {
 
 	@Test
 	public void testDoFilter() {
-		ServiceUrl serviceUrl = new ServiceUrl(config);
 		try {
-			auth.doFilter(request, response, context, serviceUrl);
+			auth.doFilter(request, response, context);
 		} catch (UnauthorizedException e) {
 			assertTrue(true);
 		}
 		
 		request.setHeader(DigestAuthProcessor.AUTHORIZATION, authHeader);
 		try {
-			auth.doFilter(request, response, context, serviceUrl);
+			auth.doFilter(request, response, context);
 		} catch (UnauthorizedException e) {
 			fail();
 		}

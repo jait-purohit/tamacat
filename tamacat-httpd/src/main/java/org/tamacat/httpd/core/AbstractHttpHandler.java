@@ -103,7 +103,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 		RequestUtils.setParameters(request, context, "UTF-8");
 		try {
 			for (RequestFilter filter : requestFilters) {
-				filter.doFilter(request, response, context, serviceUrl);
+				filter.doFilter(request, response, context);
 			}
 			doRequest(request, response, context);
 		} catch (Exception e) {
@@ -111,7 +111,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 			handleException(request, response, e);
 		} finally {
 			for (ResponseFilter filter : responseFilters) {
-				filter.afterResponse(request, response, context, serviceUrl);
+				filter.afterResponse(request, response, context);
 			}
 		}
 	}

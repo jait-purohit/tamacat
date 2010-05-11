@@ -14,9 +14,11 @@ public abstract class AbstractAuthProcessor implements RequestFilter {
 
 	protected AuthComponent<?> authComponent;
 	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
+	protected ServiceUrl serviceUrl;
 	
 	@Override
 	public void init(ServiceUrl serviceUrl) {
+		this.serviceUrl = serviceUrl;
 		if (authComponent != null) {
 			authComponent.init();
 		}

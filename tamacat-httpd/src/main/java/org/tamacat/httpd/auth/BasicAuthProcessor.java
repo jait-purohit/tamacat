@@ -13,7 +13,6 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
-import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.UnauthorizedException;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.util.StringUtils;
@@ -30,7 +29,7 @@ public class BasicAuthProcessor extends AbstractAuthProcessor implements Request
 	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
-			HttpContext context, ServiceUrl serviceUrl) {
+			HttpContext context) {
 		try {
 			String remoteUser = checkUser(request, context);
 			context.setAttribute(remoteUserKey, remoteUser);

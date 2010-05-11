@@ -11,6 +11,8 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 
+import org.tamacat.httpd.config.ServerConfig;
+import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 import org.tamacat.httpd.util.RequestUtils;
@@ -25,7 +27,11 @@ public class ClientIPAccessControlFilterTest {
 	
 	@Before
 	public void setUp() throws Exception {
+		ServerConfig config = new ServerConfig();
+		ServiceUrl serviceUrl = new ServiceUrl(config);
+
 		filter = new ClientIPAccessControlFilter();
+		filter.init(serviceUrl);
 	}
 
 	@After
@@ -38,11 +44,11 @@ public class ClientIPAccessControlFilterTest {
 		
 		InetAddress allowAddress = InetAddress.getByName("192.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 		
 		InetAddress denyAddress = InetAddress.getByName("10.1.1.1");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 	}
 	
 	@Test
@@ -51,12 +57,12 @@ public class ClientIPAccessControlFilterTest {
 		
 		InetAddress allowAddress = InetAddress.getByName("192.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 		
 		InetAddress denyAddress = InetAddress.getByName("193.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		try {
-			filter.doFilter(request, response, context, null);
+			filter.doFilter(request, response, context);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
@@ -69,12 +75,12 @@ public class ClientIPAccessControlFilterTest {
 		
 		InetAddress allowAddress = InetAddress.getByName("192.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 		
 		InetAddress denyAddress = InetAddress.getByName("192.169.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		try {
-			filter.doFilter(request, response, context, null);
+			filter.doFilter(request, response, context);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
@@ -87,12 +93,12 @@ public class ClientIPAccessControlFilterTest {
 		
 		InetAddress allowAddress = InetAddress.getByName("192.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 		
 		InetAddress denyAddress = InetAddress.getByName("192.168.11.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		try {
-			filter.doFilter(request, response, context, null);
+			filter.doFilter(request, response, context);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
@@ -105,12 +111,12 @@ public class ClientIPAccessControlFilterTest {
 		
 		InetAddress allowAddress = InetAddress.getByName("192.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 		
 		InetAddress denyAddress = InetAddress.getByName("192.168.10.124");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		try {
-			filter.doFilter(request, response, context, null);
+			filter.doFilter(request, response, context);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
@@ -124,7 +130,7 @@ public class ClientIPAccessControlFilterTest {
 		InetAddress allowAddress = InetAddress.getByName("192.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
 		try {
-			filter.doFilter(request, response, context, null);
+			filter.doFilter(request, response, context);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
@@ -132,7 +138,7 @@ public class ClientIPAccessControlFilterTest {
 		InetAddress denyAddress = InetAddress.getByName("10.1.1.1");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		try {
-			filter.doFilter(request, response, context, null);
+			filter.doFilter(request, response, context);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
@@ -145,12 +151,12 @@ public class ClientIPAccessControlFilterTest {
 		
 		InetAddress allowAddress = InetAddress.getByName("192.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 		
 		InetAddress denyAddress = InetAddress.getByName("193.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		try {
-			filter.doFilter(request, response, context, null);
+			filter.doFilter(request, response, context);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
@@ -163,12 +169,12 @@ public class ClientIPAccessControlFilterTest {
 		
 		InetAddress allowAddress = InetAddress.getByName("192.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 		
 		InetAddress denyAddress = InetAddress.getByName("192.169.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		try {
-			filter.doFilter(request, response, context, null);
+			filter.doFilter(request, response, context);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
@@ -181,12 +187,12 @@ public class ClientIPAccessControlFilterTest {
 		
 		InetAddress allowAddress = InetAddress.getByName("192.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 		
 		InetAddress denyAddress = InetAddress.getByName("192.168.11.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		try {
-			filter.doFilter(request, response, context, null);
+			filter.doFilter(request, response, context);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
@@ -199,12 +205,12 @@ public class ClientIPAccessControlFilterTest {
 		
 		InetAddress allowAddress = InetAddress.getByName("192.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 		
 		InetAddress denyAddress = InetAddress.getByName("192.168.10.124");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		try {
-			filter.doFilter(request, response, context, null);
+			filter.doFilter(request, response, context);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
@@ -219,12 +225,12 @@ public class ClientIPAccessControlFilterTest {
 		
 		InetAddress allowAddress = InetAddress.getByName("192.168.10.123");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
-		filter.doFilter(request, response, context, null);
+		filter.doFilter(request, response, context);
 		
 		InetAddress denyAddress = InetAddress.getByName("10.1.1.1");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		try {
-			filter.doFilter(request, response, context, null);
+			filter.doFilter(request, response, context);
 			fail();
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
