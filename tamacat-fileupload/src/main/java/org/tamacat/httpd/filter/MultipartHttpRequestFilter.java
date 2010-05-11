@@ -40,7 +40,7 @@ public class MultipartHttpRequestFilter implements RequestFilter {
 
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
-			HttpContext context, ServiceUrl serviceUrl) {
+			HttpContext context) {
 		if (RequestUtils.isMultipart(request)) {
 			try {
 				HttpFileUpload upload = new HttpFileUpload();
