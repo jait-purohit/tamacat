@@ -26,9 +26,9 @@ import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.IOUtils;
 
-public class MultipartHttpRequestFilter implements RequestFilter {
+public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 
-	static final Log LOG = LogFactory.getLog(MultipartHttpRequestFilter.class);
+	static final Log LOG = LogFactory.getLog(MultipartHttpFilter.class);
 	
 	protected ServiceUrl serviceUrl;
 	protected String baseDirectory;
@@ -75,13 +75,13 @@ public class MultipartHttpRequestFilter implements RequestFilter {
 				value = item.getString();
 			}
 			RequestUtils.getParameters(context)
-			.getParameterMap().put(key, Arrays.asList(value));
+				.getParameterMap().put(key, Arrays.asList(value));
 		} catch (UnsupportedEncodingException e) {
 		}
 	}
 	
 	protected void handleFileItem(HttpContext context, FileItem item) {
-		writeFile(item, item.getName());
+		context.setAttribute(FileItem.class.getName(), item);
 	}
 		
 	protected void writeFile(FileItem item, String name) {
@@ -120,6 +120,15 @@ public class MultipartHttpRequestFilter implements RequestFilter {
 		if (baseDirectory != null) {
 			baseDirectory.replace("\\", "/");
 			this.baseDirectory = baseDirectory.replaceFirst("/$", "");
+		}
+	}
+
+	@Override
+	public void afterResponse(HttpRequest request, HttpResponse response,
+			HttpContext context) {
+		FileItem item = (FileItem) context.getAttribute(FileItem.class.getName());
+		if (item != null) {
+			writeFile(item, item.getName());
 		}
 	}
 }
