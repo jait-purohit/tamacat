@@ -12,6 +12,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.velocity.VelocityContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.core.RequestContext;
+import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.ClassUtils;
 
@@ -23,6 +24,7 @@ public class VelocityActionFilter implements RequestFilter {
 	private String processKeyName = "p";
 	private String prefix = "";
 	private String suffix = "";
+	private static final Class<?>[] PARAMS = new Class<?>[]{	RequestContext.class };
 	
 	public ServiceUrl getServiceUrl() {
 		return serviceUrl;
@@ -68,10 +70,6 @@ public class VelocityActionFilter implements RequestFilter {
 		this.suffix = suffix;
 	}
 	
-	private Class<?>[] params = new Class<?>[]{
-		RequestContext.class
-	};
-	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
@@ -83,13 +81,25 @@ public class VelocityActionFilter implements RequestFilter {
 		Class<?> type = ClassUtils.forName(className);
 		if (type != null) {
 			Object instance = ClassUtils.newInstance(type);
-			Method method = ClassUtils.getMethod(type, process, params);
-			ClassUtils.invoke(method, instance, 
+			Method method = ClassUtils.getMethod(type, process, PARAMS);
+			invoke(method, instance, 
 				new RequestContext(request, response, context));
 		}
 		context.setAttribute(VelocityContext.class.getName(), ctx);
 	}
 
+	protected <T>Object invoke(Method method, T instance, Object... params) {
+        try {
+      	    if (params == null) {
+      		    return method.invoke(instance);
+      	    } else {
+      		    return method.invoke(instance, params);
+      	    }
+        } catch (Exception e) {
+            throw new ServiceUnavailableException(e);
+        }
+    }
+    
 	@Override
 	public void init(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
