@@ -35,11 +35,11 @@ public class FileUtils {
     	}
     }
     
-	public static void writeFile(InputStream in, String path) throws IOException {
-		writeFile(in, new File(path));
+	public static void write(InputStream in, String path) throws IOException {
+		write(in, new File(path));
 	}
 	
-	public static void writeFile(InputStream in, File file) throws IOException {
+	public static void write(InputStream in, File file) throws IOException {
 		FileOutputStream out = null;
 		try {
 			out = new FileOutputStream(file);
