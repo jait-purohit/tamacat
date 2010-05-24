@@ -89,6 +89,7 @@ public class VelocityActionFilter implements RequestFilter {
 	}
 
 	protected <T>Object invoke(Method method, T instance, Object... params) {
+		if (method == null) return null;
         try {
       	    if (params == null) {
       		    return method.invoke(instance);
