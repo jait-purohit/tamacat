@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <service-config>
-  <service host="http://localhost">
+  <service>
     <url path="/" type="normal" handler="DefaultHandler" />
     <url path="/test/" type="reverse" handler="ReverseHandler">
       <reverse>http://localhost:8080/test/</reverse>
     </url>
+    <url path="/html5/data/" type="normal" handler="HdfsFileHandler" />
+    <url path="/html5/" type="normal" handler="Html5Handler" />
+    <!-- 
+    <url path="/webdav/" type="normal" handler="WebDavHandler" />
+     -->
     <url path="/web/" type="normal" handler="VelocityHandler" />
     <url path="/api/" type="normal" handler="WebServiceHandler" />
     <url path="/lb/" type="lb" handler="ReverseHandler">

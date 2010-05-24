@@ -32,13 +32,11 @@
         <include>**/*.js</include>
         <include>**/*.css</include>
         <include>**/*.xml</include>
-      </includes>
-      <!-- 
+      </includes> 
       <excludes>
         <exclude>**/src/*.*</exclude>
         <exclude>**/target/*.*</exclude>
       </excludes>
-       -->
     </fileSet>
     <!-- javadoc -->
     <!--
@@ -54,7 +52,7 @@
   </fileSets>
   <dependencySets>
     <dependencySet>
-      <unpack>false</unpack>
+      <unpack>true</unpack>
       <scope>runtime</scope>
       <outputDirectory>/lib</outputDirectory>
     </dependencySet>

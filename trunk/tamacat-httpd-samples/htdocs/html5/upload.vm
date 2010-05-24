@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"></meta>
+<link rel="stylesheet" href="css/base.css" type="text/css" />
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+<title>HTML5</title>
+</head>
+<body>
+<div id="contents">
+  <div id="header">HTML5 TEST</div>
+  <div id="left-menu">
+    <h2>MENU</h2>
+    <ul>
+      <li><a href="/html5/"><span>File Upload</span></a></li>
+      <li><a href="/html5/data/"><span>File List</span></a></li>
+    </ul>
+  </div>
+  <div id="main">
+<h2>UPLOAD COMPLEATE.</h2>
+<p></p>
+<div>
+  <a href="/html5/index.html">BACK</a>
+</div>
+  </div>
+  <div id="footer">Copyright&copy; 2010, TamaCat.org</div>
+</div>
+</body>
+</html>
