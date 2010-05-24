@@ -1,6 +1,10 @@
 package org.tamacat.util;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -30,4 +34,28 @@ public class FileUtils {
     	    return null;
     	}
     }
+    
+	public static void writeFile(InputStream in, String path) throws IOException {
+		writeFile(in, new File(path));
+	}
+	
+	public static void writeFile(InputStream in, File file) throws IOException {
+		FileOutputStream out = null;
+		try {
+			out = new FileOutputStream(file);
+			InputStream is = new BufferedInputStream(in);
+			byte[] fbytes = new byte[8192];
+			while ((is.read(fbytes)) >= 0) {
+				out.write(fbytes);
+			}
+		} finally {
+			IOUtils.close(out);
+		}
+	}
+    
+	public static String normalizeFileName(String fileName) {
+		return fileName != null ? 
+			fileName.replace("..", "").replace("//","/")
+			.replace("\r","").replace("\n","") : null;
+	}
 }
