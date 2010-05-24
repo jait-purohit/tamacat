@@ -36,7 +36,33 @@
     
   <bean id="SSOFilter"
      class="org.tamacat.httpd.filter.SingleSignOnFilter" />
-     
+  
+  <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" />
+  
+  <bean id="MultipartFilter" class="org.tamacat.httpd.hdfs.FileUploadHttpFilter">
+    <property name="baseDirectory">
+      <value>hdfs://localhost/user/hadoop/html5/data/</value>
+    </property>
+    <property name="encoding">
+      <value>UTF-8</value>
+    </property>    
+  </bean>
+
+  <bean id="ActionFilter" class="org.tamacat.httpd.filter.VelocityActionFilter">
+    <property name="base">
+      <value>org.tamacat.httpd.samples.action</value>
+    </property>
+    <property name="suffix">
+      <value>Action</value>
+    </property>
+    <property name="actionKeyName">
+      <value>a</value>
+    </property>
+    <property name="processKeyName">
+      <value>p</value>
+    </property>
+  </bean>
+  
   <bean id="AccessControlFilter"
      class="org.tamacat.httpd.samples.AccessControlFilter">
     <property name="cacheSize">
@@ -52,11 +78,55 @@
     <property name="docsRoot">
       <value>${server.home}/htdocs/web</value>
     </property>
-    <property name="requestFilter">
+    <property name="httpFilter">
       <ref bean="DigestAuthFilter" />
     </property>
-    <property name="requestFilter">
+    <property name="httpFilter">
       <ref bean="AccessControlFilter" />
+    </property>
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+  </bean>
+  
+  <bean id="HdfsFileHandler" 
+     class="org.tamacat.httpd.hdfs.HdfsFileHttpHandler" singleton="false">
+    <property name="docsRoot">
+      <value>hdfs://localhost/user/hadoop/</value>
+    </property>
+    <property name="listings">
+      <value>true</value>
+    </property>
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+    <property name="httpFilter">
+      <ref bean="MultipartFilter" />
+    </property>
+  </bean>
+  
+  <bean id="Html5Handler" 
+     class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
+    <property name="docsRoot">
+      <value>${server.home}/htdocs/</value>
+    </property>
+    <property name="listings">
+      <value>true</value>
+    </property>
+    <property name="httpFilter">
+      <ref bean="MultipartFilter" />
+    </property>
+    <property name="httpFilter">
+      <ref bean="ActionFilter" />
+    </property>
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+  </bean>
+  
+  <bean id="WebDavHandler" class="org.tamacat.httpd.webdav.WebDavHttpHandler">
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
     </property>
   </bean>
   
@@ -65,27 +135,37 @@
     <property name="docsRoot">
       <value>${server.home}/htdocs/api</value>
     </property>
-    <property name="requestFilter">
+    <property name="httpFilter">
       <ref bean="WSSEAuthFilter" />
     </property>
-    <property name="requestFilter">
+    <property name="httpFilter">
       <ref bean="AccessControlFilter" />
+    </property>
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
     </property>
   </bean>
   
   <bean id="DefaultHandler"
-     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false" />
+     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+  </bean>
   
   <bean id="ReverseHandler"
      class="org.tamacat.httpd.core.ReverseProxyHandler" singleton="false">
-    <property name="requestFilter" >
+    <property name="httpFilter" >
       <ref bean="DigestAuthFilter" />
     </property>
-    <property name="requestFilter">
+    <property name="httpFilter">
       <ref bean="SSOFilter" />
     </property>
-    <property name="requestFilter">
+    <property name="httpFilter">
       <ref bean="AccessControlFilter" />
+    </property>
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
     </property>
     <property name="httpResponseInterceptor" mode="add">
       <ref bean="html" />
@@ -99,6 +179,9 @@
     </property>
     <property name="listings">
       <value>true</value>
+    </property>
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
     </property>
   </bean>
   
@@ -116,9 +199,11 @@
   
   <bean id="server"
      class="org.tamacat.httpd.core.HttpEngine" singleton="false">
+     <!-- 
     <property name="httpResponseInterceptor">
       <ref bean="gzip" />
     </property>
+     -->
   </bean>
   
 </beans>
