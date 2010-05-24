@@ -4,12 +4,10 @@
  */
 package org.tamacat.httpd.filter;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,7 +22,7 @@ import org.tamacat.httpd.mime.HttpFileUpload;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
-import org.tamacat.util.IOUtils;
+import org.tamacat.util.FileUtils;
 
 public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 
@@ -33,7 +31,12 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 	protected ServiceUrl serviceUrl;
 	protected String baseDirectory;
 	protected String encoding;
-	
+	protected boolean writeFile;
+
+	public void setWriteFile(boolean writeFile) {
+		this.writeFile = writeFile;
+	}
+
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
 	}
@@ -56,10 +59,8 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 					}
 				}
 			} catch (FileUploadException e) {
-				e.printStackTrace();
 				throw new ServiceUnavailableException(e);
 			} catch (Exception e) {
-				LOG.debug(e);
 				throw new ServiceUnavailableException(e);
 			}
 		}
@@ -80,36 +81,19 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected void handleFileItem(HttpContext context, FileItem item) {
-		context.setAttribute(FileItem.class.getName(), item);
-	}
-		
-	protected void writeFile(FileItem item, String name) {
-		FileOutputStream out = null;
-		try {
-			out = new FileOutputStream(
-				new File(getBaseDirectory() + "/" + normalizeFileName(name)));
-			InputStream in = new BufferedInputStream(item.getInputStream());
-			byte[] fbytes = new byte[1024];
-			while ((in.read(fbytes)) >= 0) {
-				out.write(fbytes);
-			}
-		} catch (IOException e) {
-			throw new ServiceUnavailableException(e);
-		} finally {
-			IOUtils.close(out);
+		List<FileItem> list = (List<FileItem>)context.getAttribute(FileItem.class.getName());
+		if (list == null) {
+			list = new ArrayList<FileItem>();
 		}
+		list.add(item);
+		context.setAttribute(FileItem.class.getName(), list);
 	}
 
 	@Override
 	public void init(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
-	}
-	
-	protected String normalizeFileName(String fileName) {
-		return fileName != null ? 
-			fileName.replace("..", "").replace("//","/")
-			.replace("\r","").replace("\n","") : null;
 	}
 	
 	protected String getBaseDirectory() {
@@ -123,12 +107,28 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void afterResponse(HttpRequest request, HttpResponse response,
 			HttpContext context) {
-		FileItem item = (FileItem) context.getAttribute(FileItem.class.getName());
-		if (item != null) {
-			writeFile(item, item.getName());
+		if (writeFile) {
+			List<FileItem> list = (List<FileItem>) context.getAttribute(FileItem.class.getName());
+			if (list != null) {
+				try {
+					for (FileItem item : list) {
+						if (item.isFormField() == false) {
+							writeFile(item, item.getName());
+						}
+					}
+				} catch (IOException e) {
+					throw new ServiceUnavailableException(e);
+				}
+			}
 		}
+	}
+		
+	protected void writeFile(FileItem item, String name) throws IOException {
+		FileUtils.write(item.getInputStream(), 
+			new File(getBaseDirectory() + "/" + FileUtils.normalizeFileName(name)));
 	}
 }

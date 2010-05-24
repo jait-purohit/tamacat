@@ -4,43 +4,32 @@
  */
 package org.tamacat.httpd.hdfs;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.security.UnixUserGroupInformation;
-import org.tamacat.httpd.exception.ServiceUnavailableException;
+import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.filter.MultipartHttpFilter;
-import org.tamacat.util.IOUtils;
+import org.tamacat.httpd.hdfs.util.HdfsFileUtils;
+import org.tamacat.util.FileUtils;
 
 public class FileUploadHttpFilter extends MultipartHttpFilter {
 	
-	@Override
-	protected void writeFile(FileItem item, String name) {
-		OutputStream out = null;
-		Configuration conf = new Configuration();
-		conf.set(UnixUserGroupInformation.UGI_PROPERTY_NAME,"hadoop,supergroup");
-		
-		String uri = getBaseDirectory() + "/" + normalizeFileName(name);
-		try {
-			FileSystem fs = FileSystem.get(URI.create(uri), conf);
-			out = fs.create(new Path(uri));
-			InputStream in = new BufferedInputStream(item.getInputStream());
-			byte[] fbytes = new byte[1024];
-			while ((in.read(fbytes)) >= 0) {
-				out.write(fbytes);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new ServiceUnavailableException(e);
-		} finally {
-			IOUtils.close(out);
+	@SuppressWarnings("unchecked")
+	protected void handleFileItem(HttpContext context, FileItem item) {
+		List<FileItem> list = (List<FileItem>)context.getAttribute(FileItem.class.getName());
+		if (list == null) {
+			list = new ArrayList<FileItem>();
 		}
+		String uri = getBaseDirectory() + "/" + FileUtils.normalizeFileName(item.getName());
+		list.add(new HdfsFileItem(item, uri));
+		context.setAttribute(FileItem.class.getName(), list);
+	}
+	
+	@Override
+	protected void writeFile(FileItem item, String name) throws IOException {
+		String uri = getBaseDirectory() + "/" + FileUtils.normalizeFileName(name);
+		HdfsFileUtils.write(item.getInputStream(), uri);
 	}
 }
