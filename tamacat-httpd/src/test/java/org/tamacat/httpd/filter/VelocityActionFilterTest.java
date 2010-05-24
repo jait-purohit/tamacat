@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.mock.HttpObjectFactory;
+import org.tamacat.httpd.util.RequestUtils;
 
 public class VelocityActionFilterTest {
 
@@ -23,6 +24,9 @@ public class VelocityActionFilterTest {
 	@Before
 	public void setUp() throws Exception {
 		filter = new VelocityActionFilter();
+		filter.setBase("org.tamacat.httpd.action");
+		filter.setSuffix("Action");
+		
 		ServerConfig config = new ServerConfig();
 		ServiceUrl serviceUrl = new ServiceUrl(config);
 		filter.init(serviceUrl);
@@ -34,9 +38,11 @@ public class VelocityActionFilterTest {
 
 	@Test
 	public void testDoFilter() {
-		HttpRequest request = HttpObjectFactory.createHttpRequest("GET", "/test/");
+		HttpRequest request = HttpObjectFactory.createHttpRequest("GET", "/test/main?a=Default&p=top");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = HttpObjectFactory.createHttpContext();
+		RequestUtils.setParameters(request, context, "UTF-8");
+		System.out.println(RequestUtils.getParameter(context, "a"));
 		
 		filter.doFilter(request, response, context);
 		assertNotNull(filter.getServiceUrl());

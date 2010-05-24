@@ -11,6 +11,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.apache.velocity.VelocityContext;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.core.RequestContext;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.ClassUtils;
 
@@ -19,6 +20,9 @@ public class VelocityActionFilter implements RequestFilter {
 	private ServiceUrl serviceUrl;
 	private String base;
 	private String actionKeyName = "a";
+	private String processKeyName = "p";
+	private String prefix = "";
+	private String suffix = "";
 	
 	public ServiceUrl getServiceUrl() {
 		return serviceUrl;
@@ -63,10 +67,10 @@ public class VelocityActionFilter implements RequestFilter {
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
 	}
-
-	private String processKeyName = "p";
-	private String prefix;
-	private String suffix;
+	
+	private Class<?>[] params = new Class<?>[]{
+		RequestContext.class
+	};
 	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
@@ -74,14 +78,15 @@ public class VelocityActionFilter implements RequestFilter {
 		VelocityContext ctx = new VelocityContext();
 		String action = RequestUtils.getParameter(context, actionKeyName);
 		String process = RequestUtils.getParameter(context, processKeyName);
-		if (action != null) action = "";
+		if (action == null) action = "Default";
 		String className = base + "." + prefix + action + suffix;
 		Class<?> type = ClassUtils.forName(className);
-		System.out.println(type);
-
-		Object instance = ClassUtils.newInstance(type);
-		Method method = ClassUtils.getMethod(type, process);
-		ClassUtils.invoke(method, instance);
+		if (type != null) {
+			Object instance = ClassUtils.newInstance(type);
+			Method method = ClassUtils.getMethod(type, process, params);
+			ClassUtils.invoke(method, instance, 
+				new RequestContext(request, response, context));
+		}
 		context.setAttribute(VelocityContext.class.getName(), ctx);
 	}
 
