@@ -17,11 +17,11 @@ public class HdfsFileItem implements FileItem {
 	private static final long serialVersionUID = 8416241515875710359L;
 	
 	private final FileItem item;
-	private String baseDirectory;
+	private String uri;
 	
-	public HdfsFileItem(FileItem item, String baseDirectory) {
+	public HdfsFileItem(FileItem item, String uri) {
 		this.item = item;
-		this.baseDirectory = baseDirectory;
+		this.uri = uri;
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class HdfsFileItem implements FileItem {
 
 	@Override
 	public String getName() {
-		return baseDirectory + item.getName();
+		return uri;
 	}
 
 	@Override
