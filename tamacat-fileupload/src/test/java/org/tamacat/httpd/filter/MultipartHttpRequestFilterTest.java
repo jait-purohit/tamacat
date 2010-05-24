@@ -37,7 +37,7 @@ public class MultipartHttpRequestFilterTest {
 
 	@Test
 	public void testGetBaseDirectory() {
-		MultipartHttpRequestFilter filter = new MultipartHttpRequestFilter();
+		MultipartHttpFilter filter = new MultipartHttpFilter();
 		filter.setBaseDirectory("src/test/resources/");
 		assertEquals("src/test/resources/test.txt", filter.getBaseDirectory() + "/" + "test.txt");
 	}

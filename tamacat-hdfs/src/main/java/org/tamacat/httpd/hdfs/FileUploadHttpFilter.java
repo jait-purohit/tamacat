@@ -16,10 +16,10 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.security.UnixUserGroupInformation;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
-import org.tamacat.httpd.filter.MultipartHttpRequestFilter;
+import org.tamacat.httpd.filter.MultipartHttpFilter;
 import org.tamacat.util.IOUtils;
 
-public class FileUploadHttpFilter extends MultipartHttpRequestFilter {
+public class FileUploadHttpFilter extends MultipartHttpFilter {
 	
 	@Override
 	protected void writeFile(FileItem item, String name) {
