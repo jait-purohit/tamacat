@@ -19,7 +19,7 @@ import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.MultipartHttpRequestFilter;
 import org.tamacat.util.IOUtils;
 
-public class FileUploadRequestFilter extends MultipartHttpRequestFilter {
+public class FileUploadHttpFilter extends MultipartHttpRequestFilter {
 	
 	@Override
 	protected void writeFile(FileItem item, String name) {
