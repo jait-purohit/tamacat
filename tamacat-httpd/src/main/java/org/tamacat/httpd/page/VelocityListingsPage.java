@@ -37,6 +37,10 @@ public class VelocityListingsPage {
     private String listingsPage = "listings";
     private VelocityEngine velocityEngine;
 
+    public void setListingsPage(String listingsPage) {
+		this.listingsPage = listingsPage;
+	}
+    
 	public VelocityListingsPage() {
 		try {
 			Properties props = PropertyUtils.getProperties("velocity.properties");
