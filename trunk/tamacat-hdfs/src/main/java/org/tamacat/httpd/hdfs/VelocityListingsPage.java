@@ -7,11 +7,10 @@ package org.tamacat.httpd.hdfs;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.http.HttpRequest;
@@ -20,11 +19,10 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
+import org.tamacat.httpd.hdfs.util.HdfsFileUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
-import org.tamacat.util.DateUtils;
 import org.tamacat.util.PropertyUtils;
-import org.tamacat.util.StringUtils;
 
 /**
  * <p>It is the Hadoop HDFS directory listings page that used Velocity template.
@@ -38,7 +36,12 @@ public class VelocityListingsPage {
     static final String DEFAULT_ERROR_500_HTML
 		= "<html><body><p>500 Internal Server Error.<br /></p></body></html>";
     private String listingsPage = "listings";
-    private VelocityEngine velocityEngine;
+    
+    public void setListingsPage(String listingsPage) {
+		this.listingsPage = listingsPage;
+	}
+
+	private VelocityEngine velocityEngine;
 
 	public VelocityListingsPage() {
 		try {
@@ -60,29 +63,14 @@ public class VelocityListingsPage {
 	
 	public String getListingsPage(
 			HttpRequest request, HttpResponse response, 
-			VelocityContext context, FileSystem file, Path path) {
+			VelocityContext context, FileSystem fs, Path path) {
 		context.put("url", request.getRequestLine().getUri());
 		if (request.getRequestLine().getUri().lastIndexOf('/') >= 0) {
 			context.put("parent", "../");
 		}
-		ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String,String>>();
+		List<Map<String, String>> list = new ArrayList<Map<String,String>>();
 		try {
-			FileStatus[] files = file.listStatus(new Path(path.toUri().getPath()));
-			if (files != null) {
-				for (FileStatus f : files) {
-					HashMap<String, String> map = new HashMap<String, String>();
-					if (f.isDir()) {
-						map.put("getName", StringUtils.encode(f.getPath().getName(),"UTF-8") + "/");
-						map.put("length", "-");
-					} else {
-						map.put("getName", StringUtils.encode(f.getPath().getName(), "UTF-8"));
-						map.put("length", String.valueOf(f.getLen()));
-					}
-					map.put("isDirectory", String.valueOf(f.isDir()));
-					map.put("lastModified", DateUtils.getTime(new Date(f.getModificationTime()), "yyyy-MM-dd HH:mm"));
-					list.add(map);
-				}
-			}
+			list = HdfsFileUtils.get(fs, path.toUri().getPath());
 		} catch (IOException e) {
 			throw new ServiceUnavailableException(e);
 		}
