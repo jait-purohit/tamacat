@@ -71,6 +71,10 @@ public class HdfsFileHttpHandler extends AbstractHttpHandler {
 		}
 	}
 	
+	public void setListingsPage(String listingsPage) {
+		listingPage.setListingsPage(listingsPage);
+	}
+	
 	protected boolean useDirectoryListings() {
 		if (listings && welcomeFile == null) {
 			return true;
@@ -89,31 +93,31 @@ public class HdfsFileHttpHandler extends AbstractHttpHandler {
 		String uri = docsRoot + getDecodeUri(path);
 		
 		try {
-			FileSystem file = FileSystem.get(URI.create(uri), conf);
+			FileSystem fs = FileSystem.get(URI.create(uri), conf);
 			Path p = new Path(uri);
 			///// 404 NOT FOUND /////
-			if (file.exists(p) == false) {
+			if (fs.exists(p) == false) {
 				LOG.trace("File " + path + " not found");
 				throw new NotFoundException();
 			}
 			///// FOR DIRECTORY /////
-			else if (file.isFile(p) == false) {
+			else if (fs.isFile(p) == false) {
 				if (useDirectoryListings()) {
 					String html = listingPage.getListingsPage(
-							request, response, file, p);
+							request, response, fs, p);
 					response.setStatusCode(HttpStatus.SC_OK);
 					ResponseUtils.setEntity(response, getEntity(html));
 				} else {
 					///// 403 FORBIDDEN /////
-					LOG.trace("Cannot read file " + file);
+					LOG.trace("Cannot read file " + fs);
 					throw new ForbiddenException();
 				}
 			}
 			///// FOR FILE /////
 			else {
-				LOG.trace("File " + file + " found");
+				LOG.trace("File " + fs + " found");
 				response.setStatusCode(HttpStatus.SC_OK);
-				ResponseUtils.setEntity(response, getFileEntity(file, p));
+				ResponseUtils.setEntity(response, getFileEntity(fs, p));
 			}
 		} catch (IOException e) {
 			throw new ForbiddenException(e);
