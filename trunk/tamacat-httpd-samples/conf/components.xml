@@ -97,6 +97,9 @@
     <property name="listings">
       <value>true</value>
     </property>
+    <property name="listingsPage">
+      <value>custom/listings</value>
+    </property>
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
@@ -155,12 +158,14 @@
   
   <bean id="ReverseHandler"
      class="org.tamacat.httpd.core.ReverseProxyHandler" singleton="false">
+     <!-- 
     <property name="httpFilter" >
       <ref bean="DigestAuthFilter" />
     </property>
     <property name="httpFilter">
       <ref bean="SSOFilter" />
     </property>
+     -->
     <property name="httpFilter">
       <ref bean="AccessControlFilter" />
     </property>

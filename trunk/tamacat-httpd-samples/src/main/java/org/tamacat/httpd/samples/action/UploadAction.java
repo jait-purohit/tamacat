@@ -5,16 +5,27 @@
 package org.tamacat.httpd.samples.action;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.hadoop.fs.FileSystem;
 
 import org.tamacat.httpd.core.RequestContext;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.hdfs.util.HdfsFileUtils;
+import org.tamacat.util.PropertyUtils;
 
 public class UploadAction {
 
+	static String nameNodeUrl;
+	static {
+		Properties props = PropertyUtils.getProperties("hdfs.properties");
+		nameNodeUrl = props.getProperty("hdfs.base.uri", "hdfs://localhost/user/hadoop");
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void upload(RequestContext request) {
 		List<FileItem> list = (List<FileItem>) request.getAttribute(FileItem.class.getName());
@@ -31,4 +42,30 @@ public class UploadAction {
 			}
 		}
 	}
+	
+	public void delete(RequestContext request) {
+		String[] files = request.getParameters("files");
+		String dir = request.getParameter("dir");
+		try {
+			for (String f : files) {
+				String uri = dir + f;
+				boolean result = HdfsFileUtils.delete(nameNodeUrl + uri);
+				System.out.println(uri + "=" + result);
+			}
+		} catch (IOException e) {
+			throw new ServiceUnavailableException(e);
+		}
+	}
+	
+	public void list(RequestContext request) {
+		String dir = request.getParameter("dir");
+		try {
+			String uri = nameNodeUrl + dir;
+			FileSystem fs = FileSystem.get(URI.create(uri), HdfsFileUtils.getConfiguration());
+			List<Map<String, String>> list = HdfsFileUtils.get(fs, nameNodeUrl + dir);
+			request.setAttribute("list", list);
+		} catch (IOException e) {
+			throw new ServiceUnavailableException(e);
+		}
+	}	
 }
