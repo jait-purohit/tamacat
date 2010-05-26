@@ -60,6 +60,10 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		}
 	}
 	
+	public void setListingsPage(String listingsPage) {
+		listingPage.setListingsPage(listingsPage);
+	}
+	
 	protected boolean useDirectoryListings() {
 		if (listings) {
 			return true;
