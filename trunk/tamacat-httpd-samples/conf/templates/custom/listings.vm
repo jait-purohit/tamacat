@@ -26,53 +26,71 @@
     <h1>Index of ${url}</h1>
     <table style="width: 80%;" id="listFiles">
       <tr>
+#if($parent)
+        <td colspan="4"><a href="../"><span>../</span></a></td>
+#end
+      </tr>
+      <tr>
+        <th style="width:5%;">No.</th>
         <th style="width:60%;">Name</th>
         <th style="width:10%;" nowrap="nowrap">Last modified</th>
         <th style="witdh:5%;text-align:right;">Size</th>
       </tr>
-#if($parent)
-      <tr>
-        <td colspan="3"><a href="../"><span>../</span></a></td>
-      </tr>
-#end
+
 #foreach($file in $list)
       <tr class="file" id="file_$velocityCount">
+        <td align="right" nowrap="nowrap">$velocityCount</td>
         <td class="fileName"><a href="$url$file.getName" id="$file.getName"><span>$file.getName</span></a></td>
         <td nowrap="nowrap">$file.lastModified</td>
         <td style="text-align:right;" nowrap="nowrap">$file.length</td>
       </tr>
 #end
     </table>
-<a href="javascript:void(0)" onclick="deleteFiles()">Delete</a>
+
+<form id="deleteFiles" method="post" action="/html5/upload.html?a=Upload&p=delete">
+<input type="hidden" name="_method" value="delete" />
+<input type="hidden" name="dir" value="${url}" />
+</form>
+#if ($list.size() > 0)
+<p style="margin:15px"><a href="javascript:void(0)" onclick="deleteFiles()">
+  <span>Delete</span></a>
+</p>
+#end
 <script type="text/javascript">
+var uniq = new Array();
 $(document).ready(function() {
-  $("#listFiles .file").selectable({
+  $("#listFiles").selectable({
     selected: onSelected,
     unselected: onUnselected
   });
 });
-var files = {};
 var onSelected = function(e, ui) {
-    var f = $(ui.selected);
-    if (f && f.children) {
-      files[f.children().get(0).id] = f;
-      //console.log(f.children().get(0).id);
+  var f = $(ui.selected);
+  if (f && f.children && f.children().get(0)) {
+    var id = f.children().get(0).id;
+    if (id && !uniq[id]) {
+      uniq[id] = true;
+      jQuery(f).css('text-decoration','line-through');
+      jQuery('#deleteFiles').append('<input type="hidden" name="files" id="__delete__' + id + '" name="file" value="' + id + '" />');
+      //console.log(id);
     }
-
+  }
 };
 var onUnselected = function(e, ui) {
-    var f = $(ui.unselected);
-    if (f && f.children) {
-      delete files[f.children().get(0).id];
-      //console.log(files.length);
+  var f = $(ui.unselected);
+  jQuery(f).css('text-decoration','none');
+  if (f && f.children && f.children().get(0)) {
+    if (id && uniq[id]) {
+      var id = f.children().get(0).id;
+      jQuery('#__delete__'+id).remove();
+      uniq[id] = false;
     }
+  }
 };
 
 
 var deleteFiles = function() {
-  for (var i in files) {
-    alert("file "+i);
-  }
+  jQuery('#deleteFiles').submit();
 };
 </script>
   </body>
