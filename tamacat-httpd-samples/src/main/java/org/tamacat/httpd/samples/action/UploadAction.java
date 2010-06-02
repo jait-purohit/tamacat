@@ -16,10 +16,14 @@ import org.apache.hadoop.fs.FileSystem;
 import org.tamacat.httpd.core.RequestContext;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.hdfs.util.HdfsFileUtils;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 import org.tamacat.util.PropertyUtils;
 
 public class UploadAction {
 
+	static final Log LOG = LogFactory.getLog(UploadAction.class);
+	
 	static String nameNodeUrl;
 	static {
 		Properties props = PropertyUtils.getProperties("hdfs.properties");
@@ -35,6 +39,7 @@ public class UploadAction {
 					if (item.isFormField() == false) {
 						HdfsFileUtils.write(item.getInputStream(), 
 						item.getName());
+						LOG.info("UPLOAD: " + item.getName());
 					}
 				}
 			} catch (IOException e) {
@@ -50,7 +55,7 @@ public class UploadAction {
 			for (String f : files) {
 				String uri = dir + f;
 				boolean result = HdfsFileUtils.delete(nameNodeUrl + uri);
-				System.out.println(uri + "=" + result);
+				LOG.info("DELETE: " + uri + ", " + result);
 			}
 		} catch (IOException e) {
 			throw new ServiceUnavailableException(e);

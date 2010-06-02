@@ -41,7 +41,7 @@
   
   <bean id="MultipartFilter" class="org.tamacat.httpd.hdfs.FileUploadHttpFilter">
     <property name="baseDirectory">
-      <value>hdfs://localhost/user/hadoop/html5/data/</value>
+      <value>hdfs://namenode:8020/user/hadoop/html5/data/</value>
     </property>
     <property name="encoding">
       <value>UTF-8</value>
@@ -92,7 +92,7 @@
   <bean id="HdfsFileHandler" 
      class="org.tamacat.httpd.hdfs.HdfsFileHttpHandler" singleton="false">
     <property name="docsRoot">
-      <value>hdfs://localhost/user/hadoop/</value>
+      <value>hdfs://namenode:8020/user/hadoop/</value>
     </property>
     <property name="listings">
       <value>true</value>
