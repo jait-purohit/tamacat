@@ -77,7 +77,13 @@ public class HdfsFileUtils {
 	}
 	
 	public static boolean delete(Configuration conf, String uri) throws IOException {
+		boolean result = false;
 		FileSystem fs = FileSystem.get(URI.create(uri), conf);
-		return fs.deleteOnExit(new Path(uri));
+		try {
+			result = fs.delete(new Path(uri), false);
+		} finally {
+			IOUtils.close(fs);
+		}
+		return result;
 	}
 }
