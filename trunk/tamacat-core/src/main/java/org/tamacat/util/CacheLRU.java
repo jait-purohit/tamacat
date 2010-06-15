@@ -5,7 +5,9 @@
 package org.tamacat.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 public class CacheLRU<K,V> {
 
@@ -54,6 +56,14 @@ public class CacheLRU<K,V> {
 	public synchronized void clear() {
 		cache.clear();
 		used.clear();
+	}
+	
+	public Set<K> keySet() {
+		return cache.keySet();
+	}
+	
+	public Collection<V> values() {
+		return cache.values();
 	}
 	
 	@Override
