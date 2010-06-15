@@ -26,9 +26,9 @@ public class GroovyClassCacheTest {
 	public void testGetString() throws Exception {
 		GroovyClassCache cache = new GroovyClassCache(10);
 		cache.setCacheExpireTime(1000);
-		cache.put("A", new GroovyFile(Test.class, new Date().getTime()));
-		cache.put("B", new GroovyFile(Test.class, new Date().getTime()));
-		cache.put("C", new GroovyFile(Test.class, new Date().getTime()));
+		cache.put("A", new GroovyFile(Target.class, new Date().getTime()));
+		cache.put("B", new GroovyFile(Target.class, new Date().getTime()));
+		cache.put("C", new GroovyFile(Target.class, new Date().getTime()));
 		
 		assertEquals(3, cache.size());
 		assertNotNull(cache.get("A"));
@@ -39,5 +39,4 @@ public class GroovyClassCacheTest {
 
 		assertEquals(2, cache.size());
 	}
-
 }
