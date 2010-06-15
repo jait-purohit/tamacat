@@ -26,4 +26,12 @@ public class ClasspathGroovyLoaderTest {
 		assertNotNull(o);
 		assertEquals("org.tamacat.groovy.test.Groovy_test", o.getClass().getName());
 	}
+	
+	@Test
+	public void testRecompile() {
+		Object o = ClasspathGroovyLoader.getInstance().getGroovy("/org/tamacat/groovy/test/Groovy_test");
+		assertNotNull(o);
+		assertEquals("org.tamacat.groovy.test.Groovy_test", o.getClass().getName());
+		ClasspathGroovyLoader.getInstance().recompile();
+	}
 }

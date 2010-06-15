@@ -10,6 +10,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
+import java.util.Set;
 
 import org.tamacat.util.ClassUtils;
 import org.tamacat.util.PropertyUtils;
@@ -17,8 +18,8 @@ import org.tamacat.util.ResourceNotFoundException;
 import org.tamacat.util.StringUtils;
 
 public class ClasspathGroovyLoader {
+	
 	static final String GROOVY_LOADER_CONFIG = "groovyloader.properties";
-
 	static final String CLASSLOADER_CONFIG = "org.tamacat.groovy.groovyloader.properties";
 	
 	static final ClasspathGroovyLoader SELF = new ClasspathGroovyLoader();
@@ -62,13 +63,35 @@ public class ClasspathGroovyLoader {
 				if (checkUpdate(groovyFile)) {
 					c = loadClass(fileName);
 				} else {
-					c = groovyFile.loadClass();
+					c = groovyFile.getType();
 				}
 			}
 			return c.newInstance();
 		} catch (Exception e) {
 			throw new GroovyClassLoaderException(e);
 		}
+	}
+	
+	public synchronized void recompile() {
+		Set<String> keys = cache.keySet();
+		for (String key : keys) {
+			GroovyFile file = cache.get(key);
+			Class<?> type = file.getType();
+			recompile(type.getName());
+		}
+	}
+	
+	public synchronized void recompile(String className) {
+		try {
+			String fileName = className.replace(".","/") + ".groovy";
+			loadClass(fileName);
+		} catch (Exception e) {
+			throw new GroovyClassLoaderException(e);
+		}
+	}
+	
+	public void clearCache() {
+		cache.clear();
 	}
 	
 	private Class<?> loadClass(String fileName) throws Exception {

@@ -4,6 +4,6 @@
  */
 package org.tamacat.groovy;
 
-public class Test {
+public class Target {
 
 }

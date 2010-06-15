@@ -17,7 +17,7 @@ public class GroovyFile {
 		this.createTime = new Date().getTime();
 	}
 	
-	public Class<?> loadClass() {
+	public Class<?> getType() {
 		return type;
 	}
 	
