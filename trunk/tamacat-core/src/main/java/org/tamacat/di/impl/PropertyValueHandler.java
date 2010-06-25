@@ -121,24 +121,24 @@ public class PropertyValueHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    static
+    @SuppressWarnings("rawtypes")
+	static
       final class ClassConverter implements StringValueConverter<Class> {
-        public Class<Class> getType() {
+		public Class<Class> getType() {
             return Class.class;
         }
-        public Class convert(String param) {
+        public Class<?> convert(String param) {
             return ClassUtils.forName(param);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    static
+    @SuppressWarnings("rawtypes")
+	static
       final class ClassArrayConverter implements StringValueConverter<Class[]> {
         public Class<Class[]> getType() {
             return Class[].class;
         }
-        public Class[] convert(String param) {
+        public Class<?>[] convert(String param) {
             return new Class[] {ClassUtils.forName(param)};
         }
     }
