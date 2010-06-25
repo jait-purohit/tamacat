@@ -63,7 +63,7 @@ public class BeanCreator {
      * @param id
      * @return Object
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 	synchronized <T> T getBean(String id, Class<T> type) {
         BeanDefine def = defines.get(id);
         if (def == null) {

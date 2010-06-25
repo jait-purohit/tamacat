@@ -25,7 +25,7 @@ public class Level<T> {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
+	@Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -33,7 +33,8 @@ public class Level<T> {
             return false;
         if (!(obj instanceof Level))
             return false;
-        final Level other = (Level) obj;
+		@SuppressWarnings("rawtypes")
+		final Level<T> other = (Level) obj;
         if (level == null) {
             if (other.level != null)
                 return false;
