@@ -54,7 +54,7 @@ public class ClasspathGroovyLoader {
 	public synchronized Object getGroovy(final String name) {
 		try {
 			String fileName = getFileName(name);
-			GroovyFile groovyFile = cache.get(fileName);
+			GroovyFile groovyFile = null;//cache.get(fileName);
 			
 			Class<?> c = null;
 			if (groovyFile == null) {
@@ -106,7 +106,8 @@ public class ClasspathGroovyLoader {
 	}
 	
 	private File getGroovyFile(URL url) throws URISyntaxException {
-		SELF.LOADER.addURL(url);
+		LOADER.clearCache();
+		LOADER.addURL(url);
 		File file = new File(url.toURI());
 		return file;
 	}
