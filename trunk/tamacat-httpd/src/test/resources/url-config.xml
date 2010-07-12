@@ -7,7 +7,6 @@
       <reverse>http://localhost:8080/test/</reverse>
     </url>
     <url path="/web/" type="normal" handler="VelocityHandler" />
-    <url path="/api/" type="normal" handler="WebServiceHandler" />
     
     <url path="/lb/" type="lb" handler="ReverseHandler">
       <reverse>http://localhost:8080/lb1/</reverse>

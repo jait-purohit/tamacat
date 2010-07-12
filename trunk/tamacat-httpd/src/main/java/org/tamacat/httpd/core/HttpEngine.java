@@ -171,11 +171,11 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	@Override
 	public void stopHttpd() {
 		try {
-			serversocket.close();
+			if (serversocket != null) serversocket.close();
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 		} finally {
-			executors.shutdown();
+			if (executors != null) executors.shutdown();
 		}
 	}
 	

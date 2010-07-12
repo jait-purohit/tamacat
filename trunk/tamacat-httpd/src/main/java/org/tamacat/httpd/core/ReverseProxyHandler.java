@@ -7,6 +7,8 @@ package org.tamacat.httpd.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 
@@ -125,13 +127,18 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        context.setAttribute("reverseUrl", reverseUrl);
 	        ReverseUtils.setXForwardedFor(request, context);
 	        outsocket = socketFactory.createSocket();
-	        socketFactory.connectSocket(outsocket, 
-	        	reverseUrl.getTargetAddress().getHostName(),
-	        	reverseUrl.getTargetAddress().getPort(),
-	        	null, -1, builder.buildParams());
-	        //outsocket = new Socket(
-			//		reverseUrl.getTargetAddress().getHostName(),
-			//		reverseUrl.getTargetAddress().getPort());
+	        
+	        InetAddress remoteAddress = InetAddress.getByName(reverseUrl.getTargetAddress().getHostName());
+	        InetSocketAddress remote = new InetSocketAddress(remoteAddress, reverseUrl.getTargetAddress().getPort());
+	        //for 4.1
+	        socketFactory.connectSocket(outsocket, remote, null, builder.buildParams());
+	        
+	        //for 4.0 @deprecated
+	        //socketFactory.connectSocket(outsocket, 
+	        //	reverseUrl.getTargetAddress().getHostName(),
+	        //	reverseUrl.getTargetAddress().getPort(),
+	        //	null, -1, builder.buildParams());
+	        
 			DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
 	        conn.bind(outsocket, builder.buildParams());
 	        

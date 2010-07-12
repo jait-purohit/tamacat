@@ -143,7 +143,7 @@ public final class SessionManager implements SessionListener {
 				ObjectInputStream in = new ObjectInputStream(
 						new FileInputStream(fileName));
 				try {
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings({ "unchecked", "rawtypes" })
 					ConcurrentHashMap<String, Session> manager
 						= (ConcurrentHashMap) in.readObject();
 					if (manager != null) {
