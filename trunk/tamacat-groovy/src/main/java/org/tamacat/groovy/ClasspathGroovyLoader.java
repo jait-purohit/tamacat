@@ -5,6 +5,7 @@
 package org.tamacat.groovy;
 
 import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyCodeSource;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -12,27 +13,42 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.Set;
 
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.tamacat.util.ClassUtils;
 import org.tamacat.util.PropertyUtils;
 import org.tamacat.util.ResourceNotFoundException;
 import org.tamacat.util.StringUtils;
 
-public class ClasspathGroovyLoader {
+/**
+ * <p>GroovyClassLoader find the Groovy script in CLASSPATH.
+ */
+public class ClasspathGroovyLoader implements GroovyLoader {
 	
 	static final String GROOVY_LOADER_CONFIG = "groovyloader.properties";
 	static final String CLASSLOADER_CONFIG = "org.tamacat.groovy.groovyloader.properties";
 	
-	static final ClasspathGroovyLoader SELF = new ClasspathGroovyLoader();
-	private GroovyClassLoader LOADER = new GroovyClassLoader();
+	private GroovyClassLoader loader; //delegate ClassLoader
 	
 	private long checkInterval = 10000; //10sec
 	
-	private GroovyClassCache cache;
+	private GroovyClassCache cache; //internal class cache
 	
-	private ClasspathGroovyLoader() {
+	/**
+	 * <p.default constructor
+	 */
+	public ClasspathGroovyLoader() {
+		this(new GroovyClassLoader());
+	}
+	
+	/**
+	 * <p>Constructor for custom GroovyClassLoader uses.
+	 * @param loader GroovyClassLoader
+	 */
+	public ClasspathGroovyLoader(GroovyClassLoader loader) {
+		this.loader = loader;
 		Properties props = null;
-		int maxClasses = 1000;
-		long cacheExpireTime = 3600000; //60min
+		int maxClasses = 1000; //default
+		long cacheExpireTime = 3600000; //default 60min
 		try {
 			props = PropertyUtils.getProperties(GROOVY_LOADER_CONFIG);
 		} catch (ResourceNotFoundException e) {
@@ -46,27 +62,30 @@ public class ClasspathGroovyLoader {
 		cache = new GroovyClassCache(maxClasses);
 		cache.setCacheExpireTime(cacheExpireTime);
 	}
-	
-	public static ClasspathGroovyLoader getInstance() {
-		return SELF;
-	}
-    
-	public synchronized Object getGroovy(final String name) {
+
+    /**
+     * <p>Loads a class from a file path or class name(FQCN).
+     *
+     * @throws CompilationFailedException if compilation was not successful
+     */
+	public synchronized Class<?> loadClass(final String name) {
 		try {
 			String fileName = getFileName(name);
-			GroovyFile groovyFile = null;//cache.get(fileName);
+			GroovyFile groovyFile = cache.get(fileName);
 			
-			Class<?> c = null;
 			if (groovyFile == null) {
-				c = loadClass(fileName);
+				groovyFile = parseClass(fileName);
 			} else {
 				if (checkUpdate(groovyFile)) {
-					c = loadClass(fileName);
-				} else {
-					c = groovyFile.getType();
+					groovyFile = parseClass(fileName, groovyFile);
 				}
 			}
-			return c.newInstance();
+			if (groovyFile != null){
+				cache.put(fileName, groovyFile);
+				return groovyFile.getType();
+			} else {
+				return null;
+			}
 		} catch (Exception e) {
 			throw new GroovyClassLoaderException(e);
 		}
@@ -84,7 +103,7 @@ public class ClasspathGroovyLoader {
 	public synchronized void recompile(String className) {
 		try {
 			String fileName = className.replace(".","/") + ".groovy";
-			loadClass(fileName);
+			parseClass(fileName);
 		} catch (Exception e) {
 			throw new GroovyClassLoaderException(e);
 		}
@@ -94,26 +113,47 @@ public class ClasspathGroovyLoader {
 		cache.clear();
 	}
 	
-	private Class<?> loadClass(String fileName) throws Exception {
+    /**
+     * <p>Parses the given file name a Java class capable of being run
+     *
+     * @param fileName (FQCN)
+     * @param groovyFile cashed GroovyFile object.
+     *        if groovyFile is null, then create a new GroovyFile instanse.
+     * @return GroovyFile (Meta file)
+     */
+	private GroovyFile parseClass(String fileName, GroovyFile groovyFile) throws Exception {
 		URL url = ClassUtils.getURL(fileName);
 		File file = getGroovyFile(url);
-		Class<?> c = LOADER.parseClass(file);
-		if (c != null) {
-			long lastModified = file.lastModified();
-			cache.put(fileName, new GroovyFile(c, lastModified));
+		long lastModified = file.lastModified();
+		if (groovyFile == null || groovyFile.isUpdate(lastModified)) {
+			GroovyCodeSource source = new GroovyCodeSource(file);
+			source.setCachable(false); //cache disabled
+			Class<?> c = loader.parseClass(source, false); //cache disabled
+			if (c != null) {
+				groovyFile = new GroovyFile(c, lastModified);
+			}
 		}
-		return c;
+		return groovyFile;
+	}
+	
+    /**
+     * <p>Parses the given file name a Java class capable of being run
+     *
+     * @param fileName (FQCN)
+     * @return GroovyFile (Meta file)
+     */
+	private GroovyFile parseClass(String fileName) throws Exception {
+		return parseClass(fileName, null);
 	}
 	
 	private File getGroovyFile(URL url) throws URISyntaxException {
-		LOADER.clearCache();
-		LOADER.addURL(url);
+		loader.addURL(url);
 		File file = new File(url.toURI());
 		return file;
 	}
 	
 	private boolean checkUpdate(GroovyFile f) {
-		return System.currentTimeMillis() - f.getCreateTime() < checkInterval;
+		return System.currentTimeMillis() - f.getCreateTime() > checkInterval;
 	}
 	
 	private String getFileName(String name) {

@@ -28,4 +28,8 @@ public class GroovyFile {
 	public long getCreateTime() {
 		return createTime;
 	}
+	
+	public long lastModified() {
+		return updateTime;
+	}
 }

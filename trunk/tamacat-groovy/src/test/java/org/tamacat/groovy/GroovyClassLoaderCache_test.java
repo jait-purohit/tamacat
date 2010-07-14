@@ -4,18 +4,22 @@
  */
 package org.tamacat.groovy;
 
+import org.tamacat.util.ClassUtils;
+
+import groovy.lang.GroovyClassLoader;
+
 public class GroovyClassLoaderCache_test {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) throws Exception {
-		
-		for (;;) {
-			Thread.sleep(5000);
-			ClasspathGroovyLoader.getInstance().getGroovy("org/tamacat/groovy/test/Hello");
+		ClasspathGroovyLoader loader = new ClasspathGroovyLoader();
+		@SuppressWarnings("unused")
+		GroovyClassLoader loader2 = new GroovyClassLoader();
+		long start = System.currentTimeMillis();
+		for (int i=0; i<100; i++) {
+			//Thread.sleep(5000);
+			Class<?> c = loader.loadClass("org/tamacat/groovy/test/Hello");
+			System.out.println(ClassUtils.newInstance(c));
 		}
-
+		System.out.println(System.currentTimeMillis() - start);
 	}
-
 }

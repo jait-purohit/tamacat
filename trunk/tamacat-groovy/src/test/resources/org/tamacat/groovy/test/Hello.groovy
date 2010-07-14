@@ -2,6 +2,6 @@ package org.tamacat.groovy.test;
 
 class Hello {
 	public Hello() {
-		print "Hello!!!\n";
+		print "Hello World!!\n";
 	}
 }

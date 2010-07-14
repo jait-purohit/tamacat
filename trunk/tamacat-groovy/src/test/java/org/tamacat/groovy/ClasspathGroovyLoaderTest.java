@@ -12,8 +12,11 @@ import org.junit.Test;
 
 public class ClasspathGroovyLoaderTest {
 
+	ClasspathGroovyLoader loader;
+	
 	@Before
 	public void setUp() throws Exception {
+		loader = new ClasspathGroovyLoader();
 	}
 
 	@After
@@ -22,16 +25,16 @@ public class ClasspathGroovyLoaderTest {
 
 	@Test
 	public void testGetGroovy() {
-		Object o = ClasspathGroovyLoader.getInstance().getGroovy("/org/tamacat/groovy/test/Groovy_test");
-		assertNotNull(o);
-		assertEquals("org.tamacat.groovy.test.Groovy_test", o.getClass().getName());
+		Class<?> c = loader.loadClass("/org/tamacat/groovy/test/Groovy_test");
+		assertNotNull(c);
+		assertEquals("org.tamacat.groovy.test.Groovy_test", c.getName());
 	}
 	
 	@Test
 	public void testRecompile() {
-		Object o = ClasspathGroovyLoader.getInstance().getGroovy("/org/tamacat/groovy/test/Groovy_test");
-		assertNotNull(o);
-		assertEquals("org.tamacat.groovy.test.Groovy_test", o.getClass().getName());
-		ClasspathGroovyLoader.getInstance().recompile();
+		Class<?> c = loader.loadClass("/org/tamacat/groovy/test/Groovy_test");
+		assertNotNull(c);
+		assertEquals("org.tamacat.groovy.test.Groovy_test", c.getName());
+		loader.recompile();
 	}
 }
