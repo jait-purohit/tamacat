@@ -11,6 +11,7 @@ import java.util.StringTokenizer;
 
 import org.apache.http.Header;
 import org.apache.http.HttpMessage;
+import org.apache.http.HttpRequest;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
@@ -93,6 +94,10 @@ public final class HeaderUtils {
 			}
 		}
 		return cookies;
+	}
+	
+	public static String getCookieValue(HttpRequest request, String name) {
+		return getCookieValue(getHeader(request, "Cookie", ""), name);
 	}
 	
 	/**
