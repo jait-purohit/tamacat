@@ -44,7 +44,11 @@ public class BasicAuthProcessor extends AbstractAuthProcessor implements Request
 		response.addHeader(WWW_AUTHENTICATE, "Basic realm=\"" + realm + "\"");
 	}
 
-	public String checkUser(HttpRequest request, HttpContext context)
+	public void setRealm(String realm) {
+		this.realm = DynamicRealm.getRealm(realm, new Date());
+	}
+	
+	protected String checkUser(HttpRequest request, HttpContext context)
 			throws UnauthorizedException {
 		Header basicAuthLine = request.getFirstHeader(AUTHORIZATION);
 		if (basicAuthLine != null && StringUtils.isNotEmpty(basicAuthLine.getValue())) {
@@ -61,9 +65,5 @@ public class BasicAuthProcessor extends AbstractAuthProcessor implements Request
 			}
 		}
 		throw new UnauthorizedException();
-	}
-
-	public void setRealm(String realm) {
-		this.realm = DynamicRealm.getRealm(realm, new Date());
 	}
 }

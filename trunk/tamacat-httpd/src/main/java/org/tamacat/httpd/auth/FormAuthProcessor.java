@@ -5,6 +5,8 @@
 package org.tamacat.httpd.auth;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -23,19 +25,69 @@ import org.tamacat.util.StringUtils;
 
 public class FormAuthProcessor extends AbstractAuthProcessor implements RequestFilter, ResponseFilter {
 
-	private static final String SC_UNAUTHORIZED
+	protected static final String SC_UNAUTHORIZED
 		= FormAuthProcessor.class.getName() + ".SC_UNAUTHORIZED";
-	private static final String SC_AUTHORIZED
+	protected static final String SC_AUTHORIZED
 		= FormAuthProcessor.class.getName() + ".SC_AUTHORIZED";
 	
-	private String loginPageUrl = "login.html";
-	private String loginActionUrl = "check.html";
-	private String topPageUrl = "index.html";
-	private String usernameKey = "username";
-	private String passwordKey = "password";
-	private String sessionCookieName = "Session";
-	private String sessionUsernameKey = "SingleSignOnUser";
-	 
+	protected String loginPageUrl = "login.html";
+	protected String loginActionUrl = "check.html";
+	protected String topPageUrl = "index.html";
+	protected String usernameKey = "username";
+	protected String passwordKey = "password";
+	protected String sessionCookieName = "Session";
+	protected String sessionUsernameKey = "SingleSignOnUser";
+	protected Set<String> freeAccessExtensions = new HashSet<String>();
+
+	public void setLoginPageUrl(String loginPageUrl) {
+		this.loginPageUrl = loginPageUrl;
+	}
+
+	public void setLoginActionUrl(String loginActionUrl) {
+		this.loginActionUrl = loginActionUrl;
+	}
+
+	public void setTopPageUrl(String topPageUrl) {
+		this.topPageUrl = topPageUrl;
+	}
+
+	public void setUsernameKey(String usernameKey) {
+		this.usernameKey = usernameKey;
+	}
+
+	public void setPasswordKey(String passwordKey) {
+		this.passwordKey = passwordKey;
+	}
+	
+	public void setSessionCookieName(String sessionCookieName) {
+		this.sessionCookieName = sessionCookieName;
+	}
+
+	public void setSessionUsernameKey(String sessionUsernameKey) {
+		this.sessionUsernameKey = sessionUsernameKey;
+	}
+
+	protected boolean isFreeAccessExtensions(String uri) {
+		int idx = uri.lastIndexOf(".");
+		if (idx >= 0) {
+			String ext = uri.substring(idx+1, uri.length()).toLowerCase().trim();
+			return freeAccessExtensions.contains(ext);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * <p>The extension skipping by the certification in comma seperated values.
+	 * @param freeAccessExtensions (CSV)
+	 */
+	public void setFreeAccessExtensions(String freeAccessExtensions) {
+		String[] list = freeAccessExtensions.split(",");
+		for (String ext : list) {
+			this.freeAccessExtensions.add(ext.trim().replaceFirst("^\\.", "").toLowerCase());
+		}
+	}
+
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
@@ -43,8 +95,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 		try {
 			String remoteUser = null;
 			String uri = request.getRequestLine().getUri();
-			if (uri.endsWith(loginPageUrl)
-				|| uri.endsWith(".css") || uri.endsWith(".js")) {
+			if (isFreeAccessExtensions(uri)) {
 				return;
 			}
 			if (request.getRequestLine().getUri().endsWith(loginActionUrl)) {
@@ -52,8 +103,8 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 				context.setAttribute(remoteUserKey, remoteUser);
 				Session session = SessionManager.getInstance().createSession();
 				session.setAttribute(sessionUsernameKey, remoteUser);
-				context.setAttribute(SC_AUTHORIZED, Boolean.TRUE);
 				response.setHeader("Set-Cookie", sessionCookieName + "=" + session.getId() + "; Path=/");
+				context.setAttribute(SC_AUTHORIZED, Boolean.TRUE);
 			} else if (StringUtils.isNotEmpty(sessionId)) {
 				Session session = SessionManager.getInstance().getSession(sessionId);
 				remoteUser = (String) session.getAttribute(sessionUsernameKey);
@@ -90,7 +141,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 		}
 	}
 	
-	public String checkUser(HttpRequest request, HttpContext context)
+	protected String checkUser(HttpRequest request, HttpContext context)
 			throws UnauthorizedException {
 		String username = RequestUtils.getParameter(context, usernameKey);
 		String password = RequestUtils.getParameter(context, passwordKey);
