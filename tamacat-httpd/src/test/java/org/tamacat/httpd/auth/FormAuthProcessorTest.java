@@ -77,12 +77,26 @@ public class FormAuthProcessorTest {
 	@Test
 	public void testCheckUser() throws Exception {
 		try {
+			context = new BasicHttpContext();
 			auth.checkUser(request, context);
 			fail();
 		} catch (UnauthorizedException e) {
 			assertEquals(BasicHttpStatus.SC_UNAUTHORIZED, e.getHttpStatus());
 		}
+		
+		//login (NG)
+		try {
+			context = new BasicHttpContext();
+			RequestUtils.setParameter(context, "username", "");
+			RequestUtils.setParameter(context, "password", "");
+			auth.checkUser(request, context);
+			fail();
+		} catch (UnauthorizedException e) {
+			assertEquals(BasicHttpStatus.SC_UNAUTHORIZED, e.getHttpStatus());
+		}
+		
 		//login
+		context = new BasicHttpContext();
 		RequestUtils.setParameter(context, "username", "admin");
 		RequestUtils.setParameter(context, "password", "pass");
 		auth.checkUser(request, context);
