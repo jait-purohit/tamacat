@@ -32,6 +32,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 	
 	protected String loginPageUrl = "login.html";
 	protected String loginActionUrl = "check.html";
+	protected String logoutActionUrl = "logout.html";
 	protected String topPageUrl = "index.html";
 	protected String usernameKey = "username";
 	protected String passwordKey = "password";
@@ -45,6 +46,10 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 
 	public void setLoginActionUrl(String loginActionUrl) {
 		this.loginActionUrl = loginActionUrl;
+	}
+	
+	public void setLogoutActionUrl(String logoutActionUrl) {
+		this.logoutActionUrl = logoutActionUrl;
 	}
 
 	public void setTopPageUrl(String topPageUrl) {
@@ -96,9 +101,11 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 			String remoteUser = null;
 			String uri = request.getRequestLine().getUri();
 			if (uri.endsWith(loginPageUrl) || isFreeAccessExtensions(uri)) {
-				return;
-			}
-			if (request.getRequestLine().getUri().endsWith(loginActionUrl)) {
+				return; //skip
+			} else if (uri.endsWith(logoutActionUrl)) {
+				logoutAction(sessionId); //logout
+				context.setAttribute(SC_UNAUTHORIZED, Boolean.TRUE);
+			} else if (request.getRequestLine().getUri().endsWith(loginActionUrl)) {
 				remoteUser = checkUser(request, context);
 				context.setAttribute(remoteUserKey, remoteUser);
 				Session session = SessionManager.getInstance().createSession();
@@ -139,6 +146,11 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 		} catch (UnsupportedEncodingException e) {
 			throw new UnauthorizedException();
 		}
+	}
+	
+	protected void logoutAction(String sessionId) {
+		Session session = SessionManager.getInstance().getSession(sessionId);
+		if (session != null) session.invalidate();
 	}
 	
 	protected String checkUser(HttpRequest request, HttpContext context)
