@@ -95,7 +95,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 		try {
 			String remoteUser = null;
 			String uri = request.getRequestLine().getUri();
-			if (isFreeAccessExtensions(uri)) {
+			if (uri.endsWith(loginPageUrl) || isFreeAccessExtensions(uri)) {
 				return;
 			}
 			if (request.getRequestLine().getUri().endsWith(loginActionUrl)) {
