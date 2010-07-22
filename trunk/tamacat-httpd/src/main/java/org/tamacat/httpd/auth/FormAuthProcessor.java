@@ -96,16 +96,15 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
+		//Get the session ID in client Cookie.
 		String sessionId = HeaderUtils.getCookieValue(request, sessionCookieName);
 		try {
 			String remoteUser = null;
 			String uri = request.getRequestLine().getUri();
 			if (uri.endsWith(loginPageUrl) || isFreeAccessExtensions(uri)) {
-				return; //skip
-			} else if (uri.endsWith(logoutActionUrl)) {
-				logoutAction(sessionId); //logout
-				context.setAttribute(SC_UNAUTHORIZED, Boolean.TRUE);
+				return; //skip by this filter.
 			} else if (request.getRequestLine().getUri().endsWith(loginActionUrl)) {
+				//login check
 				remoteUser = checkUser(request, context);
 				context.setAttribute(remoteUserKey, remoteUser);
 				Session session = SessionManager.getInstance().createSession();
@@ -113,12 +112,17 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 				response.setHeader("Set-Cookie", sessionCookieName + "=" + session.getId() + "; Path=/");
 				context.setAttribute(SC_AUTHORIZED, Boolean.TRUE);
 			} else if (StringUtils.isNotEmpty(sessionId)) {
+				//already login. -> session check
 				Session session = SessionManager.getInstance().getSession(sessionId);
 				remoteUser = (String) session.getAttribute(sessionUsernameKey);
-				if (remoteUser == null) {
+				if (remoteUser == null) { //invalid session.
 					throw new UnauthorizedException();
+				} else if (uri.endsWith(logoutActionUrl)) {
+					//logout -> session delete -> login page.
+					logoutAction(sessionId);
+					context.setAttribute(SC_UNAUTHORIZED, Boolean.TRUE);
 				}
-			} else {
+			} else { //It does not yet login.
 				throw new UnauthorizedException();
 			}
 		} catch (UnauthorizedException e) {
@@ -131,12 +135,19 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 	public void afterResponse(HttpRequest request, HttpResponse response,
 			HttpContext context) {
 		if (Boolean.TRUE.equals(context.getAttribute(SC_UNAUTHORIZED))) {
+			//unauthorized -> Go to the login page.
 			sendRedirect(response, loginPageUrl);
 		} else if (Boolean.TRUE.equals(context.getAttribute(SC_AUTHORIZED))) {
+			//authorized login -> Go to the top page.
 			sendRedirect(response, topPageUrl);
 		}
 	}
 	
+	/**
+	 * <p>Redirect for login action.
+	 * @param response
+	 * @param uri redirect URI path.
+	 */
 	protected void sendRedirect(HttpResponse response, String uri) {
 		try {
 			response.setHeader(HTTP.CONTENT_TYPE, "text/html; charset=UTF-8");
@@ -148,11 +159,22 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 		}
 	}
 	
+	/**
+	 * <p>Logout the system with invalidate this session.
+	 * @param sessionId
+	 */
 	protected void logoutAction(String sessionId) {
 		Session session = SessionManager.getInstance().getSession(sessionId);
 		if (session != null) session.invalidate();
 	}
 	
+	/**
+	 * login check with AuthComponent.
+	 * @param request
+	 * @param context
+	 * @return login username in request parameter.
+	 * @throws UnauthorizedException
+	 */
 	protected String checkUser(HttpRequest request, HttpContext context)
 			throws UnauthorizedException {
 		String username = RequestUtils.getParameter(context, usernameKey);
