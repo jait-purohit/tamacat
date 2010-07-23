@@ -9,7 +9,12 @@ import org.tamacat.httpd.auth.AuthComponent;
 
 public class UserAuthComponent implements AuthComponent<User> {
 
+	private String username;
 	private String password;
+	
+	public void setUsername(String username) {
+		this.username = username;
+	}
 	
 	public void setPassword(String password) {
 		this.password = password;
@@ -17,7 +22,10 @@ public class UserAuthComponent implements AuthComponent<User> {
 
 	@Override
 	public boolean check(String id, String pass, HttpContext context) {
-		return true;
+		return pass != null && password != null 
+	        && id != null && username != null
+	        && pass.equals(password)
+	        && id.equals(username);
 	}
 
 	@Override
