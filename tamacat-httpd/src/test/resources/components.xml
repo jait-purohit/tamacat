@@ -2,6 +2,9 @@
 <beans>
   <bean id="AuthComponent"
      class="org.tamacat.httpd.examples.UserAuthComponent" singleton="false">
+    <property name="username">
+      <value>admin</value>
+    </property>
     <property name="password">
       <value>pass</value>
     </property>
@@ -27,7 +30,17 @@
       <ref bean="AuthComponent" />
     </property>
   </bean>
-    
+
+  <bean id="FormAuthFilter"
+     class="org.tamacat.httpd.auth.FormAuthProcessor" singleton="false">
+    <property name="authComponent">
+      <ref bean="AuthComponent" />
+    </property>
+    <property name="freeAccessExtensions">
+      <value>.css,.js</value>
+    </property>
+  </bean>
+  
   <bean id="SSOFilter" class="org.tamacat.httpd.filter.SingleSignOnFilter">
     <property name="singleSignOnCookieName">
       <value>SingleSignOnUser</value>
@@ -61,13 +74,8 @@
       <ref bean="AccessLogFilter" />
     </property>
     <property name="httpFilter">
-      <ref bean="BasicAuthFilter" />
+      <ref bean="FormAuthFilter" />
     </property>
-    <!--
-    <property name="httpFilter">
-      <ref bean="AccessControlFilter" />
-    </property>
-    -->
   </bean>
   
   <bean id="DefaultHandler"

@@ -38,6 +38,7 @@ public class FormAuthProcessorTest {
 		auth.init(serviceUrl);
 		
 		authComponent = new TestAuthComponent();
+		authComponent.setAuthUsername("admin");
 		authComponent.setAuthPassword("pass");
 		auth.setAuthComponent(authComponent);
 		request = HttpObjectFactory.createHttpRequest("GET", "/");
@@ -89,6 +90,28 @@ public class FormAuthProcessorTest {
 			context = new BasicHttpContext();
 			RequestUtils.setParameter(context, "username", "");
 			RequestUtils.setParameter(context, "password", "");
+			auth.checkUser(request, context);
+			fail();
+		} catch (UnauthorizedException e) {
+			assertEquals(BasicHttpStatus.SC_UNAUTHORIZED, e.getHttpStatus());
+		}
+
+		//login (NG)
+		try {
+			context = new BasicHttpContext();
+			RequestUtils.setParameter(context, "username", "admin");
+			RequestUtils.setParameter(context, "password", "xxxx");
+			auth.checkUser(request, context);
+			fail();
+		} catch (UnauthorizedException e) {
+			assertEquals(BasicHttpStatus.SC_UNAUTHORIZED, e.getHttpStatus());
+		}
+		
+		//login (NG)
+		try {
+			context = new BasicHttpContext();
+			RequestUtils.setParameter(context, "username", "test");
+			RequestUtils.setParameter(context, "password", "pass");
 			auth.checkUser(request, context);
 			fail();
 		} catch (UnauthorizedException e) {
