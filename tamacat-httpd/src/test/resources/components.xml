@@ -147,11 +147,9 @@
   
   <bean id="server"
      class="org.tamacat.httpd.core.HttpEngine" singleton="false">
-   <!--
     <property name="httpResponseInterceptor">
       <ref bean="gzip" />
     </property>
-    -->
   </bean>
   
 </beans>

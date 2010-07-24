@@ -63,6 +63,8 @@ public class GzipResponseInterceptor implements HttpResponseInterceptor {
 	            	GzipCompressingEntity entity = new GzipCompressingEntity(response.getEntity());
 	                response.setEntity(entity);
 	                response.setHeader(entity.getContentEncoding()); //Bugfix.
+	                response.removeHeaders(HTTP.CONTENT_LEN);
+	                response.setHeader(HTTP.CONN_DIRECTIVE, HTTP.CONN_CLOSE);
 	                return;
 	            }
             }
@@ -158,6 +160,7 @@ public class GzipResponseInterceptor implements HttpResponseInterceptor {
 	        	while ((l = in.read(tmp)) != -1) {
 	        		gzip.write(tmp, 0, l);
 	        	}
+	        	
 	        } finally {
 	        	IOUtils.close(gzip);
 	        }

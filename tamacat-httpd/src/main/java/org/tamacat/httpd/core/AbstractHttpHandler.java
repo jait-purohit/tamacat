@@ -57,7 +57,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 			LOG.error(e);
 		}
     }
-    
+	
 	public static Properties getMimeTypes() {
 		return mimeTypes;
 	}
@@ -65,6 +65,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	protected VelocityErrorPage errorPage = new VelocityErrorPage();
     protected ServiceUrl serviceUrl;
     protected String docsRoot;
+    protected String encoding = "UTF-8";
     
     protected List<HttpFilter> filters = new ArrayList<HttpFilter>();
     protected List<RequestFilter> requestFilters = new ArrayList<RequestFilter>();
@@ -85,7 +86,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 			requestFilters.add((RequestFilter)filter);
 		}
 		if (filter instanceof ResponseFilter) {
-			responseFilters.add((ResponseFilter) filter);
+			responseFilters.add((ResponseFilter)filter);
 		}
 	}
 	
@@ -97,10 +98,18 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 		this.docsRoot = docsRoot.replace("${server.home}", serverHome).replace("\\", "/");
 	}
 	
+	/**
+	 * <p>Set the character encoding. (default UTF-8)
+	 * @param encoding
+	 */
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+	
 	@Override
 	public void handle(HttpRequest request, HttpResponse response, 
 			HttpContext context) {
-		RequestUtils.setParameters(request, context, "UTF-8");
+		RequestUtils.setParameters(request, context, encoding);
 		try {
 			for (RequestFilter filter : requestFilters) {
 				filter.doFilter(request, response, context);
@@ -187,7 +196,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
      */
     protected String getDecodeUri(String uri) {
     	try {
-    		return URLDecoder.decode(uri, "UTF-8");
+    		return URLDecoder.decode(uri, encoding);
     	} catch (UnsupportedEncodingException e) {
     		return uri;
     	}
