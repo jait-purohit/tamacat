@@ -39,6 +39,7 @@ public class DigestAuthProcessorTest {
 		
 		auth.setRealm("Authentication required 20091124");
 		TestAuthComponent authComponent = new TestAuthComponent();
+		authComponent.setAuthUsername("admin");
 		authComponent.setAuthPassword("pass");
 		auth.setAuthComponent(authComponent);
 		request = HttpObjectFactory.createHttpRequest("GET", "/web/");

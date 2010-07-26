@@ -31,6 +31,7 @@ public class BasicAuthProcessorTest {
 		auth.init(serviceUrl);
 		
 		TestAuthComponent authComponent = new TestAuthComponent();
+		authComponent.setAuthUsername("admin");
 		authComponent.setAuthPassword("pass");
 		auth.setAuthComponent(authComponent);
 		request = HttpObjectFactory.createHttpRequest("GET", "/");

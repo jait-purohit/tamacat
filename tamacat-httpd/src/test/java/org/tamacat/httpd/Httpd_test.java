@@ -12,7 +12,7 @@ import org.tamacat.httpd.core.HttpEngine;
  * <p>It is the start class of the http server.
  * The component setting in {@code components.xml}.
  */
-public class TestHttpd {
+public class Httpd_test {
 
 	public static final String XML = "components.xml";
 	
