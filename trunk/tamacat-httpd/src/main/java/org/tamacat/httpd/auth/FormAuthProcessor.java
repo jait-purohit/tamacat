@@ -23,6 +23,9 @@ import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.StringUtils;
 
+/**
+ * <p>Implements of HTML Form based authentication.
+ */
 public class FormAuthProcessor extends AbstractAuthProcessor implements RequestFilter, ResponseFilter {
 
 	protected static final String SC_UNAUTHORIZED
