@@ -104,7 +104,10 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 		try {
 			String remoteUser = null;
 			String uri = request.getRequestLine().getUri();
-			if (uri.endsWith(loginPageUrl) || isFreeAccessExtensions(uri)) {
+			if (uri.endsWith(loginPageUrl)) {
+				logoutAction(sessionId);
+				return;
+			} else if (isFreeAccessExtensions(uri)) {
 				return; //skip by this filter.
 			} else if (request.getRequestLine().getUri().endsWith(loginActionUrl)) {
 				//login check
@@ -116,19 +119,26 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 				context.setAttribute(SC_AUTHORIZED, Boolean.TRUE);
 			} else if (StringUtils.isNotEmpty(sessionId)) {
 				//already login. -> session check
-				Session session = SessionManager.getInstance().getSession(sessionId);
+				Session session = SessionManager.getInstance().getSession(sessionId, false);
+				if (session == null) { //invalid session.
+					throw new UnauthorizedException();
+				}
 				remoteUser = (String) session.getAttribute(sessionUsernameKey);
 				if (remoteUser == null) { //invalid session.
 					throw new UnauthorizedException();
 				} else if (uri.endsWith(logoutActionUrl)) {
 					//logout -> session delete -> login page.
 					logoutAction(sessionId);
-					context.setAttribute(SC_UNAUTHORIZED, Boolean.TRUE);
+					//force login page.
+					//context.setAttribute(SC_UNAUTHORIZED, Boolean.TRUE);
+				} else {
+					//OK
 				}
 			} else { //It does not yet login.
 				throw new UnauthorizedException();
 			}
 		} catch (UnauthorizedException e) {
+			logoutAction(sessionId);
 			response.setStatusCode(HttpStatus.SC_UNAUTHORIZED);
 			context.setAttribute(SC_UNAUTHORIZED, Boolean.TRUE);
 		}
@@ -167,8 +177,10 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 	 * @param sessionId
 	 */
 	protected void logoutAction(String sessionId) {
-		Session session = SessionManager.getInstance().getSession(sessionId);
-		if (session != null) session.invalidate();
+		if (StringUtils.isNotEmpty(sessionId)) {
+			Session session = SessionManager.getInstance().getSession(sessionId, false);
+			if (session != null) session.invalidate();
+		}
 	}
 	
 	/**

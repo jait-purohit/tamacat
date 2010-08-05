@@ -5,4 +5,5 @@ import javax.management.MXBean;
 @MXBean
 public interface SessionMonitor {
 
+	int getActiveSessions();
 }
