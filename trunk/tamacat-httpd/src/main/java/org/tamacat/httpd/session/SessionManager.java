@@ -9,13 +9,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.management.ManagementFactory;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
-public final class SessionManager implements SessionListener {
+public final class SessionManager implements SessionListener, SessionMonitor {
 	static final Log LOG = LogFactory.getLog(SessionManager.class);
 
 	private
@@ -50,6 +54,7 @@ public final class SessionManager implements SessionListener {
 		//start session cleaning thread.
 		CLEANER = new Thread(new SessionCleaner(), "Cleaner");
 		CLEANER.start();
+		register();
 	}
 	
 	public Session getSession(String id) {
@@ -80,7 +85,8 @@ public final class SessionManager implements SessionListener {
 		return defaultMaxInactiveInterval;
 	}
 	
-	public int getCountSessions() {
+	@Override
+	public int getActiveSessions() {
 		return MANAGER.size();
 	}
 	
@@ -111,6 +117,17 @@ public final class SessionManager implements SessionListener {
 	
 	public void setSessionSerializer(SessionSerializer serializer) {
 		this.serializer = serializer;
+	}
+	
+	void register() {
+		try {
+			String name = "org.tamacat.httpd:type=SessionManager";
+			ObjectName oname = new ObjectName(name);			
+			MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
+        	server.registerMBean(this, oname);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public interface SessionSerializer {
