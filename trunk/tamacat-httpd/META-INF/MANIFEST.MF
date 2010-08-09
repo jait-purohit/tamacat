@@ -9,4 +9,5 @@ Bundle-Version: 0.7
 Main-Class: org.tamacat.httpd.Httpd
 Bundle-Activator: org.tamacat.httpd.HttpdBundle
 Import-Package: org.osgi.framework;version="[1.5,2.0)"
-Require-Bundle: tamacat-core
+Require-Bundle: tamacat-core;version=0.7.0
+Bundle-ClassPath: .,tamacat-core-0.7.jar
