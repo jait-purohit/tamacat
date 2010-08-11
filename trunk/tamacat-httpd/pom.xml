@@ -113,6 +113,35 @@
         </configuration>
       </plugin>
       <plugin>
+         <groupId>org.apache.felix</groupId>
+         <artifactId>maven-bundle-plugin</artifactId>
+         <extensions>true</extensions>
+         <executions>
+           <execution>
+             <id>bundle-manifest</id>
+             <phase>process-classes</phase>
+             <goals>    
+               <goal>manifest</goal>
+             </goals>   
+           </execution>
+         </executions>
+         <configuration>
+           <supportedProjectTypes>
+             <supportedProjectType>jar</supportedProjectType>
+             <supportedProjectType>bundle</supportedProjectType>
+           </supportedProjectTypes>
+           <instructions>
+             <Export-Package>org.tamacat.httpd;uses:=org.osgi.framework;version=1.3</Export-Package>
+             <Bundle-Activator>org.tamacat.httpd.HttpdBundle</Bundle-Activator>
+             <Import-Package>org.osgi.framework;version=1.3,org.tamacat.core;version=0.7</Import-Package>
+           </instructions>
+           <!-- 
+           <Embed-Dependency>dependencies</Embed-Dependency>
+           <Embed-StripGroup>true</Embed-StripGroup>
+           -->
+         </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-install-plugin</artifactId>
         <configuration>
