@@ -7,4 +7,4 @@ Bundle-Vendor: TAMACAT.ORG
 Export-Package: org.tamacat;version=0.7
 Bundle-Version: 0.7
 Bundle-Activator: org.tamacat.CoreBundle
-Import-Package: org.osgi.framework;version="[1.5,2.0)"
+Import-Package: org.osgi.framework

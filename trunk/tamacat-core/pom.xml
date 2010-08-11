@@ -28,18 +28,19 @@
   
   <dependencies>
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-      <version>4.2.0</version>
-    </dependency>
-    
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.3.1</version>
       <scope>test</scope>
     </dependency>
-        
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <version>4.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
@@ -49,10 +50,6 @@
   </dependencies>
   
   <build>
-  <!--
-    <outputDirectory>${basedir}/${target.dir}/classes</outputDirectory>
-    <testOutputDirectory>${basedir}/${target.dir}/test-classes</testOutputDirectory>
-  -->
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -78,7 +75,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
-            <manifestFile>${basedir}/src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+            <manifestFile>${basedir}/META-INF/MANIFEST.MF</manifestFile>
             <manifestEntries>
               <Built-By>tamacat.org</Built-By>
             </manifestEntries>
@@ -118,7 +115,20 @@
           <password>${scm.password}</password>
         </configuration>
       </plugin>
-      
+
+      <plugin>
+         <groupId>org.apache.felix</groupId>
+         <artifactId>maven-bundle-plugin</artifactId>
+         <extensions>true</extensions>
+         <configuration>
+           <instructions>
+             <Export-Package>org.tamacat</Export-Package>
+             <!-- <Private-Package>org.tamacat.*</Private-Package> -->
+             <Bundle-Activator>org.tamacat.CoreBundle</Bundle-Activator>
+           </instructions>
+         </configuration>
+      </plugin>
+
     </plugins>
   
     <extensions>
@@ -129,19 +139,7 @@
       </extension>
     </extensions>
   </build>
-<!--
-  <properties>
-    <target.dir>target</target.dir>
-  </properties>
-  <profiles>
-    <profile>
-      <id>eclipse-folders</id>
-      <properties>
-        <target.dir>build</target.dir>
-      </properties>
-    </profile>
-  </profiles>
-  -->
+
   <reporting>
     <plugins>
       <plugin>
