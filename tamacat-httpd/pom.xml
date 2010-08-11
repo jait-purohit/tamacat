@@ -61,6 +61,7 @@
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
       <version>4.2.0</version>
+      <scope>provided</scope>
     </dependency>
     
     <dependency>
@@ -104,7 +105,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
-            <manifestFile>${basedir}/src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+            <manifestFile>${basedir}/META-INF/MANIFEST.MF</manifestFile>
             <manifestEntries>
               <Built-By>tamacat.org</Built-By>
             </manifestEntries>
