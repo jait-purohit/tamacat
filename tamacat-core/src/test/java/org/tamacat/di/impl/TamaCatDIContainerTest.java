@@ -17,6 +17,7 @@ import org.tamacat.core.SampleCore;
 import org.tamacat.di.define.BeanDefine;
 import org.tamacat.di.define.BeanDefineMap;
 import org.tamacat.util.ClassUtils;
+import org.tamacat.util.ResourceNotFoundException;
 
 
 public class TamaCatDIContainerTest extends TestCase {
@@ -36,7 +37,7 @@ public class TamaCatDIContainerTest extends TestCase {
             fail(di.toString() + " is not fail.");
         } catch (Exception e) {
             //e.printStackTrace();
-            assertEquals(java.net.MalformedURLException.class, e.getCause().getClass());
+            assertEquals(ResourceNotFoundException.class, e.getCause().getClass());
             //assertEquals(IllegalArgumentException.class, e.getCause().getClass());
             //assertEquals("InputStream cannot be null", e.getCause().getMessage());
             assertTrue(true);

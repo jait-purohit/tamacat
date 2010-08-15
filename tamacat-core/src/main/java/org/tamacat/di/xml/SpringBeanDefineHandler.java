@@ -12,6 +12,7 @@ import org.tamacat.di.define.BeanDefineParam;
 import org.tamacat.di.impl.BeanDefineHandler;
 import org.tamacat.log.Log;
 import org.tamacat.util.ClassUtils;
+import org.tamacat.util.IOUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -85,7 +86,7 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
         	reader.setErrorHandler(this);
         	//reader.setFeature("http://xml.org/sax/features/validation",true);
         	//reader.setFeature("http://xml.org/sax/features/namespaces",true);
-            reader.parse(new InputSource(ClassUtils.getStream(xml)));
+            reader.parse(new InputSource(IOUtils.getInputStream(xml, getClassLoader())));
         } catch (Exception e) {
             throw new DIContainerException(e);
         }

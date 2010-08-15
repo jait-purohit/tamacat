@@ -4,6 +4,8 @@
  */
 package org.tamacat.di;
 
+import java.util.HashMap;
+
 import org.tamacat.di.define.BeanDefine;
 import org.tamacat.di.define.BeanDefineMap;
 import org.tamacat.di.impl.DIContainerFactory;
@@ -16,13 +18,25 @@ import org.tamacat.util.ClassUtils;
  */
 public final class DI {
 
+	private final HashMap<ClassLoader, DIContainerFactory> manager;
+
 	/**
 	 * Creates an {@link DIContainer} for the given set of configuration file(XML).
 	 * @param defines Configuration file(XML) in CLASSPATH.
 	 * @return {@link DIContainer}
 	 */
-	public static DIContainer configure(String xml) {
-		return DIContainerFactory.getInstance(xml);
+	public static synchronized DIContainer configure(String xml) {
+		return configure(xml, null);
+	}
+	
+	/**
+	 * Creates an {@link DIContainer} for the given set of configuration file(XML).
+	 * @param defines Configuration file(XML) in CLASSPATH.
+	 * @param loader ClassLoader
+	 * @return {@link DIContainer}
+	 */
+	public static synchronized DIContainer configure(String xml, ClassLoader loader) {
+		return DI.getFactory(loader).getInstance(xml);
 	}
 	
 	/**
@@ -38,14 +52,34 @@ public final class DI {
 		return new TamaCatDIContainer(defineMap, ClassUtils.getDefaultClassLoader());
 	}
 
+	public static DIContainer configure(BeanDefineMap defines, ClassLoader loader) {
+		return new TamaCatDIContainer(defines, loader);
+	}
+	 
 	/**
 	 * Creates an {@link DIContainer} for the given set of defines.
 	 * @param defines BeanDefineMap, such as Map of {@link BeanDefine}.
 	 * @return {@link DIContainer}
 	 */
 	public static DIContainer configure(BeanDefineMap defines) {
-		return new TamaCatDIContainer(defines, ClassUtils.getDefaultClassLoader());
+		return configure(defines, ClassUtils.getDefaultClassLoader());
 	}
 	
-	private DI() {}
+	static final DI DI = new DI();
+	
+	private DI() {
+		manager = new HashMap<ClassLoader, DIContainerFactory>();
+		ClassLoader loader = getClass().getClassLoader();
+		manager.put(loader, new DIContainerFactory(loader));
+	}
+	
+	private DIContainerFactory getFactory(ClassLoader loader) {
+		if (loader == null) loader = ClassUtils.getDefaultClassLoader();
+		DIContainerFactory factory = manager.get(loader);
+		if (factory == null) {
+			factory = new DIContainerFactory(loader);
+			manager.put(loader, factory);
+		}
+		return factory;
+	}
 }

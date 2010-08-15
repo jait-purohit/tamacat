@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import org.tamacat.di.DIContainer;
 import org.tamacat.di.define.BeanDefine;
 import org.tamacat.di.define.BeanDefineMap;
+import org.tamacat.di.xml.SpringBeanDefineHandler;
 import org.tamacat.util.ClassUtils;
 import org.tamacat.util.PropertyUtils;
 
@@ -75,7 +76,7 @@ public class TamaCatDIContainer implements DIContainer {
     }
 
     void loadProperties() {
-        props = PropertyUtils.getProperties(PROPERTIES_FILE);
+        props = PropertyUtils.getProperties(PROPERTIES_FILE, getClassLoader());
     }
 
     ClassLoader loadClassLoader() {
@@ -83,22 +84,28 @@ public class TamaCatDIContainer implements DIContainer {
     }
 
     BeanDefineHandler loadBeanDefineHandler() {
+    	String className = props.getProperty(BEAN_DEFINE_HANDLER_KEY);
+    	Class<?> handlerClass = null;
+    	try {
+			handlerClass = getClassLoader().loadClass(className);
+		} catch (ClassNotFoundException e) {
+			handlerClass = SpringBeanDefineHandler.class;
+		}
         beanDefineHandler = (BeanDefineHandler) ClassUtils.newInstance(
-            ClassUtils.forName(
-                props.getProperty(BEAN_DEFINE_HANDLER_KEY),getClassLoader())
+        	handlerClass
         );
         return beanDefineHandler;
     }
     
     private void init(String xml, ClassLoader loader) {
-    	loadProperties();
-        this.loader = (loader == null) ? loadClassLoader(): loader;
+        this.loader = (loader != null) ? loader : loadClassLoader();
+        loadProperties();
         this.creator = new BeanCreator(load(xml), getClassLoader());
     }
     
     private void init(BeanDefineMap defines, ClassLoader loader) {
-    	loadProperties();
-        this.loader = (loader == null) ? loadClassLoader(): loader;
+        this.loader = (loader != null) ? loader : loadClassLoader();
+        loadProperties();
         this.creator = new BeanCreator(defines, getClassLoader());
     }
     

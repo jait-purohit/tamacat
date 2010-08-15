@@ -24,8 +24,8 @@ public class DIContainerFactoryTest {
 
 	@Test
 	public void testGetInstance() {
-		DIContainer di1 = DIContainerFactory.getInstance("test.xml");
-		DIContainer di2 = DIContainerFactory.getInstance("test.xml");
+		DIContainer di1 = new DIContainerFactory(null).getInstance("test.xml");
+		DIContainer di2 = new DIContainerFactory(null).getInstance("test.xml");
 		assertSame(di1, di2);
 	}
 

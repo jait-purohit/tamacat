@@ -35,11 +35,6 @@ public class ClassUtilsTest extends TestCase {
     }
     
     @Test
-    public void testGetStream() {
-    	assertNotNull(ClassUtils.getStream(""));
-    }
-    
-    @Test
     public void testGetURL() {
     	assertNotNull(ClassUtils.getURL(""));
     }
@@ -70,7 +65,12 @@ public class ClassUtilsTest extends TestCase {
     	assertEquals(null, ClassUtils.newInstance(ClassUtils.class, (Object[])null));
     	
     	assertEquals("test", ClassUtils.newInstance(String.class, "test"));
-    	assertEquals(null, ClassUtils.newInstance(String.class, new Object()));
+    	try {
+    		assertEquals(null, ClassUtils.newInstance(String.class, new Object()));
+    		fail();
+    	} catch (ResourceNotFoundException e) {
+    		assertTrue(true);
+    	}
     }
     
     @Test
