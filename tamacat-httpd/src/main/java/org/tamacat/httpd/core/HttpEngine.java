@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
 import javax.management.MBeanServer;
@@ -40,6 +41,7 @@ import org.tamacat.httpd.ssl.SSLContextCreator;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.ExceptionUtils;
+import org.tamacat.util.PropertyUtils;
 import org.tamacat.util.StringUtils;
 
 /**
@@ -49,7 +51,26 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 
 	static final Log LOG = LogFactory.getLog(HttpEngine.class);
 
+	private String propertiesName = "server.properties";
 	private ServerConfig serverConfig;
+	private ObjectName objectName;
+	
+	public String getPropertiesName() {
+		return propertiesName;
+	}
+
+	public void setPropertiesName(String propertiesName) {
+		this.propertiesName = propertiesName;
+	}
+
+	public ServerConfig getServerConfig() {
+		return serverConfig;
+	}
+
+	public void setServerConfig(ServerConfig serverConfig) {
+		this.serverConfig = serverConfig;
+	}
+
 	private DefaultHttpService service;
 	
 	private SSLContextCreator sslContextCreator;
@@ -69,13 +90,15 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
      */
 	protected void init() {
 		if (serverConfig == null) {
-			serverConfig = new ServerConfig();
-			paramsBuilder = new HttpParamsBuilder();
-	        paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
+			Properties props = PropertyUtils.getProperties(propertiesName);
+			serverConfig = new ServerConfig(props);
+		}
+		paramsBuilder = new HttpParamsBuilder();
+	    paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
 	          .socketBufferSize(serverConfig.getSocketBufferSize())
 	          .originServer(serverConfig.getParam("ServerName"));
-	        procBuilder = new HttpProcessorBuilder();
-		}
+	    procBuilder = new HttpProcessorBuilder();
+		
 		//default interceptors
 		procBuilder.addInterceptor(new ResponseDate());
 		procBuilder.addInterceptor(new ResponseServer());
@@ -90,11 +113,11 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 				procBuilder, new DefaultConnectionReuseStrategy(), 
 	        	new DefaultHttpResponseFactory(), null, null,
 	        	paramsBuilder.buildParams());
-		if (isMXServerStarted == false) {
-			registryMXServer();
-		}
+		//if (isMXServerStarted == false) {
+		//	registerMXServer();
+		//}
 
-		HttpHandlerFactory factory = new DefaultHttpHandlerFactory();
+		HttpHandlerFactory factory = new DefaultHttpHandlerFactory(getClass().getClassLoader());
 
 		HostRequestHandlerResolver hostResolver = new HostRequestHandlerResolver();
 		HostServiceConfig hostConfig = new ServiceConfigParser(serverConfig).getConfig();
@@ -228,17 +251,17 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	public void setHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
 		interceptors.add(interceptor);
 	}
-
+	
 	//install
 	//http://ws-jmx-connector.dev.java.net/files/documents/4956/114781/jsr262-ri.jar
 	//https://jax-ws.dev.java.net/2.1.1/JAXWS2.1.1_20070501.jar
-	void registryMXServer() {
+	public void registerMXServer() {
 		try {
 			//"service:jmx:rmi:///jndi/rmi://localhost/httpd";
 			//"ws", "localhost", 9999, "/admin"
 			String jmxUrl = serverConfig.getParam("JMX.server-url");
-			if (StringUtils.isNotEmpty(jmxUrl)) {
-				String objectName = serverConfig.getParam(
+			if (!isMXServerStarted && StringUtils.isNotEmpty(jmxUrl)) {
+				String name = serverConfig.getParam(
 						"JMX.objectname","org.tamacat.httpd:type=HttpEngine");
 				
 				int rmiPort = serverConfig.getParam("JMX.rmi.port", -1);
@@ -246,8 +269,8 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 					LocateRegistry.createRegistry(rmiPort);
 				}
 				MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
-	        	ObjectName name = new ObjectName(objectName);
-	        	server.registerMBean(this, name);
+				objectName = new ObjectName(name);
+	        	server.registerMBean(this, objectName);
 	        	
 	        	JMXConnectorServer sv = JMXConnectorServerFactory.newJMXConnectorServer(
 	                new JMXServiceURL(jmxUrl), null, server);
@@ -261,6 +284,17 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		}
 	}
 
+	@Override
+	public void unregisterMXServer() {
+		MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
+    	try {
+			server.unregisterMBean(objectName);
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
+			LOG.warn(ExceptionUtils.getStackTrace(e));
+		}
+	}
+	
 	@Override
 	public void reload() {
 		init();

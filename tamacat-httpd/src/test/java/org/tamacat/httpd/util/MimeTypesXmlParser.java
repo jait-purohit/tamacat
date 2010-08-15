@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.tamacat.util.ClassUtils;
+import org.tamacat.util.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -40,7 +40,7 @@ public class MimeTypesXmlParser {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document doc = builder.parse(ClassUtils.getStream("web.xml"));
+			Document doc = builder.parse(IOUtils.getInputStream("web.xml"));
 			parse(doc);
 			for (Entry<String, String> entry : mimetypes.entrySet()) {
 				System.out.println(entry.getKey() +"=" + entry.getValue());
