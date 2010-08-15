@@ -15,19 +15,24 @@ public class DIContainerFactory {
     private static final String PROPERTIES_FILE = "org.tamacat.di.DIContainerFactory.properties";
     private static Class<?> defaultDIContainerClass;
     private static HashMap<String, DIContainer> manager = new HashMap<String, DIContainer>();
-
+    
     //Load default DIContainer Class.
-    static {
+    public DIContainerFactory(ClassLoader loader) {
         try {
+        	if (loader == null) {
+        		loader = ClassUtils.getDefaultClassLoader();
+        	}
             String className
-                = PropertyUtils.getProperties(PROPERTIES_FILE).getProperty("DIContainerClass");
-            defaultDIContainerClass = ClassUtils.forName(className, ClassUtils.getDefaultClassLoader());
+                = PropertyUtils.getProperties(PROPERTIES_FILE, loader)
+                	.getProperty("DIContainerClass");
+            defaultDIContainerClass = ClassUtils.forName(className, loader);
         } catch (Exception e) {
+        	e.printStackTrace();
             defaultDIContainerClass = TamaCatDIContainer.class;
         }
     }
 
-    public static synchronized DIContainer getInstance(String file) {
+    public synchronized DIContainer getInstance(String file) {
         DIContainer di = manager.get(file);
         if (di == null) {
             di = (DIContainer) ClassUtils.newInstance(defaultDIContainerClass, file);
@@ -35,4 +40,22 @@ public class DIContainerFactory {
         }
         return di;
     }
+    
+//    public synchronized DIContainer getInstance(String file, ClassLoader loader) {
+//        DIContainer di = manager.get(file);
+//        if (di == null) {
+//        	
+//        	Class<?> diClass;
+//        	try {
+//        		String className
+//                	= PropertyUtils.getProperties(PROPERTIES_FILE, loader).getProperty("DIContainerClass");
+//				diClass = loader.loadClass(className);
+//			} catch (ClassNotFoundException e) {
+//				diClass = TamaCatDIContainer.class;
+//			}
+//			di = (DIContainer) ClassUtils.newInstance(diClass, file);
+//            manager.put(file, di);
+//        }
+//        return di;
+//    }
 }

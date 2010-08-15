@@ -5,7 +5,6 @@
 package org.tamacat.util;
 
 import java.beans.IntrospectionException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -30,10 +29,19 @@ public abstract class ClassUtils {
         }
     }
 
-    static
-      public InputStream getStream(String path) {
-        return getDefaultClassLoader().getResourceAsStream(path);
-    }
+//    static
+//      public InputStream getStream(String path) {
+//        return getDefaultClassLoader().getResourceAsStream(path);
+//    }
+//    
+//    static
+//      public InputStream getStream(String path, ClassLoader loader) {
+//    	if (loader == null){
+//    		return getStream(path);
+//    	} else {
+//    		return loader.getResourceAsStream(path);
+//    	}
+//    }
 
     static
       public URL getURL(String path) {
@@ -78,8 +86,12 @@ public abstract class ClassUtils {
                 try {
                     instance = (T) c.newInstance(args);
                     break;
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
+        }
+        if (instance == null) {
+        	throw new ResourceNotFoundException("Class Not found: " + type);
         }
         return instance;
     }
@@ -97,6 +109,7 @@ public abstract class ClassUtils {
       public Class<?> forName(String className, ClassLoader loader) {
     	if (loader == null) return forName(className);
         try {
+        	//return Class.forName(className, true, loader);
             return loader.loadClass(className);
         } catch (Exception e) {
             return null;//throw new ClassUtilsException(e);

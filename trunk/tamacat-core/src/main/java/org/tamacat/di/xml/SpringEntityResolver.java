@@ -6,7 +6,7 @@ package org.tamacat.di.xml;
 
 import java.io.IOException;
 
-import org.tamacat.util.ClassUtils;
+import org.tamacat.util.IOUtils;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -19,6 +19,6 @@ public class SpringEntityResolver implements EntityResolver {
 		
 		String[] d = systemId.split("/");
 		String dtd = "org/tamacat/di/xml/" + d[d.length-1];
-		return new InputSource(ClassUtils.getStream(dtd));
+		return new InputSource(IOUtils.getInputStream(dtd, getClass().getClassLoader()));
 	}
 }
