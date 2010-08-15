@@ -27,4 +27,8 @@ public interface JMXReloadableHttpd	extends Reloadable {
 	int getMaxServerThreads();
 	
 	void setMaxServerThreads(int max);
+	
+	void registerMXServer();
+	
+	void unregisterMXServer();
 }

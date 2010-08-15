@@ -12,7 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.tamacat.httpd.config.ServiceType;
 import org.tamacat.httpd.lb.LbRoundRobinServiceUrl;
-import org.tamacat.util.ClassUtils;
+import org.tamacat.util.IOUtils;
 import org.tamacat.util.StringUtils;
 
 import org.w3c.dom.Document;
@@ -72,7 +72,7 @@ public class ServiceConfigParser {
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			String xml = serverConfig.getParam("url-config.file", URL_CONFIG);
-			Document doc = builder.parse(ClassUtils.getStream(xml));
+			Document doc = builder.parse(IOUtils.getInputStream(xml, getClass().getClassLoader()));
 			return parse(doc);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

@@ -27,7 +27,7 @@ public class DefaultHttpHandlerFactoryTest {
 		serviceUrl.setType(ServiceType.NORMAL);
 		serviceConfig.addServiceUrl(serviceUrl);
 		
-		factory = new DefaultHttpHandlerFactory();
+		factory = new DefaultHttpHandlerFactory(getClass().getClassLoader());
 	}
 
 	@After
