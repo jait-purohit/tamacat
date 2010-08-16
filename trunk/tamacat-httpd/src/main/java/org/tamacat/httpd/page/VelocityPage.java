@@ -38,7 +38,7 @@ public class VelocityPage {
 	
 	void init(String docsRoot) {
 		try {
-			Properties props = PropertyUtils.getProperties("velocity.properties");
+			Properties props = PropertyUtils.getProperties("velocity.properties", getClass().getClassLoader());
 			velocityEngine = new VelocityEngine();
 			velocityEngine.setProperty("resource.loader", "page");
 			velocityEngine.setProperty("page.resource.loader.path", docsRoot);

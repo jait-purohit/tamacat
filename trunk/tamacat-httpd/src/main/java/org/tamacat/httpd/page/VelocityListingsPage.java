@@ -43,7 +43,7 @@ public class VelocityListingsPage {
     
 	public VelocityListingsPage() {
 		try {
-			Properties props = PropertyUtils.getProperties("velocity.properties");
+			Properties props = PropertyUtils.getProperties("velocity.properties", getClass().getClassLoader());
 			velocityEngine = new VelocityEngine();
 			velocityEngine.setProperty("resource.loader", "list");
 			velocityEngine.init(props);
