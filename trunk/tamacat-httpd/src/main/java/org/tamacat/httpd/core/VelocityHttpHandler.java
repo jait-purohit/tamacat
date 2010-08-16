@@ -7,6 +7,7 @@ package org.tamacat.httpd.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Properties;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -16,12 +17,14 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.velocity.VelocityContext;
+import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityListingsPage;
 import org.tamacat.httpd.page.VelocityPage;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ResponseUtils;
+import org.tamacat.util.PropertyUtils;
 
 /**
  * <p>It is implements of {@link HttpHandler} that uses {@code Apache Velocity}. 
@@ -29,12 +32,17 @@ import org.tamacat.httpd.util.ResponseUtils;
 public class VelocityHttpHandler extends AbstractHttpHandler {
 	
 	protected String welcomeFile = "index";
-	private VelocityListingsPage listingPage = new VelocityListingsPage();
+	private VelocityListingsPage listingPage;
 	protected boolean listings;
-	
 	private VelocityPage page;
-
-	public VelocityHttpHandler() {
+	
+	@Override
+    public void setServiceUrl(ServiceUrl serviceUrl) {
+    	super.setServiceUrl(serviceUrl);
+    	Properties props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
+		listingPage = new VelocityListingsPage(props);
+		page = new VelocityPage(props);
+		page.init(this.docsRoot);
 	}
 	
 	/**
@@ -73,13 +81,6 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		} else {
 			return false;
 		}
-	}
-	
-	private VelocityPage getVelocityPage() {
-		if (page == null) {
-			page = new VelocityPage(this.docsRoot);
-		}
-		return page;
 	}
 
 	@Override
@@ -127,7 +128,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	}
 	
 	private void setEntity(HttpRequest request, HttpResponse response, VelocityContext ctx, String path) {
-		String html = getVelocityPage().getPage(request, response, ctx, path);
+		String html = page.getPage(request, response, ctx, path);
 		ResponseUtils.setEntity(response, getEntity(html));
 	}
 	

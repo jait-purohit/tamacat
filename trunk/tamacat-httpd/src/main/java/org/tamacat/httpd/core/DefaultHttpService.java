@@ -6,6 +6,7 @@ package org.tamacat.httpd.core;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Properties;
 
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.HttpEntity;
@@ -28,6 +29,7 @@ import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.PropertyUtils;
 
 /**
  * <p>The default implements of {@link HttpService}.
@@ -39,7 +41,8 @@ public class DefaultHttpService extends HttpService {
     static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
     private HttpRequestHandlerResolver handlerResolver;
     private HostRequestHandlerResolver hostResolver;
-	private VelocityErrorPage errorPage = new VelocityErrorPage();
+	protected ClassLoader loader;
+	protected VelocityErrorPage errorPage;
 	
 	public DefaultHttpService(HttpProcessorBuilder procBuilder,
 			ConnectionReuseStrategy connStrategy,
@@ -104,8 +107,16 @@ public class DefaultHttpService extends HttpService {
 	 */
 	protected void handleException(HttpRequest request, HttpResponse response,
 			org.tamacat.httpd.exception.HttpException e) {
-		String html = errorPage.getErrorPage(request, response, e);
+		String html = getErrorPage().getErrorPage(request, response, e);
 		response.setEntity(getEntity(html));
+	}
+	
+	protected VelocityErrorPage getErrorPage() {
+    	if (errorPage == null) {
+    		Properties props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
+    		errorPage = new VelocityErrorPage(props);
+    	}
+		return errorPage;
 	}
 	
 	/**
@@ -122,5 +133,13 @@ public class DefaultHttpService extends HttpService {
 		} catch (UnsupportedEncodingException e1) {
 			return null;
 		}
+	}
+	
+	public void setClassLoader(ClassLoader loader) {
+		this.loader = loader;
+	}
+	
+	public ClassLoader getClassLoader() {
+		return loader != null ? loader : getClass().getClassLoader();
 	}
 }

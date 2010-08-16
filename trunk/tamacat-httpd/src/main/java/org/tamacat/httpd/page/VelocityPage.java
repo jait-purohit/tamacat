@@ -18,7 +18,6 @@ import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
-import org.tamacat.util.PropertyUtils;
 
 /**
  * <p>It is the HTTP page that used Velocity template.
@@ -27,18 +26,14 @@ public class VelocityPage {
 	static final Log LOG = LogFactory.getLog(VelocityPage.class);
 	
     private VelocityEngine velocityEngine;
-    
-	public VelocityPage() {
-		init(".");
+    private Properties props;
+	
+	public VelocityPage(Properties props) {
+		this.props = props;
 	}
 	
-	public VelocityPage(String docsRoot) {
-		init(docsRoot);
-	}
-	
-	void init(String docsRoot) {
+	public void init(String docsRoot) {
 		try {
-			Properties props = PropertyUtils.getProperties("velocity.properties", getClass().getClassLoader());
 			velocityEngine = new VelocityEngine();
 			velocityEngine.setProperty("resource.loader", "page");
 			velocityEngine.setProperty("page.resource.loader.path", docsRoot);

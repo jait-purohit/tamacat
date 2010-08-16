@@ -54,29 +54,12 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	private String propertiesName = "server.properties";
 	private ServerConfig serverConfig;
 	private ObjectName objectName;
-	
-	public String getPropertiesName() {
-		return propertiesName;
-	}
-
-	public void setPropertiesName(String propertiesName) {
-		this.propertiesName = propertiesName;
-	}
-
-	public ServerConfig getServerConfig() {
-		return serverConfig;
-	}
-
-	public void setServerConfig(ServerConfig serverConfig) {
-		this.serverConfig = serverConfig;
-	}
-
 	private DefaultHttpService service;
 	
 	private SSLContextCreator sslContextCreator;
     private ServerSocket serversocket;
     private HttpParamsBuilder paramsBuilder;
-    HttpProcessorBuilder procBuilder;
+    private HttpProcessorBuilder procBuilder;
     private ExecutorService executors;
     
     private BasicCounter counter = new BasicCounter();
@@ -84,6 +67,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
     	= new ArrayList<HttpResponseInterceptor>();
     
 	private boolean isMXServerStarted;
+	private ClassLoader loader;
 
     /**
      * <p>This method called by {@link #start}.
@@ -113,11 +97,12 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 				procBuilder, new DefaultConnectionReuseStrategy(), 
 	        	new DefaultHttpResponseFactory(), null, null,
 	        	paramsBuilder.buildParams());
+		service.setClassLoader(getClassLoader());
 		//if (isMXServerStarted == false) {
 		//	registerMXServer();
 		//}
 
-		HttpHandlerFactory factory = new DefaultHttpHandlerFactory(getClass().getClassLoader());
+		HttpHandlerFactory factory = new DefaultHttpHandlerFactory(getClassLoader());
 
 		HostRequestHandlerResolver hostResolver = new HostRequestHandlerResolver();
 		HostServiceConfig hostConfig = new ServiceConfigParser(serverConfig).getConfig();
@@ -314,5 +299,30 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	@Override
 	public void run() {
 		startHttpd();
+	}
+	
+	public String getPropertiesName() {
+		return propertiesName;
+	}
+
+	public void setPropertiesName(String propertiesName) {
+		this.propertiesName = propertiesName;
+	}
+
+	public ServerConfig getServerConfig() {
+		return serverConfig;
+	}
+
+	public void setServerConfig(ServerConfig serverConfig) {
+		this.serverConfig = serverConfig;
+	}
+	
+	public void setClassLoader(ClassLoader loader) {
+		this.loader = loader;
+	}
+	
+	public ClassLoader getClassLoader() {
+		if (loader == null) return Thread.currentThread().getContextClassLoader();
+		else return loader;
 	}
 }

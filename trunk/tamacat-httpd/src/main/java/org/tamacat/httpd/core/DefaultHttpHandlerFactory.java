@@ -17,7 +17,7 @@ public class DefaultHttpHandlerFactory implements HttpHandlerFactory {
 	private DIContainer di;
 	
 	public DefaultHttpHandlerFactory() {
-		di = DI.configure("components.xml");
+		di = DI.configure("components.xml", getClass().getClassLoader());
 	}
 	
 	public DefaultHttpHandlerFactory(ClassLoader loader) {

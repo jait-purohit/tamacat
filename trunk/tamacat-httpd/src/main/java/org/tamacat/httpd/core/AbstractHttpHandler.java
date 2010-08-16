@@ -62,7 +62,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 		return mimeTypes;
 	}
 	
-	protected VelocityErrorPage errorPage = new VelocityErrorPage();
+	protected VelocityErrorPage errorPage;
     protected ServiceUrl serviceUrl;
     protected String docsRoot;
     protected String encoding = "UTF-8";
@@ -70,6 +70,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     protected List<HttpFilter> filters = new ArrayList<HttpFilter>();
     protected List<RequestFilter> requestFilters = new ArrayList<RequestFilter>();
     protected List<ResponseFilter> responseFilters = new ArrayList<ResponseFilter>();
+    protected ClassLoader loader;
     
 	@Override
     public void setServiceUrl(ServiceUrl serviceUrl) {
@@ -77,6 +78,8 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     	for (HttpFilter filter : filters) {
     		filter.init(serviceUrl);
     	}
+		Properties props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
+    	errorPage = new VelocityErrorPage(props);
     }
     
 	@Override
@@ -200,5 +203,13 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     	} catch (UnsupportedEncodingException e) {
     		return uri;
     	}
+    }
+    
+    public void setClassLoader(ClassLoader loader) {
+    	this.loader = loader;
+    }
+    
+    public ClassLoader getClassLoader() {
+    	return loader != null ? loader : getClass().getClassLoader();
     }
 }

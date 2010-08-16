@@ -26,4 +26,6 @@ public interface HttpHandler extends HttpRequestHandler {
 	 * @param filter
 	 */
 	void setHttpFilter(HttpFilter filter);
+	
+	void setClassLoader(ClassLoader loader);
 }

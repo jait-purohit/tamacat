@@ -13,10 +13,10 @@ import org.apache.http.HttpResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
-import org.tamacat.util.PropertyUtils;
 
 /**
  * <p>It is the HTTP error page that used Velocity template.
@@ -32,20 +32,21 @@ public class VelocityErrorPage {
 		= "<html><body><p>500 Internal Server Error.</p></body></html>";
     
     private VelocityEngine velocityEngine;
-
-	public VelocityErrorPage() {
-		init("velocity.properties");
+    private Properties props;
+	
+	public VelocityErrorPage(Properties props) {
+		this.props = props;
+		init();
 	}
 	
-	public VelocityErrorPage(String fileName) {
-		init(fileName);
-	}
-	
-	void init(String fileName) {
+	void init() {
 		try {
-			Properties props = PropertyUtils.getProperties(fileName, getClass().getClassLoader());
 			velocityEngine = new VelocityEngine();
+			//velocityEngine.setApplicationAttribute(VelocityEngine.RESOURCE_LOADER,
+	        //        new ClasspathResourceLoader());
 			velocityEngine.setProperty("resource.loader", "error");
+			velocityEngine.setProperty("error.resource.loader.instance",
+					new ClasspathResourceLoader());
 			velocityEngine.init(props);
 		} catch (Exception e) {
 			LOG.warn(e.getMessage());
