@@ -43,7 +43,7 @@ public class VelocityErrorPage {
 	
 	void init(String fileName) {
 		try {
-			Properties props = PropertyUtils.getProperties(fileName);
+			Properties props = PropertyUtils.getProperties(fileName, getClass().getClassLoader());
 			velocityEngine = new VelocityEngine();
 			velocityEngine.setProperty("resource.loader", "error");
 			velocityEngine.init(props);

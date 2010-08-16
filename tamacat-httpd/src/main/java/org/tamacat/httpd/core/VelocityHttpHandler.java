@@ -34,6 +34,9 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	
 	private VelocityPage page;
 
+	public VelocityHttpHandler() {
+	}
+	
 	/**
 	 * <p>Set the welcome file.
 	 * This method use after {@link #setListings}.
