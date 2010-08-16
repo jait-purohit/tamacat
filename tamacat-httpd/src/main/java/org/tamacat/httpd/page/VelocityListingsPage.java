@@ -20,7 +20,6 @@ import org.apache.velocity.app.VelocityEngine;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.DateUtils;
-import org.tamacat.util.PropertyUtils;
 import org.tamacat.util.StringUtils;
 
 /**
@@ -41,9 +40,8 @@ public class VelocityListingsPage {
 		this.listingsPage = listingsPage;
 	}
     
-	public VelocityListingsPage() {
+	public VelocityListingsPage(Properties props) {
 		try {
-			Properties props = PropertyUtils.getProperties("velocity.properties", getClass().getClassLoader());
 			velocityEngine = new VelocityEngine();
 			velocityEngine.setProperty("resource.loader", "list");
 			velocityEngine.init(props);

@@ -3,6 +3,7 @@ package org.tamacat.httpd.page;
 import static org.junit.Assert.*;
 
 import java.io.StringWriter;
+import java.util.Properties;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -14,11 +15,15 @@ import org.junit.Test;
 import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.mock.HttpObjectFactory;
+import org.tamacat.util.PropertyUtils;
 
 public class VelocityErrorPageTest {
-
+	private Properties props;
+	
 	@Before
 	public void setUp() throws Exception {
+    	props = PropertyUtils.getProperties("velocity.properties",
+    			  getClass().getClassLoader());
 	}
 
 	@After
@@ -29,8 +34,7 @@ public class VelocityErrorPageTest {
 	public void testGetErrorPageHttpRequestHttpResponseHttpException() {
 		HttpRequest request = HttpObjectFactory.createHttpRequest("GET", "/test/");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
-		VelocityErrorPage page = new VelocityErrorPage();
-		
+		VelocityErrorPage page = new VelocityErrorPage(props);
 		try {
 			HttpException exception = new HttpException(
 				BasicHttpStatus.SC_INTERNAL_SERVER_ERROR, "Test Error.");
@@ -43,7 +47,7 @@ public class VelocityErrorPageTest {
 
 	@Test
 	public void testGetTemplate() {
-		VelocityErrorPage page = new VelocityErrorPage();
+		VelocityErrorPage page = new VelocityErrorPage(props);
 		try {
 			StringWriter writer = new StringWriter();
 			Template template = page.getTemplate("error500.vm");
@@ -55,5 +59,4 @@ public class VelocityErrorPageTest {
 			fail();
 		}
 	}
-
 }

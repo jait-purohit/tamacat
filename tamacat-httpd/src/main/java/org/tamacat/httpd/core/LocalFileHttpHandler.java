@@ -6,6 +6,7 @@ package org.tamacat.httpd.core;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.Properties;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -14,6 +15,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
+import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityListingsPage;
@@ -21,6 +23,7 @@ import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.PropertyUtils;
 
 /**
  * <p>The {@link HttpHandler} for local file access.
@@ -30,8 +33,16 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 	static final Log LOG = LogFactory.getLog(LocalFileHttpHandler.class);
 	
 	protected String welcomeFile = "index.html";
-	private VelocityListingsPage listingPage = new VelocityListingsPage();
+	private VelocityListingsPage listingPage;
 	protected boolean listings;
+	protected Properties props;
+	
+	@Override
+    public void setServiceUrl(ServiceUrl serviceUrl) {
+    	super.setServiceUrl(serviceUrl);
+		props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
+		listingPage = new VelocityListingsPage(props);
+	}
 	
 	/**
 	 * <p>Set the welcome file.

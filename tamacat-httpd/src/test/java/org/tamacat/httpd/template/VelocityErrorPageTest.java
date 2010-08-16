@@ -13,7 +13,6 @@ import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
-import org.apache.velocity.app.Velocity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,11 +22,13 @@ import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.util.PropertyUtils;
 
 public class VelocityErrorPageTest {
+	
+	private Properties props;
 
 	@Before
 	public void setUp() throws Exception {
-		Properties props = PropertyUtils.getProperties("server.properties");
-		Velocity.init(props);
+		props = PropertyUtils.getProperties("server.properties", 
+				  getClass().getClassLoader());
 	}
 
 	@After
@@ -36,14 +37,16 @@ public class VelocityErrorPageTest {
 
 	@Test
 	public void testGetPrintErrorPage() {
-		VelocityErrorPage template = new VelocityErrorPage();
+		VelocityErrorPage template = new VelocityErrorPage(props);
 		HttpRequest request = new BasicHttpRequest("GET", "http://localhost/test");
 		HttpResponse response = new BasicHttpResponse(
 				new BasicStatusLine(new ProtocolVersion("HTTP",1,1), 404, "Not Found"));
 		HttpException exception = new NotFoundException();
 		String page = template.getErrorPage(request, response, exception);
 		assertNotNull(page);
-		System.out.println(page);
+		assertEquals(
+			"<html><body><p>500 Internal Server Error.</p></body></html>",
+			page
+		);
 	}
-
 }
