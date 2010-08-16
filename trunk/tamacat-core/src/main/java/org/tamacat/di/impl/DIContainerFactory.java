@@ -16,18 +16,20 @@ public class DIContainerFactory {
     private static Class<?> defaultDIContainerClass;
     private static HashMap<String, DIContainer> manager = new HashMap<String, DIContainer>();
     
+    private ClassLoader loader;
+    
     //Load default DIContainer Class.
-    public DIContainerFactory(ClassLoader loader) {
+    public DIContainerFactory(final ClassLoader loader) {
+    	this.loader = loader;
         try {
-        	if (loader == null) {
-        		loader = ClassUtils.getDefaultClassLoader();
+        	if (this.loader == null) {
+        		this.loader = ClassUtils.getDefaultClassLoader();
         	}
             String className
-                = PropertyUtils.getProperties(PROPERTIES_FILE, loader)
+                = PropertyUtils.getProperties(PROPERTIES_FILE, this.loader)
                 	.getProperty("DIContainerClass");
-            defaultDIContainerClass = ClassUtils.forName(className, loader);
+            defaultDIContainerClass = ClassUtils.forName(className, this.loader);
         } catch (Exception e) {
-        	e.printStackTrace();
             defaultDIContainerClass = TamaCatDIContainer.class;
         }
     }
@@ -35,7 +37,8 @@ public class DIContainerFactory {
     public synchronized DIContainer getInstance(String file) {
         DIContainer di = manager.get(file);
         if (di == null) {
-            di = (DIContainer) ClassUtils.newInstance(defaultDIContainerClass, file);
+        	Object[] args = {file, loader};
+            di = (DIContainer) ClassUtils.newInstance(defaultDIContainerClass, args);
             manager.put(file, di);
         }
         return di;
