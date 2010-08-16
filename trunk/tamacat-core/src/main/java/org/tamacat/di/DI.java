@@ -26,7 +26,7 @@ public final class DI {
 	 * @return {@link DIContainer}
 	 */
 	public static synchronized DIContainer configure(String xml) {
-		return configure(xml, null);
+		return configure(xml, Thread.currentThread().getContextClassLoader());
 	}
 	
 	/**
