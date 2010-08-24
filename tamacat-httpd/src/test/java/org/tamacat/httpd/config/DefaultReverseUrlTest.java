@@ -73,7 +73,7 @@ public class DefaultReverseUrlTest {
 			reverseUrl.getConvertRequestedUrl("http://localhost:8080/test2/abc.html")
 		);
 	}
-
+	
 	@Test
 	public void testClone() {
 	}
