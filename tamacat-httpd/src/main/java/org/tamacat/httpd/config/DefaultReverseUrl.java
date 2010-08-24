@@ -40,7 +40,9 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 	
 	@Override
 	public void setHost(URL host) {
-		serviceUrl.setHost(host);
+		try {
+			serviceUrl.setHost(new URL(host.getProtocol(),host.getHost(),host.getPort(),""));
+		} catch (Exception e) {}
 	}
 
 	@Override
@@ -79,22 +81,16 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 
 	@Override
 	/**
-	 * path: http://localhost:8080/example/servlet
-	 * =>  http://localhost/example/servlet
+	 * path: http://localhost:8080/examples/servlet
+	 *   =>  http://localhost/examples2/servlet
 	 */
 	public String getConvertRequestedUrl(String path) {
-		URL host = getHost();
+		URL host = getHost(); //requested URL (path is deleted)
     	if (path != null && host != null) {
-    		try {
-    			//host.toString(): http://localhost/example/servlet
-    			//             =>  http://localhost/example/
-    			int idx = host.toString().indexOf(reverseUrl.getPath());
-    			String requestPath = host.toString().substring(
-    					0, idx + reverseUrl.getPath().length());
-    			return path.replaceFirst(reverseUrl.toString(), requestPath);
-    		} catch (Exception e) {
-    			return path;
-    		}
+    		return path.replaceFirst(
+    				reverseUrl.getProtocol() + "://" + reverseUrl.getAuthority(),
+    				host.toString()
+    			).replace(reverseUrl.getPath(), getServiceUrl().getPath());
     	} else {
     		return path;
     	}

@@ -4,6 +4,7 @@
  */
 package org.tamacat.httpd.config;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import org.tamacat.httpd.core.HttpHandler;
 
@@ -78,15 +79,20 @@ public class ServiceUrl {
 	}
 
 	/**
-	 * <p>Set the URL of host.
+	 * <p>Set the URL of host. (The path is deleted)
 	 * @param host
 	 */
 	public void setHost(URL host) {
-		this.host = host;
+		if (host != null) {
+			try {
+				this.host = new URL(host.getProtocol(), host.getHost(), host.getPort(), "");
+			} catch (MalformedURLException e) {
+			}
+		}
 	}
 
 	/**
-	 * <p>Set the URL path.
+	 * <p>Set the URL path. (The path is deleted)
 	 * @param path
 	 */
 	public void setPath(String path) {

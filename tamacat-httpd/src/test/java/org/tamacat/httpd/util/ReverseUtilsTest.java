@@ -69,7 +69,7 @@ public class ReverseUtilsTest {
 		ServiceUrl serviceUrl = new ServiceUrl(config);
 		serviceUrl.setPath("/examples/");
 		serviceUrl.setType(ServiceType.REVERSE);
-		serviceUrl.setHost(new URL("http://localhost/examples/servlets"));	
+		serviceUrl.setHost(new URL("http://localhost/examples/servlets"));
 		ReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
 		reverseUrl.setReverse(new URL("http://localhost:8080/examples/"));
 		

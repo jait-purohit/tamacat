@@ -196,7 +196,7 @@ public class RequestUtils {
 			if (context != null) {
 			HttpServerConnection con = getHttpServerConnection(context);
 				if (con instanceof HttpInetConnection) {
-					port = ((HttpInetConnection)con).getRemotePort();
+					port = ((HttpInetConnection)con).getLocalPort();
 					InetAddress addr = ((HttpInetConnection)con).getLocalAddress();
 					if (hostName == null && addr != null) {
 						hostName = addr.getHostName();

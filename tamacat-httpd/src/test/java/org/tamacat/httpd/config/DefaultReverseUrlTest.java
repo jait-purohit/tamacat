@@ -32,7 +32,7 @@ public class DefaultReverseUrlTest {
 	
 	@Test
 	public void testGetHost() {
-		assertEquals("http://localhost/test/", reverseUrl.getHost().toString());
+		assertEquals("http://localhost", reverseUrl.getHost().toString());
 	}
 
 	@Test
@@ -67,7 +67,8 @@ public class DefaultReverseUrlTest {
 	}
 
 	@Test
-	public void testGetConvertRequestedUrl() {
+	public void testGetConvertRequestedUrl() throws Exception {
+		serviceUrl.setHost(new URL("http://localhost"));
 		assertEquals(
 			"http://localhost/test/abc.html", 
 			reverseUrl.getConvertRequestedUrl("http://localhost:8080/test2/abc.html")

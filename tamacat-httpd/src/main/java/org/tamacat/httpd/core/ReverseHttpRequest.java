@@ -74,7 +74,7 @@ public class ReverseHttpRequest extends BasicHttpRequest {
         Header[] hostHeaders = request.getHeaders(HTTP.TARGET_HOST);
         for (Header hostHeader : hostHeaders) {
         	String value = hostHeader.getValue();
-        	URL host = RequestUtils.getRequestURL(request, context);
+        	URL host = RequestUtils.getRequestURL(request, context, reverseUrl.getServiceUrl());
         	reverseUrl.setHost(host);
         	String before = host.getAuthority();
         	int beforePort = host.getPort();
