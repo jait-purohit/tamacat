@@ -6,6 +6,8 @@ package org.tamacat.httpd.util;
 
 import static org.junit.Assert.*;
 
+import java.net.URL;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -14,6 +16,11 @@ import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.httpd.config.DefaultReverseUrl;
+import org.tamacat.httpd.config.ReverseUrl;
+import org.tamacat.httpd.config.ServerConfig;
+import org.tamacat.httpd.config.ServiceType;
+import org.tamacat.httpd.config.ServiceUrl;
 
 public class ReverseUtilsTest {
 
@@ -54,6 +61,25 @@ public class ReverseUtilsTest {
 		assertNull(response.getFirstHeader("Content-Length"));
 		assertNull(response.getFirstHeader("Content-Type"));
 		assertEquals("tamacat.org", response.getFirstHeader("Host").getValue());
+	}
+	
+	@Test
+	public void testRewriteLocationHeader() throws Exception {
+		ServerConfig config = new ServerConfig();
+		ServiceUrl serviceUrl = new ServiceUrl(config);
+		serviceUrl.setPath("/examples/");
+		serviceUrl.setType(ServiceType.REVERSE);
+		serviceUrl.setHost(new URL("http://localhost/examples/servlets"));	
+		ReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
+		reverseUrl.setReverse(new URL("http://localhost:8080/examples/"));
+		
+		HttpResponse response = new BasicHttpResponse(
+				new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 302, "Moved Temporarily"));	
+		response.setHeader("Location", "http://localhost:8080/examples/servlets/");
+		ReverseUtils.rewriteLocationHeader(null, response, reverseUrl);
+		assertEquals("http://localhost/examples/servlets/",
+			response.getFirstHeader("Location").getValue()
+		);
 	}
 
 }

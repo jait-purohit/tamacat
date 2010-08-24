@@ -210,11 +210,10 @@ public class RequestUtils {
 		}
 		if (hostName != null) {
 			try {
-				URL hostUrl = new URL(protocol, hostName, port,
-						request.getRequestLine().getUri());
+				return new URL(protocol, hostName, port,
+					request.getRequestLine().getUri());					
 //				HttpHost httpHost = new HttpHost(hostName, port);
 //				context.setAttribute(ExecutionContext.HTTP_TARGET_HOST, httpHost);
-				return hostUrl;
 			} catch (MalformedURLException e) {
 				//e.printStackTrace();
 			}
