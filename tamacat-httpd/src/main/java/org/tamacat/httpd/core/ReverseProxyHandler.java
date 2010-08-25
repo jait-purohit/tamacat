@@ -36,6 +36,8 @@ import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
+import org.tamacat.httpd.filter.RequestFilter;
+import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -82,6 +84,26 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     	  .connectionTimeout(serviceUrl.getServerConfig().getParam("BackEndConnectionTimeout", 10000))
           .socketBufferSize(serviceUrl.getServerConfig().getParam("BackEndSocketBufferSize", (8*1024)));
     }
+	
+	@Override
+	public void handle(HttpRequest request, HttpResponse response, 
+			HttpContext context) {
+		//Bugfix: java.lang.IllegalStateException: Content has been consumed
+		//RequestUtils.setParameters(request, context, encoding);
+		try {
+			for (RequestFilter filter : requestFilters) {
+				filter.doFilter(request, response, context);
+			}
+			doRequest(request, response, context);
+		} catch (Exception e) {
+			LOG.trace(e.getMessage());
+			handleException(request, response, e);
+		} finally {
+			for (ResponseFilter filter : responseFilters) {
+				filter.afterResponse(request, response, context);
+			}
+		}
+	}
 	
     @Override
     public void doRequest(
