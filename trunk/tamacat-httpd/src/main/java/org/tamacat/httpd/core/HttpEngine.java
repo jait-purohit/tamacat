@@ -98,11 +98,11 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	        	new DefaultHttpResponseFactory(), null, null,
 	        	paramsBuilder.buildParams());
 		service.setClassLoader(getClassLoader());
-		//if (isMXServerStarted == false) {
-		//	registerMXServer();
-		//}
+		if (isMXServerStarted == false) {
+			registerMXServer();
+		}
 
-		HttpHandlerFactory factory = new DefaultHttpHandlerFactory(getClassLoader());
+		HttpHandlerFactory factory = new DefaultHttpHandlerFactory(getClass().getClassLoader());
 
 		HostRequestHandlerResolver hostResolver = new HostRequestHandlerResolver();
 		HostServiceConfig hostConfig = new ServiceConfigParser(serverConfig).getConfig();
