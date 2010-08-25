@@ -51,7 +51,7 @@ JMX.rmi.port=1099
 || https || false/true || true: use https protocol ||
 || https.keyStoreFile || test.keystore || The key.store file is specified. It is possible to make it by using keytool. keystore file create by keytools ||
 || https.keyPassword || nopassword || keystore file's pasword ||
-|| https.protocol || SSL,SSLv2,SSLv3,TLS,TLSv1,TLSv1_1 || http protocol ||
+|| https.protocol || SSL,SSLv2,SSLv3,TLS,TLSv1,TLSv1_1 || SSL/TLS version ||
 || MaxServerThreads || 5 || Maximum worker threads of server. ||
 || ServerSocketTimeout || 5000 || socket timeout (ms) ||
 || ConnectionTimeout|| 10000 || connection timeout (ms) ||
