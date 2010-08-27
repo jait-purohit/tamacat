@@ -1,8 +1,0 @@
-Implementation-Title: tamacat-groovy
-Implementation-Version: 0.7
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: tamacat-groovy
-Bundle-Name: tamacat-groovy
-Bundle-Vendor: TAMACAT.ORG
-Export-Package: org.tamacat;version=0.7
-Bundle-Version: 0.7
