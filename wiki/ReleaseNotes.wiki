@@ -3,7 +3,7 @@
 
 = Release Notes =
 
-==Release 0.7 (2010-08-27)==
+==0.7 release (2010-08-27)==
 ------------------------
 The highlights in the tamacat-httpd-0.7 are the following:
 
