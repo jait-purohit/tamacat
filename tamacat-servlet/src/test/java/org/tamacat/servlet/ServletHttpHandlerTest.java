@@ -2,11 +2,18 @@ package org.tamacat.servlet;
 
 import static org.junit.Assert.*;
 
+import java.net.URL;
+
 import javax.servlet.http.HttpServlet;
 
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.message.BasicStatusLine;
 import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +28,7 @@ public class ServletHttpHandlerTest {
 
 	ServiceUrl serviceUrl;
 	HttpRequest req;
+	HttpResponse res;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -29,6 +37,7 @@ public class ServletHttpHandlerTest {
 			= new ServiceConfigParser(new ServerConfig());
 		ServiceConfig serviceConfig = parser.getConfig().getDefaultServiceConfig();
 		serviceUrl = serviceConfig.getServiceUrl("/test/");
+		serviceUrl.setHost(new URL("http://localhost"));
 	}
 
 	@After
@@ -38,9 +47,14 @@ public class ServletHttpHandlerTest {
 	@Test
 	public void testServletEngine() {
 		ServletHttpHandler engine = new ServletHttpHandler();
+		engine.setClassLoader(getClass().getClassLoader());
 		engine.setServiceUrl(serviceUrl);
 		try {
-			engine.handle(req, null, new BasicHttpContext());
+			HttpContext context =new BasicHttpContext();
+			res = new DefaultHttpResponseFactory().newHttpResponse(
+					new BasicStatusLine(
+						new ProtocolVersion("HTTP", 1,1), 200,"OK"), context);
+			engine.handle(req, res, context);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

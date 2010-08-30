@@ -24,14 +24,21 @@ public class WebXmlParser {
 	private WebApp webApp = new WebApp();
 	private Document document;
 	private XPath xpath;
+	private ClassLoader loader;
 	
-	public WebXmlParser() {}
+	public WebXmlParser(ClassLoader loader) {
+		this.loader = loader;
+	}
+	
+	public WebXmlParser() {
+		this(ClassUtils.getDefaultClassLoader());
+	}
 	
 	public WebApp parse(String path) {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			URL url = ClassUtils.getURL(path);
+			URL url = ClassUtils.getURL(path, loader);
 			if (url == null) {
 				url = new URL("file:" + path);
 			}
