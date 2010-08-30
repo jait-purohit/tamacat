@@ -20,6 +20,10 @@ public class RequestDispatcherImpl implements RequestDispatcher {
 	protected String path;
 	protected ServletHttpHandler handler;
 
+	RequestDispatcherImpl(ServletHttpHandler handler) {
+		this.handler = handler;
+	}
+	
 	RequestDispatcherImpl(String path) {
 		this.handler = new ServletHttpHandler();
 		this.path = path;

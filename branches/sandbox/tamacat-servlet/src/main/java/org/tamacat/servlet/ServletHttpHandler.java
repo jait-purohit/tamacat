@@ -3,6 +3,8 @@ package org.tamacat.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,7 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 
 	static final String WEB_XML_PATH = "WEB-INF/web.xml";
 	
+	private WebAppClassLoader loader;
 	private HttpCoreServletContext servletContext;
 	private HttpServletObjectFactory factory;
 
@@ -47,7 +50,7 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 
 	@Override
 	public void setServiceUrl(ServiceUrl serviceUrl) {
-		this.serviceUrl = serviceUrl;
+		super.setServiceUrl(serviceUrl);
 		init();
 	}
 	
@@ -83,7 +86,16 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 				.replaceFirst("^/","").replaceFirst("/$", ""));
 		}
 		String xml = docsRoot + "/" + WEB_XML_PATH;
-		WebApp webapp = new WebXmlParser().parse(xml);
+		try {
+			URL[] urls = new URL[] {
+				new URL("file:" + docsRoot + "/WEB-INF/classes"),
+				new URL("file:" + docsRoot + "/WEB-INF/lib"),
+			};
+			loader = new WebAppClassLoader(urls, getClassLoader());
+		} catch (MalformedURLException e) {
+			loader = new WebAppClassLoader(new URL[]{}, getClassLoader());
+		}
+		WebApp webapp = new WebXmlParser(loader).parse(xml);
 		createServletInstances(webapp);
 	}
 	
@@ -137,7 +149,7 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 	}
 	
 	protected HttpServlet createServlet(ServletDefine define) throws ServletException {
-		Class<?> servletClass = ClassUtils.forName(define.getServletClass());
+		Class<?> servletClass = ClassUtils.forName(define.getServletClass(), loader);
 		HttpServlet servlet = (HttpServlet)	ClassUtils.newInstance(servletClass);
 		return servlet;
 	}

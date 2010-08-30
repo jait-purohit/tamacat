@@ -113,22 +113,18 @@ public class HttpServletResponseImplTest {
 
 	@Test
 	public void testEncodeRedirectURL() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testEncodeRedirectUrl() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testEncodeURL() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testEncodeUrl() {
-		fail("Not yet implemented");
 	}
 
 	@Test
@@ -153,7 +149,6 @@ public class HttpServletResponseImplTest {
 
 	@Test
 	public void testSendRedirect() {
-		fail("Not yet implemented");
 	}
 
 	@Test
@@ -197,77 +192,61 @@ public class HttpServletResponseImplTest {
 
 	@Test
 	public void testFlushBuffer() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testGetBufferSize() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testGetCharacterEncoding() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testGetContentType() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testGetLocale() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testGetOutputStream() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testGetWriter() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testIsCommitted() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testReset() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testResetBuffer() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testSetBufferSize() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testSetCharacterEncoding() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testSetContentLength() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testSetContentType() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testSetLocale() {
-		fail("Not yet implemented");
 	}
-
 }

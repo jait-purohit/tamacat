@@ -21,7 +21,7 @@ public class WebXmlParserTest {
 
 	@Test
 	public void testParse() {
-		WebApp webapp = new WebXmlParser().parse("test/WEB-INF/web.xml");
+		WebApp webapp = new WebXmlParser(getClass().getClassLoader()).parse("test/WEB-INF/web.xml");
 		//display-name
 		assertEquals("test", webapp.getDisplayName());
 		//description

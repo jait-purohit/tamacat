@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,7 +46,7 @@ public class HttpServletRequestImplTest {
 
 		ServiceConfigParser parser = new ServiceConfigParser(new ServerConfig());
 		serviceUrl = parser.getConfig().getDefaultServiceConfig().getServiceUrl("/test/");
-		
+		serviceUrl.setHost(new URL("http://localhost"));
 		ServletContextImpl servletContext = new ServletContextImpl(
 				System.getProperty("user.dir")
 				+ "/src/test/resources/test", serviceUrl);
