@@ -23,7 +23,7 @@ import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.servlet.HttpCoreServletContext;
 import org.tamacat.servlet.HttpCoreServletRequest;
 import org.tamacat.servlet.HttpCoreServletResponse;
-import org.tamacat.servlet.test.TestServlet;
+import org.tamacat.servlet.test.SampleServlet;
 import org.tamacat.servlet.util.ServletUtils;
 import org.tamacat.util.StringUtils;
 
@@ -49,7 +49,7 @@ public class HttpServletResponseImplTest {
 		servletContext = new ServletContextImpl("test", serviceUrl);
 		
 		ServletUrl servletUrl = new ServletUrl();
-		servletUrl.setServlet(new TestServlet());
+		servletUrl.setServlet(new SampleServlet());
 		servletUrl.setUrlPattern("/index.html");
 		servletUrl.setServletName("TestServlet");
 		request = new HttpServletObjectFactory(servletContext)

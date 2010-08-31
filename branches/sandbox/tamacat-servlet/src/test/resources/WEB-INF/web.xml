@@ -10,7 +10,7 @@
 
   <servlet>
     <servlet-name>test1</servlet-name>
-    <servlet-class>org.tamacat.servlet.test.TestServlet</servlet-class>
+    <servlet-class>org.tamacat.servlet.test.SampleServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
