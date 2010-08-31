@@ -1,10 +1,12 @@
 package org.tamacat.servlet;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +26,7 @@ import org.apache.http.protocol.UriPatternMatcher;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.core.AbstractHttpHandler;
 import org.tamacat.httpd.core.BasicHttpStatus;
-import org.tamacat.httpd.exception.NotFoundException;
+import org.tamacat.httpd.core.LocalFileHttpHandler;
 import org.tamacat.servlet.impl.HttpServletObjectFactory;
 import org.tamacat.servlet.impl.ServletConfigImpl;
 import org.tamacat.servlet.impl.ServletContextImpl;
@@ -42,15 +44,19 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 	private WebAppClassLoader loader;
 	private HttpCoreServletContext servletContext;
 	private HttpServletObjectFactory factory;
-
+	private LocalFileHttpHandler localHandler;
+	
 	private Map<String, HttpServlet> servlets = new LinkedHashMap<String, HttpServlet>();
 	private UriPatternMatcher matcher = new UriPatternMatcher();
 	
-	public ServletHttpHandler() {}
+	public ServletHttpHandler() {
+		localHandler = new LocalFileHttpHandler();
+	}
 
 	@Override
 	public void setServiceUrl(ServiceUrl serviceUrl) {
 		super.setServiceUrl(serviceUrl);
+		localHandler.setServiceUrl(serviceUrl);
 		init();
 	}
 	
@@ -72,11 +78,11 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 				throw new org.tamacat.httpd.exception.HttpException(
 						BasicHttpStatus.SC_INTERNAL_SERVER_ERROR, e);
 			} catch (RuntimeException e) {
-				e.printStackTrace();
+				e.printStackTrace(); //TODO
 				throw e;
 			}
 		} else {
-			throw new NotFoundException();
+			localHandler.doRequest(request, response, context);
 		}
 	}
 
@@ -85,13 +91,26 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 			setDocsRoot(serviceUrl.getPath()
 				.replaceFirst("^/","").replaceFirst("/$", ""));
 		}
+		//TODO
+		localHandler.setDocsRoot(docsRoot + "/..");
 		String xml = docsRoot + "/" + WEB_XML_PATH;
 		try {
-			URL[] urls = new URL[] {
-				new URL("file:" + docsRoot + "/WEB-INF/classes"),
-				new URL("file:" + docsRoot + "/WEB-INF/lib"),
-			};
-			loader = new WebAppClassLoader(urls, getClassLoader());
+			ArrayList<URL> urls = new ArrayList<URL>();
+			urls.add(new URL("file:" + docsRoot + "/WEB-INF/classes/"));
+			File lib = new File(docsRoot + "/WEB-INF/lib");
+			File[] jars = lib.listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File arg0, String arg1) {
+					return arg1.endsWith(".jar");
+				}
+			});
+			if (jars != null) {
+				for (File f : jars) {
+					urls.add(f.toURI().toURL());
+				}
+			}
+			loader = new WebAppClassLoader(
+				urls.toArray(new URL[urls.size()]), getClassLoader());
 		} catch (MalformedURLException e) {
 			loader = new WebAppClassLoader(new URL[]{}, getClassLoader());
 		}
@@ -100,8 +119,13 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 	}
 	
 	protected ServletUrl getServletUrl(String path) {
-		ServletUrl url = (ServletUrl) matcher.lookup(path);
-		return url;
+		if (path.startsWith("/")) {
+			return (ServletUrl) matcher.lookup(
+				path.replace(serviceUrl.getPath(), "/")
+			);
+		} else {
+			return (ServletUrl) matcher.lookup(path);
+		}
 	}
 	
 	protected HttpServlet getServletFromName(String name) {
@@ -119,7 +143,7 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 				servlets.put(define.getServletName(), servlet);
 				servletContext.addServlet(define.getServletName(), servlet);
 			} catch (ServletException e) {
-				e.printStackTrace();
+				e.printStackTrace(); //TODO
 			}
 		}
 

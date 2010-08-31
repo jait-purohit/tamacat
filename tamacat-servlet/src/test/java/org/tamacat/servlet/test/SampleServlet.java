@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.tamacat.util.StringUtils;
 
-public class TestServlet extends HttpServlet {
+public class SampleServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 

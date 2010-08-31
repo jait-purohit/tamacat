@@ -12,7 +12,7 @@
   
   <servlet>
     <servlet-name>test1</servlet-name>
-    <servlet-class>org.tamacat.servlet.test.TestServlet</servlet-class>
+    <servlet-class>org.tamacat.servlet.test.SampleServlet</servlet-class>
     <init-param>
       <param-name>init-param1</param-name>
       <param-value>value1</param-value>
@@ -30,7 +30,7 @@
   
   <servlet>
     <servlet-name>test2</servlet-name>
-    <servlet-class>org.tamacat.servlet.test.TestServlet</servlet-class>
+    <servlet-class>org.tamacat.servlet.test.SampleServlet</servlet-class>
     <init-param>
       <param-name>init-param2</param-name>
       <param-value>value2</param-value>
@@ -40,5 +40,14 @@
   <servlet-mapping>
     <servlet-name>test2</servlet-name>
     <url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>RequestHeaderExample</servlet-name>
+    <servlet-class>RequestHeaderExample</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RequestHeaderExample</servlet-name>
+    <url-pattern>/servlet/RequestHeaderExample</url-pattern>
   </servlet-mapping>
 </web-app>

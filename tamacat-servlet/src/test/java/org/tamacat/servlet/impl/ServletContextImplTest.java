@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfigParser;
 import org.tamacat.httpd.config.ServiceUrl;
-import org.tamacat.servlet.test.TestServlet;
+import org.tamacat.servlet.test.SampleServlet;
 
 public class ServletContextImplTest {
 	
@@ -38,14 +38,14 @@ public class ServletContextImplTest {
 
 	@Test
 	public void testAddServlet() throws Exception {
-		context.addServlet("test", new TestServlet());
+		context.addServlet("test", new SampleServlet());
 		Servlet servlet = context.getServlet("test");
 		assertEquals("TestServlet", servlet.getServletInfo());
 	}
 
 	@Test
 	public void testRemoveServlet() throws Exception {
-		context.addServlet("test", new TestServlet());
+		context.addServlet("test", new SampleServlet());
 		Servlet servlet = context.getServlet("test");
 		assertEquals("TestServlet", servlet.getServletInfo());
 		
@@ -165,7 +165,7 @@ public class ServletContextImplTest {
 	
 	@Test
 	public void testGetNamedDispatcher() {
-		context.addServlet("test", new TestServlet());
+		context.addServlet("test", new SampleServlet());
 		assertNotNull(context.getNamedDispatcher("test"));
 	}
 
@@ -207,7 +207,8 @@ public class ServletContextImplTest {
 		Set<?> set = context.getResourcePaths("/");
 		assertNotNull(set);
 		for (Object path : set) {
-			System.out.println(path);
+			//System.out.println(path);
+			assertNotNull(path);
 		}
 	}
 
@@ -219,9 +220,9 @@ public class ServletContextImplTest {
 
 	@Test
 	public void testGetServlet() throws Exception {
-		context.addServlet("test1", new TestServlet());
-		context.addServlet("test2", new TestServlet());
-		context.addServlet("test3", new TestServlet());
+		context.addServlet("test1", new SampleServlet());
+		context.addServlet("test2", new SampleServlet());
+		context.addServlet("test3", new SampleServlet());
 		
 		Servlet servlet1 = context.getServlet("test1");
 		assertEquals("TestServlet", servlet1.getServletInfo());
@@ -244,9 +245,9 @@ public class ServletContextImplTest {
 
 	@Test
 	public void testGetServletNames() {
-		context.addServlet("test1", new TestServlet());
-		context.addServlet("test2", new TestServlet());
-		context.addServlet("test3", new TestServlet());
+		context.addServlet("test1", new SampleServlet());
+		context.addServlet("test2", new SampleServlet());
+		context.addServlet("test3", new SampleServlet());
 		
 		Enumeration<?> names = context.getServletNames();
 		assertEquals("test1", names.nextElement());
@@ -257,9 +258,9 @@ public class ServletContextImplTest {
 
 	@Test
 	public void testGetServlets() {
-		context.addServlet("test1", new TestServlet());
-		context.addServlet("test2", new TestServlet());
-		context.addServlet("test3", new TestServlet());
+		context.addServlet("test1", new SampleServlet());
+		context.addServlet("test2", new SampleServlet());
+		context.addServlet("test3", new SampleServlet());
 		
 		Enumeration<?> servlets = context.getServlets();
 		assertEquals("TestServlet", ((Servlet)servlets.nextElement()).getServletInfo());

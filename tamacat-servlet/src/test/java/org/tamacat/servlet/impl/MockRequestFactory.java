@@ -8,7 +8,7 @@ import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfigParser;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.servlet.HttpCoreServletRequest;
-import org.tamacat.servlet.test.TestServlet;
+import org.tamacat.servlet.test.SampleServlet;
 
 public class MockRequestFactory {
 	
@@ -32,7 +32,7 @@ public class MockRequestFactory {
 				+ "/src/test/resources" + contextPath, serviceUrl);
 		
 		ServletUrl servletUrl = new ServletUrl();
-		servletUrl.setServlet(new TestServlet());
+		servletUrl.setServlet(new SampleServlet());
 		servletUrl.setUrlPattern("/index.html");
 		servletUrl.setServletName("TestServlet");
 		

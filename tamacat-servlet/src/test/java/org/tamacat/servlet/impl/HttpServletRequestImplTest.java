@@ -30,7 +30,7 @@ import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceConfigParser;
 import org.tamacat.httpd.config.ServiceUrl;
-import org.tamacat.servlet.test.TestServlet;
+import org.tamacat.servlet.test.SampleServlet;
 
 public class HttpServletRequestImplTest {
 
@@ -52,7 +52,7 @@ public class HttpServletRequestImplTest {
 				+ "/src/test/resources/test", serviceUrl);
 		
 		ServletUrl servletUrl = new ServletUrl();
-		servletUrl.setServlet(new TestServlet());
+		servletUrl.setServlet(new SampleServlet());
 		servletUrl.setUrlPattern("/index.html");
 		servletUrl.setServletName("TestServlet");
 		request = (HttpServletRequestImpl)

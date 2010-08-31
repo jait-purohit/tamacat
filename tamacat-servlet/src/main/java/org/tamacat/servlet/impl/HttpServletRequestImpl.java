@@ -150,7 +150,7 @@ public class HttpServletRequestImpl implements HttpCoreServletRequest {
 			int index = 0;
 			@Override
 			public boolean hasMoreElements() {
-				return headers.length >= index;
+				return headers.length > index;
 			}
 
 			@Override
