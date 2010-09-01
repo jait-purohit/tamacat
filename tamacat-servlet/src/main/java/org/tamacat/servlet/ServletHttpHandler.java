@@ -21,6 +21,7 @@ import org.apache.http.protocol.UriPatternMatcher;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.core.AbstractHttpHandler;
 import org.tamacat.httpd.core.LocalFileHttpHandler;
+import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.servlet.impl.HttpServletObjectFactory;
 import org.tamacat.servlet.impl.ServletConfigImpl;
 import org.tamacat.servlet.impl.ServletContextImpl;
@@ -29,6 +30,7 @@ import org.tamacat.servlet.xml.ServletDefine;
 import org.tamacat.servlet.xml.ServletMapping;
 import org.tamacat.servlet.xml.WebApp;
 import org.tamacat.servlet.xml.WebXmlParser;
+import org.tamacat.servlet.xml.WelcomeFileList;
 import org.tamacat.util.ClassUtils;
 
 public class ServletHttpHandler extends AbstractHttpHandler {
@@ -39,6 +41,7 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 	private HttpCoreServletContext servletContext;
 	private HttpServletObjectFactory factory;
 	private LocalFileHttpHandler localHandler;
+	private WelcomeFileList welcomeFileList;
 	
 	private Map<String, HttpServlet> servlets = new LinkedHashMap<String, HttpServlet>();
 	private UriPatternMatcher matcher = new UriPatternMatcher();
@@ -56,7 +59,11 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 	
 	@Override
 	public void doRequest(HttpRequest request, HttpResponse response, HttpContext context) {
-		ServletUrl servletUrl = getServletUrl(request.getRequestLine().getUri());
+		String path = RequestUtils.getRequestPath(request);
+		if (path.endsWith("/") && welcomeFileList.size() > 0) {
+			path = path + welcomeFileList.get(0);
+		}
+		ServletUrl servletUrl = getServletUrl(path);
 		if (servletUrl != null) {
 			HttpServlet servlet = servletUrl.getServlet();
 			HttpCoreServletRequest req
@@ -83,6 +90,10 @@ public class ServletHttpHandler extends AbstractHttpHandler {
 		String xml = docsRoot + "/" + WEB_XML_PATH;
 		loader = new WebAppClassLoader(docsRoot, getClassLoader());
 		WebApp webapp = new WebXmlParser(loader).parse(xml);
+		welcomeFileList = webapp.getWelcomeFileList();
+		for (String welcomeFile : welcomeFileList) {
+			localHandler.setWelcomeFile(welcomeFile);
+		}
 		createServletInstances(webapp);
 	}
 	
