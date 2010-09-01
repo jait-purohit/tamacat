@@ -15,6 +15,8 @@ public class WebApp {
 	private List<ServletDefine> servlets = new ArrayList<ServletDefine>();
 	private List<ServletMapping> servletMappings = new ArrayList<ServletMapping>();
 	
+	private WelcomeFileList welcomeFileList = new WelcomeFileList();
+
 	public Map<String, String> getContextParams() {
 		return contextParams;
 	}
@@ -57,5 +59,13 @@ public class WebApp {
 	
 	public void setServletMappings(List<ServletMapping> servletMappings) {
 		this.servletMappings = servletMappings;
+	}
+	
+	public WelcomeFileList getWelcomeFileList() {
+		return welcomeFileList;
+	}
+
+	public void setWelcomeFileList(WelcomeFileList welcomeFileList) {
+		this.welcomeFileList = welcomeFileList;
 	}
 }

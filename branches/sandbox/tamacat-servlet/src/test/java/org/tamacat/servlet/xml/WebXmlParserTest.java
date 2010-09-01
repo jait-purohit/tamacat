@@ -33,7 +33,7 @@ public class WebXmlParserTest {
 
 		//servlet
 		List<ServletDefine> servlets = webapp.getServlets();
-		assertEquals(2, servlets.size());
+		assertEquals(3, servlets.size());
 		//servlet-1
 		ServletDefine servletDefine1 = servlets.get(0);
 		assertEquals("test1", servletDefine1.getServletName());
@@ -50,7 +50,7 @@ public class WebXmlParserTest {
 		
 		//servlet-mapping
 		List<ServletMapping> mappings = webapp.getServletMapping();
-		assertEquals(3, mappings.size());
+		assertEquals(4, mappings.size());
 		//mapping-1
 		assertEquals("test1", mappings.get(0).getServletName());
 		assertEquals("/test1/*", mappings.get(0).getUrlPattern());
@@ -62,5 +62,10 @@ public class WebXmlParserTest {
 		//mapping-3
 		assertEquals("test2", mappings.get(2).getServletName());
 		assertEquals("*.do", mappings.get(2).getUrlPattern());
+		
+		//welcome-file-list
+		WelcomeFileList welcomeFileList = webapp.getWelcomeFileList();
+		assertEquals("index.html", welcomeFileList.get(0));
+		assertEquals("index.do", welcomeFileList.get(1));
 	}
 }

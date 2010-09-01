@@ -14,6 +14,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.tamacat.servlet.xml.WebXmlParser.WebXml.Tag;
 import org.tamacat.util.ClassUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -50,6 +51,7 @@ public class WebXmlParser {
 			loadContextParames();
 			loadServlets();
 			loadServletMappings();
+			loadWelcomeFileList();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -89,15 +91,22 @@ public class WebXmlParser {
 		webApp.setServletMappings(mappings);
 	}
 	
+	void loadWelcomeFileList() throws XPathExpressionException {
+		XPathExpression expr = xpath.compile("//web-app/welcome-file-list/node()");
+		NodeList nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+		WelcomeFileList welcomeFileList = getWelcomeFileList(nodes);
+		webApp.setWelcomeFileList(welcomeFileList);
+	}
+	
 	Map<String,String> getParams(NodeList nodes) {
 		Map<String,String> params = new LinkedHashMap<String, String>();
 		String name = null;
 		for (int i=0; i<nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			String tagName = node.getNodeName();
-			if ("param-name".equals(tagName)) {
+			if (Tag.param_name.equals(tagName)) {
 				name = node.getTextContent();
-			} else if ("param-value".equals(tagName)) {
+			} else if (Tag.param_value.equals(tagName)) {
 				String value = node.getTextContent();
 				if (name != null) {
 					params.put(name, value);
@@ -114,17 +123,17 @@ public class WebXmlParser {
 		for (int i=0; i<nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			String tagName = node.getNodeName();
-			if ("servlet-name".equals(tagName)) {
+			if (Tag.servlet_name.equals(tagName)) {
 				if (define != null) {
 					defines.add(define);
 				}
 				define = new ServletDefine();
 				String servletName = node.getTextContent();
 				define.setServletName(servletName);
-			} else if ("servlet-class".equals(tagName)) {
+			} else if (Tag.servlet_class.equals(tagName)) {
 				String servletClass = node.getTextContent();
 				define.setServletClass(servletClass);
-			} else if ("init-param".equals(tagName)) {
+			} else if (Tag.init_param.equals(tagName)) {
 				NodeList nlist = node.getChildNodes();
 				Map<String,String> params = getParams(nlist);
 				define.setInitParams(params);
@@ -142,9 +151,9 @@ public class WebXmlParser {
 		for (int i=0; i<nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			String tagName = node.getNodeName();
-			if ("servlet-name".equals(tagName)) {
+			if (Tag.servlet_name.equals(tagName)) {
 				servletName = node.getTextContent();
-			} else if ("url-pattern".equals(tagName)) {
+			} else if (Tag.url_pattern.equals(tagName)) {
 				String urlPattern = node.getTextContent();
 				ServletMapping mapping = new ServletMapping();
 				mapping.setServletName(servletName);
@@ -153,6 +162,18 @@ public class WebXmlParser {
 			}
 		}
 		return mappings;
+	}
+	
+	WelcomeFileList getWelcomeFileList(NodeList nodes) {
+		WelcomeFileList list = new WelcomeFileList();
+		for (int i=0; i<nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			String tagName = node.getNodeName();
+			if (Tag.welcome_file.equals(tagName)) {
+				list.add(node.getTextContent());
+			}
+		}
+		return list;
 	}
 	
 	static class WebXml {
@@ -167,7 +188,11 @@ public class WebXmlParser {
 			servlet("servlet"),
 			servlet_mapping("servlet-mapping"),
 			servlet_name("servlet-name"),
-			url_pattern("url-pattern");
+			servlet_class("servlet-class"),
+			url_pattern("url-pattern"),
+			welcome_file_list("welcome-file-list"),
+			welcome_file("welcome-file")
+			;
 			
 			private final String tagName;
 			Tag(String tagName) {
@@ -176,6 +201,10 @@ public class WebXmlParser {
 			
 			public String getTagName() {
 				return tagName;
+			}
+			
+			public boolean equals(String target) {
+				return tagName.equals(target);
 			}
 		}
 	}
