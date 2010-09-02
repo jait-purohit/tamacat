@@ -84,7 +84,9 @@ public class ClasspathGroovyLoader implements GroovyLoader {
 				cache.put(fileName, groovyFile);
 				return groovyFile.getType();
 			} else {
-				return null;
+				//parent
+				if (name.endsWith(".groovy")) return null;
+				else return loader.getParent().loadClass(name);
 			}
 		} catch (Exception e) {
 			throw new GroovyClassLoaderException(e);
@@ -102,7 +104,7 @@ public class ClasspathGroovyLoader implements GroovyLoader {
 	
 	public synchronized void recompile(String className) {
 		try {
-			String fileName = className.replace(".","/") + ".groovy";
+			String fileName = className.replace(".groovy","").replace(".","/") + ".groovy";
 			parseClass(fileName);
 		} catch (Exception e) {
 			throw new GroovyClassLoaderException(e);
@@ -123,6 +125,7 @@ public class ClasspathGroovyLoader implements GroovyLoader {
      */
 	private GroovyFile parseClass(String fileName, GroovyFile groovyFile) throws Exception {
 		URL url = ClassUtils.getURL(fileName);
+		if (url == null) return groovyFile;
 		File file = getGroovyFile(url);
 		long lastModified = file.lastModified();
 		if (groovyFile == null || groovyFile.isUpdate(lastModified)) {
@@ -157,8 +160,8 @@ public class ClasspathGroovyLoader implements GroovyLoader {
 	}
 	
 	private String getFileName(String name) {
-		String fileName = name.lastIndexOf(".groovy")>=0? name : name + ".groovy";
-		fileName = fileName.replaceFirst("^/", "");
+		//String fileName = name.lastIndexOf(".groovy")>=0? name : name + ".groovy";
+		String fileName = name.replaceFirst("^/", "");
 		return fileName;
 	}
 }
