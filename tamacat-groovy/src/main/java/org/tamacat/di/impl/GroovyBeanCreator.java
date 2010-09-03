@@ -200,7 +200,6 @@ public class GroovyBeanCreator {
      */
     private <T> T setterInjection(T instance, BeanDefineParam prop, BeanDefine def, Object param) {
         Method method = prop.getMethod();
-        System.out.println(instance);
         if (method == null) {
         	Class<?> p = param != null ? param.getClass() : null;
             method = ClassUtils.searchMethod(def.getType(), prop.getName(), p);
