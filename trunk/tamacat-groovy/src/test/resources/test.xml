@@ -190,4 +190,9 @@
       <value>Test</value>
     </property>
   </bean>
+  <bean id="GroovySampleCore2" class="org.tamacat.groovy.test.GroovySampleCore" type="groovy">
+    <property name="coreName">
+      <value>Test</value>
+    </property>
+  </bean>
 </beans>
