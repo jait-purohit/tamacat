@@ -25,14 +25,14 @@ public class ClasspathGroovyLoaderTest {
 
 	@Test
 	public void testGetGroovy() {
-		Class<?> c = loader.loadClass("/org/tamacat/groovy/test/Groovy_test");
+		Class<?> c = loader.loadClass("/org/tamacat/groovy/test/Groovy_test.groovy");
 		assertNotNull(c);
 		assertEquals("org.tamacat.groovy.test.Groovy_test", c.getName());
 	}
 	
 	@Test
 	public void testRecompile() {
-		Class<?> c = loader.loadClass("/org/tamacat/groovy/test/Groovy_test");
+		Class<?> c = loader.loadClass("/org/tamacat/groovy/test/Groovy_test.groovy");
 		assertNotNull(c);
 		assertEquals("org.tamacat.groovy.test.Groovy_test", c.getName());
 		loader.recompile();

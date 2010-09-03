@@ -67,5 +67,4 @@ public class GroovySpringBeanDefineHandler extends SpringBeanDefineHandler {
             bean.setInitMethod(initMethod);
         }
 	}
-
 }

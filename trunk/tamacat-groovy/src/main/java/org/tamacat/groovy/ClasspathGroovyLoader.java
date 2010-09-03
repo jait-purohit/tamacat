@@ -160,8 +160,11 @@ public class ClasspathGroovyLoader implements GroovyLoader {
 	}
 	
 	private String getFileName(String name) {
-		//String fileName = name.lastIndexOf(".groovy")>=0? name : name + ".groovy";
 		String fileName = name.replaceFirst("^/", "");
+		if (name.endsWith(".groovy")) {
+			fileName = fileName.replaceFirst(".groovy$", "").replace(".", "/") + ".groovy";
+		}
+		//String fileName = name.lastIndexOf(".groovy")>=0? name : name + ".groovy";
 		return fileName;
 	}
 }
