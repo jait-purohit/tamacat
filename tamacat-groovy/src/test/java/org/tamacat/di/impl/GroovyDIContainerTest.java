@@ -313,9 +313,17 @@ public class GroovyDIContainerTest extends TestCase {
     }
     
     @Test
-    public void testGetGroovySampleCore2() {
+    public void testGetGroovySampleCore() {
         di = new GroovyDIContainer("test.xml", loader);
         Core core = (Core) di.getBean("GroovySampleCore");
+        assertNotNull(core);
+        assertTrue(core instanceof Core);
+    }
+    
+    @Test
+    public void testGetGroovySampleCore2() {
+        di = new GroovyDIContainer("test.xml", loader);
+        Core core = (Core) di.getBean("GroovySampleCore2");
         assertNotNull(core);
         assertTrue(core instanceof Core);
     }
