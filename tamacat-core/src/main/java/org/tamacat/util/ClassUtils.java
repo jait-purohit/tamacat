@@ -90,6 +90,7 @@ public abstract class ClassUtils {
                 }
             }
         }
+
         if (instance == null) {
         	throw new ResourceNotFoundException("Class Not found: " + type);
         }

@@ -12,4 +12,10 @@ public interface DIContainer {
     public <T>T getBean(String id, Class<T> type);
 
     public <T>List<T> getInstanceOfType(Class<T> type);
+    
+    void removeBean(String id);
+    
+    <T>void removeBeans(Class<T> type);
+    
+    //public <T>T addBean(String id, Class<T> type);
 }

@@ -22,42 +22,42 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefineHandler {
 
     /* Name of XML Tag or Attribute. */
-    private static final String BEAN = "bean";
-    private static final String ID = "id";
-    private static final String NAME = "name";
-    private static final String CLASS = "class";
-    private static final String SINGLETON = "singleton";
-    private static final String SCOPE = "scope";
-    private static final String PROPERTY = "property";
-    private static final String REF = "ref";    
-    private static final String VALUE = "value";
-    private static final String NULL = "null";
-    private static final String TYPE = "type";
-    private static final String CONSTRUCTOR_ARG = "constructor-arg";
-    private static final String INIT_METHOD = "init-method";
-    private static final String FACTORY_METHOD = "factory-method";
+	protected static final String BEAN = "bean";
+	protected static final String ID = "id";
+	protected static final String NAME = "name";
+	protected static final String CLASS = "class";
+	protected static final String SINGLETON = "singleton";
+    protected static final String SCOPE = "scope";
+    protected static final String PROPERTY = "property";
+    protected static final String REF = "ref";    
+    protected static final String VALUE = "value";
+    protected static final String NULL = "null";
+    protected static final String TYPE = "type";
+    protected static final String CONSTRUCTOR_ARG = "constructor-arg";
+    protected static final String INIT_METHOD = "init-method";
+    protected static final String FACTORY_METHOD = "factory-method";
     //any method support. (original)
-    private static final String METHOD_MODE = "mode";
+    protected static final String METHOD_MODE = "mode";
     
-    private Log logger;
-    private BeanDefineMap beans;
+    protected Log logger;
+    protected BeanDefineMap beans;
 
     private BeanConstructorParam arg;
-    private BeanDefineParam ref;
-    private BeanDefineParam prop;
+    protected BeanDefineParam ref;
+    protected BeanDefineParam prop;
 
-    private BeanDefine bean;
-    private String nameBuffer;
-    private String modeBuffer;
-    private StringBuilder valueBuffer;
+    protected BeanDefine bean;
+    protected String nameBuffer;
+    protected String modeBuffer;
+    protected StringBuilder valueBuffer;
 
-    private boolean isConstrctor;
-    private ClassLoader loader;
-    private String xml;
+    protected boolean isConstrctor;
+    protected ClassLoader loader;
+    protected String xml;
 
     public SpringBeanDefineHandler() {}
 
-    void setLogger(Log logger) {
+    protected void setLogger(Log logger) {
         this.logger = logger;
     }
 
@@ -66,7 +66,7 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
         this.loader = loader;
     }
 
-    ClassLoader getClassLoader() {
+    protected ClassLoader getClassLoader() {
         return (loader != null) ?
             loader : getClass().getClassLoader();
     }
@@ -103,7 +103,7 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
         clear();
     }
 
-    void clear() {
+    protected void clear() {
         arg = null;
         ref = null;
         prop = null;
@@ -136,7 +136,7 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
         }
     }
 
-    void startBean(Attributes attributes) {
+    protected void startBean(Attributes attributes) {
         bean = new BeanDefine();
         bean.setId(attributes.getValue(ID));
         bean.setAliases(attributes.getValue(NAME));
@@ -147,7 +147,7 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
 
         String scope = attributes.getValue(SCOPE);
         if (scope != null) {
-            bean.setSingleton("singleton".equalsIgnoreCase(scope));
+            bean.setSingleton(SINGLETON.equalsIgnoreCase(scope));
         } else {
         	String singleton = attributes.getValue(SINGLETON);
         	if (singleton != null) {
@@ -160,18 +160,18 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
         }
     }
 
-    //void startInnerBean(Attributes attributes) {
+    //protected void startInnerBean(Attributes attributes) {
     //	bean = new DefaultBeanDefine();
     //	bean.setType(ClassUtils.forName(attributes.getValue(CLASS), getClassLoader()));
     //	bean.setSingleton(false); //always scoped as prototype
     //}
 
-    void startProperty(Attributes attributes) {
+    protected void startProperty(Attributes attributes) {
         nameBuffer = attributes.getValue(NAME);
         modeBuffer = attributes.getValue(METHOD_MODE);
     }
 
-    void startRef(Attributes attributes) {
+    protected void startRef(Attributes attributes) {
         if (isConstrctor) {
             arg.setRefId(attributes.getValue(BEAN));
         } else {
@@ -181,13 +181,13 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
         }
     }
 
-    void startConstructorArg(Attributes attributes) {
+    protected void startConstructorArg(Attributes attributes) {
         arg = new BeanConstructorParam();
         arg.setType(attributes.getValue(TYPE));
         isConstrctor = true;
     }
 
-    void startValue(Attributes attributes) {
+    protected void startValue(Attributes attributes) {
         prop = new BeanDefineParam();
     }
 
@@ -217,21 +217,21 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
         }
     }
 
-    void endBean() {
+    protected void endBean() {
         beans.put(bean.getId(), bean);
     }
 
-    //void endInnerBean() {
+    //protected void endInnerBean() {
     //	beans.put(bean.getId(), bean);
     //}
 
-    void endProperty() {
+    protected void endProperty() {
         if (prop != null) { //<ref bean="xxx" />
         	bean.getPropertyList().add(prop);
         }
     }
 
-    void endValue() {
+    protected void endValue() {
         if (isConstrctor) {
             arg.setValue(getValueBuffer());
         } else {
@@ -239,12 +239,13 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
             prop.setValue(getValueBuffer());
         }
     }
-    void endConstructorArg() {
+    
+    protected void endConstructorArg() {
         bean.addConstructorArgs(arg);
         isConstrctor = false;
     }
 
-    void endRef() {
+    protected void endRef() {
         if (isConstrctor) {
             //none.
         } else {
@@ -252,7 +253,7 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
         }
     }
 
-    void endNull() {
+    protected void endNull() {
         valueBuffer = null;
         if (isConstrctor) {
             arg.setValue(null);
