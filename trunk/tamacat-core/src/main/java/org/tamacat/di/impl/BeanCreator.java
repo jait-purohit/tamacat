@@ -26,9 +26,9 @@ public class BeanCreator {
     static final Map<String, BeanAdapter<Object>> beans
     	= new HashMap<String, BeanAdapter<Object>>();
 
-    private final BeanDefineMap defines;
+    protected final BeanDefineMap defines;
 
-    private final ClassLoader loader;
+    protected final ClassLoader loader;
 
     /**
      * Constructor for DIContainer
@@ -83,6 +83,22 @@ public class BeanCreator {
             }
         } else { //Prototype, always new instance.
             return (T) newInstance(def);
+        }
+    }
+    
+    public synchronized void removeBean(String id) {
+        defines.remove(id);
+        beans.remove(id);
+    }
+    
+    public synchronized <T>void removeBeans(Class<T> type) {
+        String[] keys = StringUtils.toStringArray(defines.keySet());
+        for (String key : keys) {
+        	BeanDefine def = defines.get(key);
+        	if (def.getType().equals(type)) {
+        		defines.remove(key);
+        		beans.remove(key);
+        	}
         }
     }
 
@@ -176,7 +192,7 @@ public class BeanCreator {
                 if (argsDef.get(i).getType() == null) {
                     isAutoTypes = true;
                 } else {
-                    argsTypes[i] = ClassUtils.forName(argsDef.get(i).getType(), loader);
+                    argsTypes[i] = loadClass(argsDef.get(i).getType());
                 }
             }
         }
@@ -186,6 +202,10 @@ public class BeanCreator {
         } else {
             return initializeInstance(def, ClassUtils.newInstance(def.getType(), argsTypes, args));
         }
+    }
+    
+    protected Class<?> loadClass(String name) {
+    	return ClassUtils.forName(name, getClassLoader());
     }
 
     /**

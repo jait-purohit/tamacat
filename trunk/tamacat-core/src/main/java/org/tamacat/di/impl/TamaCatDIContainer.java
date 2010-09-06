@@ -23,21 +23,21 @@ public class TamaCatDIContainer implements DIContainer {
     static final String PROPERTIES_FILE = "org.tamacat.di.DIContainer.properties";
     static final String BEAN_DEFINE_HANDLER_KEY = "DIContainerBeanDefineHandler";
     
-    private ClassLoader loader;
-    private BeanDefineHandler beanDefineHandler;
-    private BeanCreator creator;
-    private Properties props;
+    protected ClassLoader loader;
+    protected BeanDefineHandler beanDefineHandler;
+    protected BeanCreator creator;
+    protected Properties props;
 
     public TamaCatDIContainer(String xml) {
-        init(xml, null);
+        init(xml, getClassLoader());
     }
 
-    public TamaCatDIContainer(String xml, ClassLoader loader) {
-        init(xml, loader);
+    public TamaCatDIContainer(String xml, ClassLoader parent) {
+        init(xml, getClassLoader(parent));
     }
 
-    public TamaCatDIContainer(BeanDefineMap defines, ClassLoader loader) {
-    	init(defines, loader);
+    public TamaCatDIContainer(BeanDefineMap defines, ClassLoader parent) {
+    	init(defines, getClassLoader(parent));
     }
 
     @Override
@@ -48,6 +48,16 @@ public class TamaCatDIContainer implements DIContainer {
     @Override
 	public <T> T getBean(String id, Class<T> type) {
         return creator.getBean(id, type);
+    }
+    
+    @Override
+    public void removeBean(String id) {
+    	creator.removeBean(id);
+    }
+    
+    @Override
+    public <T>void removeBeans(Class<T> type) {
+    	creator.removeBeans(type);
     }
 
     @Override
@@ -71,18 +81,24 @@ public class TamaCatDIContainer implements DIContainer {
         out.println("-------------------------------------------");
     }
 
-    ClassLoader getClassLoader() {
-        return loader;
-    }
-
     void loadProperties() {
         props = PropertyUtils.getProperties(PROPERTIES_FILE, getClassLoader());
     }
 
-    ClassLoader loadClassLoader() {
-        return ClassUtils.getDefaultClassLoader();
+    protected ClassLoader getClassLoader() {
+    	if (loader == null) {
+    		loader = ClassUtils.getDefaultClassLoader();
+    	}
+    	return loader;
     }
-
+    
+    protected ClassLoader getClassLoader(ClassLoader parent) {
+    	if (loader == null) {
+    		loader = parent;
+    	}
+    	return loader;
+    }
+    
     BeanDefineHandler loadBeanDefineHandler() {
     	String className = props.getProperty(BEAN_DEFINE_HANDLER_KEY);
     	Class<?> handlerClass = null;
@@ -98,13 +114,11 @@ public class TamaCatDIContainer implements DIContainer {
     }
     
     private void init(String xml, ClassLoader loader) {
-        this.loader = (loader != null) ? loader : loadClassLoader();
         loadProperties();
         this.creator = new BeanCreator(load(xml), getClassLoader());
     }
     
     private void init(BeanDefineMap defines, ClassLoader loader) {
-        this.loader = (loader != null) ? loader : loadClassLoader();
         loadProperties();
         this.creator = new BeanCreator(defines, getClassLoader());
     }
