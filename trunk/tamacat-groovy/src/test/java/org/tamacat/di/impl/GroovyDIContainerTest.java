@@ -6,8 +6,6 @@ import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.tamacat.groovy.GroovyFactory;
-import org.tamacat.groovy.GroovyLoader;
 import org.tamacat.groovy.test.Core;
 import org.tamacat.groovy.test.DBCore;
 import org.tamacat.groovy.test.Param;
@@ -19,12 +17,12 @@ import org.tamacat.util.ResourceNotFoundException;
 
 public class GroovyDIContainerTest extends TestCase {
 
-    GroovyLoader loader;
+    ClassLoader loader;
     GroovyDIContainer di;
 
     @Before
     protected void setUp() {
-        loader = GroovyFactory.getGroovyLoader();
+        loader = ClassUtils.getDefaultClassLoader();
     }
 
     @Test

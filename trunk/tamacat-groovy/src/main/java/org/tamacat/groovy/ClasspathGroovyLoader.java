@@ -22,7 +22,7 @@ import org.tamacat.util.StringUtils;
 /**
  * <p>GroovyClassLoader find the Groovy script in CLASSPATH.
  */
-public class ClasspathGroovyLoader implements GroovyLoader {
+public class ClasspathGroovyLoader extends ClassLoader {
 	
 	static final String GROOVY_LOADER_CONFIG = "groovyloader.properties";
 	static final String CLASSLOADER_CONFIG = "org.tamacat.groovy.groovyloader.properties";

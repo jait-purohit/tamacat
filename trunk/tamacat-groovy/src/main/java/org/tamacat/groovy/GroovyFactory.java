@@ -10,7 +10,7 @@ public class GroovyFactory {
 
 	static final ClasspathGroovyLoader LOADER = new ClasspathGroovyLoader();
 	
-	public static GroovyLoader getGroovyLoader() {
+	public static ClassLoader getGroovyLoader() {
 		return LOADER;
 	}
 	
