@@ -9,18 +9,17 @@ import groovy.lang.GroovyClassLoader;
 import org.tamacat.di.define.BeanDefine;
 import org.tamacat.di.xml.SpringBeanDefineHandler;
 import org.tamacat.groovy.ClasspathGroovyLoader;
-import org.tamacat.groovy.GroovyLoader;
 import org.tamacat.util.ClassUtils;
 import org.xml.sax.Attributes;
 
 public class GroovySpringBeanDefineHandler extends SpringBeanDefineHandler {
     
-    protected GroovyLoader groovyLoader;
+    protected ClassLoader groovyLoader;
 
     public GroovySpringBeanDefineHandler() {
     }
 
-    public GroovySpringBeanDefineHandler(GroovyLoader groovyLoader) {
+    public GroovySpringBeanDefineHandler(ClassLoader groovyLoader) {
     	this.groovyLoader = groovyLoader;
     }
     
@@ -30,7 +29,7 @@ public class GroovySpringBeanDefineHandler extends SpringBeanDefineHandler {
     	groovyLoader = new ClasspathGroovyLoader(new GroovyClassLoader(loader));
     }
     
-    protected GroovyLoader getGroovyLoader() {
+    protected ClassLoader getGroovyLoader() {
     	if (groovyLoader == null) {
     		groovyLoader = new ClasspathGroovyLoader(new GroovyClassLoader(loader));
     	}
@@ -45,7 +44,10 @@ public class GroovySpringBeanDefineHandler extends SpringBeanDefineHandler {
         String type = attributes.getValue(CLASS);
         String groovy = attributes.getValue("type");
         if (groovy != null && "groovy".equalsIgnoreCase(groovy)) {
-        	bean.setType(getGroovyLoader().loadClass(type));
+        	try {
+        		bean.setType(getGroovyLoader().loadClass(type));
+        	} catch (ClassNotFoundException e) {
+        	}
         } else {
         	bean.setType(ClassUtils.forName(type, getClassLoader()));
         }
