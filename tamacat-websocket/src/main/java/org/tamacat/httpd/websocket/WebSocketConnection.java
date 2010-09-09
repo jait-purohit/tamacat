@@ -1,17 +1,20 @@
 package org.tamacat.httpd.websocket;
 
 import java.io.IOException;
-
-import org.apache.http.HttpConnection;
+import org.apache.http.HttpServerConnection;
+import org.tamacat.httpd.core.ServerHttpConnection;
 
 public class WebSocketConnection implements WebSocket.Outbound {
 
-	private final HttpConnection connection;
+	private final HttpServerConnection connection;
+	private WebSocket websocket;
+	
 	String key1;
 	String key2;
 	
-	WebSocketConnection(HttpConnection connection) {
+	WebSocketConnection(HttpServerConnection connection, WebSocket websocket) {
 		this.connection = connection;
+		this.websocket = websocket;
 	}
 	
     public void setHixieKeys(String key1,String key2) {
@@ -22,6 +25,12 @@ public class WebSocketConnection implements WebSocket.Outbound {
 	@Override
 	public void sendMessage(String data) throws IOException {
 		System.out.println("sendMessage");
+		if (connection instanceof ServerHttpConnection) {
+			WebSocketWorkerThread worker = new WebSocketWorkerThread(
+				(ServerHttpConnection)connection, websocket);
+			worker.start();
+            //disconnect();
+		}
 	}
 
 	@Override
@@ -54,4 +63,11 @@ public class WebSocketConnection implements WebSocket.Outbound {
 		return connection.isOpen();
 	}
 
+	public void flush() {
+		try {
+			connection.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

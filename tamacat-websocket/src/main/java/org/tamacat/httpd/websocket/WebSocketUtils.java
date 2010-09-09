@@ -4,9 +4,13 @@
  */
 package org.tamacat.httpd.websocket;
 
+import java.io.UnsupportedEncodingException;
+
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
+import org.apache.http.entity.StringEntity;
 import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.util.StringUtils;
 
@@ -74,5 +78,17 @@ public class WebSocketUtils {
 	
 	public static String getFrameData(String data) {
 		return beginFrame00 + data + endFrame;
+	}
+	
+    protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
+
+	public static HttpEntity getEntity(String html) {
+		try {
+			StringEntity entity = new StringEntity(html);
+			entity.setContentType(DEFAULT_CONTENT_TYPE);
+			return entity;
+		} catch (UnsupportedEncodingException e1) {
+			return null;
+		}
 	}
 }
