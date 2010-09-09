@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.lang.management.ManagementFactory;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.List;
@@ -154,9 +153,8 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
         while (!Thread.interrupted()) {
             try {
                 //socket accept -> execute WorkerThrad.
-                Socket insocket = serversocket.accept();
                 executors.execute(new WorkerThread(
-                	service, insocket, paramsBuilder.buildParams(), counter)
+                   	service, serversocket.accept(), paramsBuilder.buildParams(), counter)
                 );
             } catch (InterruptedIOException e) {
             	counter.error();
