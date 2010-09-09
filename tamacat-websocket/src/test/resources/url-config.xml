@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<service-config>
+  <!-- default -->
+  <service>
+    <url path="/ws/" type="normal" handler="WebServiceHandler" />
+    <url path="/" type="normal" handler="WebServiceHandler" />\
+  </service>
+</service-config>
