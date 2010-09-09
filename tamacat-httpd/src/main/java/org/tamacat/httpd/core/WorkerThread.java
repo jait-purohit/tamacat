@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 import org.apache.http.ConnectionClosedException;
-import org.apache.http.impl.DefaultHttpServerConnection;
+import org.apache.http.HttpServerConnection;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
@@ -26,8 +26,9 @@ public class WorkerThread extends Thread {
 	static final Log LOG = LogFactory.getLog(WorkerThread.class);
 	
     private HttpService service;
-    private DefaultHttpServerConnection conn;
+    private ServerHttpConnection conn;
     private PerformanceCounter counter;
+    private Socket insocket;
     
     /**
      * <p>Constructs with the specified {@link HttpService}.
@@ -40,17 +41,18 @@ public class WorkerThread extends Thread {
     		HttpService service, Socket insocket, 
     		HttpParams params, PerformanceCounter counter) throws IOException {
     	this.service = service;
-    	this.conn = new DefaultHttpServerConnection();
+    	this.insocket = insocket;
+    	this.conn = new ServerHttpConnection();
     	this.conn.bind(insocket, params);
     	this.counter = counter;
     }
     
     @Override
 	public void run() {
+    	counter.countUp();
+        HttpContext context = new BasicHttpContext(null);
     	try {
-        	counter.countUp();
         	LOG.trace("New connection thread");
-            HttpContext context = new BasicHttpContext(null);
             this.service.handleRequest(conn, context);
         } catch (ConnectionClosedException ex) {
         	LOG.debug("Client closed connection");
@@ -61,17 +63,24 @@ public class WorkerThread extends Thread {
         	LOG.error("Error: " + ex.getMessage());
         	LOG.trace(ExceptionUtils.getStackTrace(ex)); //debug
         } finally {
-        	shutdown();
+            if (context.getAttribute(
+            		HttpServerConnection.class.getName()
+            		+ ".__DO_NOT_CLOSED__") == null) {
+            	shutdown();
+            }
+            counter.countDown();
         }
     }
     
-    private void shutdown() {
+    public boolean isClosed() {
+    	return insocket.isClosed();
+    }
+    
+    public void shutdown() {
         try {
             conn.shutdown();
             conn.close();
         } catch (IOException ignore) {
-        } finally {
-        	counter.countDown();
         }
     }
 }
