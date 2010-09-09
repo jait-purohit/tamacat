@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+  <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" />
+  
+  <bean id="WebServiceHandler" 
+     class="org.tamacat.httpd.websocket.WebSocketHandler" singleton="false">
+    <property name="docsRoot">
+      <value>${server.home}/src/test/resources/htdocs</value>
+    </property>
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+  </bean>
+
+  
+  <bean id="VelocityHandler" 
+     class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
+    <property name="docsRoot">
+      <value>${server.home}/src/test/resources/htdocs</value>
+    </property>
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+  </bean>
+  <bean id="server"
+     class="org.tamacat.httpd.core.HttpEngine" singleton="false">
+  </bean>
+</beans>
