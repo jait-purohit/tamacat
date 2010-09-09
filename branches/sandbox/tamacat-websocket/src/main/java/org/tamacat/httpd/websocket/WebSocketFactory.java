@@ -16,7 +16,7 @@ public class WebSocketFactory {
 	public void upgrade(HttpRequest request, HttpResponse response, 
 			HttpContext context, WebSocket websocket, String protocol) {
 		HttpServerConnection conn = RequestUtils.getHttpServerConnection(context);
-		WebSocketConnection connection = new WebSocketConnection(conn);
+		WebSocketConnection connection = new WebSocketConnection(conn, websocket);
 		String host = HeaderUtils.getHeader(request, "Host");
 		String origin = checkOrigin(host, HeaderUtils.getHeader(request, "Origin"));
 		
@@ -30,8 +30,15 @@ public class WebSocketFactory {
 		} else {
 			WebSocketUtils.setResponseUpgradeHeader(response, origin, wsUrl, protocol);
 		}
-		
+        connection.flush();
+
         websocket.onOpen(connection);
+
+        context.setAttribute(
+        	HttpServerConnection.class.getName()
+        		+ ".__DO_NOT_CLOSED__", true);
+        
+        websocket.onMessage("test");
 	}
 	
     protected String checkOrigin(String host, String origin) {

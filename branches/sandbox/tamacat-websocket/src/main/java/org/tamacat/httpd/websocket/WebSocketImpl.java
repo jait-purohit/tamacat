@@ -16,7 +16,7 @@ public class WebSocketImpl implements WebSocket {
 	protected HttpResponse response;
 	protected String protocol;
 	protected ReadyState state;
-	protected Exception err;
+	protected Throwable err;
 	protected Outbound outbound;
 	
 	private static Set<WebSocketImpl> MEMBERS = new CopyOnWriteArraySet<WebSocketImpl>();
@@ -55,7 +55,8 @@ public class WebSocketImpl implements WebSocket {
 	}
 
 	@Override
-	public void onError() {
+	public void onError(Throwable err) {
+		this.err = err;
 		state = ReadyState.CLOSING;
 		System.out.println("onError()");
 		throw new WebSocketException(err);

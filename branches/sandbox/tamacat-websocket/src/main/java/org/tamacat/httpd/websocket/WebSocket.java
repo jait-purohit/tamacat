@@ -12,7 +12,7 @@ public interface WebSocket {
 	
 	void onOpen(Outbound outbound);
     void onMessage(String data);
-    void onError();
+    void onError(Throwable err);
     void onClose();
     
     //INVALID_STATE_ERR
