@@ -1,6 +1,9 @@
 package org.tamacat.httpd.websocket;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
+
 import org.apache.http.HttpServerConnection;
 import org.tamacat.httpd.core.ServerHttpConnection;
 
@@ -24,13 +27,14 @@ public class WebSocketConnection implements WebSocket.Outbound {
     
 	@Override
 	public void sendMessage(String data) throws IOException {
-		System.out.println("sendMessage");
-		if (connection instanceof ServerHttpConnection) {
-			WebSocketWorkerThread worker = new WebSocketWorkerThread(
-				(ServerHttpConnection)connection, websocket);
-			worker.start();
+		System.out.println("sendMessage: " + connection);
+//		if (connection instanceof ServerHttpConnection) {
+//			WebSocketWorkerThread worker = new WebSocketWorkerThread(
+//				(ServerHttpConnection)connection, websocket);
+//			worker.start();
             //disconnect();
-		}
+			send(data);
+//		}
 	}
 
 	@Override
@@ -49,6 +53,23 @@ public class WebSocketConnection implements WebSocket.Outbound {
 		System.out.println("sendMessage");
 	}
 
+	protected void send(String data) throws IOException {
+		if (connection instanceof ServerHttpConnection) {
+			Socket socket = ((ServerHttpConnection)connection).getSocket();
+			OutputStream out = socket.getOutputStream();
+			WebSocketUtils.getEntity(data).writeTo(out);
+		}
+	}
+	
+	@Override
+	public void connect() {
+		if (connection instanceof ServerHttpConnection) {
+			WebSocketWorkerThread worker = new WebSocketWorkerThread(
+				(ServerHttpConnection)connection, websocket);
+			worker.start();
+		}
+	}
+	
 	@Override
 	public void disconnect() {
 		try {

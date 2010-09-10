@@ -3,6 +3,6 @@
   <!-- default -->
   <service>
     <url path="/ws/" type="normal" handler="WebServiceHandler" />
-    <url path="/" type="normal" handler="WebServiceHandler" />\
+    <url path="/" type="normal" handler="WebServiceHandler" />
   </service>
 </service-config>

@@ -1,62 +1,59 @@
 ﻿var ws;
-function $(id){
-  return document.getElementById(id);
-}
-
-function onOpenWebSocket() {
-  $("send").addEventListener("click",sendMessage,false);
+var onOpenWebSocket = function() {
+  jQuery("#send").bind("click", sendMessage);
   dispMessage("connected");
-  //alert("onOpenWebSocket()");
-}
+};
 
-function onCloseWebSocket() {
-  $("send").removeEventListener("click",sendMessage,false);
+var onCloseWebSocket = function() {
+  jQuery("#send").unbind("click", sendMessage);
   dispMessage("disconnected");
-  //alert("onCloseWebSocket()");
-}
+};
 
-function onMessageWebSocket(event) {
+var onMessageWebSocket = function(event) {
   var msg = event.data;
-  if (msg == "") {
-      return;
+  if (msg != "") {
+    dispMessage(msg);
   }
-  dispMessage("> " + msg);
-  //alert("onMessageWebSocket");
-}
+};
 
-function onUnload() {
+var onUnload = function() {
   ws.close();
-}
+};
 
-function dispMessage(msg) {
-  var elem=document.createElement("div");
-  elem.appendChild(document.createTextNode(msg));
-  if ($("messages").hasChildNodes()) {
-    $("messages").insertBefore(elem,$("messages").firstChild);
-  } else {
-    $("messages").appendChild(elem);
+var dispMessage = function(msg) {
+  var user = jQuery("#user").val();
+  jQuery("#messages").append(user + "> " + msg + "<br />");
+};
+
+var sendMessage = function() {
+  var message = jQuery("#message").val();
+  if (message != "") {
+    ws.send(message);
+    jQuery("#message").val("");
   }
-}
+};
 
-function sendMessage() {
-  var message = $("message").value;
-  if (message == "") {
-      return;
-  }
-  ws.send(message);
-  $("message").value = "";
-}
-
-function initial() {
-  var protocol = (location.protocol == "https:")? "wss" : "ws";
-  var host = location.host;
-  var url = protocol + "://" + host + "/ws/";
-  ws=new WebSocket(url, 'sample');
-
+var initial = function() {
+  var protocol = "ws";
+  if (location.protocol == "https:") {protocol = "wss";}
+  var url = protocol + "://" + location.host + "/ws/";
+  ws  =new WebSocket(url, 'sample');
   ws.addEventListener("open", onOpenWebSocket, false);
   ws.addEventListener("close", onCloseWebSocket, false);
   ws.addEventListener("message", onMessageWebSocket, false);
-
   window.addEventListener("unload", onUnload, false);
-}
-window.addEventListener("load", initial, false);
+};
+
+jQuery(document).ready(function() {
+  window.addEventListener("load", initial, false);
+  jQuery("#switch").toggle(
+    function() {
+      jQuery("#switch").val("disconnect");
+      onOpenWebSocket();
+    },
+    function() {
+      jQuery("#switch").val("connect");
+      onCloseWebSocket();
+    }
+  );
+});

@@ -36,6 +36,7 @@ public class WebSocketImpl implements WebSocket {
 	@Override
 	public void onOpen(Outbound outbound) {
 		this.outbound = outbound;
+		this.outbound.connect();
 		state = ReadyState.OPEN;
 		MEMBERS.add(this);
 		System.out.println("onOpen()");
@@ -44,14 +45,19 @@ public class WebSocketImpl implements WebSocket {
 	@Override
 	public void onMessage(String data) {
 		state = ReadyState.CONNECTING;
-		System.out.println("onMessage()" + data);
+		System.out.println("onMessage() " + data);
 		for (WebSocketImpl ws : MEMBERS) {
 			try {
-				ws.outbound.sendMessage(data);
+				ws.getOutbound().sendMessage(data);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	@Override
+	public Outbound getOutbound() {
+		return outbound;
 	}
 
 	@Override
@@ -68,9 +74,6 @@ public class WebSocketImpl implements WebSocket {
 		MEMBERS.remove(this);
 		System.out.println("onClose()");
 	}
-	
-    static final byte[] start = {0x00};
-    static final byte[] end = {(byte)0xff};
 
 	public HttpRequest getHttpRequest() {
 		return request;
