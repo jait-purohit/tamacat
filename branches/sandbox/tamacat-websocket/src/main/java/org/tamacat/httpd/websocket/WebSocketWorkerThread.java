@@ -2,7 +2,6 @@ package org.tamacat.httpd.websocket;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -24,7 +23,7 @@ public class WebSocketWorkerThread extends Thread implements Thread.UncaughtExce
 		InputStream in;
 		try {
 			in = socket.getInputStream();
-			OutputStream out = socket.getOutputStream();
+			//OutputStream out = socket.getOutputStream();
         	int b = 0;
             while ((b = in.read()) == 0x00) {
                 byte[] buf = new byte[256];
@@ -32,13 +31,13 @@ public class WebSocketWorkerThread extends Thread implements Thread.UncaughtExce
                 while ((b = in.read()) != 0xFF) {
                     buf[index++] = (byte) b;
                 }
+   				String data = WebSocketUtils.getFrameData(
+       				new String(ArrayUtils.subarray(buf, 0, index),"UTF-8")
+       			);
                 //debug
                 System.out.println(this.getName() + ": " + new String(buf, 0, index,"UTF-8"));
-       			WebSocketUtils.getEntity(
-       				WebSocketUtils.getFrameData(
-       					new String(ArrayUtils.subarray(buf, 0, index),"UTF-8")
-       			    )
-       			).writeTo(out);
+                websocket.onMessage(data);
+       			//WebSocketUtils.getEntity(data).writeTo(out);
             }
         } catch (IOException e) {
             websocket.onError(e);

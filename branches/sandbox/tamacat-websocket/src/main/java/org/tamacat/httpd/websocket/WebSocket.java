@@ -15,6 +15,8 @@ public interface WebSocket {
     void onError(Throwable err);
     void onClose();
     
+    Outbound getOutbound();
+    
     //INVALID_STATE_ERR
     //SYNTAX_ERR
     public interface Outbound {
@@ -22,6 +24,7 @@ public interface WebSocket {
         void sendMessage(byte frame,String data) throws IOException;
         void sendMessage(byte frame,byte[] data) throws IOException;
         void sendMessage(byte frame,byte[] data, int offset, int length) throws IOException;
+        void connect();
         void disconnect();
         boolean isOpen();
     }

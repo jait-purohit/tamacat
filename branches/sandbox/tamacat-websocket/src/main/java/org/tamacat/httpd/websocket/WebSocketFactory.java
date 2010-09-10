@@ -36,9 +36,7 @@ public class WebSocketFactory {
 
         context.setAttribute(
         	HttpServerConnection.class.getName()
-        		+ ".__DO_NOT_CLOSED__", true);
-        
-        websocket.onMessage("test");
+        		+ ".__DO_NOT_CLOSED__", true);;
 	}
 	
     protected String checkOrigin(String host, String origin) {
