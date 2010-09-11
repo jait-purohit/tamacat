@@ -12,34 +12,37 @@ import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.core.VelocityHttpHandler;
 import org.tamacat.httpd.exception.HttpException;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public class WebSocketHandler extends VelocityHttpHandler {
+	
+	static final Log LOG = LogFactory.getLog(WebSocketHandler.class);
 	
 	@Override
 	protected void doRequest(HttpRequest request, HttpResponse response,
 			HttpContext context) throws HttpException, IOException {
 
 		if (WebSocketUtils.isWebSocket(request)) {
-			Header[] headers = request.getAllHeaders();
-			for (Header h : headers) {
-				System.out.println("[request]"+h);
+			if (LOG.isTraceEnabled()) {
+				Header[] headers = request.getAllHeaders();
+				for (Header h : headers) {
+					LOG.trace("[Request]"+h);
+				}
 			}
 			String protocol = WebSocketUtils.getWebSocketProtocol(request);
-			System.out.println("protocol=" + protocol);
 			WebSocket websocket = doWebSocketConnect(request, response, protocol);
 			if (websocket != null) {
-				System.out.println("websocket=" + websocket);
+				LOG.trace("websocket=" + websocket);
 
 				WebSocketFactory factory = new WebSocketFactory();
 				factory.upgrade(request, response, context, websocket, protocol);
 
-				//ResponseUtils.setEntity(
-				//	response, getEntity(WebSocketUtils.getFrameData("open")));
-				//EntityUtils.consume(response.getEntity());
-
-				Header[] resheaders = response.getAllHeaders();
-				for (Header h : resheaders) {
-					System.out.println("[response]"+h);
+				if (LOG.isTraceEnabled()) {
+					Header[] resheaders = response.getAllHeaders();
+					for (Header h : resheaders) {
+						LOG.trace("[Response]"+h);
+					}
 				}
 			}
 		} else {
@@ -49,6 +52,6 @@ public class WebSocketHandler extends VelocityHttpHandler {
     
 	protected WebSocket doWebSocketConnect(
 			HttpRequest request, HttpResponse response, String protocol) {
-		return new WebSocketImpl(request, response, protocol);
+		return new WebSocketImpl();
 	}
 }

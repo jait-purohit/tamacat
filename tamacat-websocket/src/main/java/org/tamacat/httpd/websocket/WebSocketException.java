@@ -8,11 +8,11 @@ public class WebSocketException extends RuntimeException {
 	
 	private static final long serialVersionUID = 1L;
 
-	public WebSocketException(Throwable arg0) {
-		super(arg0);
+	public WebSocketException(Throwable cause) {
+		super(cause);
 	}
 
-	public WebSocketException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
+	public WebSocketException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }
