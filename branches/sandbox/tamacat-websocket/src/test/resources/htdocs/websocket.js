@@ -1,12 +1,17 @@
 ﻿var ws;
 var onOpenWebSocket = function() {
   jQuery("#send").bind("click", sendMessage);
-  dispMessage("connected");
+  var user = jQuery("#user").val();
+  //dispMessage("connected [" + user + "]");
+  ws.send("connected [" + user + "]");
 };
 
 var onCloseWebSocket = function() {
+  var user = jQuery("#user").val();
+  //displayMessage("disconnected [" + user + "]");
+  ws.send("disconnected [" + user + "]");
+  ws.close();
   jQuery("#send").unbind("click", sendMessage);
-  dispMessage("disconnected");
 };
 
 var onMessageWebSocket = function(event) {
@@ -21,14 +26,14 @@ var onUnload = function() {
 };
 
 var dispMessage = function(msg) {
-  var user = jQuery("#user").val();
-  jQuery("#messages").append(user + "> " + msg + "<br />");
+  jQuery("#messages").append(msg + "<br />");
 };
 
 var sendMessage = function() {
+  var user = jQuery("#user").val();
   var message = jQuery("#message").val();
   if (message != "") {
-    ws.send(message);
+    ws.send(user + "> " + message);
     jQuery("#message").val("");
   }
 };
@@ -37,8 +42,8 @@ var initial = function() {
   var protocol = "ws";
   if (location.protocol == "https:") {protocol = "wss";}
   var url = protocol + "://" + location.host + "/ws/";
-  ws  =new WebSocket(url, 'sample');
-  ws.addEventListener("open", onOpenWebSocket, false);
+  ws = new WebSocket(url, "sample");
+  //ws.addEventListener("open", onOpenWebSocket, false);
   ws.addEventListener("close", onCloseWebSocket, false);
   ws.addEventListener("message", onMessageWebSocket, false);
   window.addEventListener("unload", onUnload, false);

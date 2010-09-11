@@ -6,11 +6,15 @@ import java.net.Socket;
 
 import org.apache.http.HttpServerConnection;
 import org.tamacat.httpd.core.ServerHttpConnection;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public class WebSocketConnection implements WebSocket.Outbound {
 
+	static final Log LOG = LogFactory.getLog(WebSocketConnection.class);
+	
 	private final HttpServerConnection connection;
-	private WebSocket websocket;
+	private final WebSocket websocket;
 	
 	String key1;
 	String key2;
@@ -27,33 +31,28 @@ public class WebSocketConnection implements WebSocket.Outbound {
     
 	@Override
 	public void sendMessage(String data) throws IOException {
-		System.out.println("sendMessage: " + connection);
-//		if (connection instanceof ServerHttpConnection) {
-//			WebSocketWorkerThread worker = new WebSocketWorkerThread(
-//				(ServerHttpConnection)connection, websocket);
-//			worker.start();
-            //disconnect();
-			send(data);
-//		}
+		LOG.debug("sendMessage: " + connection);
+		send(data);
 	}
 
 	@Override
 	public void sendMessage(byte frame, String data) throws IOException {
-		System.out.println("sendMessage");
+		LOG.debug("sendMessage");
 	}
 
 	@Override
 	public void sendMessage(byte frame, byte[] data) throws IOException {
-		System.out.println("sendMessage");
+		LOG.debug("sendMessage");
 	}
 
 	@Override
 	public void sendMessage(byte frame, byte[] data, int offset, int length)
 			throws IOException {
-		System.out.println("sendMessage");
+		LOG.debug("sendMessage");
 	}
 
 	protected void send(String data) throws IOException {
+		LOG.trace("send [" + data + "]");
 		if (connection instanceof ServerHttpConnection) {
 			Socket socket = ((ServerHttpConnection)connection).getSocket();
 			OutputStream out = socket.getOutputStream();
@@ -67,15 +66,18 @@ public class WebSocketConnection implements WebSocket.Outbound {
 			WebSocketWorkerThread worker = new WebSocketWorkerThread(
 				(ServerHttpConnection)connection, websocket);
 			worker.start();
+			LOG.debug("start worker: " + worker.getName());
 		}
 	}
 	
 	@Override
 	public void disconnect() {
 		try {
-			connection.close();
+			connection.shutdown();
+			LOG.debug("disconnect");
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.warn(e.getMessage());
+			LOG.trace(e);
 		}
 	}
 
@@ -88,7 +90,8 @@ public class WebSocketConnection implements WebSocket.Outbound {
 		try {
 			connection.flush();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.warn(e.getMessage());
+			LOG.trace(e);
 		}
 	}
 }

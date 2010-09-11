@@ -7,7 +7,7 @@ package org.tamacat.httpd.websocket;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Validator {
+public class WebSocketValidator {
 
 	static final char LF = '\n'; //0x0a;
 	static final char CR = '\r'; //0x0d;

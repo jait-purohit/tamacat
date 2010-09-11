@@ -6,24 +6,28 @@ import java.net.Socket;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.tamacat.httpd.core.ServerHttpConnection;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
+import org.tamacat.util.IOUtils;
 
 public class WebSocketWorkerThread extends Thread implements Thread.UncaughtExceptionHandler {
 
-	ServerHttpConnection conn;
-	WebSocket websocket;
+	static final Log LOG = LogFactory.getLog(WebSocketWorkerThread.class);
 	
-	WebSocketWorkerThread(ServerHttpConnection conn, WebSocket websocket) {
+	protected final ServerHttpConnection conn;
+	protected final WebSocket websocket;
+	
+	public WebSocketWorkerThread(ServerHttpConnection conn, WebSocket websocket) {
 		this.conn = conn;
 		this.websocket = websocket;
-		conn.setSocketTimeout(10*60*1000);
 	}
 	
 	public void run() {
-		Socket socket = conn.getSocket();
-		InputStream in;
+		InputStream in = null;
 		try {
+			conn.setSocketTimeout(10*60*1000);
+			Socket socket = conn.getSocket();
 			in = socket.getInputStream();
-			//OutputStream out = socket.getOutputStream();
         	int b = 0;
             while ((b = in.read()) == 0x00) {
                 byte[] buf = new byte[256];
@@ -34,13 +38,14 @@ public class WebSocketWorkerThread extends Thread implements Thread.UncaughtExce
    				String data = WebSocketUtils.getFrameData(
        				new String(ArrayUtils.subarray(buf, 0, index),"UTF-8")
        			);
-                //debug
-                System.out.println(this.getName() + ": " + new String(buf, 0, index,"UTF-8"));
+   				WebSocketValidator.validate(data);
+                LOG.trace(this.getName() + ": " + new String(buf, 0, index,"UTF-8"));
                 websocket.onMessage(data);
-       			//WebSocketUtils.getEntity(data).writeTo(out);
             }
         } catch (IOException e) {
             websocket.onError(e);
+        } finally {
+        	IOUtils.close(in);
         }
 	}
 	

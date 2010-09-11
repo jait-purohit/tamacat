@@ -8,25 +8,17 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
 public class WebSocketImpl implements WebSocket {
-	protected HttpRequest request;
-	protected HttpResponse response;
-	protected String protocol;
-	protected ReadyState state;
+	static final Log LOG = LogFactory.getLog(WebSocketImpl.class);
+	
+	protected ReadyState state = ReadyState.CLOSED;
 	protected Throwable err;
 	protected Outbound outbound;
 	
 	private static Set<WebSocketImpl> MEMBERS = new CopyOnWriteArraySet<WebSocketImpl>();
-
-	  
-	public WebSocketImpl(HttpRequest request, HttpResponse response, String protocol) {
-		this.request = request;
-		this.response = response;
-		this.protocol = protocol;
-	}
 	
 	@Override
 	public ReadyState getReadyState() {
@@ -35,24 +27,32 @@ public class WebSocketImpl implements WebSocket {
 
 	@Override
 	public void onOpen(Outbound outbound) {
+		if (state != ReadyState.CLOSED) {
+			throw new IllegalStateException("WebSocket already opend.");
+		}
 		this.outbound = outbound;
 		this.outbound.connect();
 		state = ReadyState.OPEN;
 		MEMBERS.add(this);
-		System.out.println("onOpen()");
+		LOG.debug("onOpen()");
 	}
 
 	@Override
 	public void onMessage(String data) {
+		if (state == ReadyState.CLOSED) {
+			throw new IllegalStateException("WebSocket already closed.");
+		}
 		state = ReadyState.CONNECTING;
-		System.out.println("onMessage() " + data);
+		LOG.debug("onMessage() " + data);
 		for (WebSocketImpl ws : MEMBERS) {
 			try {
 				ws.getOutbound().sendMessage(data);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOG.warn(e.getMessage());
+				LOG.trace(e);
 			}
 		}
+		state = ReadyState.OPEN;
 	}
 	
 	@Override
@@ -63,23 +63,19 @@ public class WebSocketImpl implements WebSocket {
 	@Override
 	public void onError(Throwable err) {
 		this.err = err;
-		state = ReadyState.CLOSING;
-		System.out.println("onError()");
+		LOG.debug("onError()");
 		throw new WebSocketException(err);
 	}
 
 	@Override
 	public void onClose() {
 		state = ReadyState.CLOSING;
-		MEMBERS.remove(this);
-		System.out.println("onClose()");
-	}
-
-	public HttpRequest getHttpRequest() {
-		return request;
-	}
-	
-	public String getProtocol() {
-		return protocol;
+		try {
+			getOutbound().disconnect();
+		} finally {
+			MEMBERS.remove(this);
+		}
+		LOG.debug("onClose()");
+		state = ReadyState.CLOSED;
 	}
 }
