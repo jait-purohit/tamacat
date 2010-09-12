@@ -25,7 +25,9 @@ public class WebSocketFactory {
 		if (WebSocketUtils.isSecureWebSocket(request)) {
             String key1 = HeaderUtils.getHeader(request, "Sec-WebSocket-Key1");
             String key2 = HeaderUtils.getHeader(request, "Sec-WebSocket-Key2");
-            connection.setHixieKeys(key1, key2);
+            //connection.setHixieKeys(key1, key2);
+            byte[] md5 = WebSocketUtils.getSecureWebSocketMD5Response(key1,key2);
+            //response.addHeader("", new String(md5));
             WebSocketUtils.setSecureResponseUpgradeHeader(response, origin, wsUrl, protocol);
 		} else {
 			WebSocketUtils.setResponseUpgradeHeader(response, origin, wsUrl, protocol);

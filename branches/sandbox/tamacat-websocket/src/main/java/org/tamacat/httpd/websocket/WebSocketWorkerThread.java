@@ -1,8 +1,8 @@
 package org.tamacat.httpd.websocket;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.tamacat.httpd.core.ServerHttpConnection;
@@ -42,7 +42,11 @@ public class WebSocketWorkerThread extends Thread implements Thread.UncaughtExce
                 LOG.trace(this.getName() + ": " + new String(buf, 0, index,"UTF-8"));
                 websocket.onMessage(data);
             }
-        } catch (IOException e) {
+        } catch (SocketTimeoutException e) {
+        	LOG.debug(e.getMessage());
+        	websocket.onClose();
+        } catch (Exception e) {
+        	LOG.debug(e.getMessage());
             websocket.onError(e);
         } finally {
         	IOUtils.close(in);

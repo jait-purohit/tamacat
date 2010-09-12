@@ -3,9 +3,11 @@ package org.tamacat.httpd.websocket;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.http.HttpServerConnection;
 import org.tamacat.httpd.core.ServerHttpConnection;
+import org.tamacat.httpd.core.ThreadExecutorFactory;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
@@ -15,7 +17,10 @@ public class WebSocketConnection implements WebSocket.Outbound {
 	
 	private final HttpServerConnection connection;
 	private final WebSocket websocket;
-	
+    private ExecutorService executors;
+    private String threadName = "WebSocket";
+    private int maxThreads = 100;
+    
 	String key1;
 	String key2;
 	
@@ -63,10 +68,10 @@ public class WebSocketConnection implements WebSocket.Outbound {
 	@Override
 	public void connect() {
 		if (connection instanceof ServerHttpConnection) {
-			WebSocketWorkerThread worker = new WebSocketWorkerThread(
-				(ServerHttpConnection)connection, websocket);
-			worker.start();
-			LOG.debug("start worker: " + worker.getName());
+			executors = new ThreadExecutorFactory(threadName).getExecutorService(maxThreads);
+			executors.execute(new WebSocketWorkerThread(
+				(ServerHttpConnection)connection, websocket)
+			);
 		}
 	}
 	
