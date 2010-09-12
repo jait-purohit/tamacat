@@ -14,7 +14,7 @@ import org.tamacat.log.LogFactory;
 public class WebSocketImpl implements WebSocket {
 	static final Log LOG = LogFactory.getLog(WebSocketImpl.class);
 	
-	protected ReadyState state = ReadyState.CLOSED;
+	protected ReadyState state = ReadyState.CONNECTING;
 	protected Throwable err;
 	protected Outbound outbound;
 	
@@ -27,7 +27,7 @@ public class WebSocketImpl implements WebSocket {
 
 	@Override
 	public void onOpen(Outbound outbound) {
-		if (state != ReadyState.CLOSED) {
+		if (state == ReadyState.OPEN) {
 			throw new IllegalStateException("WebSocket already opend.");
 		}
 		this.outbound = outbound;
@@ -39,10 +39,9 @@ public class WebSocketImpl implements WebSocket {
 
 	@Override
 	public void onMessage(String data) {
-		if (state == ReadyState.CLOSED) {
+		if (state != ReadyState.OPEN) {
 			throw new IllegalStateException("WebSocket already closed.");
 		}
-		state = ReadyState.CONNECTING;
 		LOG.debug("onMessage() " + data);
 		for (WebSocketImpl ws : MEMBERS) {
 			try {
@@ -52,7 +51,6 @@ public class WebSocketImpl implements WebSocket {
 				LOG.trace(e);
 			}
 		}
-		state = ReadyState.OPEN;
 	}
 	
 	@Override
