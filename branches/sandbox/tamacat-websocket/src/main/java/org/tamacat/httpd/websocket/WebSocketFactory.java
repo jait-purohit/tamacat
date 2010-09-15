@@ -1,5 +1,7 @@
 package org.tamacat.httpd.websocket;
 
+import java.io.IOException;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpServerConnection;
@@ -25,10 +27,25 @@ public class WebSocketFactory {
 		if (WebSocketUtils.isSecureWebSocket(request)) {
             String key1 = HeaderUtils.getHeader(request, "Sec-WebSocket-Key1");
             String key2 = HeaderUtils.getHeader(request, "Sec-WebSocket-Key2");
+            byte[] key3 = connection.getKey3();
+            if (key3 == null) {
+            	throw new IllegalStateException(
+            		"WebSocket handshake error. Invalid request body.");
+            }
+            //HttpEntity entity = RequestUtils.getEntity(request);
+            System.out.println("key3=" + new String(key3));
             //connection.setHixieKeys(key1, key2);
-            byte[] md5 = WebSocketUtils.getSecureWebSocketMD5Response(key1,key2);
-            //response.addHeader("", new String(md5));
+            
+            byte[] md5 = WebSocketUtils.getSecureWebSocketMD5Response(key1,key2,key3);
+
+            //response.setEntity(WebSocketUtils.getEntity(new String(md5)));
             WebSocketUtils.setSecureResponseUpgradeHeader(response, origin, wsUrl, protocol);
+            try {
+				connection.send(new String(md5));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			WebSocketUtils.setResponseUpgradeHeader(response, origin, wsUrl, protocol);
 		}

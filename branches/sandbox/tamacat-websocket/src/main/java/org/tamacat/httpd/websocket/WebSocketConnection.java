@@ -1,6 +1,7 @@
 package org.tamacat.httpd.websocket;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -23,6 +24,7 @@ public class WebSocketConnection implements WebSocket.Outbound {
     
 	String key1;
 	String key2;
+	String key3;
 	
 	WebSocketConnection(HttpServerConnection connection, WebSocket websocket) {
 		this.connection = connection;
@@ -32,6 +34,26 @@ public class WebSocketConnection implements WebSocket.Outbound {
     public void setHixieKeys(String key1,String key2) {
         this.key1 = key1;
         this.key2 = key2;
+    }
+    
+    public byte[] getKey3() {
+		if (key3 == null && connection instanceof ServerHttpConnection) {
+			Socket socket = ((ServerHttpConnection)connection).getSocket();
+			try {
+				InputStream in = socket.getInputStream();
+				int index = 0;
+	            int ch;
+	            byte[] buf = new byte[8];
+	            while ((ch = in.read()) != -1) {
+	                buf[index++] = (byte)ch;
+	                if (index >= 8) break;
+				}
+				return buf;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
     }
     
 	@Override
@@ -56,7 +78,7 @@ public class WebSocketConnection implements WebSocket.Outbound {
 		LOG.debug("sendMessage");
 	}
 
-	protected void send(String data) throws IOException {
+	public void send(String data) throws IOException {
 		LOG.trace("send [" + data + "]");
 		if (connection instanceof ServerHttpConnection) {
 			Socket socket = ((ServerHttpConnection)connection).getSocket();

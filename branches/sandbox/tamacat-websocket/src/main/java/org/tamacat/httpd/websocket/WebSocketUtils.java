@@ -61,7 +61,7 @@ public class WebSocketUtils {
 			response.addHeader("WebSocket-Protocol", protocol);
 		}
 		response.setStatusLine(HttpVersion.HTTP_1_1, 101);
-		response.setReasonPhrase("WebSocket Protocol Handshake");
+		response.setReasonPhrase("Web Socket Protocol Handshake");
 	}
 	
 	//for Draft-76
@@ -76,7 +76,7 @@ public class WebSocketUtils {
 		}
 		
 		response.setStatusLine(HttpVersion.HTTP_1_1, 101);
-		response.setReasonPhrase("Web Socket Protocol Handshake");
+		response.setReasonPhrase("WebSocket Protocol Handshake");
 	}
 	
 	public static String getFrameData(String data) {
@@ -96,12 +96,11 @@ public class WebSocketUtils {
 	}
 	
 	public static byte[] getSecureWebSocketMD5Response(
-			String key1, String key2) {
+			String key1, String key2, byte[] key3) {
 		long k1 = hixieCrypt(key1);
 		long k2 = hixieCrypt(key2);
-		byte[] key3 = new byte[] {
-			0x47, 0x30, 0x22, 0x2D, 0x5A, 0x3F, 0x47, 0x58
-		};
+        //System.out.println(Long.toHexString(k1));
+        //System.out.println(Long.toHexString(k2));
         MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("MD5");
@@ -118,6 +117,7 @@ public class WebSocketUtils {
 			for (int i = 0; i < 8; i++) {
 				fodder[8 + i] = key3[i];
 			}
+			//System.out.println(new String(fodder));
 			md.update(fodder);
 			byte[] result = md.digest();
 			return result;
@@ -136,6 +136,6 @@ public class WebSocketUtils {
 				spaces++;
 			}
 		}
-		return spaces > 0 ? number / spaces : 0;
+		return spaces > 0 ? (number / spaces) : 0;
 	}
 }

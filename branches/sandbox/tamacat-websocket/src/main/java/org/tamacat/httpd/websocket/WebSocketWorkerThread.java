@@ -8,7 +8,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.tamacat.httpd.core.ServerHttpConnection;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
-import org.tamacat.util.IOUtils;
 
 public class WebSocketWorkerThread extends Thread implements Thread.UncaughtExceptionHandler {
 
@@ -48,8 +47,6 @@ public class WebSocketWorkerThread extends Thread implements Thread.UncaughtExce
         } catch (Exception e) {
         	LOG.debug(e.getMessage());
             websocket.onError(e);
-        } finally {
-        	IOUtils.close(in);
         }
 	}
 	
