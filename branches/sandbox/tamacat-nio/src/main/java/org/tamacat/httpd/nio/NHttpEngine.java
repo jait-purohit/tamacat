@@ -22,7 +22,6 @@ import javax.management.remote.JMXServiceURL;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.impl.nio.DefaultServerIOEventDispatch;
 import org.apache.http.impl.nio.reactor.DefaultListeningIOReactor;
 import org.apache.http.nio.protocol.NHttpRequestHandler;
 import org.apache.http.nio.protocol.NHttpRequestHandlerRegistry;
@@ -119,21 +118,12 @@ public class NHttpEngine implements BasicHttpMonitor {
 	public void start() {
 		//Initalize engine.
 		init();
-//		try {
-//			//setup the server port. 
-//			int port = serverConfig.getPort();
-//			if (serverConfig.useHttps()) {					
-//				serversocket = createSecureServerSocket(port);
-//			} else {
-//				serversocket = new ServerSocket(port);
-//			}
-//		} catch (IOException e) {
-//			throw new RuntimeException(e);
-//		}
         
         IOEventDispatch ioEventDispatch
-        	= new DefaultServerIOEventDispatch(service, paramsBuilder.buildParams());
-        service.setEventListener(new LoggingEventListener());
+        	= new DefaultIoEventDispatch(service, paramsBuilder.buildParams());
+        	//= new DefaultServerIOEventDispatch(service, paramsBuilder.buildParams());
+
+        //service.setEventListener(new LoggingEventListener());
         
         try {
 	        ListeningIOReactor listeningIOReactor
@@ -148,7 +138,7 @@ public class NHttpEngine implements BasicHttpMonitor {
         	LOG.error(e.getMessage());
         } catch (IOException e) {
         	counter.error();
-        	LOG.error(e.getMessage());
+        	LOG.error(e.getMessage(), e.getCause());
         } catch (Exception e) {
         	counter.error();
         	LOG.error(e.getMessage(), e);

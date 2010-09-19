@@ -6,6 +6,7 @@ package org.tamacat.httpd.nio;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.Properties;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -14,12 +15,14 @@ import org.apache.http.HttpStatus;
 import org.apache.http.nio.entity.NFileEntity;
 import org.apache.http.nio.entity.NStringEntity;
 import org.apache.http.protocol.HttpContext;
+import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityListingsPage;
 import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.PropertyUtils;
 
 /**
  * <p>The {@link HttpHandler} for local file access.
@@ -28,7 +31,16 @@ public class LocalFileHttpHandler extends AbstractNHttpHandler {
 
 	static final Log LOG = LogFactory.getLog(LocalFileHttpHandler.class);
 	protected String welcomeFile = "index.html";
+	private VelocityListingsPage listingPage;
 	protected boolean listings;
+	protected Properties props;
+	
+	@Override
+    public void setServiceUrl(ServiceUrl serviceUrl) {
+    	super.setServiceUrl(serviceUrl);
+		props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
+		listingPage = new VelocityListingsPage(props);
+	}
 	
 	/**
 	 * <p>Set the welcome file.
@@ -56,6 +68,10 @@ public class LocalFileHttpHandler extends AbstractNHttpHandler {
 		}
 	}
 	
+	public void setListingsPage(String listingsPage) {
+		listingPage.setListingsPage(listingsPage);
+	}
+	
 	protected boolean useDirectoryListings() {
 		if (listings && welcomeFile == null) {
 			return true;
@@ -79,8 +95,8 @@ public class LocalFileHttpHandler extends AbstractNHttpHandler {
 		///// 403 FORBIDDEN /////
 		else if (!file.canRead() || file.isDirectory()) {
 			if (file.isDirectory() && useDirectoryListings()) {
-				VelocityListingsPage page = new VelocityListingsPage();
-				String html = page.getListingsPage(request, response, file);
+				String html = listingPage.getListingsPage(
+						request, response, file);
 				response.setStatusCode(HttpStatus.SC_OK);
 			    ResponseUtils.setEntity(response, getEntity(html));
 			} else {

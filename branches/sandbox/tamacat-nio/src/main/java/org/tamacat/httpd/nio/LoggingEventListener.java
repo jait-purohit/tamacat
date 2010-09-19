@@ -34,6 +34,7 @@ public class LoggingEventListener implements EventListener {
 	@Override
 	public void fatalIOException(IOException ex, NHttpConnection conn) {
         LOG.error("I/O error: " + ex.getMessage());
+        ex.printStackTrace();
 	}
 
 	@Override
