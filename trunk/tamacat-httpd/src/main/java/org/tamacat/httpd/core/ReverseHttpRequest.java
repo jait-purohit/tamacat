@@ -70,7 +70,7 @@ public class ReverseHttpRequest extends BasicHttpRequest {
 	}
 	
 	//rewrite Host Header
-	private void rewriteHostHeader(HttpRequest request, HttpContext context) {
+	protected void rewriteHostHeader(HttpRequest request, HttpContext context) {
         Header[] hostHeaders = request.getHeaders(HTTP.TARGET_HOST);
         for (Header hostHeader : hostHeaders) {
         	String value = hostHeader.getValue();

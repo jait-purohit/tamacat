@@ -67,6 +67,8 @@ public class WorkerThread extends Thread {
             		HttpServerConnection.class.getName()
             		+ ".__DO_NOT_CLOSED__") == null) {
             	shutdown();
+            } else {
+            	conn.setWebSocket(true);
             }
             counter.countDown();
         }
