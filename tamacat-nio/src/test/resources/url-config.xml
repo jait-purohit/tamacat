@@ -2,11 +2,10 @@
 <service-config>
   <service>
     <url path="/" type="normal" handler="DefaultHandler" />
-    <!--
     <url path="/test2/" type="reverse" handler="ReverseHandler">
       <reverse>http://localhost:8080/test/</reverse>
     </url>
-    -->
+
     <url path="/web/" type="normal" handler="VelocityHandler" />
     <!--
     <url path="/api/" type="normal" handler="WebServiceHandler" />

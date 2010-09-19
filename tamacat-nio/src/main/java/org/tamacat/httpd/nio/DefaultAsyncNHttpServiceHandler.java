@@ -12,7 +12,6 @@ import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.nio.NHttpServerConnection;
 import org.apache.http.nio.protocol.AsyncNHttpServiceHandler;
 import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpProcessor;
 import org.tamacat.log.Log;
@@ -35,21 +34,24 @@ public class DefaultAsyncNHttpServiceHandler extends AsyncNHttpServiceHandler {
         );
 	}
     
-//	@Override
-//    public void requestReceived(final NHttpServerConnection conn) {
-//		LOG.info("#requestReceived() >> " + conn.getHttpRequest().getRequestLine().getUri());
-//		super.requestReceived(conn);
-//	}
+	@Override
+    public void requestReceived(final NHttpServerConnection conn) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("#requestReceived() >> " + conn.getHttpRequest().getRequestLine().getUri());
+		}
+		super.requestReceived(conn);
+	}
 	
     @Override
     protected void responseComplete(HttpResponse response, HttpContext context) {
+    	LOG.trace("response complete");
         //System.out.println("#responseComplete()");
-        NHttpServerConnection conn
-        	= (NHttpServerConnection)context.getAttribute(ExecutionContext.HTTP_CONNECTION);
-        try {
-			if (conn != null) conn.shutdown();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//        NHttpServerConnection conn
+//        	= (NHttpServerConnection)context.getAttribute(ExecutionContext.HTTP_CONNECTION);
+//        try {
+//			if (conn != null) conn.shutdown();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
     }
 }

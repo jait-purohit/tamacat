@@ -66,20 +66,23 @@ public abstract class AbstractNHttpHandler implements NHttpHandler {
 		}
     }
 
-	protected VelocityErrorPage errorPage = new VelocityErrorPage();
+	protected VelocityErrorPage errorPage;
     protected ServiceUrl serviceUrl;
     protected String docsRoot;
     
     protected List<HttpFilter> filters = new ArrayList<HttpFilter>();
     protected List<RequestFilter> requestFilters = new ArrayList<RequestFilter>();
     protected List<ResponseFilter> responseFilters = new ArrayList<ResponseFilter>();
-    
+    protected ClassLoader loader;
+
 	@Override
     public void setServiceUrl(ServiceUrl serviceUrl) {
     	this.serviceUrl = serviceUrl;
     	for (HttpFilter filter : filters) {
     		filter.init(serviceUrl);
     	}
+    	Properties props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
+    	errorPage = new VelocityErrorPage(props);
     }
     
 	@Override
@@ -105,14 +108,14 @@ public abstract class AbstractNHttpHandler implements NHttpHandler {
     public void handle(final HttpRequest request, final HttpResponse response,
             final NHttpResponseTrigger trigger, final HttpContext context)
         throws HttpException, IOException {
-        new Thread() {
-            
-            @Override
-            public void run() {
-        		RequestUtils.setParameters(request, context, "UTF-8");
+//        new Thread() {
+//            
+//            @Override
+//            public void run() {
 				try {
+	        		RequestUtils.setParameters(request, context, "UTF-8");
 					for (RequestFilter filter : requestFilters) {
-						filter.doFilter(request, response, context, serviceUrl);
+						filter.doFilter(request, response, context);
 					}
 					doRequest(request, response, context);
 				} catch (Exception e) {
@@ -122,13 +125,13 @@ public abstract class AbstractNHttpHandler implements NHttpHandler {
 					}
 				} finally {
 					for (ResponseFilter filter : responseFilters) {
-						filter.afterResponse(request, response, context, serviceUrl);
+						filter.afterResponse(request, response, context);
 					}
 					// Submit response immediately for simplicity
 			        trigger.submitResponse(response);
 				}
-            }
-        }.start();
+//            }
+//        }.start();
 	}
 	
 	/**
@@ -140,11 +143,11 @@ public abstract class AbstractNHttpHandler implements NHttpHandler {
 	 * @param e
 	 */
 	protected void handleException(HttpRequest request, HttpResponse response, Exception e) {
-		//e.printStackTrace();
 		String html = null;
 		if (e instanceof HttpException) {
 			html = errorPage.getErrorPage(request, response, (HttpException)e);
 		} else {
+			e.printStackTrace();
 			html = errorPage.getErrorPage(request, response,
 					new ServiceUnavailableException(e));
 		}
@@ -216,5 +219,13 @@ public abstract class AbstractNHttpHandler implements NHttpHandler {
     	} catch (UnsupportedEncodingException e) {
     		return uri;
     	}
+    }
+    
+    public void setClassLoader(ClassLoader loader) {
+    	this.loader = loader;
+    }
+    
+    public ClassLoader getClassLoader() {
+    	return loader != null ? loader : getClass().getClassLoader();
     }
 }
