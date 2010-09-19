@@ -15,6 +15,7 @@ import java.net.URLDecoder;
 import java.util.Set;
 
 import org.apache.http.Header;
+import org.apache.http.HttpConnection;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpInetConnection;
@@ -71,9 +72,7 @@ public class RequestUtils {
 				}
 			}
 		}
-		Header contentType = request.getFirstHeader(HTTP.CONTENT_TYPE);
-		if (contentType != null
-		  && CONTENT_TYPE_FORM_URLENCODED.equalsIgnoreCase(contentType.getValue())) {
+		if (isEntityEnclosingRequest(request)) {
 			HttpEntity entity = getEntity(request);
 			if (entity != null) {
 				InputStream in = null;
@@ -128,8 +127,8 @@ public class RequestUtils {
 		return params != null ? params.getParameterNames() : null;
 	}
 	
-	public static HttpServerConnection getHttpServerConnection(HttpContext context) {
-		return (HttpServerConnection) context.getAttribute(ExecutionContext.HTTP_CONNECTION);
+	public static HttpConnection getHttpConnection(HttpContext context) {
+		return (HttpConnection) context.getAttribute(ExecutionContext.HTTP_CONNECTION);
 	}
 	
 	/**
@@ -194,7 +193,7 @@ public class RequestUtils {
 			}
 			port = url.getServerConfig().getPort();
 			if (context != null) {
-			HttpServerConnection con = getHttpServerConnection(context);
+			HttpConnection con = getHttpConnection(context);
 				if (con instanceof HttpInetConnection) {
 					port = ((HttpInetConnection)con).getLocalPort();
 					InetAddress addr = ((HttpInetConnection)con).getLocalAddress();
