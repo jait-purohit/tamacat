@@ -21,6 +21,6 @@ public class NHttpd_test {
 		if (di == null) throw new IllegalArgumentException(config + " is not found.");
 		NHttpEngine server = di.getBean("nserver", NHttpEngine.class);
 		if (server == null) throw new IllegalArgumentException();
-		server.start();
+		server.startHttpd();
 	}
 }
