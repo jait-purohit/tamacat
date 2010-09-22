@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.http.HttpServerConnection;
+import org.apache.http.HttpConnection;
 import org.tamacat.httpd.core.ServerHttpConnection;
 import org.tamacat.httpd.core.ThreadExecutorFactory;
 import org.tamacat.log.Log;
@@ -16,7 +16,7 @@ public class WebSocketConnection implements WebSocket.Outbound {
 
 	static final Log LOG = LogFactory.getLog(WebSocketConnection.class);
 	
-	private final HttpServerConnection connection;
+	private final HttpConnection connection;
 	private final WebSocket websocket;
     private ExecutorService executors;
     private String threadName = "WebSocket";
@@ -26,7 +26,7 @@ public class WebSocketConnection implements WebSocket.Outbound {
 	String key2;
 	String key3;
 	
-	WebSocketConnection(HttpServerConnection connection, WebSocket websocket) {
+	WebSocketConnection(HttpConnection connection, WebSocket websocket) {
 		this.connection = connection;
 		this.websocket = websocket;
 	}
@@ -113,12 +113,12 @@ public class WebSocketConnection implements WebSocket.Outbound {
 		return connection.isOpen();
 	}
 
-	public void flush() {
-		try {
-			connection.flush();
-		} catch (IOException e) {
-			LOG.warn(e.getMessage());
-			LOG.trace(e);
-		}
-	}
+//	public void flush() {
+//		try {
+//			connection.flush();
+//		} catch (IOException e) {
+//			LOG.warn(e.getMessage());
+//			LOG.trace(e);
+//		}
+//	}
 }
