@@ -49,7 +49,7 @@ import org.tamacat.util.StringUtils;
 /**
  * <p>It is implements of the multi thread server.
  */
-public class NHttpEngine implements BasicHttpMonitor {
+public class NHttpEngine implements BasicHttpMonitor, Runnable {
 
 	static final Log LOG = LogFactory.getLog(NHttpEngine.class);
 
@@ -115,7 +115,7 @@ public class NHttpEngine implements BasicHttpMonitor {
 	/**
 	 * <p>Start the http server.
 	 */
-	public void start() {
+	public void startHttpd() {
 		//Initalize engine.
 		init();
         
@@ -143,6 +143,11 @@ public class NHttpEngine implements BasicHttpMonitor {
         	counter.error();
         	LOG.error(e.getMessage(), e);
         }
+	}
+	
+	@Override
+	public void run() {
+		startHttpd();
 	}
 	
 	/**
