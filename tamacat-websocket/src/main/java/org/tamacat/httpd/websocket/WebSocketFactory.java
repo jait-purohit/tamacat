@@ -2,6 +2,7 @@ package org.tamacat.httpd.websocket;
 
 import java.io.IOException;
 
+import org.apache.http.HttpConnection;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpServerConnection;
@@ -17,7 +18,7 @@ public class WebSocketFactory {
 	//Origin: http://127.0.0.1
 	public void upgrade(HttpRequest request, HttpResponse response, 
 			HttpContext context, WebSocket websocket, String protocol) {
-		HttpServerConnection conn = RequestUtils.getHttpServerConnection(context);
+		HttpConnection conn = RequestUtils.getHttpConnection(context);
 		WebSocketConnection connection = new WebSocketConnection(conn, websocket);
 		String host = HeaderUtils.getHeader(request, "Host");
 		String origin = checkOrigin(host, HeaderUtils.getHeader(request, "Origin"));
@@ -25,6 +26,7 @@ public class WebSocketFactory {
 		String uri = request.getRequestLine().getUri();
 		String wsUrl = "ws://" + host + uri;
 		if (WebSocketUtils.isSecureWebSocket(request)) {
+			
             String key1 = HeaderUtils.getHeader(request, "Sec-WebSocket-Key1");
             String key2 = HeaderUtils.getHeader(request, "Sec-WebSocket-Key2");
             byte[] key3 = connection.getKey3();
@@ -49,7 +51,7 @@ public class WebSocketFactory {
 		} else {
 			WebSocketUtils.setResponseUpgradeHeader(response, origin, wsUrl, protocol);
 		}
-        connection.flush();
+        //connection.flush();
 
         websocket.onOpen(connection);
 

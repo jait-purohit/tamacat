@@ -3,7 +3,7 @@
   <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" />
   
   <bean id="WebServiceHandler" 
-     class="org.tamacat.httpd.websocket.WebSocketNHttpHandler" singleton="false">
+     class="org.tamacat.httpd.websocket.WebSocketHandler" singleton="false">
     <property name="docsRoot">
       <value>${server.home}/src/test/resources/htdocs</value>
     </property>
@@ -13,7 +13,7 @@
   </bean>
 
   <bean id="VelocityHandler" 
-     class="org.tamacat.httpd.nio.VelocityHttpHandler" singleton="false">
+     class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
     <property name="docsRoot">
       <value>${server.home}/src/test/resources/htdocs</value>
     </property>
@@ -23,10 +23,10 @@
   </bean>
   
   <bean id="ReverseHandler"
-     class="org.tamacat.httpd.nio.ReverseProxyHandler" singleton="false">
+     class="org.tamacat.httpd.core.ReverseProxyHandler" singleton="false">
   </bean>
   
   <bean id="server"
-     class="org.tamacat.httpd.nio.NHttpEngine" singleton="false">
+     class="org.tamacat.httpd.core.HttpEngine" singleton="false">
   </bean>
 </beans>

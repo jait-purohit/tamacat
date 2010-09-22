@@ -12,6 +12,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.core.VelocityHttpHandler;
 import org.tamacat.httpd.exception.HttpException;
+import org.tamacat.httpd.filter.RequestFilter;
+import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
@@ -20,10 +22,29 @@ public class WebSocketHandler extends VelocityHttpHandler {
 	static final Log LOG = LogFactory.getLog(WebSocketHandler.class);
 	
 	@Override
+	public void handle(HttpRequest request, HttpResponse response, 
+			HttpContext context) {
+		try {
+			for (RequestFilter filter : requestFilters) {
+				filter.doFilter(request, response, context);
+			}
+			doRequest(request, response, context);
+		} catch (Exception e) {
+			LOG.trace(e.getMessage());
+			handleException(request, response, e);
+		} finally {
+			for (ResponseFilter filter : responseFilters) {
+				filter.afterResponse(request, response, context);
+			}
+		}
+	}
+	
+	@Override
 	protected void doRequest(HttpRequest request, HttpResponse response,
 			HttpContext context) throws HttpException, IOException {
 
 		if (WebSocketUtils.isWebSocket(request)) {
+			
 			if (LOG.isTraceEnabled()) {
 				Header[] headers = request.getAllHeaders();
 				for (Header h : headers) {
@@ -46,7 +67,7 @@ public class WebSocketHandler extends VelocityHttpHandler {
 				}
 			}
 		} else {
-			super.doRequest(request, response, context);
+			//super.doRequest(request, response, context);
 		}
 	}
     
