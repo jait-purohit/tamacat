@@ -108,6 +108,13 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 				logoutAction(sessionId);
 				return;
 			} else if (isFreeAccessExtensions(uri)) {
+				Session session = SessionManager.getInstance().getSession(sessionId, false);
+				if (session != null) {
+					remoteUser = (String) session.getAttribute(sessionUsernameKey);
+					if (remoteUser != null) {
+						context.setAttribute(remoteUserKey, remoteUser);
+					}
+				}
 				return; //skip by this filter.
 			} else if (request.getRequestLine().getUri().endsWith(loginActionUrl)) {
 				//login check
@@ -126,7 +133,9 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 				remoteUser = (String) session.getAttribute(sessionUsernameKey);
 				if (remoteUser == null) { //invalid session.
 					throw new UnauthorizedException();
-				} else if (uri.endsWith(logoutActionUrl)) {
+				}
+				context.setAttribute(remoteUserKey, remoteUser);
+				if (uri.endsWith(logoutActionUrl)) {
 					//logout -> session delete -> login page.
 					logoutAction(sessionId);
 					//force login page.
