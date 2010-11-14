@@ -51,6 +51,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	static final Log LOG = LogFactory.getLog(HttpEngine.class);
 
 	private String propertiesName = "server.properties";
+
 	private ServerConfig serverConfig;
 	private ObjectName objectName;
 	private DefaultHttpService service;
@@ -101,7 +102,9 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 			registerMXServer();
 		}
 
-		HttpHandlerFactory factory = new DefaultHttpHandlerFactory(getClass().getClassLoader());
+		String componentsXML = serverConfig.getParam("components.file", "components.xml");
+		HttpHandlerFactory factory = new DefaultHttpHandlerFactory(
+				componentsXML, getClass().getClassLoader());
 
 		HostRequestHandlerResolver hostResolver = new HostRequestHandlerResolver();
 		HostServiceConfig hostConfig = new ServiceConfigParser(serverConfig).getConfig();

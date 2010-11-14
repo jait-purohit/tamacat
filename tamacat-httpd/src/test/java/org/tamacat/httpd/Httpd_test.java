@@ -14,7 +14,7 @@ import org.tamacat.httpd.core.HttpEngine;
  */
 public class Httpd_test {
 
-	public static final String XML = "components.xml";
+	public static final String XML = "httpd.xml";
 	
 	public static void main(String[] args) {
 		String config = args.length > 0 ? args[0] : XML;

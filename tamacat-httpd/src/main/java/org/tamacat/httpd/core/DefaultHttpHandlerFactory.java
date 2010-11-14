@@ -16,12 +16,12 @@ public class DefaultHttpHandlerFactory implements HttpHandlerFactory {
 
 	private DIContainer di;
 	
-	public DefaultHttpHandlerFactory() {
-		di = DI.configure("components.xml", getClass().getClassLoader());
+	public DefaultHttpHandlerFactory(String xml) {
+		di = DI.configure(xml, getClass().getClassLoader());
 	}
 	
-	public DefaultHttpHandlerFactory(ClassLoader loader) {
-		di = DI.configure("components.xml", loader);
+	public DefaultHttpHandlerFactory(String xml, ClassLoader loader) {
+		di = DI.configure(xml, loader);
 	}
 	
 	@Override
