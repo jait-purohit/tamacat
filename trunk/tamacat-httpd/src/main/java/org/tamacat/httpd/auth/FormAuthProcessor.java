@@ -108,11 +108,13 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 				logoutAction(sessionId);
 				return;
 			} else if (isFreeAccessExtensions(uri)) {
-				Session session = SessionManager.getInstance().getSession(sessionId, false);
-				if (session != null) {
-					remoteUser = (String) session.getAttribute(sessionUsernameKey);
-					if (remoteUser != null) {
-						context.setAttribute(remoteUserKey, remoteUser);
+				if (sessionId != null) {
+					Session session = SessionManager.getInstance().getSession(sessionId, false);
+					if (session != null) {
+						remoteUser = (String) session.getAttribute(sessionUsernameKey);
+						if (remoteUser != null) {
+							context.setAttribute(remoteUserKey, remoteUser);
+						}
 					}
 				}
 				return; //skip by this filter.
