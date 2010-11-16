@@ -92,10 +92,19 @@ public class ServerConfig {
 	/**
 	 * <p>If using the https, returns true.
 	 * @return Get the parameter value key of "https",
-	 * if value is null then returns {@code true}.
+	 * if value is null then returns {@code false}.
 	 */
 	public boolean useHttps() {
-		return getParam("https", "true").equalsIgnoreCase("true");
+		return getParam("https", "false").equalsIgnoreCase("true");
+	}
+	
+	/**
+	 * <p>If using the https client authentication, returns true.
+	 * @return Get the parameter value key of "https.clientAuth",
+	 * if value is null then returns {@code false}.
+	 */
+	public boolean useClientAuth() {
+		return getParam("https.clientAuth", "false").equalsIgnoreCase("true");
 	}
 	
 	/**

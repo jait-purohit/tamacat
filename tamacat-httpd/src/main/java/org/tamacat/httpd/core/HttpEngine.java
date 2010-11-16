@@ -20,6 +20,7 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
 
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
@@ -138,6 +139,9 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 			int port = serverConfig.getPort();
 			if (serverConfig.useHttps()) {					
 				serversocket = createSecureServerSocket(port);
+				if (serverConfig.useClientAuth() && serversocket instanceof SSLServerSocket) {
+					((SSLServerSocket)serversocket).setNeedClientAuth(true);
+				}
 			} else {
 				serversocket = new ServerSocket(port);
 			}
