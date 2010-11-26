@@ -13,6 +13,7 @@ import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -44,6 +45,7 @@ import org.tamacat.httpd.ssl.SSLContextCreator;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.ExceptionUtils;
+import org.tamacat.util.PropertyUtils;
 import org.tamacat.util.StringUtils;
 
 /**
@@ -53,6 +55,7 @@ public class NHttpEngine implements BasicHttpMonitor, Runnable {
 
 	static final Log LOG = LogFactory.getLog(NHttpEngine.class);
 
+	private String propertiesName = "server.properties";
 	private ServerConfig serverConfig;
 	private DefaultAsyncNHttpServiceHandler service;
 	
@@ -71,7 +74,8 @@ public class NHttpEngine implements BasicHttpMonitor, Runnable {
      */
 	protected void init() {
 		if (serverConfig == null) {
-			serverConfig = new ServerConfig();
+			Properties props = PropertyUtils.getProperties(propertiesName);
+			serverConfig = new ServerConfig(props);
 			paramsBuilder = new HttpParamsBuilder();
 	        paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
 	          .socketBufferSize(serverConfig.getSocketBufferSize())
@@ -88,6 +92,12 @@ public class NHttpEngine implements BasicHttpMonitor, Runnable {
 		for (HttpResponseInterceptor interceptor : interceptors) {
 			procBuilder.addInterceptor(interceptor);
 		}
+		
+		String componentsXML = serverConfig.getParam(
+				"components.file", "components.xml");
+		NHttpHandlerFactory factory = new DefaultNHttpHandlerFactory(
+				componentsXML, getClass().getClassLoader());
+
 		service = new DefaultAsyncNHttpServiceHandler(
 				procBuilder.build(), paramsBuilder.buildParams());
 		if (isMXServerStarted == false) {
@@ -99,7 +109,6 @@ public class NHttpEngine implements BasicHttpMonitor, Runnable {
 			NHttpRequestHandlerRegistry registry = new NHttpRequestHandlerRegistry();
 			ServiceConfig serviceConfig = hostConfig.getServiceConfig(host);
 			for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
-				NHttpHandlerFactory factory = new DefaultNHttpHandlerFactory();
 				NHttpRequestHandler handler = factory.getNHttpRequestHandler(serviceUrl, serviceUrl.getHandlerName());
 				if (handler != null) {
 					LOG.info(serviceUrl.getPath() + " - " + handler.getClass().getName());
@@ -150,6 +159,14 @@ public class NHttpEngine implements BasicHttpMonitor, Runnable {
 		startHttpd();
 	}
 	
+	public String getPropertiesName() {
+		return propertiesName;
+	}
+
+	public void setPropertiesName(String propertiesName) {
+		this.propertiesName = propertiesName;
+	}
+
 	/**
 	 * <p>Set the {@link SSLContextCreator},
 	 * when customize the configration of https (SSL/TSL).

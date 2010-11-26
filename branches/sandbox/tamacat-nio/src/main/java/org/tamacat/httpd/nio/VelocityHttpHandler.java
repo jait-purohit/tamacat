@@ -15,6 +15,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.nio.entity.NFileEntity;
 import org.apache.http.nio.entity.NStringEntity;
+import org.apache.http.nio.protocol.NHttpResponseTrigger;
 import org.apache.http.protocol.HttpContext;
 import org.apache.velocity.VelocityContext;
 import org.tamacat.httpd.config.ServiceUrl;
@@ -78,6 +79,14 @@ public class VelocityHttpHandler extends AbstractNHttpHandler {
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+    public void handle(final HttpRequest request, final HttpResponse response,
+            final NHttpResponseTrigger trigger, final HttpContext context)
+        throws HttpException, IOException {
+		RequestUtils.setParameters(request, context, "UTF-8");
+		super.handle(request, response, trigger, context);
 	}
 	
 	@Override

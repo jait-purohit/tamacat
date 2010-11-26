@@ -28,7 +28,6 @@ import org.tamacat.httpd.filter.HttpFilter;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.page.VelocityErrorPage;
-import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -108,12 +107,10 @@ public abstract class AbstractNHttpHandler implements NHttpHandler {
     public void handle(final HttpRequest request, final HttpResponse response,
             final NHttpResponseTrigger trigger, final HttpContext context)
         throws HttpException, IOException {
-//        new Thread() {
-//            
+//        new Thread() {       
 //            @Override
 //            public void run() {
 				try {
-	        		RequestUtils.setParameters(request, context, "UTF-8");
 					for (RequestFilter filter : requestFilters) {
 						filter.doFilter(request, response, context);
 					}
