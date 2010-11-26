@@ -96,19 +96,10 @@
     -->
   </bean>
   
-  <bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor">
-    <property name="contentType">
-      <value>html,xml,css,javascript</value>
-    </property>
-  </bean>
-  
   <bean id="html" class="org.tamacat.httpd.filter.HtmlLinkConvertInterceptor">
     <property name="contentType">
       <value>html</value>
     </property>
-  </bean>
-  
-  <bean id="nserver" class="org.tamacat.httpd.nio.NHttpEngine">
   </bean>
   
 </beans>

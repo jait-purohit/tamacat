@@ -5,6 +5,7 @@
 package org.tamacat.httpd.nio;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
@@ -14,11 +15,14 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.nio.entity.NFileEntity;
 import org.apache.http.nio.entity.NStringEntity;
+import org.apache.http.nio.protocol.NHttpResponseTrigger;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ForbiddenException;
+import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityListingsPage;
+import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -78,6 +82,14 @@ public class LocalFileHttpHandler extends AbstractNHttpHandler {
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+    public void handle(final HttpRequest request, final HttpResponse response,
+            final NHttpResponseTrigger trigger, final HttpContext context)
+        throws HttpException, IOException {
+		RequestUtils.setParameters(request, context, "UTF-8");
+		super.handle(request, response, trigger, context);
 	}
 	
 	@Override

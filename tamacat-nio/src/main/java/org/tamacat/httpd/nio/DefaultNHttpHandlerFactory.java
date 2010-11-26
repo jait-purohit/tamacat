@@ -11,8 +11,16 @@ import org.tamacat.di.DIContainer;
 import org.tamacat.httpd.config.ServiceUrl;
 
 public class DefaultNHttpHandlerFactory implements NHttpHandlerFactory {
-	static DIContainer di = DI.configure("components.xml");
-
+	private DIContainer di;
+	
+	public DefaultNHttpHandlerFactory(String xml) {
+		di = DI.configure(xml, getClass().getClassLoader());
+	}
+	
+	public DefaultNHttpHandlerFactory(String xml, ClassLoader loader) {
+		di = DI.configure(xml, loader);
+	}
+	
 	@Override
 	public NHttpRequestHandler getNHttpRequestHandler(ServiceUrl serviceUrl,
 			String handlerName) {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+  <bean id="server" class="org.tamacat.httpd.nio.NHttpEngine">
+    <property name="propertiesName">
+      <value>nio-server.properties</value>
+    </property>
+  </bean>
+</beans>
