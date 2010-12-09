@@ -79,6 +79,9 @@ public class DefaultHttpService extends HttpService {
 			HttpRequestHandler handler = null;
 			if (handlerResolver != null) {
 				handler = handlerResolver.lookup(request.getRequestLine().getUri());
+				if (handler == null) {
+					handler = handlerResolver.lookup("/");
+				}
 			} else if (hostResolver != null) {
 				handler = hostResolver.lookup(request, context);
 			}
