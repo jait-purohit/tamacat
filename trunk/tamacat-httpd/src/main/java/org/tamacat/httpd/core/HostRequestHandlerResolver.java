@@ -69,7 +69,13 @@ public class HostRequestHandlerResolver {
 		if (LOG.isTraceEnabled() && resolver != null) {
 			LOG.trace("handler: " + resolver.getClass().getName());
 		}
-		return resolver != null ? 
-			resolver.lookup(request.getRequestLine().getUri()) : null;
+		HttpRequestHandler handler = null;
+		if (resolver != null) {
+			handler = resolver.lookup(request.getRequestLine().getUri());
+			if (handler == null) {
+				handler = resolver.lookup("/");
+			}
+		}
+		return handler;
 	}
 }
