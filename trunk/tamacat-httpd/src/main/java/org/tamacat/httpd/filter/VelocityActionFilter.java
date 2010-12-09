@@ -24,7 +24,9 @@ public class VelocityActionFilter implements RequestFilter {
 	private String processKeyName = "p";
 	private String prefix = "";
 	private String suffix = "";
-	private static final Class<?>[] PARAMS = new Class<?>[]{	RequestContext.class };
+	private static final Class<?>[] PARAMS = new Class<?>[]{
+		RequestContext.class
+	};
 	
 	public ServiceUrl getServiceUrl() {
 		return serviceUrl;
