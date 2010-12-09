@@ -103,11 +103,12 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 		String sessionId = HeaderUtils.getCookieValue(request, sessionCookieName);
 		try {
 			String remoteUser = null;
-			String uri = request.getRequestLine().getUri();
-			if (uri.endsWith(loginPageUrl)) {
+			String path = RequestUtils.getRequestPath(request);
+
+			if (path.endsWith(loginPageUrl)) {
 				logoutAction(sessionId);
 				return;
-			} else if (isFreeAccessExtensions(uri)) {
+			} else if (isFreeAccessExtensions(path)) {
 				if (sessionId != null) {
 					Session session = SessionManager.getInstance().getSession(sessionId, false);
 					if (session != null) {
@@ -137,7 +138,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 					throw new UnauthorizedException();
 				}
 				context.setAttribute(remoteUserKey, remoteUser);
-				if (uri.endsWith(logoutActionUrl)) {
+				if (path.endsWith(logoutActionUrl)) {
 					//logout -> session delete -> login page.
 					logoutAction(sessionId);
 					//force login page.
