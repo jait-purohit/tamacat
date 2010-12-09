@@ -7,7 +7,9 @@ package org.tamacat.httpd.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -35,6 +37,28 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	private VelocityListingsPage listingPage;
 	protected boolean listings;
 	private VelocityPage page;
+	private final Set<String> urlPatterns = new HashSet<String>();
+	
+	public void setUrlPatterns(String patterns) {
+		for (String pattern : patterns.split(",")) {
+			urlPatterns.add(pattern.trim());
+		}
+	}
+	
+	public boolean isMatchUrlPattern(String path) {
+		if (urlPatterns.size() > 0) {
+			for (String pattern : urlPatterns) {
+				if (pattern.endsWith("/") && path.matches(pattern)) {
+					return true;
+				} else if (path.lastIndexOf(pattern) >= 0) {
+					return true;
+				}
+			}
+		} else if (path.lastIndexOf(".html") >= 0) {
+			return true;
+		}
+		return false;
+	}
 	
 	@Override
     public void setServiceUrl(ServiceUrl serviceUrl) {
@@ -91,10 +115,10 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		String path = RequestUtils.getRequestPath(request);
 		ctx.put("param", RequestUtils.getParameters(context).getParameterMap());
 		ctx.put("contextRoot", serviceUrl.getPath().replaceFirst("/$",""));
-		int idx = path.lastIndexOf(".html");
-		if (idx >= 0) {
+		if (isMatchUrlPattern(path)) {
 			//delete the extention of file name. (index.html -> index)
-			setEntity(request, response, ctx, path.replace(".html", ""));
+			String file = path.indexOf(".")>=0 ? path.split("\\.")[0] : path;
+			setEntity(request, response, ctx, file);
 		} else if (path.endsWith("/")) {
 			//directory -> index page.
 			File file = null;
