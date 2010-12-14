@@ -119,7 +119,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 			}
 			doRequest(request, response, context);
 		} catch (Exception e) {
-			LOG.trace(e.getMessage());
+			LOG.warn(e.getMessage());
 			handleException(request, response, e);
 		} finally {
 			for (ResponseFilter filter : responseFilters) {
