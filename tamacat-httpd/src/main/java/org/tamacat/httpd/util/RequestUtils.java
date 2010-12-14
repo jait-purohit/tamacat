@@ -72,7 +72,7 @@ public class RequestUtils {
 				}
 			}
 		}
-		if (isEntityEnclosingRequest(request)) {
+		if (isEntityEnclosingRequest(request) && ! RequestUtils.isMultipart(request)) {
 			HttpEntity entity = getEntity(request);
 			if (entity != null) {
 				InputStream in = null;
