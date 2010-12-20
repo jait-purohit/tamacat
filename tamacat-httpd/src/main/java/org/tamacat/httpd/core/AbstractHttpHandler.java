@@ -27,6 +27,7 @@ import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.ExceptionUtils;
 import org.tamacat.util.PropertyUtils;
 import org.tamacat.util.StringUtils;
 
@@ -119,7 +120,6 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 			}
 			doRequest(request, response, context);
 		} catch (Exception e) {
-			LOG.warn(e.getMessage());
 			handleException(request, response, e);
 		} finally {
 			for (ResponseFilter filter : responseFilters) {
@@ -141,6 +141,13 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 		if (e instanceof HttpException) {
 			html = errorPage.getErrorPage(request, response, (HttpException)e);
 		} else {
+			if (LOG.isWarnEnabled()) {
+				String stackTrace = ExceptionUtils.getStackTrace(e);
+				if (stackTrace != null && stackTrace.length() > 77) {
+					stackTrace = stackTrace.substring(0, 77) + "...";
+				}
+				LOG.warn(stackTrace);
+			}
 			html = errorPage.getErrorPage(request, response,
 					new ServiceUnavailableException(e));
 		}
