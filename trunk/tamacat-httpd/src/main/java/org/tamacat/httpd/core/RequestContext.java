@@ -7,6 +7,7 @@ package org.tamacat.httpd.core;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
+import org.apache.velocity.VelocityContext;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.StringUtils;
 
@@ -50,9 +51,20 @@ public class RequestContext {
 	
 	public void setAttribute(String name, Object value) {
 		context.setAttribute(name, value);
+		getVelocityContext().put(name, value);
 	}
 	
 	public Object getAttribute(String name) {
 		return context.getAttribute(name);
+	}
+	
+	public void setVelocityContext(VelocityContext ctx) {
+		context.setAttribute(VelocityContext.class.getName(), ctx);
+	}
+	
+	public VelocityContext getVelocityContext() {
+		VelocityContext ctx = (VelocityContext) context.getAttribute(
+				VelocityContext.class.getName());
+		return ctx != null? ctx : new VelocityContext();
 	}
 }
