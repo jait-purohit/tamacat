@@ -34,11 +34,17 @@ import org.tamacat.util.PropertyUtils;
 public class VelocityHttpHandler extends AbstractHttpHandler {
 	
 	protected String welcomeFile = "index";
-	private VelocityListingsPage listingPage;
 	protected boolean listings;
-	private VelocityPage page;
-	private final Set<String> urlPatterns = new HashSet<String>();
+	protected String encoding = "UTF-8";
 	
+	protected VelocityListingsPage listingPage;
+	protected VelocityPage page;
+	protected final Set<String> urlPatterns = new HashSet<String>();
+
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+
 	public void setUrlPatterns(String patterns) {
 		for (String pattern : patterns.split(",")) {
 			urlPatterns.add(pattern.trim());
@@ -171,7 +177,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	@Override
 	protected HttpEntity getEntity(String html) {
 		try {
-			StringEntity entity = new StringEntity(html);
+			StringEntity entity = new StringEntity(html, encoding);
 			entity.setContentType(DEFAULT_CONTENT_TYPE);
 			return entity;
 		} catch (UnsupportedEncodingException e1) {
