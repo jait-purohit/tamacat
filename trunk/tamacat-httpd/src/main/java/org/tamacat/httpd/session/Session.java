@@ -24,6 +24,10 @@ public interface Session {
 	
 	Date getCreationDate();
 	
+	Date getLastAccessDate();
+	
+	void setLastAccessDate(Date lastAccessDate);
+	
 	int getMaxInactiveInterval();
 	
 	void setMaxInactiveInterval(int maxInactiveInterval);
