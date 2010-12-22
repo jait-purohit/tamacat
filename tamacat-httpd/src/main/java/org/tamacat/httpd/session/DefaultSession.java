@@ -15,6 +15,7 @@ class DefaultSession implements Session, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Date creationDate;
+	private Date lastAccessDate;
 	private String id;
 	private HashMap<String, Object> attributes;
 	private int maxInactiveInterval; // = 30 * 60 * 1000; //30min.
@@ -22,6 +23,7 @@ class DefaultSession implements Session, Serializable {
 	
 	public DefaultSession(SessionListener listener) {
 		this.creationDate = new Date();
+		this.lastAccessDate = new Date();
 		this.attributes = new HashMap<String, Object>();
 		this.id = UniqueCodeGenerator.generate();
 		this.listener = listener;
@@ -44,6 +46,16 @@ class DefaultSession implements Session, Serializable {
 	}
 
 	@Override
+	public Date getLastAccessDate() {
+		return lastAccessDate;
+	}
+	
+	@Override
+	public void setLastAccessDate(Date lastAccessDate) {
+		this.lastAccessDate = lastAccessDate;
+	}
+	
+	@Override
 	public String getId() {
 		return id;
 	}
@@ -57,11 +69,13 @@ class DefaultSession implements Session, Serializable {
 	@Override
 	public void removeAttribute(String key) {
 		attributes.remove(key);
+		lastAccessDate = new Date();
 	}
 
 	@Override
 	public void setAttribute(String key, Object value) {
 		attributes.put(key, value);
+		lastAccessDate = new Date();
 	}
 	
 	@Override

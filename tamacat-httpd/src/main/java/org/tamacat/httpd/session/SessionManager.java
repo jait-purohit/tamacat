@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.management.ManagementFactory;
+import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -65,8 +66,9 @@ public final class SessionManager implements SessionListener, SessionMonitor {
 		synchronized (MANAGER) {
 			Session session = MANAGER.get(id);
 			if (session != null) {
-				if (System.currentTimeMillis() - session.getCreationDate().getTime()
+				if (System.currentTimeMillis() - session.getLastAccessDate().getTime()
 					<= session.getMaxInactiveInterval()) {
+					session.setLastAccessDate(new Date());
 					return session;
 				} else {
 					session.invalidate();
