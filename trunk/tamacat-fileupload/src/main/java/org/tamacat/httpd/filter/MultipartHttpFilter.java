@@ -30,7 +30,7 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 	
 	protected ServiceUrl serviceUrl;
 	protected String baseDirectory;
-	protected String encoding;
+	protected String encoding = "UTF-8";
 	protected boolean writeFile;
 
 	public void setWriteFile(boolean writeFile) {
@@ -128,7 +128,9 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 	}
 		
 	protected void writeFile(FileItem item, String name) throws IOException {
-		FileUtils.write(item.getInputStream(), 
-			new File(getBaseDirectory() + "/" + FileUtils.normalizeFileName(name)));
+		String fileName = getBaseDirectory() + "/"
+							+ FileUtils.normalizeFileName(name);
+		FileUtils.write(item.getInputStream(), new File(fileName));
+		LOG.debug("save file: " + fileName);
 	}
 }

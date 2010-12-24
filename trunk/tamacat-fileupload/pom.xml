@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.tamacat</groupId>
   <artifactId>tamacat-fileupload</artifactId>
-  <version>0.7</version>
+  <version>0.8</version>
   <packaging>jar</packaging>
   <name>tamacat-httpd file upload support</name>
   <url>http://code.google.com/p/tamacat/</url>
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.tamacat</groupId>
       <artifactId>tamacat-httpd</artifactId>
-      <version>0.7</version>
+      <version>0.8</version>
     </dependency>
             
     <dependency>
@@ -60,7 +60,7 @@
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <version>1.2.14</version>
+      <version>1.2.16</version>
       <scope>test</scope>
     </dependency>
     
