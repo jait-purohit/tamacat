@@ -33,6 +33,7 @@ import org.tamacat.util.PropertyUtils;
  */
 public class VelocityHttpHandler extends AbstractHttpHandler {
 	
+	public static final String CONTENT_TYPE = "ResponseHeader__ContentType__";
 	protected String welcomeFile = "index";
 	protected boolean listings;
 	protected String encoding = "UTF-8";
@@ -159,7 +160,12 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	
 	private void setEntity(HttpRequest request, HttpResponse response, VelocityContext ctx, String path) {
 		String html = page.getPage(request, response, ctx, path);
-		ResponseUtils.setEntity(response, getEntity(html));
+		Object contentType = ctx.get(CONTENT_TYPE);
+		if (contentType != null && contentType instanceof String) {
+			ResponseUtils.setEntity(response, getEntity(html, (String)contentType));
+		} else {
+			ResponseUtils.setEntity(response, getEntity(html));
+		}
 	}
 	
 	private void setFileEntity(HttpRequest request, HttpResponse response, String path) {
@@ -174,6 +180,16 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		}
 	}
 
+	protected HttpEntity getEntity(String html, String contentType) {
+		try {
+			StringEntity entity = new StringEntity(html, encoding);
+			entity.setContentType(contentType);
+			return entity;
+		} catch (UnsupportedEncodingException e1) {
+			return null;
+		}
+	}
+	
 	@Override
 	protected HttpEntity getEntity(String html) {
 		try {
