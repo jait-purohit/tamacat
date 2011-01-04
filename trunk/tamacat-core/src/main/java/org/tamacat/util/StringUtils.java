@@ -125,4 +125,13 @@ public abstract class StringUtils {
     	}
     	return data.toString();
     }
+    
+    static
+      public String cut(String str, int lenth) {
+    	if (str != null && str.length() > lenth) {
+    		return str.substring(0, lenth);
+    	} else {
+    		return str;
+    	}
+    }
 }
