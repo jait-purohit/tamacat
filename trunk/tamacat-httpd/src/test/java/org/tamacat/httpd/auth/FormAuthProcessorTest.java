@@ -68,9 +68,10 @@ public class FormAuthProcessorTest {
 
 	@Test
 	public void testSendRedirect() throws Exception {
-		auth.sendRedirect(response, "/test/login.html");
+		auth.sendRedirect(request, response, "/test/login.html");
 		assertEquals(
-			"<html><meta http-equiv=\"refresh\" content=\"0;url=/test/login.html\"></html>",
+			"<html><meta http-equiv=\"refresh\" content=\"0;"
+			  + "url=/test/login.html\"></html>",
 			EntityUtils.toString(response.getEntity())
 		);
 	}
