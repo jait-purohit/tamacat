@@ -208,10 +208,10 @@ public final class SessionManager implements SessionListener, SessionMonitor {
 				String id = session.getId();
 				if (LOG.isTraceEnabled()) {
 					LOG.info(System.currentTimeMillis()
-						- session.getCreationDate().getTime()
+						- session.getLastAccessDate().getTime()
 						+ " > " + session.getMaxInactiveInterval());
 				}
-				if (System.currentTimeMillis() - session.getCreationDate().getTime()
+				if (System.currentTimeMillis() - session.getLastAccessDate().getTime()
 					> session.getMaxInactiveInterval()) {
 					try {
 						session.invalidate();
