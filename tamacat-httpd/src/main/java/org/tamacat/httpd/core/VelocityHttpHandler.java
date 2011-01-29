@@ -159,24 +159,30 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	}
 	
 	private void setEntity(HttpRequest request, HttpResponse response, VelocityContext ctx, String path) {
-		String html = page.getPage(request, response, ctx, path);
-		Object contentType = ctx.get(CONTENT_TYPE);
-		if (contentType != null && contentType instanceof String) {
-			ResponseUtils.setEntity(response, getEntity(html, (String)contentType));
-		} else {
-			ResponseUtils.setEntity(response, getEntity(html));
+		//Do not set an entity when it already exists.
+		if (response.getEntity() == null) {
+			String html = page.getPage(request, response, ctx, path);
+			Object contentType = ctx.get(CONTENT_TYPE);
+			if (contentType != null && contentType instanceof String) {
+				ResponseUtils.setEntity(response, getEntity(html, (String)contentType));
+			} else {
+				ResponseUtils.setEntity(response, getEntity(html));
+			}
 		}
 	}
 	
 	private void setFileEntity(HttpRequest request, HttpResponse response, String path) {
-		try {
-			File file = new File(docsRoot + getDecodeUri(path));//r.toURI());
-			if (file.exists() == false) {
-				throw new NotFoundException();
+		//Do not set an entity when it already exists.
+		if (response.getEntity() == null) {
+			try {
+				File file = new File(docsRoot + getDecodeUri(path));//r.toURI());
+				if (file.exists() == false) {
+					throw new NotFoundException();
+				}
+				ResponseUtils.setEntity(response, getFileEntity(file));
+			} catch (Exception e) {
+				throw new NotFoundException(e);
 			}
-			ResponseUtils.setEntity(response, getFileEntity(file));
-		} catch (Exception e) {
-			throw new NotFoundException(e);
 		}
 	}
 
@@ -199,6 +205,11 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		} catch (UnsupportedEncodingException e1) {
 			return null;
 		}
+	}
+	
+	protected HttpEntity getFileEntity(File file, String contentType) {
+		FileEntity body = new FileEntity(file, contentType);
+        return body;
 	}
 	
 	@Override
