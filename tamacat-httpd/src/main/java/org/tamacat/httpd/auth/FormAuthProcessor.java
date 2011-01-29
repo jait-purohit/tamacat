@@ -5,6 +5,8 @@
 package org.tamacat.httpd.auth;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,24 +35,48 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 	protected static final String SC_AUTHORIZED
 		= FormAuthProcessor.class.getName() + ".SC_AUTHORIZED";
 	
+	protected String charset = "UTF-8";
 	protected String loginPageUrl = "login.html";
 	protected String loginActionUrl = "check.html";
 	protected String logoutActionUrl = "logout.html";
 	protected String topPageUrl = "index.html";
 	protected String usernameKey = "username";
 	protected String passwordKey = "password";
+	protected String redirectKey = "redirect";
+
 	protected String sessionCookieName = "Session";
 	protected String sessionUsernameKey = "SingleSignOnUser";
 	protected Set<String> freeAccessExtensions = new HashSet<String>();
 
+	/**
+	 * <p>Setting the HTTP charset parameter.
+	 * @param charset default: "UTF-8"
+	 */
+	public void setCharset(String charset) {
+		this.charset = charset;
+	}
+	
+	/**
+	 * <p>Setting the form login page. 
+	 * @param loginPageUrl default: "login.html"
+	 */
 	public void setLoginPageUrl(String loginPageUrl) {
 		this.loginPageUrl = loginPageUrl;
 	}
 
+	/**
+	 * <p>Setting the form action URL.
+	 * <pre>&lt;form action="check.html"&gt;</pre>
+	 * @param loginActionUrl default: "check.html"
+	 */
 	public void setLoginActionUrl(String loginActionUrl) {
 		this.loginActionUrl = loginActionUrl;
 	}
 	
+	/**
+	 * <p>Setting the logout action URL.
+	 * @param logoutActionUrl default: "logout.html"
+	 */
 	public void setLogoutActionUrl(String logoutActionUrl) {
 		this.logoutActionUrl = logoutActionUrl;
 	}
@@ -67,6 +93,14 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 		this.passwordKey = passwordKey;
 	}
 	
+	/**
+	 * <p>Setting the request parameter of redirect key.
+	 * @param redirectKey default: "redirect"
+	 */
+	public void setRedirectKey(String redirectKey) {
+		this.redirectKey = redirectKey;
+	}
+	
 	public void setSessionCookieName(String sessionCookieName) {
 		this.sessionCookieName = sessionCookieName;
 	}
@@ -75,6 +109,12 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 		this.sessionUsernameKey = sessionUsernameKey;
 	}
 
+	/**
+	 * <p>Whether it agrees to the extension that can be accessed
+	 *  without the attestation is inspected.  
+	 * @param uri
+	 * @return true: contains the freeAccessExtensions.
+	 */
 	protected boolean isFreeAccessExtensions(String uri) {
 		int idx = uri.lastIndexOf(".");
 		if (idx >= 0) {
@@ -106,7 +146,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 			String path = RequestUtils.getRequestPath(request);
 
 			if (path.endsWith(loginPageUrl)) {
-				logoutAction(sessionId);
+				logoutAction(request, sessionId);
 				return;
 			} else if (isFreeAccessExtensions(path)) {
 				if (sessionId != null) {
@@ -119,7 +159,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 					}
 				}
 				return; //skip by this filter.
-			} else if (request.getRequestLine().getUri().endsWith(loginActionUrl)) {
+			} else if (isMatchLoginUrl(request)) {
 				//login check
 				remoteUser = checkUser(request, context);
 				context.setAttribute(remoteUserKey, remoteUser);
@@ -140,7 +180,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 				context.setAttribute(remoteUserKey, remoteUser);
 				if (path.endsWith(logoutActionUrl)) {
 					//logout -> session delete -> login page.
-					logoutAction(sessionId);
+					logoutAction(request, sessionId);
 					//force login page.
 					//context.setAttribute(SC_UNAUTHORIZED, Boolean.TRUE);
 				} else {
@@ -150,7 +190,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 				throw new UnauthorizedException();
 			}
 		} catch (UnauthorizedException e) {
-			logoutAction(sessionId);
+			logoutAction(request, sessionId);
 			response.setStatusCode(HttpStatus.SC_UNAUTHORIZED);
 			context.setAttribute(SC_UNAUTHORIZED, Boolean.TRUE);
 		}
@@ -161,24 +201,34 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 			HttpContext context) {
 		if (Boolean.TRUE.equals(context.getAttribute(SC_UNAUTHORIZED))) {
 			//unauthorized -> Go to the login page.
-			sendRedirect(response, loginPageUrl);
+			sendRedirect(request, response, getLoginPageUrlWithRedirect(request));
 		} else if (Boolean.TRUE.equals(context.getAttribute(SC_AUTHORIZED))) {
 			//authorized login -> Go to the top page.
-			sendRedirect(response, topPageUrl);
+			String uri = RequestUtils.getParameter(context, "redirect");
+			if (uri != null) {
+				try {
+					uri = URLDecoder.decode(uri, charset);
+				} catch (UnsupportedEncodingException e) {
+				}
+			} else {
+				uri = topPageUrl;
+			}
+			sendRedirect(request, response, uri);
 		}
 	}
 	
 	/**
 	 * <p>Redirect for login action.
+	 * @param request
 	 * @param response
 	 * @param uri redirect URI path.
 	 */
-	protected void sendRedirect(HttpResponse response, String uri) {
+	protected void sendRedirect(HttpRequest request, HttpResponse response, String uri) {
 		try {
-			response.setHeader(HTTP.CONTENT_TYPE, "text/html; charset=UTF-8");
+			response.setHeader(HTTP.CONTENT_TYPE, "text/html; charset=" + charset);
 			response.setEntity(new StringEntity(
-				"<html><meta http-equiv=\"refresh\" content=\"0;url=" +
-				uri + "\"></html>", "UTF-8"));
+				"<html><meta http-equiv=\"refresh\" content=\"0;url="
+				  + uri + "\"></html>", "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			throw new UnauthorizedException();
 		}
@@ -188,7 +238,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 	 * <p>Logout the system with invalidate this session.
 	 * @param sessionId
 	 */
-	protected void logoutAction(String sessionId) {
+	protected void logoutAction(HttpRequest request, String sessionId) {
 		if (StringUtils.isNotEmpty(sessionId)) {
 			Session session = SessionManager.getInstance().getSession(sessionId, false);
 			if (session != null) session.invalidate();
@@ -196,7 +246,31 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 	}
 	
 	/**
-	 * login check with AuthComponent.
+	 * <p>Request URI confirms whether to match to loginActionUrl.
+	 * @param request
+	 * @return true: Request URI is considered to be loginActionURL and the same.
+	 */
+	protected boolean isMatchLoginUrl(HttpRequest request) {
+		return request.getRequestLine().getUri().endsWith(loginActionUrl);
+	}
+	
+	/**
+	 * <p>After log in is attested, URL redirected to requested URL is acquired.
+	 * @param request
+	 * @return loginPageUrl?redirectKey=/path/to/requestURL
+	 */
+	protected String getLoginPageUrlWithRedirect(HttpRequest request) {
+		String uri = RequestUtils.getRequestPath(request);
+		try {
+			return loginPageUrl + "?"
+			  + redirectKey + "=" + URLEncoder.encode(uri, charset);
+		} catch (UnsupportedEncodingException e) {
+			return loginPageUrl;
+		}
+	}
+	
+	/**
+	 * <p>Login check with AuthComponent.
 	 * @param request
 	 * @param context
 	 * @return login username in request parameter.
