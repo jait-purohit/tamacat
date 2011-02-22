@@ -261,12 +261,14 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 	 */
 	protected String getLoginPageUrlWithRedirect(HttpRequest request) {
 		String uri = RequestUtils.getRequestPath(request);
-		try {
-			return loginPageUrl + "?"
-			  + redirectKey + "=" + URLEncoder.encode(uri, charset);
-		} catch (UnsupportedEncodingException e) {
-			return loginPageUrl;
+		if (! uri.endsWith(logoutActionUrl) && ! uri.endsWith(loginActionUrl)) {
+			try {
+				return loginPageUrl + "?"
+				  + redirectKey + "=" + URLEncoder.encode(uri, charset);
+			} catch (UnsupportedEncodingException e) {
+			}
 		}
+		return loginPageUrl;
 	}
 	
 	/**

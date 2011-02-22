@@ -36,7 +36,7 @@ public class FormAuthProcessorTest {
 		ServiceUrl serviceUrl = new ServiceUrl(config);
 		auth = new FormAuthProcessor();
 		auth.init(serviceUrl);
-		
+
 		authComponent = new TestAuthComponent();
 		authComponent.setAuthUsername("admin");
 		authComponent.setAuthPassword("pass");
@@ -126,4 +126,15 @@ public class FormAuthProcessorTest {
 		auth.checkUser(request, context);
 	}
 
+	@Test
+	public void testGetLoginPageUrlWithRedirect() {
+		request = HttpObjectFactory.createHttpRequest("GET", "/test/");
+		assertEquals("login.html?redirect=%2Ftest%2F", auth.getLoginPageUrlWithRedirect(request));
+		
+		request = HttpObjectFactory.createHttpRequest("GET", "/check.html");
+		assertEquals("login.html", auth.getLoginPageUrlWithRedirect(request));
+		
+		request = HttpObjectFactory.createHttpRequest("GET", "/logout.html");
+		assertEquals("login.html", auth.getLoginPageUrlWithRedirect(request));
+	}
 }
