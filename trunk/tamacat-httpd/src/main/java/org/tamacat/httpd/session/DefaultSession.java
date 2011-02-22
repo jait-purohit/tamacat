@@ -21,6 +21,10 @@ class DefaultSession implements Session, Serializable {
 	private int maxInactiveInterval; // = 30 * 60 * 1000; //30min.
 	private transient SessionListener listener;
 	
+	public DefaultSession() {
+		this(null);
+	}
+	
 	public DefaultSession(SessionListener listener) {
 		this.creationDate = new Date();
 		this.lastAccessDate = new Date();
@@ -63,7 +67,7 @@ class DefaultSession implements Session, Serializable {
 	@Override
 	public void invalidate() {
 		attributes.clear();
-		listener.invalidate(this);
+		if (listener != null) listener.invalidate(this);
 	}
 
 	@Override

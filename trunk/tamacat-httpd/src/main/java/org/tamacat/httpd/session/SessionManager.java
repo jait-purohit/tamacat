@@ -19,6 +19,7 @@ import javax.management.ObjectName;
 
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.IOUtils;
 
 public final class SessionManager implements SessionListener, SessionMonitor {
 	static final Log LOG = LogFactory.getLog(SessionManager.class);
@@ -26,9 +27,8 @@ public final class SessionManager implements SessionListener, SessionMonitor {
 	private
 	  static final SessionManager SELF = new SessionManager();
 	
-	private
-	  static ConcurrentHashMap<String, Session> MANAGER
-	  	= new ConcurrentHashMap<String, Session>();
+	private static final ConcurrentHashMap<String, Session> 
+		MANAGER = new ConcurrentHashMap<String, Session>();
 
 	private static int defaultMaxInactiveInterval;
 
@@ -107,8 +107,7 @@ public final class SessionManager implements SessionListener, SessionMonitor {
 		serializer.serialize();
 	}
 	
-	
-	public void deserialize() throws IOException {
+	public void deserialize() {
 		serializer.deserialize();
 	}
 	
@@ -128,14 +127,14 @@ public final class SessionManager implements SessionListener, SessionMonitor {
 			MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
         	server.registerMBean(this, oname);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.warn(e.getMessage());
 		}
 	}
 	
 	public interface SessionSerializer {
-		void serialize() throws IOException;
+		void serialize();
 		
-		void deserialize() throws IOException;
+		void deserialize();
 	}
 	
 	class FileSessionSerializer implements SessionSerializer {
@@ -147,31 +146,41 @@ public final class SessionManager implements SessionListener, SessionMonitor {
 		}
 		
 		@Override
-		public void serialize() throws IOException {
+		public void serialize() {
 			synchronized (MANAGER) {
-				ObjectOutputStream out = new ObjectOutputStream(
+				ObjectOutputStream out = null;
+				try {
+					out = new ObjectOutputStream(
 						new FileOutputStream(fileName));
-				out.writeObject(MANAGER);
-				out.close();
+					out.writeObject(MANAGER);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				} finally {
+					IOUtils.close(out);
+				}
 			}
 		}
 		
 		@Override
-		public void deserialize() throws IOException {
+		public void deserialize() {
 			synchronized (MANAGER) {
-				ObjectInputStream in = new ObjectInputStream(
-						new FileInputStream(fileName));
+				ObjectInputStream in = null;
 				try {
+					in = new ObjectInputStream(
+							new FileInputStream(fileName));
 					@SuppressWarnings({ "unchecked", "rawtypes" })
 					ConcurrentHashMap<String, Session> manager
 						= (ConcurrentHashMap) in.readObject();
 					if (manager != null) {
-						MANAGER = manager;
+						MANAGER.putAll(manager);
 					}
+				} catch (IOException e) {
+					LOG.warn(e.getMessage());
 				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+					LOG.warn(e.getMessage());
+				} finally {
+					IOUtils.close(in);
 				}
-				in.close();
 			}
 		}
 	}
@@ -179,7 +188,7 @@ public final class SessionManager implements SessionListener, SessionMonitor {
 	/**
 	 * <p>The internal class of session invalidate.
 	 */
-	static class SessionCleaner implements Runnable {
+	class SessionCleaner implements Runnable {
 		private int checkInterval =  30 * 1000; //default 30sec.
 		
 		void setCheckInterval(int checkInterval) {
@@ -215,6 +224,7 @@ public final class SessionManager implements SessionListener, SessionMonitor {
 					> session.getMaxInactiveInterval()) {
 					try {
 						session.invalidate();
+						MANAGER.remove(id);
 						LOG.debug("cleanup: " + id);
 					} catch (Exception e) {
 						LOG.warn(e.getMessage());

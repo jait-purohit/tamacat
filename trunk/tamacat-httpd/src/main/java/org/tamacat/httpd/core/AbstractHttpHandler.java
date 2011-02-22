@@ -143,8 +143,8 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 		} else {
 			if (LOG.isWarnEnabled()) {
 				String stackTrace = ExceptionUtils.getStackTrace(e);
-				if (stackTrace != null && stackTrace.length() > 77) {
-					stackTrace = stackTrace.substring(0, 77) + "...";
+				if (stackTrace != null && stackTrace.length() > 500) {
+					stackTrace = stackTrace.substring(0, 500) + "...";
 				}
 				LOG.warn(stackTrace);
 			}
