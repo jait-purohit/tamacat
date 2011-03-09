@@ -14,7 +14,6 @@ public class SessionManagerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		SessionManager.setDefaultMaxInactiveInterval(10000);
 	}
 
 	@After

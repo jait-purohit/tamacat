@@ -10,6 +10,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.session.Session;
+import org.tamacat.httpd.session.SessionFactory;
 import org.tamacat.httpd.session.SessionManager;
 import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.util.StringUtils;
@@ -28,7 +29,7 @@ public class SessionCookieFilter implements RequestFilter {
 		this.sessionCookieName = sessionCookieName;
 	}
 
-	protected static final SessionManager MANAGER = SessionManager.getInstance();
+	protected static final SessionFactory MANAGER = SessionManager.getInstance();
 	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
