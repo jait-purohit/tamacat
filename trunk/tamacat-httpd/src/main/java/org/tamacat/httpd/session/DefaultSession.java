@@ -19,19 +19,17 @@ class DefaultSession implements Session, Serializable {
 	private String id;
 	private HashMap<String, Object> attributes;
 	private int maxInactiveInterval; // = 30 * 60 * 1000; //30min.
-	private transient SessionListener listener;
 	
 	public DefaultSession() {
-		this(null);
+		this(30*60*1000);
 	}
 	
-	public DefaultSession(SessionListener listener) {
+	public DefaultSession(int maxInactiveInterval) {
 		this.creationDate = new Date();
 		this.lastAccessDate = new Date();
 		this.attributes = new HashMap<String, Object>();
 		this.id = UniqueCodeGenerator.generate();
-		this.listener = listener;
-		this.maxInactiveInterval = listener.getMaxInactiveInterval();
+		this.maxInactiveInterval = maxInactiveInterval;
 	}
 	
 	@Override
@@ -67,7 +65,6 @@ class DefaultSession implements Session, Serializable {
 	@Override
 	public void invalidate() {
 		attributes.clear();
-		if (listener != null) listener.invalidate(this);
 	}
 
 	@Override

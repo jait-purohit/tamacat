@@ -9,7 +9,7 @@ package org.tamacat.httpd.session;
  */
 public interface SessionListener {
 
-	int getMaxInactiveInterval();
+	void sessionCreated(Session session);
 	
-	void invalidate(Session session);
+	void sessionDestroyed(Session session);
 }
