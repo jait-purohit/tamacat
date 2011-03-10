@@ -11,7 +11,7 @@ import java.util.Set;
 
 import org.tamacat.util.UniqueCodeGenerator;
 
-class DefaultSession implements Session, Serializable {
+public class DefaultSession implements Session, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Date creationDate;
