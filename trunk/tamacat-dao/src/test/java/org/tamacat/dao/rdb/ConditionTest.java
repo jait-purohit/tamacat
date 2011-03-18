@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) 2007, TamaCat.org
+ * All rights reserved.
+ */
+package org.tamacat.dao.rdb;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+import org.tamacat.dao.rdb.internal.SQLParser;
+
+public class ConditionTest {
+
+    @Test
+    public void testGetReplaceHolder() {
+        assertEquals(SQLParser.VALUE1, Condition.EQUAL.getReplaceHolder());
+        assertEquals("#{value1}", Condition.EQUAL.getReplaceHolder());
+    }
+
+    @Test
+    public void testGetCondition() {
+        assertEquals(" like ", Condition.LIKE_HEAD.getCondition());
+        assertEquals("<>", Condition.NOT_EQUAL.getCondition());
+        assertEquals("=", Condition.EQUAL.getCondition());
+    }
+}
