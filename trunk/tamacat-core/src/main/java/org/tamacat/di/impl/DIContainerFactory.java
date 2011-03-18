@@ -40,7 +40,7 @@ public class DIContainerFactory {
         }
     }
     
-    String getDIContainerClass(String name) {
+    protected String getDIContainerClass(String name) {
     	try {
     		Properties props = PropertyUtils.getProperties(name, this.loader);
     		if (props != null) return props.getProperty("DIContainerClass");
@@ -53,27 +53,10 @@ public class DIContainerFactory {
         DIContainer di = manager.get(file);
         if (di == null) {
         	Object[] args = {file, loader};
-            di = (DIContainer) ClassUtils.newInstance(defaultDIContainerClass, args);
+        	Class<?>[] types = {String.class, ClassLoader.class};
+            di = (DIContainer) ClassUtils.newInstance(defaultDIContainerClass, types, args);
             manager.put(file, di);
         }
         return di;
     }
-    
-//    public synchronized DIContainer getInstance(String file, ClassLoader loader) {
-//        DIContainer di = manager.get(file);
-//        if (di == null) {
-//        	
-//        	Class<?> diClass;
-//        	try {
-//        		String className
-//                	= PropertyUtils.getProperties(PROPERTIES_FILE, loader).getProperty("DIContainerClass");
-//				diClass = loader.loadClass(className);
-//			} catch (ClassNotFoundException e) {
-//				diClass = TamaCatDIContainer.class;
-//			}
-//			di = (DIContainer) ClassUtils.newInstance(diClass, file);
-//            manager.put(file, di);
-//        }
-//        return di;
-//    }
 }
