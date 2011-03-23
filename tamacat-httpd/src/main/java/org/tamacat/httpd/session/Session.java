@@ -4,13 +4,14 @@
  */
 package org.tamacat.httpd.session;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
 /**
  * <p>{@code Session} interface like HttpSession of Servlet-API.
  */
-public interface Session {
+public interface Session extends Serializable {
 
 	String getId();
 	

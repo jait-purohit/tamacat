@@ -26,10 +26,10 @@ public class DefaultSession implements Session, Serializable {
 	
 	public DefaultSession(int maxInactiveInterval) {
 		this.creationDate = new Date();
-		this.lastAccessDate = new Date();
 		this.attributes = new HashMap<String, Object>();
 		this.id = UniqueCodeGenerator.generate();
 		this.maxInactiveInterval = maxInactiveInterval;
+		updateSession();
 	}
 	
 	@Override
@@ -70,13 +70,17 @@ public class DefaultSession implements Session, Serializable {
 	@Override
 	public void removeAttribute(String key) {
 		attributes.remove(key);
-		lastAccessDate = new Date();
+		updateSession();
 	}
 
 	@Override
 	public void setAttribute(String key, Object value) {
+		if (value != null && !(value instanceof Serializable)) {
+			System.err.println("Session#setAttribute value is not Serializable: "
+				+ value.getClass().getName());
+		}
 		attributes.put(key, value);
-		lastAccessDate = new Date();
+		updateSession();
 	}
 	
 	@Override
@@ -87,5 +91,9 @@ public class DefaultSession implements Session, Serializable {
 	@Override
 	public void setMaxInactiveInterval(int maxInactiveInterval) {
 		this.maxInactiveInterval = maxInactiveInterval;
+	}
+	
+	protected void updateSession() {
+		lastAccessDate = new Date();
 	}
 }

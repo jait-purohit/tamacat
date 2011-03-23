@@ -4,13 +4,11 @@
  */
 package org.tamacat.httpd.session;
 
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -18,17 +16,14 @@ import javax.management.ObjectName;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
-public final class DefaultSessionFactory implements SessionFactory {
+public class DefaultSessionFactory implements SessionFactory {
 	static final Log LOG = LogFactory.getLog(DefaultSessionFactory.class);
-	
-	private static final ConcurrentHashMap<String, Session> 
-		MANAGER = new ConcurrentHashMap<String, Session>();
 
 	private List<SessionListener> listeners = new ArrayList<SessionListener>();
 	
 	private int defaultMaxInactiveInterval = 30 * 60 * 1000; //30min.
 	
-	private SessionSerializer serializer;// = new FileSessionSerializer();
+	private SessionStore sessionStore = new MemorySessionStore();
 	
 	public void setSessionListener(SessionListener listener) {
 		listeners.add(listener);
@@ -44,7 +39,7 @@ public final class DefaultSessionFactory implements SessionFactory {
 	}
 	
 	public Set<String> getActiveSessionIds() {
-		return MANAGER.keySet();
+		return sessionStore.getActiveSessionIds();
 	}
 	
 	public Session getSession(String id) {
@@ -52,22 +47,20 @@ public final class DefaultSessionFactory implements SessionFactory {
 	}
 	
 	public Session getSession(String id, boolean isCreate) {
-		synchronized (MANAGER) {
-			Session session = MANAGER.get(id);
-			if (session != null) {
-				if (System.currentTimeMillis() - session.getLastAccessDate().getTime()
-					<= session.getMaxInactiveInterval()) {
-					session.setLastAccessDate(new Date());
-					return session;
-				} else {
-					invalidate(session);
-					return null;
-				}
-			} else if (isCreate) {
-				return createSession();
-			} else {
+		Session session = sessionStore.load(id);
+		if (session != null) {
+			if (System.currentTimeMillis() - session.getLastAccessDate().getTime()
+				<= session.getMaxInactiveInterval()) {
+				session.setLastAccessDate(new Date());
 				return session;
+			} else {
+				invalidate(session);
+				return null;
 			}
+		} else if (isCreate) {
+			return createSession();
+		} else {
+			return session;
 		}
 	}
 	
@@ -77,12 +70,12 @@ public final class DefaultSessionFactory implements SessionFactory {
 	
 	@Override
 	public int getActiveSessions() {
-		return MANAGER.size();
+		return sessionStore.getActiveSessions();
 	}
 	
 	public Session createSession() {
 		Session session = new DefaultSession(getMaxInactiveInterval());
-		MANAGER.put(session.getId(), session);
+		sessionStore.store(session);
 		for (SessionListener listener : listeners) {
 			listener.sessionCreated(session);
 		}
@@ -90,6 +83,7 @@ public final class DefaultSessionFactory implements SessionFactory {
 	}
 
 	public void invalidate(Session session) {
+		String id = session.getId();
 		try {
 			for (SessionListener listener : listeners) {
 				listener.sessionDestroyed(session);
@@ -100,24 +94,18 @@ public final class DefaultSessionFactory implements SessionFactory {
 		try {
 			session.invalidate();
 		} finally {
-			MANAGER.remove(session.getId());
+			sessionStore.delete(id);
 		}
 	}
 	
-	public void serialize() throws IOException {
-		serializer.serialize(this);
-	}
-	
-	public void deserialize() {
-		serializer.deserialize(this);
-	}
-	
+	@Override
 	public synchronized void release() {
-		MANAGER.clear();
+		sessionStore.release();
 	}
 	
-	public void setSessionSerializer(SessionSerializer serializer) {
-		this.serializer = serializer;
+	@Override
+	public void setSessionStore(SessionStore sessionStore) {
+		this.sessionStore = sessionStore;
 	}
 	
 	void register() {

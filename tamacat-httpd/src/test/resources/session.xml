@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
   <bean id="listener" class="org.tamacat.httpd.session.DebugSessionListener" />
-  <bean id="serializer" class="org.tamacat.httpd.session.FileSessionSerializer" />
+  <bean id="sessionStore" class="org.tamacat.httpd.session.MemorySessionStore" />
   
   <bean id="session" class="org.tamacat.httpd.session.DefaultSessionFactory" singleton="true">
     <property name="defaultMaxInactiveInterval">
@@ -10,8 +10,8 @@
     <property name="sessionListener">
       <ref bean="listener" />
     </property>
-    <property name="sessionSerializer">
-      <ref bean="serializer" />
+    <property name="sessionStore">
+      <ref bean="sessionStore" />
     </property>
   </bean>
 </beans>

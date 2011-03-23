@@ -27,8 +27,10 @@ public class SessionCleaner implements Runnable {
 			while(true) {
 				LOG.debug("clean check.");
 				Set<String> ids = manager.getActiveSessionIds();
-				for (String id : ids) {
-					checkAndCleanup(manager.getSession(id, false));
+				if (ids != null) {
+					for (String id : ids) {
+						checkAndCleanup(manager.getSession(id, false));
+					}
 				}
 				Thread.sleep(checkInterval);
 			}
