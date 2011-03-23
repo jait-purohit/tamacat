@@ -10,6 +10,7 @@ import org.tamacat.dao.Search;
 import org.tamacat.dao.Sort;
 import org.tamacat.dao.rdb.ORMappingSupport;
 import org.tamacat.dao.rdb.RdbColumnMetaData;
+import org.tamacat.dao.rdb.RdbTableMetaData;
 
 public interface RdbQuery<T extends ORMappingSupport>{
 
@@ -21,6 +22,8 @@ public interface RdbQuery<T extends ORMappingSupport>{
     RdbQuery<T> addUpdateColumns(Collection<RdbColumnMetaData> columns);
     Collection<RdbColumnMetaData> getUpdateColumns();
 
+    RdbQuery<ORMappingSupport> addTable(RdbTableMetaData table);
+    
     RdbQuery<T> addConnectTable(RdbColumnMetaData col1, RdbColumnMetaData col2);
 
     RdbQuery<T> andSearch(Search search, Sort sort);
@@ -36,6 +39,8 @@ public interface RdbQuery<T extends ORMappingSupport>{
     String getUpdateSQL(T table);
 
     String getDeleteSQL(T table);
+    
+    String getDeleteAllSQL(RdbTableMetaData table);
     
     int getBlobIndex();
     
