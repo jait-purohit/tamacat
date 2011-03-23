@@ -38,6 +38,11 @@ public class RdbQueryImpl<T extends ORMappingSupport> implements RdbQuery<ORMapp
 
     int blobIndex = 0;
     
+    public RdbQuery<ORMappingSupport> addTable(RdbTableMetaData table) {
+    	tables.add(table);
+    	return this;
+    }
+    
     public RdbQuery<ORMappingSupport> addSelectColumn(RdbColumnMetaData column) {
         selectColumns.add(column);
         return this;
@@ -172,13 +177,28 @@ public class RdbQueryImpl<T extends ORMappingSupport> implements RdbQuery<ORMapp
     public String getDeleteSQL(ORMappingSupport data) {
         SQLParser parser = new SQLParser();
         String tableName = null;
-        for (RdbColumnMetaData col : updateColumns.toArray(new RdbColumnMetaData[updateColumns.size()])) {
-            if (tableName == null) tableName = col.getRdbTableMetaData().getTableName();
-            if (col.isPrimaryKey()) {
-                addWhere("and", parser.value(col, Condition.EQUAL, data.getValue(col)));
-                continue;
-            }
+        if (updateColumns != null) {
+        	for (RdbColumnMetaData col : updateColumns.toArray(new RdbColumnMetaData[updateColumns.size()])) {
+            	if (tableName == null) tableName = col.getRdbTableMetaData().getTableName();
+            	if (! useAutoPrimaryKeyUpdate) {
+            		addWhere("and", parser.value(col, Condition.EQUAL, data.getValue(col)));
+            	} else if (col.isPrimaryKey()) {
+                	addWhere("and", parser.value(col, Condition.EQUAL, data.getValue(col)));
+            	}
+        	}
         }
+        if (tableName == null) {
+        	for (RdbTableMetaData table : tables) {
+        		tableName = table.getTableName();
+        		break;
+        	}
+        }
+        String query = DELETE.replace("${TABLE}", tableName);
+        return query + where.toString();
+    }
+    
+    public String getDeleteAllSQL(RdbTableMetaData table) {
+        String tableName = table.getTableName();
         String query = DELETE.replace("${TABLE}", tableName);
         return query + where.toString();
     }
