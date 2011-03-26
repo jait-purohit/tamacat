@@ -7,6 +7,7 @@ package org.tamacat.sql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.tamacat.dao.DaoException;
 import org.tamacat.log.Log;
@@ -32,6 +33,7 @@ public class DriverManagerJdbcConfig implements JdbcConfig {
     private int initPools;
     private int maxPools;
     
+    private String activateSQL;
     private Class<?> driver;
 
     @Override
@@ -50,7 +52,19 @@ public class DriverManagerJdbcConfig implements JdbcConfig {
     public void activate(Connection con) throws ObjectActivateException {
     	if (con == null) throw new ObjectActivateException();
     	try {
-    		con.setAutoCommit(true);
+    		if (activateSQL != null) {
+    			Statement stmt = con.createStatement();
+    			try {
+    				stmt.executeQuery(activateSQL);
+    				if (LOG.isDebugEnabled()) {
+    					LOG.debug(activateSQL);
+    				}
+    			} finally {
+    				DBUtils.close(stmt);
+    			}
+    		} else {
+    			con.setAutoCommit(true);
+    		}
     	} catch (SQLException e) {
     		throw new ObjectActivateException(e);
     	}
@@ -104,5 +118,9 @@ public class DriverManagerJdbcConfig implements JdbcConfig {
     }
     public void setMaxPools(int maxPools) {
         this.maxPools = maxPools;
+    }
+    
+    public void setActivateSQL(String activateSQL) {
+    	this.activateSQL = activateSQL;
     }
 }
