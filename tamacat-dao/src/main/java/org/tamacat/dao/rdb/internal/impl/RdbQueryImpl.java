@@ -144,6 +144,7 @@ public class RdbQueryImpl<T extends ORMappingSupport> implements RdbQuery<ORMapp
         SQLParser parser = new SQLParser();
         StringBuffer values = new StringBuffer();
         String tableName = null;
+        blobIndex = 0;
         for (RdbColumnMetaData col : updateColumns.toArray(new RdbColumnMetaData[updateColumns.size()])) {
             if (tableName == null) tableName = col.getRdbTableMetaData().getTableName();
             if (col.isPrimaryKey()) {
@@ -166,6 +167,12 @@ public class RdbQueryImpl<T extends ORMappingSupport> implements RdbQuery<ORMapp
                 }
             	values.append(parser.value(col, Condition.EQUAL, getTimestampString())
             			.replaceFirst(tableName+".", ""));
+            } else if (col.getType() == RdbDataType.OBJECT) {
+            	if (values.length() > 0) {
+                    values.append(",");
+                }
+            	values.append(parser.value(col, Condition.EQUAL, "?"));
+            	blobIndex++;
             }
         }
         String query = UPDATE.replace("${TABLE}", tableName)
