@@ -163,7 +163,7 @@ public final class DBAccessManager implements LifecycleSupport {
         	close(st);
         	Connection c = con.get();
         	ConnectionManager.getInstance(name).free(c);
-        	LOG.info("released.");
+        	LOG.debug("released.");
     	}
     }
 
