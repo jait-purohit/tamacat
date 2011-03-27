@@ -29,7 +29,7 @@ public class SessionCleaner implements Runnable {
 				Set<String> ids = manager.getActiveSessionIds();
 				if (ids != null) {
 					for (String id : ids) {
-						checkAndCleanup(manager.getSession(id, false));
+						checkAndCleanup(id);
 					}
 				}
 				Thread.sleep(checkInterval);
@@ -40,23 +40,13 @@ public class SessionCleaner implements Runnable {
 		}
 	}
 	
-	void checkAndCleanup(Session session) {
-		if (session != null) {
-			String id = session.getId();
-			if (LOG.isTraceEnabled()) {
-				LOG.trace(System.currentTimeMillis()
-					- session.getLastAccessDate().getTime()
-					+ " > " + session.getMaxInactiveInterval());
-			}
-			if (System.currentTimeMillis() - session.getLastAccessDate().getTime()
-				> session.getMaxInactiveInterval()) {
-				try {
-					session.invalidate();
-					manager.invalidate(session);
-					LOG.debug("cleanup: " + id);
-				} catch (Exception e) {
-					LOG.warn(e.getMessage());
-				}
+	void checkAndCleanup(String id) {
+		if (id != null) {
+			try {
+				Session session = manager.checkSession(id);
+				if (session == null) LOG.debug("cleanup: " + id);
+			} catch (Exception e) {
+				LOG.warn(e.getMessage());
 			}
 		}
 	}

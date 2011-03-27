@@ -4,29 +4,29 @@
  */
 package org.tamacat.httpd.session;
 
-import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Set;
 
 import org.tamacat.util.UniqueCodeGenerator;
 
-public class DefaultSession implements Session, Serializable {
+public class DefaultSession implements Session, SessionSerializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1915915524691987130L;
+	
 	private Date creationDate;
 	private Date lastAccessDate;
 	private String id;
-	private HashMap<String, Object> attributes;
+	private SessionAttributes attributes;
 	private int maxInactiveInterval; // = 30 * 60 * 1000; //30min.
-	
+	private SessionStore sessionStore;
+
 	public DefaultSession() {
 		this(30*60*1000);
 	}
 	
 	public DefaultSession(int maxInactiveInterval) {
 		this.creationDate = new Date();
-		this.attributes = new HashMap<String, Object>();
+		this.attributes = new DefaultSessionAttributes();
 		this.id = UniqueCodeGenerator.generate();
 		this.maxInactiveInterval = maxInactiveInterval;
 		updateSession();
@@ -34,14 +34,31 @@ public class DefaultSession implements Session, Serializable {
 	
 	@Override
 	public Object getAttribute(String key) {
-		return attributes.get(key);
+		return attributes.getAttribute(key);
+	}
+	
+	@Override
+	public void setAttribute(String key, Object value) {
+		attributes.setAttribute(key, value);
+		updateSession();
+	}
+	
+	@Override
+	public void removeAttribute(String key) {
+		attributes.removeAttribute(key);
+		updateSession();
 	}
 
 	@Override
 	public Set<String> getAttributeKeys() {
-		return attributes.keySet();
+		return attributes.getAttributeKeys();
 	}
 
+	@Override
+	public SessionAttributes getSessionAttributes() {
+		return attributes;
+	}
+	
 	@Override
 	public Date getCreationDate() {
 		return creationDate;
@@ -66,22 +83,6 @@ public class DefaultSession implements Session, Serializable {
 	public void invalidate() {
 		attributes.clear();
 	}
-
-	@Override
-	public void removeAttribute(String key) {
-		attributes.remove(key);
-		updateSession();
-	}
-
-	@Override
-	public void setAttribute(String key, Object value) {
-		if (value != null && !(value instanceof Serializable)) {
-			System.err.println("Session#setAttribute value is not Serializable: "
-				+ value.getClass().getName());
-		}
-		attributes.put(key, value);
-		updateSession();
-	}
 	
 	@Override
 	public int getMaxInactiveInterval() {
@@ -93,7 +94,24 @@ public class DefaultSession implements Session, Serializable {
 		this.maxInactiveInterval = maxInactiveInterval;
 	}
 	
-	protected void updateSession() {
+	@Override
+	public void updateSession() {
 		lastAccessDate = new Date();
+		if (sessionStore != null) sessionStore.store(this);
+	}
+	
+	@Override
+	public void setSessionStore(SessionStore sessionStore) {
+		this.sessionStore = sessionStore;
+	}
+	
+	private void writeObject(java.io.ObjectOutputStream stream)
+			throws java.io.IOException {
+		stream.defaultWriteObject();
+	}
+
+	private void readObject(java.io.ObjectInputStream stream)
+			throws java.io.IOException, ClassNotFoundException {
+		stream.defaultReadObject();
 	}
 }
