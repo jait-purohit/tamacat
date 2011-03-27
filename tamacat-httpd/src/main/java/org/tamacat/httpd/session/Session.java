@@ -23,6 +23,8 @@ public interface Session extends Serializable {
 	
 	Set<String> getAttributeKeys();
 	
+	SessionAttributes getSessionAttributes();
+	
 	Date getCreationDate();
 	
 	Date getLastAccessDate();

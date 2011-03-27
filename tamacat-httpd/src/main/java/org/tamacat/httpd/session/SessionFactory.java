@@ -6,10 +6,16 @@ public interface SessionFactory extends SessionMonitor {
 	Session getSession(String id, boolean isCreate);
 	
 	Session createSession();
-	void invalidate(Session session);
 	
-	//void serialize() throws IOException;
-	//void deserialize(Session session);
+	/**
+	 * check the session object.
+	 * if session invalidate then return null. 
+	 * @param id
+	 * @return
+	 */
+	Session checkSession(String id);
+	
+	void invalidate(Session session);
 	
 	void release();
 	

@@ -10,7 +10,7 @@ import org.tamacat.log.LogFactory;
 public class MemorySessionStore implements SessionStore {
 
 	static final Log LOG = LogFactory.getLog(MemorySessionStore.class);
-	static Map<String, Session> STORE = new ConcurrentHashMap<String, Session>();
+	static final Map<String, Session> STORE = new ConcurrentHashMap<String, Session>();
 	
 	@Override
 	public synchronized void store(Session session) {

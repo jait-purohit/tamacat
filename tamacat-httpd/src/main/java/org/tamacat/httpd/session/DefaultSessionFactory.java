@@ -38,30 +38,47 @@ public class DefaultSessionFactory implements SessionFactory {
 		register();
 	}
 	
+	@Override
 	public Set<String> getActiveSessionIds() {
 		return sessionStore.getActiveSessionIds();
 	}
 	
+	@Override
 	public Session getSession(String id) {
 		return getSession(id, true);
 	}
 	
+	@Override
 	public Session getSession(String id, boolean isCreate) {
-		Session session = sessionStore.load(id);
+		Session session = checkSession(id);
 		if (session != null) {
-			if (System.currentTimeMillis() - session.getLastAccessDate().getTime()
-				<= session.getMaxInactiveInterval()) {
-				session.setLastAccessDate(new Date());
-				return session;
+			if (session instanceof SessionSerializable) {
+				((SessionSerializable)session).updateSession();
 			} else {
-				invalidate(session);
-				return null;
+				session.setLastAccessDate(new Date());
 			}
-		} else if (isCreate) {
+			return session;
+		}
+		if (isCreate) {
 			return createSession();
 		} else {
 			return session;
 		}
+	}
+	
+	@Override
+	public Session checkSession(String id) {
+		Session session = sessionStore.load(id);
+		if (session != null) {
+			session.setMaxInactiveInterval(defaultMaxInactiveInterval);
+			if (System.currentTimeMillis() - session.getLastAccessDate().getTime()
+				<= session.getMaxInactiveInterval()) {
+				return session;
+			} else {
+				invalidate(session);
+			}
+		}
+		return null;
 	}
 	
 	public int getMaxInactiveInterval() {
@@ -75,10 +92,13 @@ public class DefaultSessionFactory implements SessionFactory {
 	
 	public Session createSession() {
 		Session session = new DefaultSession(getMaxInactiveInterval());
-		sessionStore.store(session);
+		if (session instanceof SessionSerializable) {
+			((SessionSerializable)session).setSessionStore(sessionStore);
+		}
 		for (SessionListener listener : listeners) {
 			listener.sessionCreated(session);
 		}
+		sessionStore.store(session);
 		return session;
 	}
 
