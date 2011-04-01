@@ -13,6 +13,8 @@ import java.util.Set;
  */
 public interface Session extends Serializable {
 
+	void setId(String id);
+	
 	String getId();
 	
 	Object getAttribute(String key);
@@ -22,6 +24,8 @@ public interface Session extends Serializable {
 	void removeAttribute(String key);
 	
 	Set<String> getAttributeKeys();
+	
+	void setSessionAttributes(SessionAttributes attributes);
 	
 	SessionAttributes getSessionAttributes();
 	

@@ -20,6 +20,13 @@ public class DefaultSession implements Session, SessionSerializable {
 	private int maxInactiveInterval; // = 30 * 60 * 1000; //30min.
 	private SessionStore sessionStore;
 
+	public DefaultSession(String id, Date createDate, Date lastAccessDate) {
+		this.id = id;
+		this.creationDate = createDate;
+		this.lastAccessDate = lastAccessDate;
+		this.attributes = new DefaultSessionAttributes();
+	}
+	
 	public DefaultSession() {
 		this(30*60*1000);
 	}
@@ -55,6 +62,11 @@ public class DefaultSession implements Session, SessionSerializable {
 	}
 
 	@Override
+	public void setSessionAttributes(SessionAttributes attributes) {
+		this.attributes = attributes;
+	}
+	
+	@Override
 	public SessionAttributes getSessionAttributes() {
 		return attributes;
 	}
@@ -72,6 +84,11 @@ public class DefaultSession implements Session, SessionSerializable {
 	@Override
 	public void setLastAccessDate(Date lastAccessDate) {
 		this.lastAccessDate = lastAccessDate;
+	}
+	
+	@Override
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	@Override
