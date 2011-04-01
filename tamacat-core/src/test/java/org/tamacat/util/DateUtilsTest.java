@@ -21,4 +21,10 @@ public class DateUtilsTest {
         assertTrue(true);
     }
 
+    @Test
+    public void testParseTime() {
+        System.out.println(DateUtils.parse("2011-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss"));
+        assertTrue(true);
+    }
+
 }
