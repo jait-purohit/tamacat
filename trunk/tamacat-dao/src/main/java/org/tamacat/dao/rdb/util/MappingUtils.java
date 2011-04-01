@@ -21,8 +21,9 @@ public class MappingUtils {
         case STRING:
             return rs.getString(index);
         case DATE:
-        case TIME:
             return rs.getDate(index);
+        case TIME:
+            return rs.getString(index);
         case NUMERIC:
             return rs.getLong(index);
         case FLOAT:
@@ -39,8 +40,10 @@ public class MappingUtils {
     	String key = getColumnName(column);
     	Object value = data.get(key);
     	if (value == null) return null;
-    	if (value instanceof Date) {
-    		return DateUtils.getTime((Date)value, "yyyy-MM-dd HH:mm:ss"); //TODO
+    	if (type == RdbDataType.DATE && value instanceof Date) {
+    		return DateUtils.getTime((Date)value, "yyyy-MM-dd"); //TODO
+    	} else if (type == RdbDataType.TIME && value instanceof Date) {
+        	return DateUtils.getTime((Date)value, "yyyy-MM-dd HH:mm:ss"); //TODO
     	} else if (value instanceof String){
     		return (String) value;
     	} else {
