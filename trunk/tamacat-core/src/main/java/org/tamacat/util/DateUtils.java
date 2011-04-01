@@ -4,6 +4,7 @@
  */
 package org.tamacat.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -27,5 +28,19 @@ public abstract class DateUtils {
     
     public static String getTimestamp(String pattern, Locale locale) {
     	return getTime(new Date(), pattern, locale);
+    }
+    
+    public static Date parse(String date, String pattern) {
+    	return parse(date, pattern, currentLocale);
+    }
+    
+    public static Date parse(String date, String pattern, Locale locale) {
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern, locale);
+        try {
+			return formatter.parse(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
     }
 }
