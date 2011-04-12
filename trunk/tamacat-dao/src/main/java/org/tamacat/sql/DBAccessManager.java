@@ -169,7 +169,7 @@ public final class DBAccessManager implements LifecycleSupport {
 
     @Override
 	public boolean isRunning() {
-		return running.get();
+		return running != null && running.get();
 	}
 
     @Override
