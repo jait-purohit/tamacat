@@ -33,9 +33,10 @@ public class DefaultRdbTableMetaData implements RdbTableMetaData {
         }
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public Collection<RdbColumnMetaData> getColumns() {
-        return columns;
+        return (Collection<RdbColumnMetaData>) columns.clone();
     }
 
     @Override
