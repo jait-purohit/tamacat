@@ -40,4 +40,6 @@ public interface Session extends Serializable {
 	void setMaxInactiveInterval(int maxInactiveInterval);
 	
 	void invalidate();
+	
+	boolean isInvalidate();
 }
