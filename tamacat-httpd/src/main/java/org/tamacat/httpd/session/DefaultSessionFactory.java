@@ -71,11 +71,15 @@ public class DefaultSessionFactory implements SessionFactory {
 		Session session = sessionStore.load(id);
 		if (session != null) {
 			session.setMaxInactiveInterval(defaultMaxInactiveInterval);
-			if (System.currentTimeMillis() - session.getLastAccessDate().getTime()
+			if (session.isInvalidate()) {
+				session.invalidate();
+				//invalidate(session);
+			} else if (System.currentTimeMillis() - session.getLastAccessDate().getTime()
 				<= session.getMaxInactiveInterval()) {
 				return session;
 			} else {
-				invalidate(session);
+				session.invalidate();
+				//invalidate(session);
 			}
 		}
 		return null;
@@ -112,9 +116,10 @@ public class DefaultSessionFactory implements SessionFactory {
 			LOG.warn(e.getMessage());
 		}
 		try {
-			session.invalidate();
-		} finally {
+			System.out.println("sessionStore.delete(id):"+id);
 			sessionStore.delete(id);
+		} catch (Exception e) {
+			LOG.warn(e.getMessage());
 		}
 	}
 	

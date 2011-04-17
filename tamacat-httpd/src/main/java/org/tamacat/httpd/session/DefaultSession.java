@@ -19,12 +19,14 @@ public class DefaultSession implements Session, SessionSerializable {
 	private SessionAttributes attributes;
 	private int maxInactiveInterval; // = 30 * 60 * 1000; //30min.
 	private SessionStore sessionStore;
-
-	public DefaultSession(String id, Date createDate, Date lastAccessDate) {
+	private boolean invalidate;
+	
+	public DefaultSession(String id, Date createDate, Date lastAccessDate, boolean invalidate) {
 		this.id = id;
 		this.creationDate = createDate;
 		this.lastAccessDate = lastAccessDate;
 		this.attributes = new DefaultSessionAttributes();
+		this.invalidate = invalidate;
 	}
 	
 	public DefaultSession() {
@@ -99,6 +101,13 @@ public class DefaultSession implements Session, SessionSerializable {
 	@Override
 	public void invalidate() {
 		attributes.clear();
+		invalidate = true;
+		//updateSession();
+		SessionManager.getInstance().invalidate(this);
+	}
+	
+	public boolean isInvalidate() {
+		return invalidate;
 	}
 	
 	@Override
@@ -113,8 +122,12 @@ public class DefaultSession implements Session, SessionSerializable {
 	
 	@Override
 	public void updateSession() {
-		lastAccessDate = new Date();
-		if (sessionStore != null) sessionStore.store(this);
+		if (invalidate) {
+			if (sessionStore != null) sessionStore.delete(id);
+		} else {
+			lastAccessDate = new Date();
+			if (sessionStore != null) sessionStore.store(this);
+		}
 	}
 	
 	@Override

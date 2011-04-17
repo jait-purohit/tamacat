@@ -241,7 +241,9 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 	protected void logoutAction(HttpRequest request, String sessionId) {
 		if (StringUtils.isNotEmpty(sessionId)) {
 			Session session = SessionManager.getInstance().getSession(sessionId, false);
-			if (session != null) session.invalidate();
+			if (session != null) {
+				session.invalidate();
+			}
 		}
 	}
 	
@@ -260,7 +262,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 	 * @return loginPageUrl?redirectKey=/path/to/requestURL
 	 */
 	protected String getLoginPageUrlWithRedirect(HttpRequest request) {
-		String uri = RequestUtils.getRequestPath(request);
+		String uri = request.getRequestLine().getUri();//RequestUtils.getRequestPath(request);
 		if (! uri.endsWith(logoutActionUrl) && ! uri.endsWith(loginActionUrl)) {
 			try {
 				return loginPageUrl + "?"

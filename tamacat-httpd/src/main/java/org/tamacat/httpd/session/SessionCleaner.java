@@ -46,6 +46,7 @@ public class SessionCleaner implements Runnable {
 				Session session = manager.checkSession(id);
 				if (session == null) LOG.debug("cleanup: " + id);
 			} catch (Exception e) {
+				e.printStackTrace();
 				LOG.warn(e.getMessage());
 			}
 		}
