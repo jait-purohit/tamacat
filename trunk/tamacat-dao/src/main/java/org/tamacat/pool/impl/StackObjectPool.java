@@ -7,12 +7,16 @@ package org.tamacat.pool.impl;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 import org.tamacat.pool.ObjectActivateException;
 import org.tamacat.pool.ObjectPool;
 import org.tamacat.pool.PoolableObjectFactory;
 
 public class StackObjectPool<T> implements ObjectPool<T> {
 
+	static final Log LOG = LogFactory.getLog(StackObjectPool.class);
+	
     private final PoolableObjectFactory<T> factory;
 
     private final Stack<T> pool;
@@ -34,27 +38,28 @@ public class StackObjectPool<T> implements ObjectPool<T> {
 
     @Override
     public synchronized T getObject() {
+    	T object = null;
         if (pool.size() > 0) {
-            T object = pool.pop();
-            if (object != null) {
-                try {
-                    factory.activate(object);
-                    active.incrementAndGet();
-                    return object;
-                } catch (ObjectActivateException e) {
-                    //retry
-                    factory.destroy(object);
-                    object = getObject();
-                }
-            }
+            object = pool.pop();
+            try {
+              	LOG.trace("activate");
+                factory.activate(object);
+            } catch (ObjectActivateException e) {
+            	LOG.warn("retry. " + e.getMessage());
+                factory.destroy(object);
+                object = getObject();
+            } 
+        } else {
+        	object = create();
         }
-        T object = create();
-        return object;
+        if (object != null) {
+        	active.incrementAndGet();
+        }
+    	return object;
     }
 
     protected T create() {
         if (max.get() == 0 || active.get() < max.get()) {
-            active.incrementAndGet();
             return factory.create();
         } else {
             throw new RuntimeException();
