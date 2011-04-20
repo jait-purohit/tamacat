@@ -20,7 +20,9 @@ public final class SessionManager {
 		FACTORY = di.getBean("session", SessionFactory.class);
 		if (FACTORY == null) FACTORY = new DefaultSessionFactory();
 		//start session cleaning thread.
-		CLEANER = new Thread(new SessionCleaner(FACTORY), "Cleaner");
+		SessionCleaner cleaner = di.getBean("cleaner", SessionCleaner.class);
+		cleaner.setSessionFactory(FACTORY);
+		CLEANER = new Thread(cleaner, cleaner.getName());
 		CLEANER.start();
 	}
 
