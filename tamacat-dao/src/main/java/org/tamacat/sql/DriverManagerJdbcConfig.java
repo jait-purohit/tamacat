@@ -52,6 +52,7 @@ public class DriverManagerJdbcConfig implements JdbcConfig {
     public void activate(Connection con) throws ObjectActivateException {
     	if (con == null) throw new ObjectActivateException();
     	try {
+    		con.setAutoCommit(true);
     		if (activateSQL != null) {
     			Statement stmt = con.createStatement();
     			try {
@@ -62,10 +63,9 @@ public class DriverManagerJdbcConfig implements JdbcConfig {
     			} finally {
     				DBUtils.close(stmt);
     			}
-    		} else {
-    			con.setAutoCommit(true);
     		}
     	} catch (SQLException e) {
+    		LOG.warn("activate error. " + e.getMessage());
     		throw new ObjectActivateException(e);
     	}
     }

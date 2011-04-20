@@ -44,7 +44,7 @@ public final class DBAccessManager implements LifecycleSupport {
         }
     }
 
-    Connection getConnection() {
+    synchronized Connection getConnection() {
         Connection c = con.get();
         try {
 	        if (c == null || c.isClosed()) {
@@ -60,7 +60,7 @@ public final class DBAccessManager implements LifecycleSupport {
         return c;
     }
 
-    Statement getStatement() {
+    synchronized Statement getStatement() {
         Statement s = stmt.get();
         try {
         	if (s == null || s.isClosed()) {
@@ -160,10 +160,12 @@ public final class DBAccessManager implements LifecycleSupport {
     public void release() {
     	if (isRunning()) {
     		Statement st = stmt.get();
+    		stmt.remove();
         	close(st);
         	Connection c = con.get();
+        	con.remove();
         	ConnectionManager.getInstance(name).free(c);
-        	LOG.debug("released.");
+        	LOG.trace("released.");
     	}
     }
 

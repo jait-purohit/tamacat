@@ -32,6 +32,10 @@ public class ConnectionManagerTest {
         Connection con = cm.getObject();
         LOG.debug(con.toString());
         cm.free(con);
+        
+        Connection c2 = cm.getObject();
+        LOG.debug(c2.toString());
+        cm.free(c2);
     }
 
 }

@@ -6,6 +6,7 @@ package org.tamacat.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -20,6 +21,7 @@ public class DataSourceJdbcConfig implements JdbcConfig {
 
 	static final Log LOG = LogFactory.getLog(DataSourceJdbcConfig.class);
 	
+    private String activateSQL;
     private InitialContext ic;
     private String dataSourceName;
     DataSource ds = null;
@@ -38,6 +40,17 @@ public class DataSourceJdbcConfig implements JdbcConfig {
     	if (con == null) throw new ObjectActivateException();
     	try {
     		con.setAutoCommit(true);
+    		if (activateSQL != null) {
+    			Statement stmt = con.createStatement();
+    			try {
+    				stmt.executeQuery(activateSQL);
+    				if (LOG.isDebugEnabled()) {
+    					LOG.debug(activateSQL);
+    				}
+    			} finally {
+    				DBUtils.close(stmt);
+    			}
+    		}
     	} catch (SQLException e) {
     		throw new ObjectActivateException(e);
     	}
