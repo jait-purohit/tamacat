@@ -101,6 +101,10 @@ public class RequestUtils {
 		}
 	}
 	
+	public static void setParameters(HttpContext context, RequestParameters parameters) {
+		context.setAttribute(REQUEST_PARAMETERS_CONTEXT_KEY, parameters);
+	}
+	
 	public static RequestParameters getParameters(HttpContext context) {
 		synchronized (context) {
 			RequestParameters params = (RequestParameters) context.getAttribute(REQUEST_PARAMETERS_CONTEXT_KEY);
