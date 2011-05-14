@@ -17,8 +17,13 @@ import org.tamacat.util.StringUtils;
 public class HttpRequestContext implements RequestContext {
 
 	HttpRequest request;
+	
 	public HttpRequestContext(HttpRequest request) {
 		this.request = request;
+	}
+	
+	public HttpRequest getHttpRequest() {
+		return request;
 	}
 	
 	@Override

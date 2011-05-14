@@ -1,0 +1,105 @@
+package org.tamacat.httpd.mime;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+
+import org.apache.commons.fileupload.FileItem;
+
+public class HttpFileItem implements FileItem {
+
+	private static final long serialVersionUID = 1L;
+	protected FileItem item;
+	
+	private String digest;
+
+	public String getDigest() {
+		return digest;
+	}
+
+	public void setDigest(String digest) {
+		this.digest = digest;
+	}
+
+	public HttpFileItem(FileItem item) {
+		this.item = item;
+	}
+
+	@Override
+	public InputStream getInputStream() throws IOException {
+		return item.getInputStream();
+	}
+
+	@Override
+	public String getContentType() {
+		return item.getContentType();
+	}
+
+	@Override
+	public String getName() {
+		return item.getName();
+	}
+
+	@Override
+	public boolean isInMemory() {
+		return item.isInMemory();
+	}
+
+	@Override
+	public long getSize() {
+		return item.getSize();
+	}
+
+	@Override
+	public byte[] get() {
+		return item.get();
+	}
+
+	@Override
+	public String getString(String encoding)
+			throws UnsupportedEncodingException {
+		return item.getString(encoding);
+	}
+
+	@Override
+	public String getString() {
+		return item.getString();
+	}
+
+	@Override
+	public void write(File file) throws Exception {
+		item.write(file);
+	}
+
+	@Override
+	public void delete() {
+		item.delete();
+	}
+
+	@Override
+	public String getFieldName() {
+		return item.getFieldName();
+	}
+
+	@Override
+	public void setFieldName(String name) {
+		item.setFieldName(name);
+	}
+
+	@Override
+	public boolean isFormField() {
+		return item.isFormField();
+	}
+
+	@Override
+	public void setFormField(boolean state) {
+		item.setFormField(state);
+	}
+
+	@Override
+	public OutputStream getOutputStream() throws IOException {
+		return item.getOutputStream();
+	}
+}

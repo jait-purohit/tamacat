@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadBase.FileSizeLimitExceededException;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -32,6 +33,16 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 	protected String baseDirectory;
 	protected String encoding = "UTF-8";
 	protected boolean writeFile;
+	protected long fileSizeMax;
+	protected String algorithm = "SHA-256";
+
+	public void setAlgorithm(String algorithm) {
+		this.algorithm = algorithm;
+	}
+
+	public void setFileSizeMax(long fileSizeMax) {
+		this.fileSizeMax = fileSizeMax;
+	}
 
 	public void setWriteFile(boolean writeFile) {
 		this.writeFile = writeFile;
@@ -50,6 +61,9 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 				if (encoding != null ) {
 					upload.setHeaderEncoding(encoding);
 				}
+				if (fileSizeMax > 0) {
+					upload.setFileSizeMax(fileSizeMax);
+				}
 				List<FileItem> list = upload.parseRequest(request);
 				for (FileItem item : list) {
 					if (item.isFormField()) {
@@ -58,9 +72,14 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 						handleFileItem(context, item);
 					}
 				}
+			} catch (FileSizeLimitExceededException e) {
+				LOG.error(e.getMessage());
+				context.setAttribute(EXCEPTION_KEY, e);
 			} catch (FileUploadException e) {
+				LOG.error(e.getMessage());
 				throw new ServiceUnavailableException(e);
 			} catch (Exception e) {
+				LOG.error(e.getMessage(), e);
 				throw new ServiceUnavailableException(e);
 			}
 		}
