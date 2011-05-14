@@ -18,10 +18,4 @@ public class BlobUtils {
 			throw new DaoException(e);
 		}
 	}
-	
-//	public static Object getObject(
-//			ResultSet rs, int index, OutputStream out) throws SQLException {
-//		out.write(rs.getBlob(index).getBytes());
-//		return result;
-//	}
 }

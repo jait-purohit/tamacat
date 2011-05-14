@@ -115,11 +115,11 @@ public class RdbDaoAdapter<T extends ORMappingSupport> implements Dao<T> {
     	return delegate.executeUpdate(sql, index, in);
     }
     
-    protected void commit() {
+    public void commit() {
     	delegate.commit();
     }
 
-    protected void rollback() {
+    public void rollback() {
     	delegate.commit();
     }
     
