@@ -8,5 +8,7 @@ import org.tamacat.httpd.config.ServiceUrl;
 
 public interface HttpFilter {
 	
+	String EXCEPTION_KEY = "org.tamacat.httpd.filter.HttpFilter.Exception";
+	
 	void init(ServiceUrl serviceUrl);
 }
