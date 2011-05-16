@@ -16,14 +16,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.exception.UnauthorizedException;
-import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.util.StringUtils;
 import org.tamacat.util.UniqueCodeGenerator;
 
 /**
  * <p>Implements of WS-Security Extenstion (WSSE) authentication.
  */
-public class WSSEAuthProcessor extends AbstractAuthProcessor implements RequestFilter {
+public class WSSEAuthProcessor extends AbstractAuthProcessor {
 	
 	static final String AUTHORIZATION = "Authorization";
 	static final String WWW_AUTHENTICATE = "WWW-Authenticate";

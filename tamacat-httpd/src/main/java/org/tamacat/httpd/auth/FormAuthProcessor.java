@@ -17,8 +17,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.exception.UnauthorizedException;
-import org.tamacat.httpd.filter.RequestFilter;
-import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.session.Session;
 import org.tamacat.httpd.session.SessionManager;
 import org.tamacat.httpd.util.HeaderUtils;
@@ -28,7 +26,7 @@ import org.tamacat.util.StringUtils;
 /**
  * <p>Implements of HTML Form based authentication.
  */
-public class FormAuthProcessor extends AbstractAuthProcessor implements RequestFilter, ResponseFilter {
+public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	protected static final String SC_UNAUTHORIZED
 		= FormAuthProcessor.class.getName() + ".SC_UNAUTHORIZED";
@@ -199,21 +197,27 @@ public class FormAuthProcessor extends AbstractAuthProcessor implements RequestF
 	@Override
 	public void afterResponse(HttpRequest request, HttpResponse response,
 			HttpContext context) {
-		if (Boolean.TRUE.equals(context.getAttribute(SC_UNAUTHORIZED))) {
-			//unauthorized -> Go to the login page.
-			sendRedirect(request, response, getLoginPageUrlWithRedirect(request));
-		} else if (Boolean.TRUE.equals(context.getAttribute(SC_AUTHORIZED))) {
-			//authorized login -> Go to the top page.
-			String uri = RequestUtils.getParameter(context, "redirect");
-			if (uri != null) {
-				try {
-					uri = URLDecoder.decode(uri, charset);
-				} catch (UnsupportedEncodingException e) {
+		try {
+			if (Boolean.TRUE.equals(context.getAttribute(SC_UNAUTHORIZED))) {
+				//unauthorized -> Go to the login page.
+				sendRedirect(request, response, getLoginPageUrlWithRedirect(request));
+			} else if (Boolean.TRUE.equals(context.getAttribute(SC_AUTHORIZED))) {
+				//authorized login -> Go to the top page.
+				String uri = RequestUtils.getParameter(context, "redirect");
+				if (uri != null) {
+					try {
+						uri = URLDecoder.decode(uri, charset);
+					} catch (UnsupportedEncodingException e) {
+					}
+				} else {
+					uri = topPageUrl;
 				}
-			} else {
-				uri = topPageUrl;
+				sendRedirect(request, response, uri);
 			}
-			sendRedirect(request, response, uri);
+		} finally {
+			if (authComponent != null) {
+				authComponent.release();
+			}
 		}
 	}
 	

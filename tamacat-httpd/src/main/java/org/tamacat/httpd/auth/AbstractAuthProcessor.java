@@ -4,13 +4,17 @@
  */
 package org.tamacat.httpd.auth;
 
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.filter.RequestFilter;
+import org.tamacat.httpd.filter.ResponseFilter;
 
 /**
  * <p>The abstract class of authentication processor.
  */
-public abstract class AbstractAuthProcessor implements RequestFilter {
+public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFilter {
 
 	protected AuthComponent<?> authComponent;
 	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
@@ -22,6 +26,14 @@ public abstract class AbstractAuthProcessor implements RequestFilter {
 		if (authComponent != null) {
 			authComponent.init();
 		}
+	}
+	
+	@Override
+	public void afterResponse(HttpRequest request, HttpResponse response,
+			HttpContext context) {
+		if (authComponent != null) {
+			authComponent.release();
+		}		
 	}
 	
 	/**
