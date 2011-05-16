@@ -5,9 +5,9 @@
 package org.tamacat.httpd.examples;
 
 import org.apache.http.protocol.HttpContext;
-import org.tamacat.httpd.auth.AuthComponent;
+import org.tamacat.httpd.auth.AbstractAuthComponent;
 
-public class UserAuthComponent implements AuthComponent<User> {
+public class UserAuthComponent extends AbstractAuthComponent<User> {
 
 	private String username;
 	private String password;
@@ -21,22 +21,10 @@ public class UserAuthComponent implements AuthComponent<User> {
 	}
 
 	@Override
-	public boolean check(String id, String pass, HttpContext context) {
-		return pass != null && password != null 
-	        && id != null && username != null
-	        && pass.equals(password)
-	        && id.equals(username);
-	}
-
-	@Override
 	public User getAuthUser(String id, HttpContext context) {
 		User user = new User();
-		user.setAuthUsername(id);
+		user.setAuthUsername(username);
 		user.setAuthPassword(password);
 		return user;
-	}
-
-	@Override
-	public void init() {
 	}
 }

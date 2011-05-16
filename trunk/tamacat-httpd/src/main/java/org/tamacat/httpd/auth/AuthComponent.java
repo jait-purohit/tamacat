@@ -21,6 +21,8 @@ public interface AuthComponent<T extends AuthUser> {
 	 */
 	void init();
 	
+	void release();
+	
 	/**
 	 * <p>The login account is verified. 
 	 * @param id

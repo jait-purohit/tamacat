@@ -14,13 +14,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.exception.UnauthorizedException;
-import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.util.StringUtils;
 
 /**
  * <p>Implements of Basic authentication.
  */
-public class BasicAuthProcessor extends AbstractAuthProcessor implements RequestFilter {
+public class BasicAuthProcessor extends AbstractAuthProcessor {
 
 	static final String AUTHORIZATION = "Authorization";
 	static final String WWW_AUTHENTICATE = "WWW-Authenticate";
