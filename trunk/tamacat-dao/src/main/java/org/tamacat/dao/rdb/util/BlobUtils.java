@@ -14,7 +14,6 @@ public class BlobUtils {
 			stmt.setBinaryStream(index, in);
 			return stmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new DaoException(e);
 		}
 	}
