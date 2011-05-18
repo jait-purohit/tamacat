@@ -17,10 +17,14 @@ public interface AuthComponent<T extends AuthUser> {
 	String REMOTE_USER_KEY = AuthComponent.class.getClass().getName() + ".REMOTE_USER";
 
 	/**
-	 * <p>Execute from {@link HttpHandler#setRequestFilter}.
+	 * <p>Initialized this instance.
+	 * Execute from {@link HttpHandler#setRequestFilter}.
 	 */
 	void init();
 	
+	/**
+	 * <p>Release all object used by this instance.
+	 */
 	void release();
 	
 	/**

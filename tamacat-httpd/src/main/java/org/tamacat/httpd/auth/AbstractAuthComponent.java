@@ -2,6 +2,11 @@ package org.tamacat.httpd.auth;
 
 import org.apache.http.protocol.HttpContext;
 
+/**
+ * <p>{@code AbstractAuthComponent} is common implementation for {@code AuthComponent}.
+ * AuthUser can be acquired from AuthUserManager when attested.
+ * @param <T> extends AuthUser
+ */
 public abstract class AbstractAuthComponent<T extends AuthUser> implements AuthComponent<T> {
 
 	protected AuthUserManager manager = new AuthUserManager();
