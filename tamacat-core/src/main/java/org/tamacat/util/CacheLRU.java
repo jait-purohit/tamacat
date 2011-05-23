@@ -9,6 +9,12 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+/**
+ * Cashe implements Least Recently Used (LRU) algorithm.
+ *
+ * @param <K> key
+ * @param <V> value
+ */
 public class CacheLRU<K,V> {
 
 	private int maxSize;

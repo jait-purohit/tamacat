@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * Utilities of Collection.
+ */
 public class CollectionUtils {
 
 	public static Map<String, String> convertMap(

@@ -14,6 +14,9 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Utilities of Class and Method.
+ */
 public abstract class ClassUtils {
 
     static
@@ -28,20 +31,6 @@ public abstract class ClassUtils {
             return loader;
         }
     }
-
-//    static
-//      public InputStream getStream(String path) {
-//        return getDefaultClassLoader().getResourceAsStream(path);
-//    }
-//    
-//    static
-//      public InputStream getStream(String path, ClassLoader loader) {
-//    	if (loader == null){
-//    		return getStream(path);
-//    	} else {
-//    		return loader.getResourceAsStream(path);
-//    	}
-//    }
 
     static
       public URL getURL(String path) {
