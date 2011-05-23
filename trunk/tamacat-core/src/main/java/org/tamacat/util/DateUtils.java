@@ -9,6 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Utilities of Date.
+ */
 public abstract class DateUtils {
 
     static final Locale currentLocale = Locale.getDefault(); //JAPANESE;
@@ -39,7 +42,6 @@ public abstract class DateUtils {
         try {
 			return formatter.parse(date);
 		} catch (ParseException e) {
-			e.printStackTrace();
 			return null;
 		}
     }
