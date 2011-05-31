@@ -32,7 +32,7 @@ public final class DI {
 	/**
 	 * Creates an {@link DIContainer} for the given set of configuration file(XML).
 	 * @param defines Configuration file(XML) in CLASSPATH.
-	 * @param loader ClassLoader
+	 * @param loader instance of ClassLoader
 	 * @return {@link DIContainer}
 	 */
 	public static synchronized DIContainer configure(String xml, ClassLoader loader) {
@@ -52,6 +52,12 @@ public final class DI {
 		return new TamaCatDIContainer(defineMap, ClassUtils.getDefaultClassLoader());
 	}
 
+	/**
+	 * Creates an {@link DIContainer} for the given set of defines.
+	 * @param defines BeanDefineMap, such as Map of {@link BeanDefine}.
+	 * @param loader instance of ClassLoader
+	 * @return {@link DIContainer}
+	 */
 	public static DIContainer configure(BeanDefineMap defines, ClassLoader loader) {
 		return new TamaCatDIContainer(defines, loader);
 	}
