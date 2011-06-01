@@ -11,31 +11,31 @@ package org.tamacat.httpd.auth;
 public interface AuthUser {
 	
 	/**
-	 * <p>Get the username
+	 * Get the username (login id)
 	 * @return username
 	 */
 	String getAuthUsername();
 	
 	/**
-	 * <p>Get the password
+	 * Get the password
 	 * @return password
 	 */
 	String getAuthPassword();
 	
 	/**
-	 * <p>Set the username to use by the authentication.
+	 * Set the username(login id) to use by the authentication.
 	 * @param password
 	 */
 	void setAuthUsername(String username);
 	
 	/**
-	 * <p>Set the password to use by the authentication.
+	 * Set the password to use by the authentication.
 	 * @param password
 	 */
 	void setAuthPassword(String password);
 	
 	/**
-	 * <p>When I use the encrypted password,
+	 * When I use the encrypted password,
 	 * I give back the {@code true}.
 	 */
 	boolean isEncrypted();
