@@ -24,7 +24,7 @@ import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.StringUtils;
 
 /**
- * <p>Implements of HTML Form based authentication.
+ * Implements of HTML Form based authentication.
  */
 public class FormAuthProcessor extends AbstractAuthProcessor {
 
@@ -47,7 +47,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	protected Set<String> freeAccessExtensions = new HashSet<String>();
 
 	/**
-	 * <p>Setting the HTTP charset parameter.
+	 * Setting the HTTP charset parameter.
 	 * @param charset default: "UTF-8"
 	 */
 	public void setCharset(String charset) {
@@ -55,7 +55,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	}
 	
 	/**
-	 * <p>Setting the form login page. 
+	 * Setting the form login page. 
 	 * @param loginPageUrl default: "login.html"
 	 */
 	public void setLoginPageUrl(String loginPageUrl) {
@@ -63,7 +63,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	}
 
 	/**
-	 * <p>Setting the form action URL.
+	 * Setting the form action URL.
 	 * <pre>&lt;form action="check.html"&gt;</pre>
 	 * @param loginActionUrl default: "check.html"
 	 */
@@ -72,21 +72,33 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	}
 	
 	/**
-	 * <p>Setting the logout action URL.
+	 * Setting the logout action URL.
 	 * @param logoutActionUrl default: "logout.html"
 	 */
 	public void setLogoutActionUrl(String logoutActionUrl) {
 		this.logoutActionUrl = logoutActionUrl;
 	}
 
+	/**
+	 * URL on the top page that moves after log in is set.
+	 * @param topPageUrl
+	 */
 	public void setTopPageUrl(String topPageUrl) {
 		this.topPageUrl = topPageUrl;
 	}
 
+	/**
+	 * Set the key of username for input text form.
+	 * @param usernameKey
+	 */
 	public void setUsernameKey(String usernameKey) {
 		this.usernameKey = usernameKey;
 	}
 
+	/**
+	 * Set the key of password for input text form. 
+	 * @param passwordKey
+	 */
 	public void setPasswordKey(String passwordKey) {
 		this.passwordKey = passwordKey;
 	}
@@ -99,17 +111,25 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 		this.redirectKey = redirectKey;
 	}
 	
+	/**
+	 * Set the cookie name for session.
+	 * @param sessionCookieName
+	 */
 	public void setSessionCookieName(String sessionCookieName) {
 		this.sessionCookieName = sessionCookieName;
 	}
 
+	/**
+	 * Set the key of username for session.
+	 * @param sessionUsernameKey
+	 */
 	public void setSessionUsernameKey(String sessionUsernameKey) {
 		this.sessionUsernameKey = sessionUsernameKey;
 	}
 
 	/**
-	 * <p>Whether it agrees to the extension that can be accessed
-	 *  without the attestation is inspected.  
+	 * Whether it agrees to the extension that can be accessed
+	 * without the attestation is inspected.  
 	 * @param uri
 	 * @return true: contains the freeAccessExtensions.
 	 */
@@ -124,7 +144,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	}
 
 	/**
-	 * <p>The extension skipping by the certification in comma seperated values.
+	 * The extension skipping by the certification in comma seperated values.
 	 * @param freeAccessExtensions (CSV)
 	 */
 	public void setFreeAccessExtensions(String freeAccessExtensions) {
@@ -222,7 +242,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	}
 	
 	/**
-	 * <p>Redirect for login action.
+	 * Redirect for login action.
 	 * @param request
 	 * @param response
 	 * @param uri redirect URI path.
@@ -239,7 +259,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	}
 	
 	/**
-	 * <p>Logout the system with invalidate this session.
+	 * Logout the system with invalidate this session.
 	 * @param sessionId
 	 */
 	protected void logoutAction(HttpRequest request, String sessionId) {
@@ -252,7 +272,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	}
 	
 	/**
-	 * <p>Request URI confirms whether to match to loginActionUrl.
+	 * Request URI confirms whether to match to loginActionUrl.
 	 * @param request
 	 * @return true: Request URI is considered to be loginActionURL and the same.
 	 */
@@ -261,7 +281,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	}
 	
 	/**
-	 * <p>After log in is attested, URL redirected to requested URL is acquired.
+	 * After log in is attested, URL redirected to requested URL is acquired.
 	 * @param request
 	 * @return loginPageUrl?redirectKey=/path/to/requestURL
 	 */
@@ -278,7 +298,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	}
 	
 	/**
-	 * <p>Login check with AuthComponent.
+	 * Login check with AuthComponent.
 	 * @param request
 	 * @param context
 	 * @return login username in request parameter.

@@ -17,13 +17,14 @@ import org.tamacat.httpd.exception.UnauthorizedException;
 import org.tamacat.util.StringUtils;
 
 /**
- * <p>Implements of Basic authentication.
+ * Implements of Basic authentication.
  */
 public class BasicAuthProcessor extends AbstractAuthProcessor {
 
 	static final String AUTHORIZATION = "Authorization";
 	static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 
+	/** default realm. */
 	protected String realm = "Authentication required";
 	
 	@Override
@@ -39,14 +40,31 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 		}
 	}
 
-	public void setWWWAuthenticateHeader(HttpResponse response) {
+	/**
+	 * Set the "WWW-Authenticate" response header of Basic authenticate realm.
+	 * @param response
+	 */
+	protected void setWWWAuthenticateHeader(HttpResponse response) {
 		response.addHeader(WWW_AUTHENTICATE, "Basic realm=\"" + realm + "\"");
 	}
 
+	/**
+	 * Realm is changed.
+	 * Default realm is "Authentication required".
+	 * @param realm
+	 */
 	public void setRealm(String realm) {
 		this.realm = DynamicRealm.getRealm(realm, new Date());
 	}
 	
+	/**
+	 * When the user authentication check and correct,
+	 * the username(login id) is returned. 
+	 * @param request
+	 * @param context
+	 * @return username (login id)
+	 * @throws UnauthorizedException
+	 */
 	protected String checkUser(HttpRequest request, HttpContext context)
 			throws UnauthorizedException {
 		Header basicAuthLine = request.getFirstHeader(AUTHORIZATION);
