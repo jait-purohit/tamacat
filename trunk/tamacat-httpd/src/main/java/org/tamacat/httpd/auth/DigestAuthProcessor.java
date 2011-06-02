@@ -20,17 +20,42 @@ import org.tamacat.util.StringUtils;
 import org.tamacat.util.UniqueCodeGenerator;
 
 /**
- * <p>Implements of Digest authentication.
+ * Implements of Digest authentication.
  */
 public class DigestAuthProcessor extends AbstractAuthProcessor {
 
 	static final String AUTHORIZATION = "Authorization";
 	static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 
-	private String realm = "Authentication required";
+	protected String realm = "Authentication required";
 
-	private String algorithm = "MD5";
-	private String qop = "auth";
+	protected String algorithm = "MD5";
+	protected String qop = "auth";
+	
+	/**
+	 * Realm is changed.
+	 * Default realm is "Authentication required".
+	 * @param realm
+	 */
+	public void setRealm(String realm) {
+		this.realm = DynamicRealm.getRealm(realm, new Date());
+	}
+
+	/**
+	 * Set the algorithm. Default algorithm is MD5
+	 * @param algorithm
+	 */
+	public void setAlgorithm(String algorithm) {
+		this.algorithm = algorithm;
+	}
+
+	/**
+	 * Set the qop. Dejault is "auth".
+	 * @param qop
+	 */
+	public void setQop(String qop) {
+		this.qop = qop;
+	}
 	
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
@@ -45,6 +70,14 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 		}
 	}
 
+	/**
+	 * When the user authentication check and correct,
+	 * the username(login id) is returned. 
+	 * @param request
+	 * @param context
+	 * @return username (login id)
+	 * @throws UnauthorizedException
+	 */
 	protected String checkUser(HttpRequest request, HttpContext context)
 			throws UnauthorizedException {
 		Header digestAuthLine = request.getFirstHeader(AUTHORIZATION);
@@ -85,6 +118,10 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 		throw new UnauthorizedException();
 	}
 
+	/**
+	 * Set the "WWW-Authenticate" response header of Digest authenticate realm.
+	 * @param response
+	 */
 	protected void setWWWAuthenticateHeader(HttpResponse response) {
 		response.addHeader(WWW_AUTHENTICATE, "Digest realm=\"" + realm + "\", "
 				+ "nonce=\"" + generateNonce() + "\", " + "algorithm=" + algorithm
@@ -93,18 +130,6 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 
 	protected String generateNonce() {
 		return UniqueCodeGenerator.generate();
-	}
-
-	public void setRealm(String realm) {
-		this.realm = DynamicRealm.getRealm(realm, new Date());
-	}
-
-	public void setAlgorithm(String algorithm) {
-		this.algorithm = algorithm;
-	}
-
-	public void setQop(String qop) {
-		this.qop = qop;
 	}
 
 	static class Digest {
@@ -181,7 +206,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
      * 
      * @see #encode(byte[])
      */
-    private static final char[] HEXADECIMAL = {
+    static final char[] HEXADECIMAL = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 
         'e', 'f'
     };
@@ -207,7 +232,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
         return new String(buffer);
     }
     
-	private static byte[] getMD5(String plainText) {
+	static byte[] getMD5(String plainText) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			return md.digest(plainText.getBytes());

@@ -20,7 +20,7 @@ import org.tamacat.util.StringUtils;
 import org.tamacat.util.UniqueCodeGenerator;
 
 /**
- * <p>Implements of WS-Security Extenstion (WSSE) authentication.
+ * Implements of WS-Security Extenstion (WSSE) authentication.
  */
 public class WSSEAuthProcessor extends AbstractAuthProcessor {
 	
@@ -42,6 +42,13 @@ public class WSSEAuthProcessor extends AbstractAuthProcessor {
         }
 	}
 	
+	/**
+	 * Login check with AuthComponent.
+	 * @param request
+	 * @param context
+	 * @return login username in request parameter.
+	 * @throws UnauthorizedException
+	 */
 	protected String checkUser(HttpRequest request, HttpContext context)
 			throws UnauthorizedException {
 	    Header wsseAuthLine = request.getFirstHeader(X_WSSE_HEADER);
@@ -64,7 +71,13 @@ public class WSSEAuthProcessor extends AbstractAuthProcessor {
 	    throw new UnauthorizedException();
 	}
 	
-	private String getPasswordDigest(WSSE wsse, AuthUser user) {
+	/**
+	 * Get the password digest.
+	 * @param wsse
+	 * @param user
+	 * @return password digest
+	 */
+	protected String getPasswordDigest(WSSE wsse, AuthUser user) {
 		String password = user.getAuthPassword();
 		if (password == null
 				|| wsse.getNonce() == null
@@ -81,15 +94,40 @@ public class WSSEAuthProcessor extends AbstractAuthProcessor {
 	    return new String(new Base64().encode(getSHA1(digest)));
 	}
 	
+	/**
+	 * Set the "WWW-Authenticate" response header of WSSE authenticate realm.
+	 * @param response
+	 */
 	protected void setWWWAuthenticateHeader(HttpResponse response) {
 	    response.addHeader(WWW_AUTHENTICATE, "WSSE profile=\"UsernameToken\"");
 	}
 	
+	/**
+	 * Get the nonce.
+	 * @return nonce
+	 */
 	protected String getNonce() {
 		String nonce = UniqueCodeGenerator.generate();
 		return new String(new Base64().encode(nonce.getBytes()));
 	}
 	
+	/**
+	 * Get the SHA1 digest.
+	 * @param digest
+	 * @return bytes of digest.
+	 */
+	protected byte[] getSHA1(byte[] digest) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA1");
+			return md.digest(digest);
+		} catch (NoSuchAlgorithmException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Bean class for WSSE attributes. 
+	 */
 	static class WSSE {
 		private Map<String,String> params = new LinkedHashMap<String,String>();
 
@@ -133,15 +171,6 @@ public class WSSEAuthProcessor extends AbstractAuthProcessor {
 		
 		public String getCreated() {
 			return params.get("Created");
-		}
-	}
-	
-	private byte[] getSHA1(byte[] digest) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("SHA1");
-			return md.digest(digest);
-		} catch (NoSuchAlgorithmException e) {
-			return null;
 		}
 	}
 }
