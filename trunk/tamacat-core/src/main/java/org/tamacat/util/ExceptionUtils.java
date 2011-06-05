@@ -17,6 +17,14 @@ public class ExceptionUtils {
 		return out.toString();
 	}
 	
+	public static String getStackTrace(Throwable e, int endIndex) {
+		String stackTrace = getStackTrace(e);
+		if (stackTrace != null && stackTrace.length() > endIndex) {
+			stackTrace = stackTrace.substring(0, endIndex) + "...";
+		}
+		return stackTrace;
+	}
+	
 	public static boolean isRuntime(Exception e) {
 		return e != null && e instanceof RuntimeException;
 	}
