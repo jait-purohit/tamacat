@@ -55,7 +55,7 @@ public class IOUtils {
 			} else {
 				try {
 					Method closable = ClassUtils.searchMethod(
-							target.getClass(), "close", (Class[])null);
+							target.getClass(), "close");
 					if (closable != null) closable.invoke(target);
 				} catch (Exception e) {
 				}

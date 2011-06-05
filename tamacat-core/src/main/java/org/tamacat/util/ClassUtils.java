@@ -220,11 +220,11 @@ public abstract class ClassUtils {
 
     static
       public Method searchMethod(Class<?> type, String methodName, Class<?>... paramType) {
-        Method m = paramType.length > 0 && paramType[0] != null ?
-        	getMethod(type, methodName, paramType) : getMethod(type, methodName);
-        if (m != null) return m;
-        //paramType is interface?
-        if (paramType != null && paramType.length > 0 && paramType[0] != null) {
+    	if (paramType != null && paramType.length > 0 && paramType[0] != null) {
+    		Method m = getMethod(type, methodName, paramType);
+    		if (m != null) return m;
+    		
+    		//paramType is interface?
         	Set<Class<?>> p = getAllClasses(new HashSet<Class<?>>(), paramType[0]);
 	        //Class<?>[] p = paramType[0].getDeclaredClasses();
 	        if (p != null) {
@@ -238,9 +238,10 @@ public abstract class ClassUtils {
 	        for (int i=0; i<paramType.length; i++) {
 	            argsType[i] = Object.class;
 	        }
-	        m = getMethod(type, methodName, argsType);
-        }
-        return m;
+	        return getMethod(type, methodName, argsType);
+    	} else {
+    		return getMethod(type, methodName);
+    	}
     }
 	
 	static

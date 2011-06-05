@@ -16,9 +16,9 @@ public class DIContainerFactory {
 
     private static final String PROPERTIES_FILE = "org.tamacat.di.DIContainerFactory.properties";
     private static final String CUSTOM_PROPERTIES_FILE = "org.tamacat.di.CustomDIContainerFactory.properties";
-    private static Class<?> defaultDIContainerClass;
     private static HashMap<String, DIContainer> manager = new HashMap<String, DIContainer>();
-    
+
+    private Class<?> defaultDIContainerClass;
     private ClassLoader loader;
     
     //Load default DIContainer Class.

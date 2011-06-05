@@ -25,7 +25,7 @@ public class IOUtilsTest {
 	
 	@Test
 	public void testCloseObject() {
-		String target = new String("Test");
+		String target = "Test";
 		IOUtils.close(target);
 	}
 
