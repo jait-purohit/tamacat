@@ -41,7 +41,6 @@ import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
-import org.tamacat.util.ExceptionUtils;
 
 /**
  * <p>The {@link HttpHandler} for reverse proxy.
@@ -189,17 +188,11 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
 	        httpexecutor.postProcess(targetResponse, httpproc, context);
 	        return targetResponse;
+		} catch (RuntimeException e) {
+			handleException(request, response, e);
+			return response;
 		} catch (Exception e) {
-			String html = null;
-			if (e instanceof HttpException) {
-				html = errorPage.getErrorPage(request, response, (HttpException)e);
-			} else {
-				LOG.error(e.getMessage());
-				LOG.trace(ExceptionUtils.getStackTrace(e)); //debug
-				html = errorPage.getErrorPage(request, response, 
-						new ServiceUnavailableException(e));
-			}
-			response.setEntity(getEntity(html));
+			handleException(request, response, e);
 			return response;
 		}
 	}

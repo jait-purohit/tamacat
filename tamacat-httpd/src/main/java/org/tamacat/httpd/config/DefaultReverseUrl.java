@@ -42,7 +42,9 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 	public void setHost(URL host) {
 		try {
 			serviceUrl.setHost(new URL(host.getProtocol(),host.getHost(),host.getPort(),""));
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			//none
+		}
 	}
 
 	@Override

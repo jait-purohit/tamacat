@@ -43,8 +43,9 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 			throw new IllegalArgumentException("Output stream may not be null");
 		}
 		BufferedOutputStream out = new BufferedOutputStream(outstream);
+		BufferedInputStream in = null;
 		try {
-			BufferedInputStream in = new BufferedInputStream(wrappedEntity.getContent());
+			in = new BufferedInputStream(wrappedEntity.getContent());
 			byte[] tmp = new byte[bufferSize];
 			this.contentLength = wrappedEntity.getContentLength();
 			Header contentType = wrappedEntity.getContentType();
@@ -68,6 +69,7 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 			}
 			out.flush();
 		} finally {
+			IOUtils.close(in);
 			IOUtils.close(out);
 		}
 	}

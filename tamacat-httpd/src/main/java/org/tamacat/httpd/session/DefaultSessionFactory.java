@@ -96,9 +96,7 @@ public class DefaultSessionFactory implements SessionFactory {
 	
 	public Session createSession() {
 		Session session = new DefaultSession(getMaxInactiveInterval());
-		if (session instanceof SessionSerializable) {
-			((SessionSerializable)session).setSessionStore(sessionStore);
-		}
+		((SessionSerializable)session).setSessionStore(sessionStore);
 		for (SessionListener listener : listeners) {
 			listener.sessionCreated(session);
 		}

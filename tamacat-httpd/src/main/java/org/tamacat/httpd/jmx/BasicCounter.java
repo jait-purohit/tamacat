@@ -16,7 +16,12 @@ import javax.management.ObjectName;
 public class BasicCounter implements PerformanceCounterMonitor, Serializable {
 	private static final long serialVersionUID = 6089725451626828983L;
 	
-	private ThreadLocal<Long> time = new ThreadLocal<Long>();
+	private static ThreadLocal<Long> time = new ThreadLocal<Long>() {
+	    protected Long initialValue() {
+	        return System.currentTimeMillis();
+	    }
+	};
+	
 	private AtomicInteger activeConnections = new AtomicInteger();
 	private AtomicLong accessCount = new AtomicLong();
 	private AtomicLong errorCount = new AtomicLong();
