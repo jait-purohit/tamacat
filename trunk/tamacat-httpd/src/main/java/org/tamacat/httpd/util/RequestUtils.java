@@ -59,7 +59,7 @@ public class RequestUtils {
 
 		if (path.indexOf('?') >= 0) {
 			String[] requestParams = path.split("\\?");
-			path = requestParams[0];
+			//path = requestParams[0];
 			//set request parameters for Custom HttpRequest.
 			if (requestParams.length >= 2) {
 				String params = requestParams[1];
@@ -76,9 +76,10 @@ public class RequestUtils {
 			HttpEntity entity = getEntity(request);
 			if (entity != null) {
 				InputStream in = null;
+				BufferedReader reader = null;
 				try {
 					in = entity.getContent();
-					BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+					reader = new BufferedReader(new InputStreamReader(in)); //8192byte buffers
 					String s;
 					StringBuilder sb = new StringBuilder();
 					while ((s = reader.readLine()) != null) {
@@ -95,6 +96,7 @@ public class RequestUtils {
 				} catch (IOException e) {
 					throw new HttpException(BasicHttpStatus.SC_BAD_REQUEST, e);
 				} finally {
+					IOUtils.close(reader);
 					IOUtils.close(in);
 				}
 			}

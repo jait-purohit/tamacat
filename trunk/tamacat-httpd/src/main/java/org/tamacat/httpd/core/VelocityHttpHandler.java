@@ -36,15 +36,10 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	public static final String CONTENT_TYPE = "ResponseHeader__ContentType__";
 	protected String welcomeFile = "index";
 	protected boolean listings;
-	protected String encoding = "UTF-8";
 	
 	protected VelocityListingsPage listingPage;
 	protected VelocityPage page;
 	protected final Set<String> urlPatterns = new HashSet<String>();
-
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
-	}
 
 	public void setUrlPatterns(String patterns) {
 		for (String pattern : patterns.split(",")) {

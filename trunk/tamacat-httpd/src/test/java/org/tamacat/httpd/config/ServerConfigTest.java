@@ -25,7 +25,7 @@ public class ServerConfigTest {
 
 	@Test
 	public void testGetSocketTimeout() {
-		assertEquals(config.getSocketTimeout(), 5000);
+		assertEquals(config.getSocketTimeout(), 15000);
 		
 		config.setParam("ServerSocketTimeout", "30000");
 		assertEquals(config.getSocketTimeout(), 30000);
@@ -33,7 +33,7 @@ public class ServerConfigTest {
 	
 	@Test
 	public void testGetConnectionTimeout() {
-		assertEquals(config.getConnectionTimeout(), 10000);
+		assertEquals(config.getConnectionTimeout(), 15000);
 		
 		config.setParam("ConnectionTimeout", "30000");
 		assertEquals(config.getConnectionTimeout(), 30000);

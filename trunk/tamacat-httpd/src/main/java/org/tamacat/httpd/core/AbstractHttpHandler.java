@@ -142,11 +142,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 			html = errorPage.getErrorPage(request, response, (HttpException)e);
 		} else {
 			if (LOG.isWarnEnabled()) {
-				String stackTrace = ExceptionUtils.getStackTrace(e);
-				if (stackTrace != null && stackTrace.length() > 500) {
-					stackTrace = stackTrace.substring(0, 500) + "...";
-				}
-				LOG.warn(stackTrace);
+				LOG.warn(ExceptionUtils.getStackTrace(e, 500));
 			}
 			html = errorPage.getErrorPage(request, response,
 					new ServiceUnavailableException(e));

@@ -24,7 +24,6 @@ import org.tamacat.httpd.config.ServiceUrl;
 
 public class ReverseHttpEntityEnclosingRequestTest {
 	ReverseUrl reverseUrl;
-	ServiceUrl serviceUrl;
 	ServerConfig config;
 	
 	@Before
