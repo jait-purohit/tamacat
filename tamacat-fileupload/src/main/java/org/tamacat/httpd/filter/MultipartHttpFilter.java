@@ -121,7 +121,7 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 	
 	public void setBaseDirectory(String baseDirectory) {
 		if (baseDirectory != null) {
-			baseDirectory.replace("\\", "/");
+			baseDirectory = baseDirectory.replace("\\", "/");
 			this.baseDirectory = baseDirectory.replaceFirst("/$", "");
 		}
 	}
