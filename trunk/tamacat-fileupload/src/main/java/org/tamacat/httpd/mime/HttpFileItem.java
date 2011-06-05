@@ -7,8 +7,10 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemHeaders;
+import org.apache.commons.fileupload.FileItemHeadersSupport;
 
-public class HttpFileItem implements FileItem {
+public class HttpFileItem implements FileItem, FileItemHeadersSupport {
 
 	private static final long serialVersionUID = 1L;
 	protected FileItem item;
@@ -101,5 +103,21 @@ public class HttpFileItem implements FileItem {
 	@Override
 	public OutputStream getOutputStream() throws IOException {
 		return item.getOutputStream();
+	}
+	
+	@Override
+	public FileItemHeaders getHeaders() {
+		if (item instanceof FileItemHeadersSupport) {
+			return ((FileItemHeadersSupport)item).getHeaders();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void setHeaders(FileItemHeaders headers) {
+		if (item instanceof FileItemHeadersSupport) {
+			((FileItemHeadersSupport)item).setHeaders(headers);
+		}
 	}
 }

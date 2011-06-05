@@ -10,8 +10,6 @@ import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileItemHeaders;
-import org.apache.commons.fileupload.FileItemHeadersSupport;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUpload;
@@ -81,10 +79,6 @@ public class HttpFileUpload extends FileUpload {
 	               throw new IOFileUploadException(
 	                       "Processing of " + MULTIPART_FORM_DATA
 	                       + " request failed. " + e.getMessage(), e);
-	           }
-	           if (fileItem instanceof FileItemHeadersSupport) {
-	               final FileItemHeaders fih = item.getHeaders();
-	               ((FileItemHeadersSupport) fileItem).setHeaders(fih);
 	           }
 	           items.add(fileItem);
 	       }
