@@ -56,7 +56,7 @@ public class DataSourceJdbcConfig implements JdbcConfig {
     	}
     }
     
-    public void setDataSourceName(String dataSourceName) {
+    public synchronized void setDataSourceName(String dataSourceName) {
         this.dataSourceName = dataSourceName;
     }
 

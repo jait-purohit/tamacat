@@ -19,7 +19,8 @@ public class DBUtils {
     public static void setAutoCommitTrue(DBAccessManager dbm) {
     	try {
     		dbm.setAutoCommit(true);
-    	} catch (Exception e) {}
+    	} catch (Exception e) {
+    	}
     }
     
     public static void close(Statement stmt) {

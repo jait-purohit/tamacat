@@ -14,6 +14,7 @@ import org.tamacat.dao.rdb.Condition;
 import org.tamacat.dao.rdb.ORMappingSupport;
 import org.tamacat.dao.rdb.RdbColumnMetaData;
 import org.tamacat.dao.rdb.RdbDataType;
+import org.tamacat.dao.rdb.RdbInvalidParameterException;
 import org.tamacat.dao.rdb.RdbTableMetaData;
 import org.tamacat.dao.rdb.internal.RdbQuery;
 import org.tamacat.dao.rdb.internal.SQLParser;
@@ -199,6 +200,9 @@ public class RdbQueryImpl<T extends ORMappingSupport> implements RdbQuery<ORMapp
         		tableName = table.getTableName();
         		break;
         	}
+            if (tableName == null) {
+            	throw new RdbInvalidParameterException();
+            }
         }
         String query = DELETE.replace("${TABLE}", tableName);
         return query + where.toString();
