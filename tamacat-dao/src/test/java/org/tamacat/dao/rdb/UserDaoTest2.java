@@ -16,15 +16,16 @@ import org.junit.Test;
 
 public class UserDaoTest2 {
 
-    static UserDao dao;
+    UserDao dao;
 
     @BeforeClass
     public static void createTable() {
-    	dao = RdbDaoFactory.getRdbDao(UserDao.class);
-    	dao.setDatabase("javadb");
+    	UserDao dao = RdbDaoFactory.getRdbDao(UserDao.class);
     	try {
+        	dao.setDatabase("javadb");
     		dao.createTable();
     	} catch (Exception e){
+    		e.printStackTrace();
     	} finally {
     		if (dao != null) dao.release();
     	}
@@ -32,9 +33,14 @@ public class UserDaoTest2 {
     
     @AfterClass
     public static void dropTable() {
+    	UserDao dao = RdbDaoFactory.getRdbDao(UserDao.class);
     	try {
+        	dao.setDatabase("javadb");
     		dao.dropTable();
     	} catch (Exception e){
+    		e.printStackTrace();
+    	} finally {
+    		if (dao != null) dao.release();
     	}
     }
     

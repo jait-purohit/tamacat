@@ -13,7 +13,6 @@ import org.junit.Test;
 public class MapBasedORMappingBeanTest {
 
 	MapBasedORMappingBean bean;
-	User user;
 	
 	@Before
 	public void setUp() throws Exception {
