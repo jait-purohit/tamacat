@@ -139,6 +139,8 @@
         <configuration>
           <show>protected</show>
           <nohelp>true</nohelp>
+          <locale>en</locale>
+          <bottom>Copyright&amp;copy; 2011, tamacat.org</bottom>
         </configuration>
       </plugin>
     </plugins>
