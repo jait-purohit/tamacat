@@ -3,6 +3,15 @@
 
 = Release Notes =
 
+==0.8 Release (2011-06-07)==
+------------------------
+The highlights in the tamacat-httpd-0.8 are the following:
+
+ * Support session persistence.
+ * Many bug fix and refactoring.
+ * Use HttpComponents 4.1.1 (HttpCore-4.1.1/HttpClient-4.1.1)
+
+
 ==0.7 release (2010-08-27)==
 ------------------------
 The highlights in the tamacat-httpd-0.7 are the following:
