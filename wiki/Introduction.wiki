@@ -4,7 +4,7 @@
 
 == Download ==
  * Download the archive file and extract.
-   * http://tamacat.googlecode.com/files/tamacat-httpd-0.6-20100316.zip
+   * http://tamacat.googlecode.com/files/tamacat-httpd-0.8-20110607.zip
 
 == Configuring httpd ==
 
@@ -12,6 +12,7 @@ Please make the following configuration files for the place where in CLASSPATH.
   (It makes it referring to `tamacat-httpd/conf`.)
 
 === Configuration Files: ===
+  * httpd.xml
   * server.properties
   * components.xml
   * url-config.xml
@@ -19,27 +20,51 @@ Please make the following configuration files for the place where in CLASSPATH.
   * log4j.properties (use by default it)
   * mime-types.properties (option)
 
+
+==== httpd.xml (required) ====
+{{{
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+  <bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor">
+    <property name="contentType">
+      <value>html,xml,css,javascript</value>
+    </property>
+  </bean>
+  <bean id="server" class="org.tamacat.httpd.core.HttpEngine" singleton="false">
+    <property name="propertiesName">
+      <value>server.properties</value>
+    </property>
+    <property name="httpResponseInterceptor">
+      <ref bean="gzip" />
+    </property>
+  </bean>  
+</beans>
+}}}
+
 ==== server.properties (required) ====
 {{{
 ServerName=tamacat-httpd
 Port=80
+
 https=false
 https.keyStoreFile=test.keystore
 https.keyPassword=nopassword
 https.keyStoreType=JKS
 https.protocol=TLS
+https.clientAuth=false
 
 MaxServerThreads=5
-ServerSocketTimeout=5000
-ConnectionTimeout=10000
+ServerSocketTimeout=15000
+ConnectionTimeout=15000
 ServerSocketBufferSize=8192
 WorkerThreadName=httpd
 
-BackEndSocketTimeout=5000
-BackEndConnectionTimeout=10000
+BackEndSocketTimeout=15000
+BackEndConnectionTimeout=15000
 BackEndSocketBufferSize=8192
 
 url-config.file=url-config.xml
+components.file=components.xml
 
 JMX.server-url=service:jmx:rmi:///jndi/rmi://localhost/httpd
 JMX.objectname=org.tamacat.httpd:type=HttpEngine
@@ -52,15 +77,17 @@ JMX.rmi.port=1099
 || https.keyStoreFile || test.keystore || The key.store file is specified. It is possible to make it by using keytool. keystore file create by keytools ||
 || https.keyPassword || nopassword || keystore file's pasword ||
 || https.protocol || SSL,SSLv2,SSLv3,TLS,TLSv1,TLSv1_1 || SSL/TLS version ||
+|| https.clientAuth || false || use client authenticate
 || MaxServerThreads || 5 || Maximum worker threads of server. ||
-|| ServerSocketTimeout || 5000 || socket timeout (ms) ||
-|| ConnectionTimeout|| 10000 || connection timeout (ms) ||
+|| ServerSocketTimeout || 15000 || socket timeout (ms) ||
+|| ConnectionTimeout|| 15000 || connection timeout (ms) ||
 || ServerSocketBufferSize || 8192 || socket buffer size (bytes) ||
 || WorkerThreadName || httpd || name of child threads ||
-|| BackEndSocketTimeout|| 5000 || socket timeout for reverse proxy (ms) ||
-|| BackEndConnectionTimeout|| 10000 || connection timeout for reverse proxy (ms) ||
+|| BackEndSocketTimeout|| 15000 || socket timeout for reverse proxy (ms) ||
+|| BackEndConnectionTimeout|| 15000 || connection timeout for reverse proxy (ms) ||
 || BackEndSocketBufferSize|| 8192 || socket buffer size for reverse proxy (bytes) ||
 || url-config.file || url-config.xml || URL configuration file in CLASSPATH. ||
+|| components.file || components.xml || Components configuration file in CLASSPATH. ||
 || JMX.server-url|| service:jmx:rmi:///jndi/rmi://localhost/httpd || JMX remote access URL||
 || JMX.objectname || org.tamacat.httpd:type=HttpEngine || ObjectName of httpd ||
 || JMX.rmi.port || 1099 || JMX remote access port of RMI.||
@@ -70,7 +97,6 @@ JMX.rmi.port=1099
 <?xml version="1.0" encoding="UTF-8"?> 
 <beans>
   <bean id="DefaultHandler" class="org.tamacat.httpd.core.LocalFileHttpHandler" />
-  <bean id="server" class="org.tamacat.httpd.core.HttpEngine" />
 </beans>
 }}}
 ===== Handler class =====
