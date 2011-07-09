@@ -40,5 +40,6 @@ public class UniqueCodeGeneratorTest {
 
 	@Test
 	public void testGenerateString() {
+		assertTrue(UniqueCodeGenerator.generate("test").startsWith("test"));
 	}
 }

@@ -148,4 +148,9 @@ public class StringUtilsTest {
 		};
 		assertNotNull(util);
     }
+    
+    @Test
+    public void testCut() {
+    	assertEquals("1234567890", StringUtils.cut("1234567890test", 10));
+    }
 }
