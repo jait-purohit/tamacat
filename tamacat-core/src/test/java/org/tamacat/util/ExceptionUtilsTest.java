@@ -11,12 +11,24 @@ import org.junit.Test;
 public class ExceptionUtilsTest {
 
 	@Test
+	public void testExceptionUtuls() {
+		new ExceptionUtils();
+	}
+	
+	@Test
 	public void testGetStackTrace() {
 		Exception e = new Exception("test");
 		String trace = ExceptionUtils.getStackTrace(e);
 		assertTrue(trace.startsWith("java.lang.Exception: test"));
 	}
 
+	@Test
+	public void testGetStackTraceThrowableInt() {
+		Exception e = new Exception("test");
+		String trace = ExceptionUtils.getStackTrace(e, 25);
+		assertEquals("java.lang.Exception: test...", trace);
+	}
+	
 	@Test
 	public void testIsRuntime() {
 		assertFalse(ExceptionUtils.isRuntime(new Exception("test")));

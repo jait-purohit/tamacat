@@ -1,6 +1,8 @@
 /*
  * Copyright (c) 2009, TamaCat.org
- * All rights reserved.
+ * All ri
+import java.lang.annotation.RetentionPolicy;
+ghts reserved.
  */
 package org.tamacat.util;
 
@@ -24,14 +26,19 @@ public class JavaScriptUtils {
 		String value();
 	}
 	
-	public static void eval(Method method) throws ScriptException {
-		JavaScript script = method.getAnnotation(JavaScript.class);
-		eval(script);
-	}
-	
-	public static void eval(JavaScript script) throws ScriptException {
+	public static ScriptEngine getScriptEngine() {
 		ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine engine = manager.getEngineByName("js");
-        engine.eval(script.value());
+        return engine;
+	}
+	
+	public static Object eval(Method method) throws ScriptException {
+		JavaScript script = method.getAnnotation(JavaScript.class);
+		if (script == null) return null;
+		return eval(script);
+	}
+	
+	public static Object eval(JavaScript script) throws ScriptException {
+		return getScriptEngine().eval(script.value());
 	}
 }
