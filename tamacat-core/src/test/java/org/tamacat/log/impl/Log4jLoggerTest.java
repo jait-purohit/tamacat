@@ -63,4 +63,10 @@ public class Log4jLoggerTest {
     	LogFactory.getDiagnosticContext(logger).remove();
         logger.debug("Test DiagnosticContext2");
     }
+    
+    public void testGetOriginalLogger() {
+    	Object original = logger.getOriginalLogger();
+    	assertNotNull(original);
+    	assertTrue(original instanceof org.apache.log4j.Logger);
+    }
 }

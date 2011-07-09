@@ -32,7 +32,7 @@ public class SimpleLevel extends Level<String> {
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = super.hashCode();
+        int result = super.hashCode() + priority;
         result = prime * result;
         return result;
     }
@@ -45,6 +45,8 @@ public class SimpleLevel extends Level<String> {
             return false;
         if (!(obj instanceof SimpleLevel))
             return false;
+        if (priority != ((SimpleLevel)obj).priority)
+        	return false;
         return true;
     }
 }

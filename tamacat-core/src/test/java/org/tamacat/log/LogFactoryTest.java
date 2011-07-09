@@ -19,6 +19,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.log.impl.Log4jDiagnosticContext;
+import org.tamacat.log.impl.Log4jLogger;
+import org.tamacat.log.impl.NoneDiagnosticContext;
 
 public class LogFactoryTest {
 
@@ -47,5 +50,17 @@ public class LogFactoryTest {
         assertTrue(logger.isInfoEnabled());
         assertTrue(logger.isDebugEnabled());
         assertTrue(logger.isTraceEnabled());
+    }
+    
+    @Test
+    public void testLoadLogger() {
+    	assertTrue(LogFactory.SELF.loadLogger("test") instanceof Log4jLogger);
+    	
+    }
+    
+    @Test
+    public void testGetDiagnosticContext() {
+    	assertTrue(LogFactory.getDiagnosticContext(new Log4jLogger("test")) instanceof Log4jDiagnosticContext);
+    	assertTrue(LogFactory.getDiagnosticContext(null) instanceof NoneDiagnosticContext);
     }
 }

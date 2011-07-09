@@ -4,30 +4,35 @@
  */
 package org.tamacat.log.impl;
 
+import java.util.Set;
+
 import org.apache.log4j.MDC;
 import org.apache.log4j.NDC;
 import org.tamacat.log.DiagnosticContext;
 
 public class Log4jDiagnosticContext implements DiagnosticContext {
 
-	boolean useNDC;
-	boolean useMDC;
-	
+	@Override
 	public void setMappedContext(String key, String data) {
 		MDC.put(key, data);
-		useMDC = true;
 	}
 
+	@Override
 	public void setNestedContext(String data) {
 		NDC.push(data);
-		useNDC = true;
 	}
 
+	@Override
 	public void remove() {
-		if (useNDC) NDC.remove();
+		NDC.remove();
 	}
 	
+	@Override
 	public void remove(String key) {
-		if (useMDC) MDC.remove(key);
+		MDC.remove(key);
+	}
+	
+	protected Set<?> keySet() {
+		return MDC.getContext().keySet();
 	}
 }
