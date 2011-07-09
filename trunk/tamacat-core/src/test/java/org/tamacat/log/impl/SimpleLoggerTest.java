@@ -68,4 +68,57 @@ public class SimpleLoggerTest {
         assertTrue(logger.isDebugEnabled());
         assertFalse(logger.isTraceEnabled());
     }
+    
+    @Test
+    public void testGetOriginalLogger() {
+    	Object original = logger.getOriginalLogger();
+    	assertNotNull(original);
+    	assertTrue(original instanceof SimpleLogger);
+    	assertSame(original, logger);
+    }
+
+    @Test
+    public void testFatalString() {
+        logger.fatal("test");
+    }
+    
+    @Test
+    public void testErrorString() {
+        logger.error("test");
+    }
+    
+    @Test
+    public void testWarnString() {
+        logger.warn("test");
+    }
+    
+    @Test
+    public void testFatalObjectString() {
+        logger.fatal(Integer.MAX_VALUE, "test1", "test2");
+    }
+    
+    @Test
+    public void testErrorObjectString() {
+        logger.error(Integer.MAX_VALUE, "test1", "test2");
+    }
+    
+    @Test
+    public void testWarnObjectString() {
+        logger.warn(Integer.MAX_VALUE, "test1", "test2");
+    }
+    
+    @Test
+    public void testFatalObjectThrowable() {
+        logger.fatal("test", new RuntimeException("message"));
+    }
+    
+    @Test
+    public void testErrorObjectThrowable() {
+        logger.error("test", new RuntimeException("message"));
+    }
+    
+    @Test
+    public void testWarnObjectThrowable() {
+        logger.warn("test", new RuntimeException("message"));
+    }
 }

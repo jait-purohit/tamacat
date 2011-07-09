@@ -16,6 +16,7 @@ public class MessageDigestInputStream extends FilterInputStream {
 		try {
 			digest = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
+			throw new MessageDigestException(e);
 		}
 	}
 	
