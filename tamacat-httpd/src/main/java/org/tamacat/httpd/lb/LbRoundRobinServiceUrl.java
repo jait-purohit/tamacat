@@ -67,8 +67,16 @@ public class LbRoundRobinServiceUrl extends ServiceUrl
 	private int defaultTimeout = 5000;
 	private String defaultCheckUrl = "check.html";
 	
+	public LbRoundRobinServiceUrl() {
+		loadMonitorConfig();
+	}
+	
 	public LbRoundRobinServiceUrl(ServerConfig serverConfig) {
 		super(serverConfig);
+		loadMonitorConfig();
+	}
+	
+	protected void loadMonitorConfig() {
 		try {
 			monitorProps = PropertyUtils.getProperties(MONITOR_PROPERTIES);
 			defaultCheckUrl = monitorProps.getProperty(DEFAULT_URL_KEY, defaultCheckUrl);
@@ -82,6 +90,10 @@ public class LbRoundRobinServiceUrl extends ServiceUrl
 			monitorProps.setProperty(DEFAULT_INTERVAL_KEY, String.valueOf(defaultInterval));
 			monitorProps.setProperty(DEFAULT_TIMEOUT_KEY, String.valueOf(defaultTimeout));
 		}
+	}
+	
+	public List<ReverseUrl> getReverseUrls() {
+		return reverseUrls;
 	}
 	
 	@Override

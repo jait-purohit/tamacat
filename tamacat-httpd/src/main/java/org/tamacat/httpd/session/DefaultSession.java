@@ -18,7 +18,7 @@ public class DefaultSession implements Session, SessionSerializable {
 	private String id;
 	private SessionAttributes attributes;
 	private int maxInactiveInterval; // = 30 * 60 * 1000; //30min.
-	private SessionStore sessionStore;
+	private transient SessionStore sessionStore;
 	private boolean invalidate;
 	
 	public DefaultSession(String id, Date createDate, Date lastAccessDate, boolean invalidate) {

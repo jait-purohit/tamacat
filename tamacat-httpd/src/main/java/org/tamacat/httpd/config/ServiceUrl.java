@@ -18,7 +18,7 @@ public class ServiceUrl {
 	private String path;
 	private ReverseUrl reverseUrl;
 	private UrlType type;
-	private final ServerConfig serverConfig;
+	private ServerConfig serverConfig;
 	
 	/**
 	 * <p>Constructor for ServiceConfig.
@@ -28,6 +28,11 @@ public class ServiceUrl {
 		this.serverConfig = serverConfig;
 	}
 
+	/**
+	 * <p>Default Constructor for ServiceConfig.
+	 */
+	public ServiceUrl() {}
+	
 	/**
 	 * <p>Returns the URL of host.
 	 * @return URL of host.
@@ -59,7 +64,7 @@ public class ServiceUrl {
 	public ServerConfig getServerConfig() {
 		return serverConfig;
 	}
-
+	
 	/**
 	 * <p>Returns the type of Service URL.
 	 * @return UrlType
@@ -78,6 +83,14 @@ public class ServiceUrl {
 		return this.type.equals(type);
 	}
 
+	/**
+	 * <p>Set the ServiceConfig
+	 * @param serviceConfig
+	 */
+	public void setServiceUrl(ServerConfig serverConfig) {
+		this.serverConfig = serverConfig;
+	}
+	
 	/**
 	 * <p>Set the URL of host. (The path is deleted)
 	 * @param host

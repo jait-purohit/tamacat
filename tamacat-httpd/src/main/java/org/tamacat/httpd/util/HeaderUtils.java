@@ -21,7 +21,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 public final class HeaderUtils {
 
 	/** Cannot instantiate. */
-	private HeaderUtils() {}
+	HeaderUtils() {}
 
 	/**
 	 * <p>Get the first header value.
@@ -119,10 +119,9 @@ public final class HeaderUtils {
 							String value = nameValue[1];
 							if (value != null) {
 								return value.trim();
-							} else {
-								return "";
 							}
 						}
+						return "";
 					}
 				}
 			}
