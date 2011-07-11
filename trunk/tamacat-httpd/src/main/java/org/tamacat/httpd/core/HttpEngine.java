@@ -45,7 +45,7 @@ import org.tamacat.util.PropertyUtils;
 import org.tamacat.util.StringUtils;
 
 /**
- * <p>It is implements of the multi thread server.
+ * <p>It is implements of the multi-thread server.
  */
 public class HttpEngine implements JMXReloadableHttpd, Runnable {
 

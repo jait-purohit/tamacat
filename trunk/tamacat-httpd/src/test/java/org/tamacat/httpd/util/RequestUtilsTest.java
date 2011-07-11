@@ -2,10 +2,16 @@ package org.tamacat.httpd.util;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 
+import org.apache.http.Header;
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -29,6 +35,12 @@ public class RequestUtilsTest {
 
 	@After
 	public void tearDown() throws Exception {
+	}
+	
+	@Test
+	public void testGetRequestPath() {
+		assertEquals("/test.html", RequestUtils.getRequestPath(new BasicHttpRequest("GET", "/test.html")));
+		assertEquals("/test.html", RequestUtils.getRequestPath(new BasicHttpRequest("GET", "/test.html?id=test")));
 	}
 
 	@Test
@@ -85,5 +97,30 @@ public class RequestUtilsTest {
 		serviceUrl = new ServiceUrl(serverConfig);
 		url = RequestUtils.getRequestHostURL(request, null, serviceUrl);
 		assertEquals("https://example.com", url.toString());		
+	}
+	
+	@Test
+	public void testGetInputStream() throws IOException {
+		HttpEntityEnclosingRequest request = new BasicHttpEntityEnclosingRequest("POST", "/test.html");
+		request.setEntity(new StringEntity("<html></html>"));
+		assertNotNull(RequestUtils.getInputStream(request));
+		
+		HttpEntityEnclosingRequest request2 = new BasicHttpEntityEnclosingRequest("POST", "/test.html");
+		assertNull(RequestUtils.getInputStream(request2));
+		
+		HttpRequest request3 = new BasicHttpRequest("POST", "/test.html");
+		assertNull(RequestUtils.getInputStream(request3));
+	}
+	
+	@Test
+	public void testIsMultipart() {
+		Header header = new BasicHeader(HTTP.CONTENT_TYPE, "multipart/form-data");
+		HttpRequest request = new BasicHttpRequest("POST", "/test.html");
+		request.setHeader(header);
+		
+		assertTrue(RequestUtils.isMultipart(request));
+		
+		HttpRequest request2 = new BasicHttpRequest("GET", "/test.html");
+		assertFalse(RequestUtils.isMultipart(request2));
 	}
 }

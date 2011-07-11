@@ -127,7 +127,7 @@ public class ServiceConfigParser {
 		}
 	}
 	
-	private String getHost(Node service) {
+	String getHost(Node service) {
 		NamedNodeMap attr = service.getAttributes();
 		if (attr != null) {
 			Node hostNode = attr.getNamedItem(HOST);
@@ -138,7 +138,7 @@ public class ServiceConfigParser {
 		return null;
 	}
 	
-	private ServiceUrl getServiceUrl(Node urlNode, String host) {
+	ServiceUrl getServiceUrl(Node urlNode, String host) {
 		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
 		NamedNodeMap urlAttrs = urlNode.getAttributes();
 		if (urlAttrs != null) {
@@ -159,7 +159,7 @@ public class ServiceConfigParser {
 		return serviceUrl;
 	}
 	
-	private ServiceUrl getReverseUrl(ServiceUrl serviceUrl, Node urlNode) {
+	ServiceUrl getReverseUrl(ServiceUrl serviceUrl, Node urlNode) {
 		ReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
 		NodeList reverseNodes = urlNode.getChildNodes();
 		REV: for (int j=0; j<reverseNodes.getLength(); j++) {
@@ -174,7 +174,7 @@ public class ServiceConfigParser {
 		return serviceUrl;
 	}
 	
-	private ServiceUrl getLbServiceUrl(ServiceUrl serviceUrl, Node urlNode, String host) {
+	ServiceUrl getLbServiceUrl(ServiceUrl serviceUrl, Node urlNode, String host) {
 		LbRoundRobinServiceUrl lbServiceUrl = new LbRoundRobinServiceUrl(serverConfig);
 		lbServiceUrl.setPath(serviceUrl.getPath());
 		lbServiceUrl.setHandlerName(serviceUrl.getHandlerName());
