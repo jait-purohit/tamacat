@@ -13,6 +13,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.junit.After;
@@ -47,6 +48,9 @@ public class RequestUtilsTest {
 	public void testGetRemoteIPAddress() {
 		String ipaddress = RequestUtils.getRemoteIPAddress(context);
 		assertEquals("127.0.0.1", ipaddress);
+	
+		HttpContext ctx = new BasicHttpContext();
+		assertEquals("", RequestUtils.getRemoteIPAddress(ctx));
 	}
 	
 	@Test
@@ -100,6 +104,19 @@ public class RequestUtilsTest {
 	}
 	
 	@Test
+	public void testGetRequestHostURLHttpRequestHttpContext() {
+		HttpRequest request = new BasicHttpRequest("GET", "/test.html");
+		
+		String url = RequestUtils.getRequestHostURL(request, context);
+		assertNull(url);
+
+		request.setHeader(HTTP.TARGET_HOST, "example.com");
+		
+		url = RequestUtils.getRequestHostURL(request, context);
+		assertEquals("http://example.com", url);	
+	}
+	
+	@Test
 	public void testGetInputStream() throws IOException {
 		HttpEntityEnclosingRequest request = new BasicHttpEntityEnclosingRequest("POST", "/test.html");
 		request.setEntity(new StringEntity("<html></html>"));
@@ -122,5 +139,12 @@ public class RequestUtilsTest {
 		
 		HttpRequest request2 = new BasicHttpRequest("GET", "/test.html");
 		assertFalse(RequestUtils.isMultipart(request2));
+	}
+	
+	@Test
+	public void testDecode() {
+		assertEquals("", RequestUtils.decode("", "UTF-8"));
+		assertEquals("abc def", RequestUtils.decode("abc%20def", "UTF-8"));
+
 	}
 }

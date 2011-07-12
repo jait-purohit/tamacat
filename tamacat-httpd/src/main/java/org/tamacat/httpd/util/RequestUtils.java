@@ -199,7 +199,7 @@ public class RequestUtils {
 			}
 			port = url.getServerConfig().getPort();
 			if (context != null) {
-			HttpConnection con = getHttpConnection(context);
+				HttpConnection con = getHttpConnection(context);
 				if (con instanceof HttpInetConnection) {
 					port = ((HttpInetConnection)con).getLocalPort();
 					InetAddress addr = ((HttpInetConnection)con).getLocalAddress();
@@ -226,7 +226,7 @@ public class RequestUtils {
 		return null;
 	}
 	
-	private static String decode(String value, String encoding) {
+	static String decode(String value, String encoding) {
 		String decode = null;
 		try {
 			decode = URLDecoder.decode(value, encoding);

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -196,37 +195,13 @@ public class ReverseUtils {
 	}
 	
 	/**
-	 * <p>Get the Cookie value in request headers.
-	 * @param request
-	 * @param name
-	 * @return Cookie value.
-	 */
-	public static String getCookieValue(HttpRequest request, String name) {
-		Header[] headers = request.getHeaders("Cookie");
-		for (Header h : headers) {
-			String value = h.getValue();
-			StringTokenizer st = new StringTokenizer(value, ";");
-			if (st.countTokens() == 0) continue;
-			while (st.hasMoreTokens()) {
-				String set = st.nextToken().trim();
-				String[] nameValue = set.split("=");
-				if (nameValue.length < 2) continue;
-				if (nameValue[0].equals(name)) {
-					return nameValue[1];
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
 	 * <p>Convert cookie path. 
 	 * <pre>
 	 *   BEFORE: JSESSIONID=1234567890ABCDEFGHIJKLMNOPQRSTUV; Path=/dist
 	 *   AFTER : JSESSIONID=1234567890ABCDEFGHIJKLMNOPQRSTUV; Path=/src
 	 * </pre>
 	 */
-	private static String getConvertedSetCookieHeader(String dist, String src, String line) {
+	static String getConvertedSetCookieHeader(String dist, String src, String line) {
 		if (line != null) {
 			String d = stripEnd(dist, "/");
 			String s = stripEnd(src, "/");
@@ -237,7 +212,7 @@ public class ReverseUtils {
 		}
 	}
 	
-	private static String stripEnd(String str, String stripChars) {
+	static String stripEnd(String str, String stripChars) {
 		int end;
 		if (str == null || (end = str.length()) == 0) {
 			return str;
