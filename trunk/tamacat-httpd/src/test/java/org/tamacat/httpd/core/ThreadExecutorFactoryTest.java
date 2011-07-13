@@ -5,8 +5,6 @@
 package org.tamacat.httpd.core;
 
 import static org.junit.Assert.*;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.Callable;
@@ -14,14 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 public class ThreadExecutorFactoryTest {
-	
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
 
 	@Test
 	public void testGetExecutorService() {
@@ -36,7 +26,8 @@ public class ThreadExecutorFactoryTest {
 		for (int i=0; i<10; i++) {
 			Future<Long> future = executor.submit(new CallbackImpl());
 			try {
-				System.out.println("No." + i + "=" + future.get());
+				future.get();
+				//System.out.println("No." + i + "=" + future.get());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

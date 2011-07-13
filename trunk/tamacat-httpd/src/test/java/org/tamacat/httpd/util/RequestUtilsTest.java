@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.core.RequestParameters;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 
 public class RequestUtilsTest {
@@ -36,6 +37,25 @@ public class RequestUtilsTest {
 
 	@After
 	public void tearDown() throws Exception {
+	}
+	
+	@Test
+	public void testRequestUtils() {
+		new RequestUtils();
+	}
+	
+	@Test
+	public void testSetParameters() throws Exception {
+		HttpEntityEnclosingRequest request = new BasicHttpEntityEnclosingRequest("POST", "/test.html");
+		request.setEntity(new StringEntity("<html></html>"));
+		RequestUtils.setParameters(request, context, "UTF-8");
+	}
+	
+	@Test
+	public void testSetParametersHttpContextRequestParameters() throws Exception {
+		RequestParameters params = new RequestParameters();
+		params.setParameter("key1", "value1");
+		RequestUtils.setParameters(context, params);
 	}
 	
 	@Test
@@ -145,6 +165,5 @@ public class RequestUtilsTest {
 	public void testDecode() {
 		assertEquals("", RequestUtils.decode("", "UTF-8"));
 		assertEquals("abc def", RequestUtils.decode("abc%20def", "UTF-8"));
-
 	}
 }

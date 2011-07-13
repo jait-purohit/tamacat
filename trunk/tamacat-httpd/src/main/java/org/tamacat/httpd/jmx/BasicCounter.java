@@ -17,6 +17,7 @@ public class BasicCounter implements PerformanceCounterMonitor, Serializable {
 	private static final long serialVersionUID = 6089725451626828983L;
 	
 	private static ThreadLocal<Long> time = new ThreadLocal<Long>() {
+		@Override
 	    protected Long initialValue() {
 	        return System.currentTimeMillis();
 	    }

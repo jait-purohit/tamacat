@@ -6,6 +6,8 @@ package org.tamacat.httpd.html;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
+
 import org.apache.http.entity.StringEntity;
 import org.junit.After;
 import org.junit.Before;
@@ -28,7 +30,9 @@ public class LinkConvertingEntityTest {
 		String after = "/bbb/";
 		LinkConvertingEntity entity = new LinkConvertingEntity(html, before, after);
 		assertNotNull(entity);
-		//OutputStream out = new ByteArrayOutputStream();
-		entity.writeTo(System.out);
+		
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		entity.writeTo(out);
+		assertEquals("<html><a href=\"/bbb/test.html\">aaa</a></html>", new String(out.toByteArray()));
 	}
 }
