@@ -114,7 +114,7 @@ public class DefaultSessionFactory implements SessionFactory {
 			LOG.warn(e.getMessage());
 		}
 		try {
-			System.out.println("sessionStore.delete(id):"+id);
+			LOG.trace("sessionStore.delete(id): " + id);
 			sessionStore.delete(id);
 		} catch (Exception e) {
 			LOG.warn(e.getMessage());

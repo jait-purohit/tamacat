@@ -42,8 +42,7 @@ public class VelocityActionFilterTest {
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = HttpObjectFactory.createHttpContext();
 		RequestUtils.setParameters(request, context, "UTF-8");
-		System.out.println(RequestUtils.getParameter(context, "a"));
-		
+		assertEquals("Default", RequestUtils.getParameter(context, "a"));
 		filter.doFilter(request, response, context);
 		assertNotNull(filter.getServiceUrl());
 	}
