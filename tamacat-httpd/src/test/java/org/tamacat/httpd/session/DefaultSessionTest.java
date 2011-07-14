@@ -2,6 +2,9 @@ package org.tamacat.httpd.session;
 
 import static org.junit.Assert.*;
 
+import java.util.Date;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +20,7 @@ public class DefaultSessionTest {
 
 	@After
 	public void tearDown() throws Exception {
+		
 	}
 
 	@Test
@@ -37,17 +41,27 @@ public class DefaultSessionTest {
 
 	@Test
 	public void testGetAttribute() {
+		session.setAttribute("key1", "value1");
+		assertEquals("value1", session.getAttribute("key1"));
 		
+		session.removeAttribute("key1");
+		assertEquals(null, session.getAttribute("key1"));
 	}
 
 	@Test
 	public void testGetAttributeKeys() {
-		
+		session.setAttribute("key1", "value1");
+		Set<String> keys = session.getAttributeKeys();
+		assertEquals("key1", keys.iterator().next());
 	}
 
 	@Test
 	public void testGetSessionAttributes() {
+		session.setAttribute("key1", "value1");
+		SessionAttributes attributes = session.getSessionAttributes();
+		assertEquals("value1", attributes.getAttribute("key1"));
 		
+		session.setSessionAttributes(attributes);
 	}
 
 	@Test
@@ -57,6 +71,7 @@ public class DefaultSessionTest {
 
 	@Test
 	public void testGetLastAccessDate() {
+		session.setLastAccessDate(new Date());
 		assertNotNull(session.getLastAccessDate());
 	}
 
@@ -67,7 +82,9 @@ public class DefaultSessionTest {
 
 	@Test
 	public void testInvalidate() {
+		assertFalse(session.isInvalidate());
 		session.invalidate();
+		assertTrue(session.isInvalidate());
 	}
 
 	@Test
