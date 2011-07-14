@@ -17,9 +17,9 @@ public class FileSessionStore implements SessionStore {
 
 	static final Log LOG = LogFactory.getLog(FileSessionStore.class);
 	
-	private String directory = "./";
-	private String fileNamePrefix = "";
-	private String fileNameSuffix = ".ser";
+	String directory = "./";
+	String fileNamePrefix = "";
+	String fileNameSuffix = ".ser";
 	
 	public void setDirectory(String directory) {
 		if (! directory.endsWith("/")) directory = directory + "/";
@@ -76,7 +76,9 @@ public class FileSessionStore implements SessionStore {
 		String fileName = directory + fileNamePrefix + id + fileNameSuffix; 
 		try {
 			File file = new File(fileName);
-			file.deleteOnExit();
+			if (file.exists()) {
+				file.delete();
+			}
 		} catch (Exception e) {
 			LOG.warn(e.getMessage());
 		}
