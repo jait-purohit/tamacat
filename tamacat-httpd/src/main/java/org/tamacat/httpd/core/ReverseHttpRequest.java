@@ -87,6 +87,7 @@ public class ReverseHttpRequest extends BasicHttpRequest {
         		after = after + ":" + afterPort;
         	}
         	String newValue = value.replace(before, after);
+
         	LOG.trace("Host: " + value + " >> " + newValue);
         	Header newHeader = new BasicHeader(hostHeader.getName(), newValue);
         	request.removeHeader(hostHeader);
