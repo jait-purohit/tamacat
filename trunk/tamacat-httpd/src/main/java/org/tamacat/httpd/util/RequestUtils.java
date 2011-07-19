@@ -29,6 +29,7 @@ import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.core.RequestParameters;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.util.IOUtils;
+import org.tamacat.util.StringUtils;
 
 public class RequestUtils {
 
@@ -197,7 +198,15 @@ public class RequestUtils {
 			if (url.getServerConfig().useHttps()) {
 				protocol = "https";
 			}
-			port = url.getServerConfig().getPort();
+			if (hostName != null && hostName.indexOf(':') >= 0) {
+				String[] hostAndPort = hostName.split(":");
+				if (hostAndPort.length >= 2) {
+					hostName = hostAndPort[0];
+					port = StringUtils.parse(hostAndPort[1],-1);
+				}
+			} else {
+				port = url.getServerConfig().getPort();
+			}
 			if (context != null) {
 				HttpConnection con = getHttpConnection(context);
 				if (con instanceof HttpInetConnection) {
