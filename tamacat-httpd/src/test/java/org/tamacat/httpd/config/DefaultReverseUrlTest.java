@@ -73,6 +73,12 @@ public class DefaultReverseUrlTest {
 			"http://localhost/test/abc.html", 
 			reverseUrl.getConvertRequestedUrl("http://localhost:8080/test2/abc.html")
 		);
+		
+		serviceUrl.setHost(new URL("http://localhost:10080"));
+		assertEquals(
+			"http://localhost:10080/test/abc.html", 
+			reverseUrl.getConvertRequestedUrl("http://localhost:8080/test2/abc.html")
+		);
 	}
 	
 	@Test
