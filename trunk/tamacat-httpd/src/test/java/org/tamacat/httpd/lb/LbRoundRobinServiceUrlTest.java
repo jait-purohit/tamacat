@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.tamacat.httpd.config.DefaultReverseUrl;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.monitor.MonitorConfig;
 
 public class LbRoundRobinServiceUrlTest {
@@ -30,6 +31,11 @@ public class LbRoundRobinServiceUrlTest {
 	}
 
 	@Test
+	public void testLbRoundRobinServiceUrl() {
+		new LbRoundRobinServiceUrl();
+	}
+	
+	@Test
 	public void testGetMonitorConfigDefault() throws Exception {
 		LbRoundRobinServiceUrl url = new LbRoundRobinServiceUrl(serverConfig);
 		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
@@ -41,6 +47,70 @@ public class LbRoundRobinServiceUrlTest {
 		assertEquals("http://localhost:8080/check.html", config.getUrl());
 		assertEquals(30000, config.getInterval());
 		assertEquals(10000, config.getTimeout());
+	}
+	
+	@Test
+	public void testGetReverseUrls() throws Exception {
+		LbRoundRobinServiceUrl url = new LbRoundRobinServiceUrl(serverConfig);
+		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
+		DefaultReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
+		url.setReverseUrl(reverseUrl);
+		assertEquals(1, url.getReverseUrls().size());
+	}
+	
+	@Test
+	public void testGetReverseUrl() throws Exception {
+		LbRoundRobinServiceUrl url = new LbRoundRobinServiceUrl(serverConfig);
+		try {
+			url.getReverseUrl();
+			fail();
+		} catch (ServiceUnavailableException e) {
+		}
+
+		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
+		DefaultReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
+		reverseUrl.setReverse(new URL("http://192.168.1.11:8080/test/"));
+		url.setReverseUrl(reverseUrl);
+		assertNotNull(url.getReverseUrl());
+		
+		DefaultReverseUrl reverseUrl2 = new DefaultReverseUrl(serviceUrl);
+		reverseUrl2.setReverse(new URL("http://192.168.1.12:8080/test/"));
+		url.setReverseUrl(reverseUrl2);
+
+		assertEquals("http://192.168.1.11:8080/test/", url.getReverseUrl().getReverse().toString());
+		assertEquals("http://192.168.1.12:8080/test/", url.getReverseUrl().getReverse().toString());
+		assertEquals("http://192.168.1.11:8080/test/", url.getReverseUrl().getReverse().toString());
+		assertEquals("http://192.168.1.12:8080/test/", url.getReverseUrl().getReverse().toString());
+	}
+	
+	@Test
+	public void testAddTarget() throws Exception {
+		LbRoundRobinServiceUrl url = new LbRoundRobinServiceUrl(serverConfig);
+		try {
+			url.getReverseUrl();
+			fail();
+		} catch (ServiceUnavailableException e) {
+			//OK
+		}
+
+		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
+		DefaultReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
+		reverseUrl.setReverse(new URL("http://192.168.1.11:8080/test/"));
+		url.addTarget(reverseUrl);
+		assertNotNull(url.getReverseUrl());
+		
+		DefaultReverseUrl reverseUrl2 = new DefaultReverseUrl(serviceUrl);
+		reverseUrl2.setReverse(new URL("http://192.168.1.12:8080/test/"));
+		url.addTarget(reverseUrl2);
+
+		assertEquals("http://192.168.1.11:8080/test/", url.getReverseUrl().getReverse().toString());
+		assertEquals("http://192.168.1.12:8080/test/", url.getReverseUrl().getReverse().toString());
+		assertEquals("http://192.168.1.11:8080/test/", url.getReverseUrl().getReverse().toString());
+		assertEquals("http://192.168.1.12:8080/test/", url.getReverseUrl().getReverse().toString());
+		
+		url.removeTarget(reverseUrl);
+		assertEquals("http://192.168.1.12:8080/test/", url.getReverseUrl().getReverse().toString());
+		assertEquals("http://192.168.1.12:8080/test/", url.getReverseUrl().getReverse().toString());
 	}
 	
 	@Test
@@ -56,5 +126,18 @@ public class LbRoundRobinServiceUrlTest {
 		assertEquals("http://localhost:8080/lb1/test/check.html", config.getUrl());
 		assertEquals(60000, config.getInterval());
 		assertEquals(15000, config.getTimeout());
+	}
+	
+	@Test
+	public void testStartHealthCheck() throws Exception {
+		LbRoundRobinServiceUrl url = new LbRoundRobinServiceUrl(serverConfig);
+		url.startHealthCheck();
+		
+		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
+		DefaultReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
+		reverseUrl.setReverse(new URL("http://192.168.1.11:8080/test/"));
+		url.addTarget(reverseUrl);
+		
+		url.startHealthCheck();
 	}
 }

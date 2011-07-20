@@ -91,7 +91,7 @@ public class WSSEAuthProcessor extends AbstractAuthProcessor {
 	    System.arraycopy(nonce, 0, digest, 0, nonce.length);
 	    System.arraycopy(created, 0, digest, nonce.length, created.length);
 	    System.arraycopy(pb, 0, digest, nonce.length + created.length, pb.length);
-	    return new String(new Base64().encode(getSHA1(digest)));
+	    return new String(new Base64().encode(getSHA1(digest))).replace("\r","").replace("\n","");
 	}
 	
 	/**
