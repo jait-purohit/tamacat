@@ -89,8 +89,4 @@ public class HttpFileUpload extends FileUpload {
 	       throw new FileUploadException(e.getMessage(), e);
 	   }
 	}
-	
-	void setDigest(RequestContext ctx, String checksum) {
-		((HttpRequestContext) ctx).getHttpRequest();
-	}
 }
