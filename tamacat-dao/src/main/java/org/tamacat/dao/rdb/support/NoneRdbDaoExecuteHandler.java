@@ -15,7 +15,8 @@ public class NoneRdbDaoExecuteHandler implements RdbDaoExecuteHandler {
 
 	@Override
 	public int handleAfterExecuteUpdate(RdbDaoEvent event) {
-		return event.getResult();
+		if (event == null) return 0;
+		else return event.getResult();
 	}
 
 	@Override
