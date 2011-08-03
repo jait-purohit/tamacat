@@ -9,7 +9,8 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.http.client.utils.CloneUtils;
+import org.tamacat.util.CloneUtils;
+
 
 /**
  * <p>The default implements of {@link ReverseUrl}.
@@ -103,7 +104,7 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
     	DefaultReverseUrl clone = 
             (DefaultReverseUrl) super.clone();
         if (this.serviceUrl != null) {
-            clone.serviceUrl = (ServiceUrl) CloneUtils.clone(this.serviceUrl);
+            clone.serviceUrl = CloneUtils.clone(this.serviceUrl);
         }
         return clone;
     }
