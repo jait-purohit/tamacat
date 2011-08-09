@@ -5,7 +5,7 @@
   
   <bean id="session" class="org.tamacat.httpd.session.DefaultSessionFactory" singleton="true">
     <property name="defaultMaxInactiveInterval">
-      <value>10000</value>
+      <value>1800000</value>
     </property>
     <property name="sessionListener">
       <ref bean="listener" />
