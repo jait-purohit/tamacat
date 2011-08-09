@@ -33,7 +33,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 	static final Log LOG = LogFactory.getLog(LocalFileHttpHandler.class);
 	
 	protected String welcomeFile = "index.html";
-	private VelocityListingsPage listingPage;
+	protected VelocityListingsPage listingPage;
 	protected boolean listings;
 	protected Properties props;
 	
@@ -88,7 +88,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 		if (path.endsWith("/") && useDirectoryListings() == false) {
 			path = path + welcomeFile;
 		}
-		File file = new File(docsRoot, getDecodeUri(path));
+		File file = new File(docsRoot, getDecodeUri(path.replace(serviceUrl.getPath(), "/")));
 		///// 404 NOT FOUND /////
 		if (!file.exists()) {
 			LOG.trace("File " + file.getPath() + " not found");

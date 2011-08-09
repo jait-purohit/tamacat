@@ -8,8 +8,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.http.HttpRequest;
@@ -29,12 +32,12 @@ public class VelocityListingsPage {
 
 	static final Log LOG = LogFactory.getLog(VelocityListingsPage.class);
 
-    static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
+    protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
     
-    static final String DEFAULT_ERROR_500_HTML
+    protected static final String DEFAULT_ERROR_500_HTML
 		= "<html><body><p>500 Internal Server Error.<br /></p></body></html>";
-    private String listingsPage = "listings";
-    private VelocityEngine velocityEngine;
+    protected String listingsPage = "listings";
+    protected VelocityEngine velocityEngine;
 
     public void setListingsPage(String listingsPage) {
 		this.listingsPage = listingsPage;
@@ -71,15 +74,18 @@ public class VelocityListingsPage {
 				&& ! pathname.getName().startsWith(".");
 			}
 		});
-		ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String,String>>();
+		
+		Arrays.sort(files, new FileSort());
+		
+		ArrayList<Map<String, String>> list = new ArrayList<Map<String,String>>();
 		for (File f : files) {
-			HashMap<String, String> map = new HashMap<String, String>();
+			Map<String, String> map = new HashMap<String, String>();
 			if (f.isDirectory()) {
 				map.put("getName", StringUtils.encode(f.getName(),"UTF-8") + "/");
 				map.put("length", "-");
 			} else {
 				map.put("getName", StringUtils.encode(f.getName(), "UTF-8"));
-				map.put("length", String.valueOf(f.length()));
+				map.put("length", String.format("%1$,3d KB", f.length()/1024));
 			}
 			map.put("isDirectory", String.valueOf(f.isDirectory()));
 			map.put("lastModified", DateUtils.getTime(new Date(f.lastModified()), "yyyy-MM-dd HH:mm"));
@@ -99,5 +105,14 @@ public class VelocityListingsPage {
     
     protected Template getTemplate(String page) throws Exception {
     	return velocityEngine.getTemplate("templates/" + page, "UTF-8");
+    }
+    
+    static class FileSort implements Comparator<File> {
+    	public int compare(File src, File target) {
+    		if (src.isDirectory() && target.isFile()) return -1;
+    		if (src.isFile() && target.isDirectory()) return 1;
+    		int diff = src.getName().compareTo(target.getName());
+    		return diff;
+    	}
     }
 }
