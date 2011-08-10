@@ -36,9 +36,9 @@
 #end
 #foreach($file in $list)
       <tr>
-        <td><a href="$url$file.getName"><span>$file.getName</span></a></td>
-        <td nowrap="nowrap">$file.lastModified</td>
-        <td style="text-align:right;" nowrap="nowrap">$file.length</td>
+        <td><a href="$!url$!file.getName"><span>$!file.getName</span></a></td>
+        <td nowrap="nowrap">$!file.lastModified</td>
+        <td style="text-align:right;" nowrap="nowrap">$!file.length</td>
       </tr>
 #end
     </table>
