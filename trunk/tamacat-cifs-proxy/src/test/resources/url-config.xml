@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<service-config>
+  <!-- default -->
+  <service>
+    <url path="/" type="normal" handler="DefaultHandler" />
+    <url path="/cifs/" type="normal" handler="CifsProxyHandler" />
+  </service>
+</service-config>
