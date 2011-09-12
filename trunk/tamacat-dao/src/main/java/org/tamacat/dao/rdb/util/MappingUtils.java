@@ -7,7 +7,6 @@ package org.tamacat.dao.rdb.util;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.HashMap;
 
 import org.tamacat.dao.rdb.RdbColumnMetaData;
 import org.tamacat.dao.rdb.RdbDataType;
@@ -34,11 +33,8 @@ public class MappingUtils {
         return null;
     }
     
-    public static String parse(
-    		RdbDataType type, HashMap<String, Object> data, 
-    		RdbColumnMetaData column) {
-    	String key = getColumnName(column);
-    	Object value = data.get(key);
+    public static String parse(RdbColumnMetaData column, Object value) {
+    	RdbDataType type = column.getType();
     	if (value == null) return null;
     	if (type == RdbDataType.DATE && value instanceof Date) {
     		return DateUtils.getTime((Date)value, "yyyy-MM-dd"); //TODO
