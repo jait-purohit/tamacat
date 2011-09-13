@@ -57,6 +57,7 @@ public class WebDavHttpResponse extends AbstractResponse {
 		if (out == null) {
 			final ByteArrayOutputStream o = new ByteArrayOutputStream();
 			ContentProducer producer = new ContentProducer() {
+				@Override
 				public void writeTo(OutputStream out) throws IOException {
 					out.write(o.toByteArray());
 				}

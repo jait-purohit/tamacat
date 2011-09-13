@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.tamacat.io.RuntimeIOException;
+
 import com.bradmcevoy.http.FileItem;
 
 public class WebDavFileItem implements FileItem {
@@ -33,7 +35,7 @@ public class WebDavFileItem implements FileItem {
 		try {
 			return item.getInputStream();
 		} catch (IOException e) {
-			return null;
+			throw new RuntimeIOException(e);
 		}
 	}
 
@@ -47,7 +49,7 @@ public class WebDavFileItem implements FileItem {
 		try {
 			return item.getOutputStream();
 		} catch (IOException e) {
-			return null;
+			throw new RuntimeIOException(e);
 		}
 	}
 

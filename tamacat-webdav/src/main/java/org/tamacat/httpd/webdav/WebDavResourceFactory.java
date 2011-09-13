@@ -13,7 +13,6 @@ import com.bradmcevoy.http.ResourceFactory;
 import com.ettrema.http.fs.FileSystemResourceFactory;
 import com.ettrema.http.fs.FsDirectoryResource;
 import com.ettrema.http.fs.FsFileResource;
-import com.ettrema.http.fs.FsSecurityManager;
 import com.ettrema.http.fs.NullSecurityManager;
 
 public class WebDavResourceFactory implements ResourceFactory {
@@ -30,7 +29,7 @@ public class WebDavResourceFactory implements ResourceFactory {
 		this.serviceUrl = serviceUrl;
 		this.docsRoot = docsRoot;
 
-		FsSecurityManager securityManager = new NullSecurityManager();//SimpleSecurityManager();
+		com.bradmcevoy.http.SecurityManager securityManager = new NullSecurityManager();//SimpleSecurityManager();
 		File file = new File(docsRoot);
 		factory = new FileSystemResourceFactory(file, securityManager, ".");
 	}

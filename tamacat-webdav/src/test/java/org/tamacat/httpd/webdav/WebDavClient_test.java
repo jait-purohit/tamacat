@@ -19,7 +19,7 @@ import org.tamacat.httpd.core.HttpEngine;
 
 public class WebDavClient_test {
 
-	public static final String XML = "components.xml";
+	public static final String XML = "httpd.xml";
 	
 	public static void main(String[] args) throws Exception {
 		String config = args.length > 0 ? args[0] : XML;
@@ -40,7 +40,7 @@ public class WebDavClient_test {
 		HttpClient client = new DefaultHttpClient();
 		
 		HttpPut request = new HttpPut("http://localhost:8080/webdav/test.txt");
-		request.setEntity(new StringEntity("test"));
+		request.setEntity(new StringEntity("test1234","UTF-8"));
 		request.addHeader("Host", "localhost");
 		HttpResponse response = null;
 		try {

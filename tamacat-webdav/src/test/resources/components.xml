@@ -5,15 +5,11 @@
   <bean id="WebDavHandler" 
      class="org.tamacat.httpd.webdav.WebDavHttpHandler" singleton="false">
     <property name="docsRoot">
-      <value>${server.home}/src/test/resources</value>
+      <value>src/test/resources</value>
     </property>
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
-  </bean>
-  
-  <bean id="server"
-     class="org.tamacat.httpd.core.HttpEngine" singleton="false">
   </bean>
   
 </beans>
