@@ -130,4 +130,14 @@ public class WebDavHttpRequest extends AbstractRequest {
 			}
 		}
 	}
+
+	@Override
+	public void setAuthorization(Auth auth) {
+		
+	}
+
+	@Override
+	public String getRemoteAddr() {
+		return RequestUtils.getRemoteIPAddress(context);
+	}
 }
