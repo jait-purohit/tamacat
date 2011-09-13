@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 
+import org.tamacat.io.RuntimeIOException;
+
 public class IOUtils {
 
 
@@ -29,7 +31,7 @@ public class IOUtils {
         try {
         	in = url.openStream();
         } catch (IOException e) {
-            throw new ResourceNotFoundException(e);
+            throw new RuntimeIOException(e);
         } catch (NullPointerException e) {
             throw new ResourceNotFoundException(path + " is not found.");
         }
@@ -56,8 +58,12 @@ public class IOUtils {
 				try {
 					Method closable = ClassUtils.searchMethod(
 							target.getClass(), "close");
-					if (closable != null) closable.invoke(target);
+					if (closable != null) closable.invoke(target);					
 				} catch (Exception e) {
+					Throwable cause = e.getCause();
+					if (cause != null && cause instanceof IOException) {
+						throw new RuntimeIOException(e);
+					}
 				}
 			}
 		}
@@ -68,6 +74,7 @@ public class IOUtils {
 	    try {
 			if (closable != null) closable.close();
 		} catch (IOException e) {
+			throw new RuntimeIOException(e);
 		}
 	}
 }
