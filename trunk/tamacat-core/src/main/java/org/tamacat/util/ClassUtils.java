@@ -61,7 +61,6 @@ public abstract class ClassUtils {
         }
     }
 
-    @SuppressWarnings("unchecked")
     static
       public <T> T newInstance(Class<T> type, Object... args) {
     	if (args == null) {
@@ -73,7 +72,7 @@ public abstract class ClassUtils {
             Class<?>[] types = c.getParameterTypes();
             if (types.length == args.length) {
                 try {
-                    instance = (T) c.newInstance(args);
+                    instance = type.cast(c.newInstance(args));
                     break;
                 } catch (Exception e) {
                 }
