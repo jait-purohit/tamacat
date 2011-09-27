@@ -8,10 +8,13 @@ import java.io.IOException;
 
 import java.net.URL;
 import java.security.KeyStore;
+import java.security.cert.X509Certificate;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.tamacat.httpd.config.ServerConfig;
 
@@ -75,10 +78,18 @@ public class SSLContextCreator {
 	        kmfactory.init(keystore, keyPassword);
 	        KeyManager[] keymanagers = kmfactory.getKeyManagers(); 
 	        SSLContext sslcontext = SSLContext.getInstance(protocol.name());
-	        sslcontext.init(keymanagers, null, null);
+	        sslcontext.init(keymanagers, TRUST_MANAGER, null);
 	        return sslcontext;
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
 	}
+	
+	static final TrustManager[] TRUST_MANAGER = { 
+		new X509TrustManager() {
+			public X509Certificate[] getAcceptedIssuers() { return null; }
+			public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+			public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+		} 
+	};
 }

@@ -60,6 +60,10 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
+		if ("OPTIONS".equalsIgnoreCase(request.getRequestLine().getMethod())) {
+			response.setStatusCode(HttpStatus.SC_NO_CONTENT);
+			return;
+		}
 		try {
 			String remoteUser = checkUser(request, context);
 			context.setAttribute(remoteUserKey, remoteUser);
