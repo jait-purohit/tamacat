@@ -13,8 +13,8 @@ import org.tamacat.httpd.util.AccessLogUtils;
 public class AccessLogFilter implements RequestFilter, ResponseFilter {
 
 	protected ServiceUrl serviceUrl;
-	static final String START_TIME = "Response.startTime";
-	static final String RESPONSE_TIME = "Response.responseTime";
+	static final String START_TIME = AccessLogFilter.class.getName() + "_Response.startTime";
+	static final String RESPONSE_TIME = AccessLogFilter.class.getName() + "_Response.responseTime";
 
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
@@ -31,9 +31,11 @@ public class AccessLogFilter implements RequestFilter, ResponseFilter {
 	@Override
 	public void afterResponse(HttpRequest request, HttpResponse response,
 			HttpContext context) {
-		long start = (Long) context.getAttribute(START_TIME);
-		long time = System.currentTimeMillis() - start;
-		context.setAttribute(RESPONSE_TIME, time);
-		AccessLogUtils.writeAccessLog(request, response, context, time);
+		Long start = (Long)context.getAttribute(START_TIME);
+		if (start != null) {
+			long time = System.currentTimeMillis() - start;
+			context.setAttribute(RESPONSE_TIME, time);
+			AccessLogUtils.writeAccessLog(request, response, context, time);
+		}
 	}
 }
