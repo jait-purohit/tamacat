@@ -21,6 +21,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import org.easymock.EasyMock;
 import org.tamacat.log.Log;
@@ -32,7 +33,7 @@ public class MockConnection implements Connection {
 
     String url;
     Properties info;
-    
+    String schema;
     Connection con;
     
     public MockConnection(String url, Properties info) {
@@ -255,4 +256,35 @@ public class MockConnection implements Connection {
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return null;
     }
+
+	@Override
+	/** @since 1.7 */
+	public void setSchema(String schema) throws SQLException {
+		this.schema = schema;
+	}
+
+	@Override
+	/** @since 1.7 */
+	public String getSchema() throws SQLException {
+		return schema;
+	}
+
+	@Override
+	/** @since 1.7 */
+	public void abort(Executor executor) throws SQLException {
+		
+	}
+
+	@Override
+	/** @since 1.7 */
+	public void setNetworkTimeout(Executor executor, int milliseconds)
+			throws SQLException {
+		
+	}
+
+	@Override
+	/** @since 1.7 */
+	public int getNetworkTimeout() throws SQLException {
+		return 0;
+	}
 }

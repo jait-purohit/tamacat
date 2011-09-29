@@ -802,4 +802,15 @@ public class MockResultSet implements ResultSet {
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return null;
     }
+
+    /* @sinse 1.7 */
+	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+		return null;
+	}
+
+	/* @sinse 1.7 */
+	public <T> T getObject(String columnLabel, Class<T> type)
+			throws SQLException {
+		return null;
+	}
 }

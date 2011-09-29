@@ -9,7 +9,9 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 //import org.easymock.EasyMock;
 //import org.easymock.IMocksControl;
@@ -17,7 +19,8 @@ import java.util.Properties;
 public class MockDriver implements Driver {
 
 	private Connection connection;
-	
+    private Logger logger;
+    
     static {
         try {
             DriverManager.registerDriver(new MockDriver());
@@ -60,4 +63,20 @@ public class MockDriver implements Driver {
     public boolean jdbcCompliant() {
         return true;
     }
+
+	/* @since 1.7 */
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		if (logger == null) {
+			throw new SQLFeatureNotSupportedException("This method is not Supported.");
+		}
+		return logger;
+	}
+	
+	/**
+	 * (original method)
+	 * @param logger
+	 */
+	public void setParentLogger(Logger logger) {
+		this.logger = logger;
+	}
 }

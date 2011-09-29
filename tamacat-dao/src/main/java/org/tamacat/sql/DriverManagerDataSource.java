@@ -8,7 +8,9 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -19,7 +21,8 @@ public class DriverManagerDataSource implements DataSource {
 	private Class<?> driverClass;
 	private Properties options = new Properties();
 	private String url;
-	
+    private Logger logger;
+
 	public DriverManagerDataSource() {}
 	
 	public Class<?> getDriverClass() {
@@ -96,5 +99,21 @@ public class DriverManagerDataSource implements DataSource {
 				+ "not as [" + iface.getName());
 		}
 		return (T)this;
+	}
+
+	/* @since 1.7 */
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		if (logger == null) {
+			throw new SQLFeatureNotSupportedException("This method is not Supported.");
+		}
+		return logger;
+	}
+	
+	/**
+	 * (original method)
+	 * @param logger
+	 */
+	public void setParentLogger(Logger logger) {
+		this.logger = logger;
 	}
 }

@@ -191,4 +191,13 @@ public class MockStatement implements Statement {
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return null;
     }
+
+	/* @since 1.7 */
+	public void closeOnCompletion() throws SQLException {		
+	}
+
+	/* @since 1.7 */
+	public boolean isCloseOnCompletion() throws SQLException {
+		return false;
+	}
 }
