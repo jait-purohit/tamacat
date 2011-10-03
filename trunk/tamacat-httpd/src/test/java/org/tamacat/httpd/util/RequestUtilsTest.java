@@ -166,4 +166,16 @@ public class RequestUtilsTest {
 		assertEquals("", RequestUtils.decode("", "UTF-8"));
 		assertEquals("abc def", RequestUtils.decode("abc%20def", "UTF-8"));
 	}
+	
+	@Test
+	public void testGetPathPrefix() {
+		HttpRequest request = new BasicHttpRequest("GET", "/test.html");
+		assertEquals("/", RequestUtils.getPathPrefix(request));
+		
+		request = new BasicHttpRequest("GET", "/test/index.html");
+		assertEquals("/test/", RequestUtils.getPathPrefix(request));
+		
+		request = new BasicHttpRequest("GET", "/test/aaaa/index.html");
+		assertEquals("/test/aaaa/", RequestUtils.getPathPrefix(request));
+	}
 }

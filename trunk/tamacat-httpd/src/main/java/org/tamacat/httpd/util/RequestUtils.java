@@ -269,4 +269,13 @@ public class RequestUtils {
 		}
 		return false;
 	}
+	
+	public static String getPathPrefix(HttpRequest request) {
+		String path = request.getRequestLine().getUri();
+		int idx = path.lastIndexOf("/");
+		if (idx >=0) {
+			return path.substring(0, idx) + "/";
+		}
+		return path;
+	}
 }
