@@ -190,11 +190,19 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        	targetRequest = new ReverseHttpRequest(line, reverseUrl);
 	        	targetRequest.setRequest(request, context);
 	        }
+	        reverseUrl.countUp();
 	        
-	        httpexecutor.preProcess(targetRequest, httpproc, context);
-	        HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
-	        httpexecutor.postProcess(targetResponse, httpproc, context);
-	        return targetResponse;
+	        try {
+		        httpexecutor.preProcess(targetRequest, httpproc, context);
+		        HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
+		        httpexecutor.postProcess(targetResponse, httpproc, context);
+		        return targetResponse;
+	        } finally {
+		        reverseUrl.countDown();
+		        if (LOG.isDebugEnabled()) {
+		        	LOG.debug(">> "+ reverseUrl.getReverse() + ", connections=" + reverseUrl.getActiveConnections());
+		        }
+	        }
 		} catch (RuntimeException e) {
 			handleException(request, response, e);
 			return response;

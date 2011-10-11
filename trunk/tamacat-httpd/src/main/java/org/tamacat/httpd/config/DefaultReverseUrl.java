@@ -9,17 +9,20 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.tamacat.httpd.jmx.BasicCounter;
+import org.tamacat.httpd.jmx.PerformanceCounter;
 import org.tamacat.util.CloneUtils;
 
 
 /**
  * <p>The default implements of {@link ReverseUrl}.
  */
-public class DefaultReverseUrl implements ReverseUrl, Cloneable {
+public class DefaultReverseUrl implements ReverseUrl, PerformanceCounter, Cloneable {
 
 	private ServiceUrl serviceUrl;	
 	private URL reverseUrl;
 	private InetSocketAddress targetAddress;
+	private PerformanceCounter counter;
 	
 	/**
 	 * <p>Constructs with the specified {@link ServiceUrl}. 
@@ -27,6 +30,7 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
 	 */
 	public DefaultReverseUrl(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
+		counter = new BasicCounter();
 	}
 	
 	@Override
@@ -108,4 +112,34 @@ public class DefaultReverseUrl implements ReverseUrl, Cloneable {
         }
         return clone;
     }
+    
+    @Override
+	public int getActiveConnections() {
+    	return counter.getActiveConnections();
+    }
+    
+    @Override
+    public int countUp() {
+    	return counter.countUp();
+    }
+    
+    @Override
+    public int countDown() {
+    	return counter.countDown();
+    }
+
+	@Override
+	public void reset() {
+		counter.reset();
+	}
+
+	@Override
+	public long getAverageResponseTime() {
+		return counter.getAverageResponseTime();
+	}
+
+	@Override
+	public long getMaximumResponseTime() {
+		return counter.getMaximumResponseTime();
+	}
 }
