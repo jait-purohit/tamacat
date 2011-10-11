@@ -235,8 +235,7 @@ public class HttpServletResponseImpl implements HttpCoreServletResponse {
 			throw new IllegalStateException();
 		}
 		if (pw == null) {
-			final PrintWriterImpl writer = new PrintWriterImpl(
-					new StringWriter());
+			final PrintWriterImpl writer = new PrintWriterImpl(new StringWriter());
 			ContentProducer producer = new ContentProducer() {
 				public void writeTo(OutputStream out) throws IOException {
 					out.write(writer.getWriter().toString().getBytes(getCharacterEncoding()));
@@ -251,20 +250,15 @@ public class HttpServletResponseImpl implements HttpCoreServletResponse {
 
 	@Override
 	public boolean isCommitted() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void resetBuffer() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

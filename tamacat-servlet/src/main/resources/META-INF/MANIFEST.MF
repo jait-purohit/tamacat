@@ -1,7 +1,7 @@
 Implementation-Title: tamacat-servlet
-Implementation-Version: 0.7
+Implementation-Version: 0.9
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.tamacat.servlet
 Bundle-Name: tamacat-servlet
 Bundle-Vendor: TAMACAT.ORG
-Bundle-Version: 0.7
+Bundle-Version: 0.9
