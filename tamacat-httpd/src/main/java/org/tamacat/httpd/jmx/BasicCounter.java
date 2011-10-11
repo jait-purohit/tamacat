@@ -44,20 +44,28 @@ public class BasicCounter implements PerformanceCounterMonitor, Serializable {
 		return activeConnections.get();
 	}
 
-	public void countUp() {
-		activeConnections.incrementAndGet();
+	@Override
+	public int countUp() {
 		time.set(System.currentTimeMillis());
+		return activeConnections.incrementAndGet();
 	}
 	
-	public void countDown() {
+	@Override
+	public int countDown() {
 		Long start = time.get();
 		if (start != null) {
 			setResponseTime(System.currentTimeMillis() - start);
 		}
 		time.remove();
-		activeConnections.decrementAndGet();
+		return activeConnections.decrementAndGet();
 	}
 
+	@Override
+	public void reset() {
+		accessCount.set(0);
+		errorCount.set(0);
+	}
+	
 	@Override
 	public long getAccessCount() {
 		return accessCount.get();

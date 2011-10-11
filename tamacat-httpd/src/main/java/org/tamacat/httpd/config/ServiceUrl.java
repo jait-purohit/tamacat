@@ -19,7 +19,8 @@ public class ServiceUrl {
 	private ReverseUrl reverseUrl;
 	private UrlType type;
 	private ServerConfig serverConfig;
-	
+	private String loadBalancerMethod = "RoundRobin";
+
 	/**
 	 * <p>Constructor for ServiceConfig.
 	 * @param serverConfig
@@ -141,5 +142,13 @@ public class ServiceUrl {
 	 */
 	public void setHandlerName(String handlerName) {
 		this.handlerName = handlerName;
+	}
+	
+	public String getLoadBalancerMethod() {
+		return loadBalancerMethod;
+	}
+
+	public void setLoadBalancerMethod(String loadBalancerMethod) {
+		this.loadBalancerMethod = loadBalancerMethod;
 	}
 }

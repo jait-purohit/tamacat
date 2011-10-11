@@ -9,9 +9,13 @@ import javax.management.MXBean;
 @MXBean
 public interface PerformanceCounter {
 
-	void countUp();
+	int getActiveConnections();
+
+	int countUp();
 	
-	void countDown();
+	int countDown();
+	
+	void reset();
 	
 	long getAverageResponseTime();
 	

@@ -7,10 +7,12 @@ package org.tamacat.httpd.config;
 import java.net.InetSocketAddress;
 import java.net.URL;
 
+import org.tamacat.httpd.jmx.PerformanceCounter;
+
 /**
  * <p>The ReverseUrl interface is a setup of Reverse Proxy URL.
  */
-public interface ReverseUrl {
+public interface ReverseUrl extends PerformanceCounter {
 	
 	/**
 	 * <p>Returns the {@link ServiceURL}. 

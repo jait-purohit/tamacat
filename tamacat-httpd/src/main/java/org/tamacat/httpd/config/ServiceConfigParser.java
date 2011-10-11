@@ -11,7 +11,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.tamacat.httpd.config.ServiceType;
-import org.tamacat.httpd.lb.LbRoundRobinServiceUrl;
+import org.tamacat.httpd.lb.LbHealthCheckServiceUrl;
+import org.tamacat.httpd.lb.LbServiceUrlFactory;
 import org.tamacat.util.IOUtils;
 import org.tamacat.util.StringUtils;
 
@@ -49,6 +50,7 @@ public class ServiceConfigParser {
 	static final String TYPE = "type";
 	static final String REVERSE = "reverse";
 	static final String HANDLER = "handler";
+	static final String LB_METHOD = "lb-method";
 	
 	static final String URL_CONFIG = "url-config.xml";
 	protected ServerConfig serverConfig;
@@ -149,6 +151,12 @@ public class ServiceConfigParser {
 			Node type = urlAttrs.getNamedItem(TYPE);
 			if (StringUtils.isNotEmpty(type)) {
 				serviceUrl.setType(ServiceType.find(type.getNodeValue()));
+				if (serviceUrl.isType(ServiceType.LB)) {
+					Node lbMethod = urlAttrs.getNamedItem(LB_METHOD);
+					if (StringUtils.isNotEmpty(lbMethod)) {
+						serviceUrl.setLoadBalancerMethod(lbMethod.getNodeValue());
+					}
+				}
 			}
 			Node handler = urlAttrs.getNamedItem(HANDLER);
 			if (StringUtils.isNotEmpty(handler)) {					
@@ -175,7 +183,7 @@ public class ServiceConfigParser {
 	}
 	
 	ServiceUrl getLbServiceUrl(ServiceUrl serviceUrl, Node urlNode, String host) {
-		LbRoundRobinServiceUrl lbServiceUrl = new LbRoundRobinServiceUrl(serverConfig);
+		LbHealthCheckServiceUrl lbServiceUrl = LbServiceUrlFactory.getServiceUrl(serviceUrl);
 		lbServiceUrl.setPath(serviceUrl.getPath());
 		lbServiceUrl.setHandlerName(serviceUrl.getHandlerName());
 		lbServiceUrl.setType(serviceUrl.getType());

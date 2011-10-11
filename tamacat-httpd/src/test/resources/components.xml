@@ -116,12 +116,14 @@
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
+    <!--
     <property name="httpFilter" >
       <ref bean="BasicAuthFilter" />
     </property>
     <property name="httpFilter">
       <ref bean="SSOFilter" />
     </property>
+    -->
     <property name="httpFilter">
       <ref bean="SessionFilter" />
     </property>
