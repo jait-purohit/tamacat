@@ -12,7 +12,5 @@
       <ref bean="AccessLogFilter" />
     </property>
   </bean>
-
-  <bean id="server" class="org.tamacat.httpd.core.HttpEngine" />
   
 </beans>
