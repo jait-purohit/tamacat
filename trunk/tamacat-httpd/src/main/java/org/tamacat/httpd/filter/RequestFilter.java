@@ -9,11 +9,17 @@ import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 
 /**
- * <p>{@core RequestFilter} is execute from
- * {@link HttpHandler#handleRequest} method.
+ * <p>{@code RequestFilter} is execute from
+ * {@link HttpRequestHandler#handle} method.
  */
 public interface RequestFilter extends HttpFilter {
 	
+	/**
+	 * This method is performed before a request. 
+	 * @param request
+	 * @param response
+	 * @param context
+	 */
 	void doFilter(HttpRequest request, HttpResponse response, 
 		HttpContext context);
 }
