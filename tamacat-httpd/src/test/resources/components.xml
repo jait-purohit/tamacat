@@ -41,20 +41,20 @@
     </property>
   </bean>
   
-  <bean id="SSOFilter" class="org.tamacat.httpd.filter.SingleSignOnFilter">
+  <bean id="SSOFilter" class="org.tamacat.httpd.filter.SingleSignOnFilter" singleton="false">
     <property name="singleSignOnCookieName">
       <value>SingleSignOnUser</value>
     </property>
   </bean>
   
-  <bean id="SessionFilter" class="org.tamacat.httpd.filter.SessionCookieFilter">
+  <bean id="SessionFilter" class="org.tamacat.httpd.filter.SessionCookieFilter" singleton="false">
     <property name="sessionCookieName">
       <value>tamacat-httpd-Session</value>
     </property>
   </bean>
   
   <bean id="AccessControlFilter"
-     class="org.tamacat.httpd.examples.AccessControlFilter">
+     class="org.tamacat.httpd.examples.AccessControlFilter" singleton="false">
     <property name="cacheSize">
       <value>100</value>
     </property>
@@ -63,7 +63,7 @@
     </property>
   </bean>
   
-  <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" />
+  <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" singleton="false" />
   
   <bean id="VelocityHandler" 
      class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
@@ -135,7 +135,7 @@
     </property>
   </bean>
   
-  <bean id="html" class="org.tamacat.httpd.filter.HtmlLinkConvertInterceptor">
+  <bean id="html" class="org.tamacat.httpd.filter.HtmlLinkConvertInterceptor" singleton="false">
     <property name="contentType">
       <value>html</value>
     </property>
