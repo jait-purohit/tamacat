@@ -25,7 +25,7 @@ Please make the following configuration files for the place where in CLASSPATH.
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-  <bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor">
+  <bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor" singleton="false">
     <property name="contentType">
       <value>html,xml,css,javascript</value>
     </property>
@@ -96,7 +96,7 @@ JMX.rmi.port=1099
 {{{
 <?xml version="1.0" encoding="UTF-8"?> 
 <beans>
-  <bean id="DefaultHandler" class="org.tamacat.httpd.core.LocalFileHttpHandler" />
+  <bean id="DefaultHandler" class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false" />
 </beans>
 }}}
 ===== Handler class =====
