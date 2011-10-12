@@ -119,7 +119,7 @@ JMX.rmi.port=1099
 || *name* || *value* || * description* ||
 || type || normal, reverse, lb || "normal" is standard web server. "reverse" is Reverse proxy. "lb" is Load balancing with reverse proxy. ||
 || handler || The name of handler in components.xml || The Bean name in components.xml. ||
-|| lb-method|| The name of load balancing method for type="lb" || lb-method="RoundRobin" or LeastConnection" default is "RoundRobin" (since v0.9) ||
+|| lb-method|| The name of load balancing method for type="lb" || lb-method="RoundRobin" or "LeastConnection" default is "RoundRobin" (since v0.9) ||
 
 ===== ex. Virtual host (using HTTP Host request header) =====
 {{{
