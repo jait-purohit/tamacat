@@ -17,9 +17,15 @@ public class HtmlUtils {
 			Pattern.CASE_INSENSITIVE);
 
 	public static final Pattern CHARSET_PATTERN = Pattern.compile(
-			"<meta[^<]*\\s+(content)=(.*);\\s(charset)=(.*)['|\"][^>]*>",
+			"<meta[^<]*\\s+(content)=(.*);\\s?(charset)=(.*)['|\"][^>]*>",
 			Pattern.CASE_INSENSITIVE);
 	
+	/**
+	 * Get the character set from Content-type header.
+	 * @param contentType
+	 *    ex) key: "Content-Type", value: "text/html; charset=UTF-8"
+	 * @return charset (lower case)
+	 */
 	public static String getCharSet(Header contentType) {
 		if (contentType != null) {
 			String value = contentType.getValue();
@@ -34,6 +40,12 @@ public class HtmlUtils {
 		return null;
 	}
 
+	/**
+	 * Get the character set from HTML meta tag.
+	 * @param html
+	 * @param defaultCharset
+	 * @return charset (lower case)
+	 */
 	public static String getCharSetFromMetaTag(String html, String defaultCharset) {
 		if (html != null) {
 			Matcher matcher = CHARSET_PATTERN.matcher(html);
