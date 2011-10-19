@@ -33,6 +33,7 @@ public class VelocityErrorPage {
     
     private VelocityEngine velocityEngine;
     private Properties props;
+	private String templatesPath = "templates";
 	
 	public VelocityErrorPage(Properties props) {
 		this.props = props;
@@ -48,6 +49,10 @@ public class VelocityErrorPage {
 			velocityEngine.setProperty("error.resource.loader.instance",
 					new ClasspathResourceLoader());
 			velocityEngine.init(props);
+			String path = props.getProperty("templates.path");
+			if (path != null) {
+				templatesPath = path;
+			}
 		} catch (Exception e) {
 			LOG.warn(e.getMessage());
 		}
@@ -83,6 +88,6 @@ public class VelocityErrorPage {
     }
     
     protected Template getTemplate(String page) throws Exception {
-    	return velocityEngine.getTemplate("templates/" + page, "UTF-8");
+    	return velocityEngine.getTemplate(templatesPath + "/" + page, "UTF-8");
     }
 }
