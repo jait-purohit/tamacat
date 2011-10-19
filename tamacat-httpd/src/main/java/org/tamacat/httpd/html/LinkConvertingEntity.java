@@ -8,6 +8,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.regex.Pattern;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -21,15 +22,29 @@ import org.tamacat.util.IOUtils;
  */
 public class LinkConvertingEntity extends HttpEntityWrapper {
 
-	private static final int bufferSize = 2048;
-	private String before;
-	private String after;
-	private long contentLength = -1;
-
+	protected int bufferSize = 8192; //8KB
+	protected String before;
+	protected String after;
+	protected long contentLength = -1;
+	protected Pattern linkPattern;
+	
 	public LinkConvertingEntity(HttpEntity entity, String before, String after) {
+		this(entity, before, after, HtmlUtils.LINK_PATTERN);
+	}
+	
+	public LinkConvertingEntity(HttpEntity entity, String before, String after, Pattern linkPattern) {
 		super(entity);
 		this.before = before;
 		this.after = after;
+		if (linkPattern != null) {
+			this.linkPattern = linkPattern;
+		} else {
+			this.linkPattern = HtmlUtils.LINK_PATTERN;
+		}
+	}
+	
+	public void setBufferSize(int bufferSize) {
+		this.bufferSize = bufferSize;
 	}
 
 	@Override
@@ -57,7 +72,7 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 							new String(tmp, "8859_1"), "UTF-8");
 				}
 				ConvertData html = HtmlUtils.convertLink(
-						new String(tmp, charset), before, after);
+						new String(tmp, charset), before, after, linkPattern);
 				if (html.isConverted()) {
 					byte[] bytes = html.getData().getBytes(charset);
 					int diff = bytes.length - tmp.length;

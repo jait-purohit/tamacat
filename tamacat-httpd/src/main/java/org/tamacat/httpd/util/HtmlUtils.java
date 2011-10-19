@@ -12,11 +12,11 @@ import org.tamacat.httpd.html.ConvertData;
 
 public class HtmlUtils {
 	
-	static final Pattern LINK_PATTERN = Pattern.compile(
-			"<[^<]*\\s+(href|src|action)=['|\"]([^('|\")]*)['|\"][^>]*>",
+	public static final Pattern LINK_PATTERN = Pattern.compile(
+			"<[^<]*\\s+(href|src|action|.*[0-9]*;?url)=(?:\'|\")?([^('|\")]*)(?:\'|\")?[^>]*>",
 			Pattern.CASE_INSENSITIVE);
 
-	static final Pattern CHARSET_PATTERN = Pattern.compile(
+	public static final Pattern CHARSET_PATTERN = Pattern.compile(
 			"<meta[^<]*\\s+(content)=(.*);\\s(charset)=(.*)['|\"][^>]*>",
 			Pattern.CASE_INSENSITIVE);
 	
@@ -47,7 +47,11 @@ public class HtmlUtils {
 	}
 	
 	public static ConvertData convertLink(String html, String before, String after) {
-		Matcher matcher = LINK_PATTERN.matcher(html);
+		return convertLink(html, before, after, LINK_PATTERN);
+	}
+	
+	public static ConvertData convertLink(String html, String before, String after, Pattern pattern) {
+		Matcher matcher = pattern.matcher(html);
 		StringBuffer result = new StringBuffer();
 		boolean converted = false;
 		while (matcher.find()) {
@@ -59,7 +63,6 @@ public class HtmlUtils {
 			converted = true;
 		}
 		matcher.appendTail(result);
-		// System.out.println("URLConvert: " + before + " -> " + after); //debug
 		return new ConvertData(result.toString(), converted);
 	}
 }
