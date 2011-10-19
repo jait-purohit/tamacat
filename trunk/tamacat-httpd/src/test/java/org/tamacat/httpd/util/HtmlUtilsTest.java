@@ -23,10 +23,94 @@ public class HtmlUtilsTest {
 	}
 	
 	@Test
-	public void testUseLinkConvert() {
-		String html = "<html><a href=\"test\">TEST</a></html>";
-		html = HtmlUtils.convertLink(html, "test", "zzzz").getData();
-		assertEquals("<html><a href=\"zzzz\">TEST</a></html>", html);
+	public void testUseLinkConvert_A_HREF() {
+		String html = "<html><a href=\"/test/index.html\">TEST</a></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><a href=\"/zzzz/index.html\">TEST</a></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_A_HREF2() {
+		String html = "<html><a href='/test/index.html'>TEST</a></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><a href='/zzzz/index.html'>TEST</a></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_A_HREF3() {
+		String html = "<html><a href=/test/index.html>TEST</a></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><a href=/zzzz/index.html>TEST</a></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_ACTION() {
+		String html = "<html><form action=\"/test/main.do\">TEST</form></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><form action=\"/zzzz/main.do\">TEST</form></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_ACTION2() {
+		String html = "<html><form action='/test/main.do'>TEST</form></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><form action='/zzzz/main.do'>TEST</form></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_ACTION3() {
+		String html = "<html><form action=/test/main.do>TEST</form></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><form action=/zzzz/main.do>TEST</form></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_IMG_SRC() {
+		String html = "<html><img src=\"/test/images/test.jpg\">TEST</form></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><img src=\"/zzzz/images/test.jpg\">TEST</form></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_IMG_SRC2() {
+		String html = "<html><img src='/test/images/test.jpg'>TEST</form></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><img src='/zzzz/images/test.jpg'>TEST</form></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_IMG_SRC3() {
+		String html = "<html><img src=/test/images/test.jpg>TEST</form></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><img src=/zzzz/images/test.jpg>TEST</form></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_META_URL() {
+		String html = "<html><meta http-equiv=\"Refresh\" content=\"0;url=/test/index.html\" /></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><meta http-equiv=\"Refresh\" content=\"0;url=/zzzz/index.html\" /></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_META_URL2() {
+		String html = "<html><meta http-equiv='Refresh' content='100;url=/test/index.html' /></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><meta http-equiv='Refresh' content='100;url=/zzzz/index.html' /></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_META_URL3() {
+		String html = "<html><meta http-equiv=Refresh content=\"0;url=/test/index.html\" /></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><meta http-equiv=Refresh content=\"0;url=/zzzz/index.html\" /></html>", html);
+	}
+	
+	@Test
+	public void testUseLinkConvert_META_URL4() {
+		String html = "<html><meta http-equiv=\"Refresh\" content=\"0; url=/test/index.html\" /></html>";
+		html = HtmlUtils.convertLink(html, "/test/", "/zzzz/").getData();
+		assertEquals("<html><meta http-equiv=\"Refresh\" content=\"0; url=/zzzz/index.html\" /></html>", html);
 	}
 	
 	@Test

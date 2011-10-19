@@ -7,6 +7,7 @@ package org.tamacat.httpd.filter;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.http.Header;
 import org.apache.http.HttpException;
@@ -17,6 +18,7 @@ import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.html.LinkConvertingEntity;
 import org.tamacat.httpd.util.HeaderUtils;
+import org.tamacat.httpd.util.HtmlUtils;
 import org.tamacat.util.StringUtils;
 
 /**
@@ -24,11 +26,16 @@ import org.tamacat.util.StringUtils;
  */
 public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 
-    private Set<String> contentTypes = new HashSet<String>();
-    
-    public HtmlLinkConvertInterceptor() {
+    protected Set<String> contentTypes = new HashSet<String>();
+    protected Pattern linkPattern = HtmlUtils.LINK_PATTERN;
+
+	public HtmlLinkConvertInterceptor() {
     	contentTypes.add("html");
     }
+	
+    public void setLinkPattern(String linkPattern) {
+		this.linkPattern = Pattern.compile(linkPattern);
+	}
     
 	@Override
 	public void process(HttpResponse response, HttpContext context)
@@ -43,7 +50,7 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 	        	String before = reverseUrl.getReverse().getPath();
 	        	String after = reverseUrl.getServiceUrl().getPath();
 	        	LinkConvertingEntity entity = new LinkConvertingEntity(
-	        			response.getEntity(), before, after);
+	        			response.getEntity(), before, after, linkPattern);
 	        	response.setEntity(entity);
 	        }
         }
