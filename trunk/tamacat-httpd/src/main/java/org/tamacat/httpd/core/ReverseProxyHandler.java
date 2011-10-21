@@ -234,7 +234,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	@Override
 	protected HttpEntity getEntity(String html) {
 		try {
-			StringEntity entity = new StringEntity(html);
+			StringEntity entity = new StringEntity(html, encoding);
 			entity.setContentType(DEFAULT_CONTENT_TYPE);
 			return entity;
 		} catch (UnsupportedEncodingException e1) {
