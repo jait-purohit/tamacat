@@ -119,7 +119,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 	protected HttpEntity getEntity(String html) {
 		StringEntity body = null;
 		try {
-			body = new StringEntity(html);
+			body = new StringEntity(html, encoding);
 			body.setContentType(DEFAULT_CONTENT_TYPE);
 		} catch (UnsupportedEncodingException e) {
 		}
