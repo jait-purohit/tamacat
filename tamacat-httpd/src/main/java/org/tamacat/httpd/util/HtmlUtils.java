@@ -68,8 +68,9 @@ public class HtmlUtils {
 		boolean converted = false;
 		while (matcher.find()) {
 			String url = matcher.group(2);
-			if (url.startsWith("http"))
+			if (url.startsWith("http://") || url.startsWith("https://")) {
 				continue;
+			}
 			String rev = matcher.group().replaceFirst(before, after);
 			matcher.appendReplacement(result, rev.replace("$", "\\$"));
 			converted = true;
