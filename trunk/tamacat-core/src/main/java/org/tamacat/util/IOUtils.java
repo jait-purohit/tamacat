@@ -7,21 +7,30 @@ package org.tamacat.util;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.URL;
 
 import org.tamacat.io.RuntimeIOException;
 
+/**
+ * Class of Utilities for I/O
+ */
 public class IOUtils {
 
-
+	/**
+	 * Get the InputStream from Resource in CLASSPATH.
+	 * @param path
+	 * @return
+	 */
     public static InputStream getInputStream(String path) {
     	return getInputStream(path, ClassUtils.getDefaultClassLoader());
     }
     
     /**
-     *<p>Get the InputStream.
-     * @param path File path in the CLASSPATH
+     * Get the InputStream from Resource in CLASSPATH.
+     * @param path File path in CLASSPATH
      * @return InputStream
      * @since 0.7
      */
@@ -38,6 +47,11 @@ public class IOUtils {
         return in;
     }
     
+    /**
+     * Convert the format of CLASSPATH('.' seperator) to Resource path('/' separator)
+     * @param path
+     * @return
+     */
     public static String getClassPathToResourcePath(String path) {
         if (path == null || path.indexOf('/') >= 0) return path;
         int idx = path.lastIndexOf(".");
@@ -49,6 +63,11 @@ public class IOUtils {
         	return path;
         }
     }
+    
+    /**
+     * It performs, when the "close()" method is implemented. 
+     * @param target
+     */
 	static
 	  public void close(Object target) {
 		if (target != null) {
@@ -69,12 +88,21 @@ public class IOUtils {
 		}
 	}
 	
+	/**
+	 * When an IOException occurs, 
+	 * RuntimeIOException will be given up if it is OutputStream or Writer.  
+	 * @param closable
+	 */
 	static
 	  public void close(Closeable closable) {
 	    try {
-			if (closable != null) closable.close();
+			if (closable != null) {
+				closable.close();
+			}
 		} catch (IOException e) {
-			throw new RuntimeIOException(e);
+			if (closable instanceof OutputStream || closable instanceof Writer) {
+				throw new RuntimeIOException(e);
+			}
 		}
 	}
 }
