@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
@@ -49,9 +50,14 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 	        if (header != null && HeaderUtils.inContentType(contentTypes, header)) {
 	        	String before = reverseUrl.getReverse().getPath();
 	        	String after = reverseUrl.getServiceUrl().getPath();
-	        	LinkConvertingEntity entity = new LinkConvertingEntity(
-	        			response.getEntity(), before, after, linkPattern);
-	        	response.setEntity(entity);
+	        	HttpEntity entity = response.getEntity();
+	        	if (before.equals(after)) {
+		        	response.setEntity(entity);
+	        	} else {
+	        		response.setEntity(new LinkConvertingEntity(
+	        			response.getEntity(), before, after, linkPattern)
+	        		);
+	        	}
 	        }
         }
 	}

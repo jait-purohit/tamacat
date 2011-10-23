@@ -4,10 +4,12 @@
  */
 package org.tamacat.httpd.html;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.regex.Pattern;
 
 import org.apache.http.Header;
@@ -57,35 +59,38 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 		if (outstream == null) {
 			throw new IllegalArgumentException("Output stream may not be null");
 		}
-		BufferedOutputStream out = new BufferedOutputStream(outstream);
-		BufferedInputStream in = null;
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outstream));
+		BufferedReader reader = null;
 		try {
-			in = new BufferedInputStream(wrappedEntity.getContent());
-			byte[] tmp = new byte[bufferSize];
 			this.contentLength = wrappedEntity.getContentLength();
 			Header contentType = wrappedEntity.getContentType();
 			String charset = EncodeUtils.getJavaEncoding(HtmlUtils.getCharSet(contentType));
-			int l;
-			while ((l = in.read(tmp)) != -1) {
-				if (charset == null) {
-					charset = HtmlUtils.getCharSetFromMetaTag(
-							new String(tmp, "8859_1"), "UTF-8");
-				}
-				ConvertData html = HtmlUtils.convertLink(
-						new String(tmp, charset), before, after, linkPattern);
-				if (html.isConverted()) {
-					byte[] bytes = html.getData().getBytes(charset);
-					int diff = bytes.length - tmp.length;
-					out.write(bytes, 0, (l + diff));
-					contentLength += diff;
-				} else {
-					out.write(tmp, 0, l);
-				}
+			if (charset == null) {
+				//charset = HtmlUtils.getCharSetFromMetaTag(line, "UTF-8");
+				charset = "8859_1";
 			}
-			out.flush();
+			reader = new BufferedReader(
+					new InputStreamReader(wrappedEntity.getContent(), charset));
+
+			int length = 0;
+			String line;
+			while ((line = reader.readLine()) != null) {
+				ConvertData html = HtmlUtils.convertLink(line, before, after, linkPattern);
+				if (html.isConverted()) {
+					line = html.getData();
+					writer.write(line);
+				} else {
+					writer.write(line);
+				}
+				length += line.getBytes(charset).length;
+			}
+			if (before.length() != after.length()) {
+				contentLength = length;
+			}
+			writer.flush();
 		} finally {
-			IOUtils.close(in);
-			IOUtils.close(out);
+			IOUtils.close(reader);
+			IOUtils.close(writer);
 		}
 	}
 }
