@@ -8,22 +8,20 @@ import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
-import org.tamacat.httpd.auth.AuthComponent;
-import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.auth.AbstractAuthProcessor;
 import org.tamacat.httpd.exception.UnauthorizedException;
 import org.tamacat.httpd.util.HeaderUtils;
+import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.StringUtils;
 
 
-public class SingleSignOnFilter implements RequestFilter {
+public class SingleSignOnFilter extends AbstractAuthProcessor {
 
 	static final Log LOG = LogFactory.getLog(SingleSignOnFilter.class);
 
-	protected ServiceUrl serviceUrl;
 	protected String singleSignOnCookieName;
-	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
 	
 	public SingleSignOnFilter(String singleSignOnCookieName) {
 		this.singleSignOnCookieName = singleSignOnCookieName;
@@ -31,11 +29,6 @@ public class SingleSignOnFilter implements RequestFilter {
 	
 	public SingleSignOnFilter() {
 		this.singleSignOnCookieName = "SingleSignOnUser";
-	}
-	
-	@Override
-	public void init(ServiceUrl serviceUrl) {
-		this.serviceUrl = serviceUrl;
 	}
 	
 	@Override
@@ -59,15 +52,14 @@ public class SingleSignOnFilter implements RequestFilter {
 				LOG.trace("Set-Cookie: " + singleSignOnCookieName + "=" + remoteUser + "; Path=/");
 			}
 		} else {
-			throw new UnauthorizedException();
+			String path = RequestUtils.getRequestPath(request);
+			if (isFreeAccessExtensions(path) == false) {
+				throw new UnauthorizedException();
+			}
 		}
 	}
 
 	public void setSingleSignOnCookieName(String singleSignOnCookieName) {
 		this.singleSignOnCookieName = singleSignOnCookieName;
-	}
-	
-	public void setRemoteUserKey(String remoteUserKey) {
-		this.remoteUserKey = remoteUserKey;
 	}
 }

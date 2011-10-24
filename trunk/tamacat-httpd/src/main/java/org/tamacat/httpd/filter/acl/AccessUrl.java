@@ -13,9 +13,7 @@ public interface AccessUrl extends LimitedCacheObject {
 
 	/**
 	 * <p>When the accessible URL returns true.
-	 * @param url
 	 * @return true: accessible.
 	 */
-	boolean isSuccess(String url);
-	
+	boolean isSuccess();
 }

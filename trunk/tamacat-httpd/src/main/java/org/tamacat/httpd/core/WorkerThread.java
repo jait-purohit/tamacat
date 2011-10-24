@@ -61,7 +61,7 @@ public class WorkerThread extends Thread {
         } catch (Exception ex) {
         	//ex.printStackTrace();
         	LOG.error("Error: " + ex.getMessage());
-        	LOG.trace(ExceptionUtils.getStackTrace(ex)); //debug
+        	LOG.debug(ExceptionUtils.getStackTrace(ex)); //debug
         } finally {
             if (context.getAttribute(
             		HttpServerConnection.class.getName()

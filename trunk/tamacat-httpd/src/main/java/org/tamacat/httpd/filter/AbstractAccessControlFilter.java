@@ -10,6 +10,7 @@ import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ForbiddenException;
+import org.tamacat.httpd.filter.acl.AccessUrl;
 import org.tamacat.httpd.filter.acl.AccessUrlCache;
 import org.tamacat.util.StringUtils;
 
@@ -56,18 +57,21 @@ public abstract class AbstractAccessControlFilter implements RequestFilter {
 		String remoteUser = (String) context.getAttribute(remoteUserKey);
         if (remoteUser != null && serviceUrl != null) {
         	String accessUrl = serviceUrl.getPath();
-//        	if (serviceUrl.isType(ServiceType.REVERSE)) {
-//        		ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
-//        		accessUrl = reverseUrl.getServiceUrl().getPath();
-//        	} else {
-//        		accessUrl = serviceUrl.getPath();
-//        	}
+
         	if (StringUtils.isEmpty(accessUrl)) throw new ForbiddenException();
         	
         	if (isSuccess(remoteUser, accessUrl) == false) {
         		throw new ForbiddenException();
         	}
         }
+	}
+	
+	protected AccessUrl getCachedAccessUrl(String username, String url) {
+		return cache.get(username + ":" + url);
+	}
+	
+	protected void setAccessUrlCache(String username, String url, AccessUrl accessUrl) {
+		cache.put(username + ":" +url, accessUrl);
 	}
 	
 	/**

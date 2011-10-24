@@ -15,6 +15,9 @@
     <property name="authComponent">
       <ref bean="AuthComponent" />
     </property>
+    <property name="freeAccessExtensions">
+      <value>.jpg,.gif,.png</value>
+    </property>
   </bean>
   
   <bean id="DigestAuthFilter"
@@ -44,6 +47,9 @@
   <bean id="SSOFilter" class="org.tamacat.httpd.filter.SingleSignOnFilter" singleton="false">
     <property name="singleSignOnCookieName">
       <value>SingleSignOnUser</value>
+    </property>
+    <property name="freeAccessExtensions">
+      <value>.jpg,.gif,.png</value>
     </property>
   </bean>
   
@@ -116,14 +122,14 @@
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
-    <!--
+
     <property name="httpFilter" >
       <ref bean="BasicAuthFilter" />
     </property>
     <property name="httpFilter">
       <ref bean="SSOFilter" />
     </property>
-    -->
+
     <property name="httpFilter">
       <ref bean="SessionFilter" />
     </property>

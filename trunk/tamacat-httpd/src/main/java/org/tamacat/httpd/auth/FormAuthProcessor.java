@@ -7,8 +7,6 @@ package org.tamacat.httpd.auth;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -44,7 +42,6 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	protected String sessionCookieName = "Session";
 	protected String sessionUsernameKey = "SingleSignOnUser";
-	protected Set<String> freeAccessExtensions = new HashSet<String>();
 
 	/**
 	 * Setting the HTTP charset parameter.
@@ -127,33 +124,6 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 		this.sessionUsernameKey = sessionUsernameKey;
 	}
 
-	/**
-	 * Whether it agrees to the extension that can be accessed
-	 * without the attestation is inspected.  
-	 * @param uri
-	 * @return true: contains the freeAccessExtensions.
-	 */
-	protected boolean isFreeAccessExtensions(String uri) {
-		int idx = uri.lastIndexOf(".");
-		if (idx >= 0) {
-			String ext = uri.substring(idx+1, uri.length()).toLowerCase().trim();
-			return freeAccessExtensions.contains(ext);
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * The extension skipping by the certification in comma seperated values.
-	 * @param freeAccessExtensions (CSV)
-	 */
-	public void setFreeAccessExtensions(String freeAccessExtensions) {
-		String[] list = freeAccessExtensions.split(",");
-		for (String ext : list) {
-			this.freeAccessExtensions.add(ext.trim().replaceFirst("^\\.", "").toLowerCase());
-		}
-	}
-
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
@@ -162,7 +132,6 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 		try {
 			String remoteUser = null;
 			String path = RequestUtils.getRequestPath(request);
-
 			if (path.endsWith(loginPageUrl)) {
 				logoutAction(request, sessionId);
 				return;

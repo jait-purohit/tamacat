@@ -14,6 +14,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.exception.UnauthorizedException;
+import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.StringUtils;
 
 /**
@@ -30,13 +31,16 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
-		try {
-			String remoteUser = checkUser(request, context);
-			context.setAttribute(remoteUserKey, remoteUser);
-		} catch (UnauthorizedException e) {
-			response.setStatusCode(HttpStatus.SC_UNAUTHORIZED);
-			setWWWAuthenticateHeader(response);
-			throw e;
+		String path = RequestUtils.getRequestPath(request);
+		if (isFreeAccessExtensions(path) == false) {
+			try {
+				String remoteUser = checkUser(request, context);
+				context.setAttribute(remoteUserKey, remoteUser);
+			} catch (UnauthorizedException e) {
+				response.setStatusCode(HttpStatus.SC_UNAUTHORIZED);
+				setWWWAuthenticateHeader(response);
+				throw e;
+			}
 		}
 	}
 
