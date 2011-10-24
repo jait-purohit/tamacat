@@ -33,7 +33,7 @@ public class SingleSignOnFilterTest {
 		HttpRequest request = HttpObjectFactory.createHttpRequest("GET", "/test/");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = HttpObjectFactory.createHttpContext();
-		context.setAttribute(filter.remoteUserKey, "admin");
+		context.setAttribute(filter.getRemoteUserKey(), "admin");
 		
 		filter.doFilter(request, response, context);
 		assertEquals("SingleSignOnUser=admin; Path=/",
@@ -49,6 +49,6 @@ public class SingleSignOnFilterTest {
 	@Test
 	public void testSetRemoteUserKey() {
 		filter.setRemoteUserKey("RemoteUser");
-		assertEquals("RemoteUser", filter.remoteUserKey);
+		assertEquals("RemoteUser", filter.getRemoteUserKey());
 	}
 }

@@ -25,7 +25,7 @@ public class AccessUrlCacheTest {
 			}
 			
 			@Override
-			public boolean isSuccess(String url) {
+			public boolean isSuccess() {
 				return false;
 			}
 		});

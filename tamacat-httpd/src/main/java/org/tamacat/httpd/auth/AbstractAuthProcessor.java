@@ -4,6 +4,9 @@
  */
 package org.tamacat.httpd.auth;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
@@ -20,6 +23,8 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
 	protected ServiceUrl serviceUrl;
 	
+	protected Set<String> freeAccessExtensions = new HashSet<String>();
+
 	@Override
 	public void init(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
@@ -50,5 +55,37 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 	 */
 	public void setRemoteUserKey(String remoteUserKey) {
 		this.remoteUserKey = remoteUserKey;
+	}
+	
+	public String getRemoteUserKey() {
+		return remoteUserKey;
+	}
+	
+	/**
+	 * Whether it agrees to the extension that can be accessed
+	 * without the attestation is inspected.  
+	 * @param uri
+	 * @return true: contains the freeAccessExtensions.
+	 */
+	protected boolean isFreeAccessExtensions(String uri) {
+		if (freeAccessExtensions.size() > 0) {
+			int idx = uri.lastIndexOf(".");
+			if (idx >= 0) {
+				String ext = uri.substring(idx+1, uri.length()).toLowerCase().trim();
+				return freeAccessExtensions.contains(ext);
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * The extension skipping by the certification in comma seperated values.
+	 * @param freeAccessExtensions (CSV)
+	 */
+	public void setFreeAccessExtensions(String freeAccessExtensions) {
+		String[] list = freeAccessExtensions.split(",");
+		for (String ext : list) {
+			this.freeAccessExtensions.add(ext.trim().replaceFirst("^\\.", "").toLowerCase());
+		}
 	}
 }
