@@ -24,13 +24,23 @@ public class ClientIPAccessControlFilter implements RequestFilter {
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
 		String client = RequestUtils.getRemoteIPAddress(context);
-		String[] searchIp = client.split("\\."); 
-		String[] matcher = new String[4];
-		if (searchIp.length >= 4) {
-			matcher[0] = searchIp[0] + ".";
-			matcher[1] = matcher[0] + searchIp[1] + ".";
-			matcher[2] = matcher[1] + searchIp[2] + ".";
-			matcher[3] = client; //match full.
+		
+		boolean ipv6 = RequestUtils.isRemoteIPv6Address(context);
+		String[] matcher = null;
+		if (ipv6) {
+			@SuppressWarnings("unused")
+			String[] searchIp = client.split("\\:"); 
+			matcher = new String[16];
+			//TODO implements
+		} else { //IPv4
+			String[] searchIp = client.split("\\."); 
+			matcher = new String[4];
+			if (searchIp.length >= 4) {
+				matcher[0] = searchIp[0] + ".";
+				matcher[1] = matcher[0] + searchIp[1] + ".";
+				matcher[2] = matcher[1] + searchIp[2] + ".";
+				matcher[3] = client; //match full.
+			}
 		}
 		boolean isAllow = false;
 		for (Entry<String, Integer> entry : allows.entrySet()) {

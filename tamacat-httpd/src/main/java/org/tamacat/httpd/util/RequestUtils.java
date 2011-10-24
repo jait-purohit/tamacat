@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -159,6 +160,15 @@ public class RequestUtils {
 		InetAddress address = (InetAddress) context.getAttribute(REMOTE_ADDRESS);
 		if (address != null) return address.getHostAddress();
 		else return "";
+	}
+	
+	public static boolean isRemoteIPv6Address(HttpContext context) {
+		InetAddress address = (InetAddress) context.getAttribute(REMOTE_ADDRESS);
+		if (address != null && address instanceof Inet6Address) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public static String getRequestHostURL(
