@@ -29,7 +29,8 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 	protected String after;
 	protected long contentLength = -1;
 	protected Pattern linkPattern;
-	
+	protected String defaultCharset = "8859_1";
+
 	public LinkConvertingEntity(HttpEntity entity, String before, String after) {
 		this(entity, before, after, HtmlUtils.LINK_PATTERN);
 	}
@@ -59,29 +60,27 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 		if (outstream == null) {
 			throw new IllegalArgumentException("Output stream may not be null");
 		}
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outstream));
+		BufferedWriter writer = null;
 		BufferedReader reader = null;
 		try {
 			this.contentLength = wrappedEntity.getContentLength();
 			Header contentType = wrappedEntity.getContentType();
 			String charset = EncodeUtils.getJavaEncoding(HtmlUtils.getCharSet(contentType));
 			if (charset == null) {
-				//charset = HtmlUtils.getCharSetFromMetaTag(line, "UTF-8");
-				charset = "8859_1";
+				charset = defaultCharset;
 			}
-			reader = new BufferedReader(
-					new InputStreamReader(wrappedEntity.getContent(), charset));
+			writer = new BufferedWriter(new OutputStreamWriter(outstream, charset));
+			reader = new BufferedReader(new InputStreamReader(wrappedEntity.getContent(), charset));
 
 			int length = 0;
 			String line;
 			while ((line = reader.readLine()) != null) {
+				line = line + "\r\n";
 				ConvertData html = HtmlUtils.convertLink(line, before, after, linkPattern);
 				if (html.isConverted()) {
 					line = html.getData();
-					writer.write(line);
-				} else {
-					writer.write(line);
 				}
+				writer.write(line);
 				length += line.getBytes(charset).length;
 			}
 			if (before.length() != after.length()) {
@@ -92,5 +91,9 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 			IOUtils.close(reader);
 			IOUtils.close(writer);
 		}
+	}
+	
+	public void setDefaultCharset(String defaultCharset) {
+		this.defaultCharset = defaultCharset;
 	}
 }
