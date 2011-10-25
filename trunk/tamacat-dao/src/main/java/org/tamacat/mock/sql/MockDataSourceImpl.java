@@ -57,7 +57,7 @@ public class MockDataSourceImpl implements DataSource, Referenceable {
 		return new Reference(getClass().getName());
 	}
 
-	@Override
+	//@Override (1.7)
 	/** @since 1.7 */
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		if (logger == null) throw new SQLFeatureNotSupportedException();

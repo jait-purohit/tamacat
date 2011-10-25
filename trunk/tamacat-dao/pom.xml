@@ -114,9 +114,16 @@
   <distributionManagement>
     <repository>
     <id>maven.tamacat.org</id>
-    <url>https://maven.tamacat.org/maven2/</url>
+    <url>https://tamacat.org/maven2/</url>
     <uniqueVersion>false</uniqueVersion>
     </repository>
   </distributionManagement>
+  
+  <repositories>
+    <repository>
+      <id>tamacat.org</id>
+      <url>http://tamacat.org/maven2/</url>
+    </repository>
+  </repositories>
 </project>
 
