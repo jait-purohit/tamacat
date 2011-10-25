@@ -4,13 +4,14 @@
  */
 package org.tamacat.httpd.examples;
 
-import org.tamacat.httpd.auth.AuthUser;
+import org.tamacat.httpd.auth.CacheSupportAuthUser;
 
-public class User implements AuthUser {
+public class User implements CacheSupportAuthUser {
 
 	private String username;
 	private String password;
-	
+	private long createTime = System.currentTimeMillis();
+
 	@Override
 	public String getAuthPassword() {
 		return password;
@@ -34,5 +35,10 @@ public class User implements AuthUser {
 	@Override
 	public void setAuthUsername(String username) {
 		this.username = username;
+	}
+	
+	@Override
+	public boolean isCacheExpired(long expire) {
+		return System.currentTimeMillis() - createTime > expire;
 	}
 }
