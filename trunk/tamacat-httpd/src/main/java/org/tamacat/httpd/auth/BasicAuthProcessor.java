@@ -34,7 +34,7 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 		String path = RequestUtils.getRequestPath(request);
 		if (isFreeAccessExtensions(path) == false) {
 			try {
-				String remoteUser = checkUser(request, context);
+				String remoteUser = checkUser(request, response, context);
 				context.setAttribute(remoteUserKey, remoteUser);
 			} catch (UnauthorizedException e) {
 				response.setStatusCode(HttpStatus.SC_UNAUTHORIZED);
@@ -49,6 +49,7 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 	 * @param response
 	 */
 	protected void setWWWAuthenticateHeader(HttpResponse response) {
+		String realm = DynamicRealm.getRealm(this.realm, new Date());
 		response.addHeader(WWW_AUTHENTICATE, "Basic realm=\"" + realm + "\"");
 	}
 
@@ -58,7 +59,7 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 	 * @param realm
 	 */
 	public void setRealm(String realm) {
-		this.realm = DynamicRealm.getRealm(realm, new Date());
+		this.realm = realm;
 	}
 	
 	/**
@@ -69,7 +70,7 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 	 * @return username (login id)
 	 * @throws UnauthorizedException
 	 */
-	protected String checkUser(HttpRequest request, HttpContext context)
+	protected String checkUser(HttpRequest request, HttpResponse response, HttpContext context)
 			throws UnauthorizedException {
 		Header basicAuthLine = request.getFirstHeader(AUTHORIZATION);
 		if (basicAuthLine != null && StringUtils.isNotEmpty(basicAuthLine.getValue())) {
@@ -81,9 +82,15 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 				String password = idpass.substring(pos + 1, idpass.length());
 				if (authComponent != null
 						&& authComponent.check(user, password, context)) {
+					
+					if (singleSignOn != null) {
+						singleSignOn.sign(user, request, response, context);
+					}
 					return user;
 				}
 			}
+		} else if (singleSignOn != null && singleSignOn.isSigned(request, context)) {
+			return singleSignOn.getSignedUser(request, context);
 		}
 		throw new UnauthorizedException();
 	}

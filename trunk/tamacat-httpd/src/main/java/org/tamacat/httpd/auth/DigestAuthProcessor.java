@@ -68,7 +68,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 		String path = RequestUtils.getRequestPath(request);
 		if (isFreeAccessExtensions(path) == false) {
 			try {
-				String remoteUser = checkUser(request, context);
+				String remoteUser = checkUser(request, response, context);
 				context.setAttribute(remoteUserKey, remoteUser);
 			} catch (UnauthorizedException e) {
 				response.setStatusCode(HttpStatus.SC_UNAUTHORIZED);
@@ -82,11 +82,12 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 	 * When the user authentication check and correct,
 	 * the username(login id) is returned. 
 	 * @param request
+	 * @param response
 	 * @param context
 	 * @return username (login id)
 	 * @throws UnauthorizedException
 	 */
-	protected String checkUser(HttpRequest request, HttpContext context)
+	protected String checkUser(HttpRequest request, HttpResponse response, HttpContext context)
 			throws UnauthorizedException {
 		Header digestAuthLine = request.getFirstHeader(AUTHORIZATION);
 		if (digestAuthLine != null && StringUtils.isNotEmpty(digestAuthLine.getValue())) {
@@ -119,9 +120,14 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 				if (username != null && password != null
 						&& username.equals(user.getAuthUsername())
 						&& password.equals(hashedPassword)) {
+					if (singleSignOn != null) {
+						singleSignOn.sign(username, request, response, context);
+					}
 					return user.getAuthUsername();
 				}
 			}
+		} if (singleSignOn != null && singleSignOn.isSigned(request, context)) {
+			return singleSignOn.getSignedUser(request, context);
 		}
 		throw new UnauthorizedException();
 	}

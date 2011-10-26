@@ -63,7 +63,7 @@ public class BasicAuthProcessorTest {
 	@Test
 	public void testCheckUser() {
 		try {
-			String id = auth.checkUser(request, context);
+			String id = auth.checkUser(request, response, context);
 			assertNull(id);
 		} catch (UnauthorizedException e) {
 			assertTrue(true);
@@ -71,7 +71,7 @@ public class BasicAuthProcessorTest {
 		try {
 			String idpass = new String(new Base64().encode("admin:pass".getBytes()));
 			request.setHeader(BasicAuthProcessor.AUTHORIZATION, "Basic " + idpass);
-			String id = auth.checkUser(request, context);
+			String id = auth.checkUser(request, response, context);
 			assertNotNull(id);
 			assertEquals("admin", id);
 		} catch (UnauthorizedException e) {

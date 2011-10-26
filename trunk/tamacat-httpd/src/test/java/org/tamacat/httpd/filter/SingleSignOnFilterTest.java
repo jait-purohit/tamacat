@@ -12,6 +12,7 @@ import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 
+@Deprecated
 public class SingleSignOnFilterTest {
 
 	private SingleSignOnFilter filter;
