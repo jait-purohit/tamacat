@@ -10,17 +10,33 @@ import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.util.AccessLogUtils;
 
+/**
+ * This filter is logging access and server side response time.
+ */
 public class AccessLogFilter implements RequestFilter, ResponseFilter {
 
-	protected ServiceUrl serviceUrl;
 	static final String START_TIME = AccessLogFilter.class.getName() + "_Response.startTime";
 	static final String RESPONSE_TIME = AccessLogFilter.class.getName() + "_Response.responseTime";
+	protected ServiceUrl serviceUrl;
+	
+	protected boolean faviconLogging;
+	
+	/**
+	 * Logging "/favicon.ico" to access log.
+	 * default false (not logging)
+	 * @param faviconLogging
+	 */
+	public void setFaviconLogging(boolean faviconLogging) {
+		this.faviconLogging = faviconLogging;
+	}
 
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
-		long start = System.currentTimeMillis();
-		context.setAttribute(START_TIME, start);
+		if (faviconLogging == false && "/favicon.ico".equals(request.getRequestLine().getUri()) == false) {
+			long start = System.currentTimeMillis();
+			context.setAttribute(START_TIME, start);
+		}
 	}
 
 	@Override
