@@ -22,7 +22,8 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 	protected AuthComponent<?> authComponent;
 	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
 	protected ServiceUrl serviceUrl;
-	
+	protected SingleSignOn singleSignOn;
+
 	protected Set<String> freeAccessExtensions = new HashSet<String>();
 
 	@Override
@@ -59,6 +60,10 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 	
 	public String getRemoteUserKey() {
 		return remoteUserKey;
+	}
+	
+	public void setSingleSignOn(SingleSignOn singleSignOn) {
+		this.singleSignOn = singleSignOn;
 	}
 	
 	/**

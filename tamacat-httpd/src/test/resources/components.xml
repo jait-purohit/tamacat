@@ -10,10 +10,25 @@
     </property>
   </bean>
   
+  <bean id="SingleSignOn" class="org.tamacat.httpd.auth.CookieBasedSingleSignOn" singleton="false">
+    <property name="singleSignOnCookieName">
+      <value>SingleSignOnUser</value>
+    </property>
+    <property name="freeAccessExtensions">
+      <value>.jpg,.gif,.png</value>
+    </property>
+  </bean>
+  
   <bean id="BasicAuthFilter"
      class="org.tamacat.httpd.auth.BasicAuthProcessor" singleton="false">
     <property name="authComponent">
       <ref bean="AuthComponent" />
+    </property>
+    <property name="singleSignOn">
+      <ref bean="SingleSignOn" />
+    </property>
+    <property name="realm">
+      <value>Basic Authentication area ${yyyyMMddHHmmssS}</value>
     </property>
     <property name="freeAccessExtensions">
       <value>.jpg,.gif,.png</value>
@@ -41,15 +56,6 @@
     </property>
     <property name="freeAccessExtensions">
       <value>.css,.js</value>
-    </property>
-  </bean>
-  
-  <bean id="SSOFilter" class="org.tamacat.httpd.filter.SingleSignOnFilter" singleton="false">
-    <property name="singleSignOnCookieName">
-      <value>SingleSignOnUser</value>
-    </property>
-    <property name="freeAccessExtensions">
-      <value>.jpg,.gif,.png</value>
     </property>
   </bean>
   
@@ -122,14 +128,9 @@
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
-
     <property name="httpFilter" >
       <ref bean="BasicAuthFilter" />
     </property>
-    <property name="httpFilter">
-      <ref bean="SSOFilter" />
-    </property>
-
     <property name="httpFilter">
       <ref bean="SessionFilter" />
     </property>

@@ -70,14 +70,14 @@ public class DigestAuthProcessorTest {
 	@Test
 	public void testCheckUser() {
 		try {
-			String id = auth.checkUser(request, context);
+			String id = auth.checkUser(request, response, context);
 			assertNull(id);
 		} catch (UnauthorizedException e) {
 			assertTrue(true);
 		}
 		try {
 			request.setHeader(DigestAuthProcessor.AUTHORIZATION, authHeader);
-			String id = auth.checkUser(request, context);
+			String id = auth.checkUser(request, response, context);
 			assertNotNull(id);
 			assertEquals("admin", id);
 		} catch (UnauthorizedException e) {

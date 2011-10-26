@@ -16,7 +16,7 @@ import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.StringUtils;
 
-
+@Deprecated
 public class SingleSignOnFilter extends AbstractAuthProcessor {
 
 	static final Log LOG = LogFactory.getLog(SingleSignOnFilter.class);
