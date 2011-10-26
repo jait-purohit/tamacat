@@ -22,6 +22,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.DefaultHttpResponseFactory;
@@ -64,7 +65,11 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
     private ExecutorService executors;
     
     private BasicCounter counter = new BasicCounter();
-    private List<HttpResponseInterceptor> interceptors
+
+    private List<HttpRequestInterceptor> requestInterceptors
+		= new ArrayList<HttpRequestInterceptor>();
+    
+    private List<HttpResponseInterceptor> responseInterceptors
     	= new ArrayList<HttpResponseInterceptor>();
     
 	private boolean isMXServerStarted;
@@ -91,9 +96,13 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		procBuilder.addInterceptor(new ResponseConnControl());
 		
 		//add interceptors
-		for (HttpResponseInterceptor interceptor : interceptors) {
+		for (HttpRequestInterceptor interceptor : requestInterceptors) {
 			procBuilder.addInterceptor(interceptor);
 		}
+		for (HttpResponseInterceptor interceptor : responseInterceptors) {
+			procBuilder.addInterceptor(interceptor);
+		}
+		
 		service = new DefaultHttpService(
 				procBuilder, new DefaultConnectionReuseStrategy(), 
 	        	new DefaultHttpResponseFactory(), null, null,
@@ -234,12 +243,21 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	}
 	
 	/**
+	 * <p>Add the request interceptor.
+	 * @param interceptor
+	 * @since 0.9
+	 */
+	public void setHttpRequestInterceptor(HttpRequestInterceptor interceptor) {
+		requestInterceptors.add(interceptor);
+	}
+	
+	/**
 	 * <p>Add the response interceptor.
 	 * @param interceptor
 	 * @since 0.5
 	 */
 	public void setHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
-		interceptors.add(interceptor);
+		responseInterceptors.add(interceptor);
 	}
 	
 	//install
