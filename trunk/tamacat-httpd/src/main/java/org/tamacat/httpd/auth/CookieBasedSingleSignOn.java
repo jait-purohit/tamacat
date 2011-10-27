@@ -18,7 +18,9 @@ import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.StringUtils;
 
-
+/**
+ * This class implements Single Sign-On with cookie.
+ */
 public class CookieBasedSingleSignOn implements SingleSignOn {
 
 	static final Log LOG = LogFactory.getLog(CookieBasedSingleSignOn.class);
@@ -28,6 +30,22 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 	protected Set<String> freeAccessExtensions = new HashSet<String>();
 
 	/**
+	 * Constructor with Single Sign-On cookie.
+	 * @param singleSignOnCookieName
+	 */
+	public CookieBasedSingleSignOn(String singleSignOnCookieName) {
+		this.singleSignOnCookieName = singleSignOnCookieName;
+	}
+	
+	/**
+	 * Default Constructor.
+	 * default cookie name: "SingleSignOnUser"
+	 */
+	public CookieBasedSingleSignOn() {
+		this.singleSignOnCookieName = "SingleSignOnUser";
+	}
+	
+	/**
 	 * Set the remote user key name. (optional)
 	 * @param remoteUserKey
 	 */
@@ -35,8 +53,13 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 		this.remoteUserKey = remoteUserKey;
 	}
 	
-	public String getRemoteUserKey() {
-		return remoteUserKey;
+	/**
+	 * Set the Single Sign-On cookie name. 
+	 * default: "SingleSignOnUser"
+	 * @param singleSignOnCookieName
+	 */
+	public void setSingleSignOnCookieName(String singleSignOnCookieName) {
+		this.singleSignOnCookieName = singleSignOnCookieName;
 	}
 	
 	/**
@@ -65,14 +88,6 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 		for (String ext : list) {
 			this.freeAccessExtensions.add(ext.trim().replaceFirst("^\\.", "").toLowerCase());
 		}
-	}
-	
-	public CookieBasedSingleSignOn(String singleSignOnCookieName) {
-		this.singleSignOnCookieName = singleSignOnCookieName;
-	}
-	
-	public CookieBasedSingleSignOn() {
-		this.singleSignOnCookieName = "SingleSignOnUser";
 	}
 	
 	@Override
@@ -115,9 +130,5 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 			request.setHeader("Cookie",	singleSignOnCookieName + "=" + remoteUser); //for Reverse Proxy
 			LOG.trace("Set-Cookie: " + singleSignOnCookieName + "=" + remoteUser + "; Path=/");
 		}
-	}
-
-	public void setSingleSignOnCookieName(String singleSignOnCookieName) {
-		this.singleSignOnCookieName = singleSignOnCookieName;
 	}
 }
