@@ -55,7 +55,7 @@ public class GzipResponseInterceptor implements HttpResponseInterceptor {
             throw new IllegalArgumentException("HTTP context may not be null");
         }
         HttpRequest request = (HttpRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
-        Header aeheader = request.getFirstHeader(ACCEPT_ENCODING);
+        Header aeheader = request != null ? request.getFirstHeader(ACCEPT_ENCODING) : null;
         if (aeheader != null && useCompress(response.getFirstHeader(HTTP.CONTENT_TYPE))) {
 	        HeaderElement[] codecs = aeheader.getElements();
 	        for (int i=0; i<codecs.length; i++) {
