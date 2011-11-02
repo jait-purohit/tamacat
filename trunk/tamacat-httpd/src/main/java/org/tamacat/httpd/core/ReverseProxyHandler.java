@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
 
 import org.apache.http.HttpEntity;
@@ -147,8 +148,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
         	throw new ServiceUnavailableException("reverseUrl is infinite loop.");
 		}
         Socket outsocket = null;
+        ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
 		try {
-	        ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
 	        if (reverseUrl == null) {
 	        	throw new ServiceUnavailableException("reverseUrl is null.");
 	        }
@@ -203,6 +204,10 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		        	LOG.debug(">> "+ reverseUrl.getReverse() + ", connections=" + reverseUrl.getActiveConnections());
 		        }
 	        }
+		} catch (SocketException e) {
+			throw new ServiceUnavailableException(
+				BasicHttpStatus.SC_GATEWAY_TIMEOUT.getReasonPhrase()
+				+ " URL=" + reverseUrl.getReverse());
 		} catch (RuntimeException e) {
 			handleException(request, response, e);
 			return response;
