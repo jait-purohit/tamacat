@@ -139,6 +139,13 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	protected void handleException(HttpRequest request, HttpResponse response, Exception e) {
 		String html = null;
 		if (e instanceof HttpException) {
+			HttpStatus status = ((HttpException)e).getHttpStatus();
+			if (status.isServerError()) {
+				LOG.error(e.getMessage());
+			}
+			if (LOG.isDebugEnabled() && status.isClientError()) {
+				LOG.debug(e.getMessage());
+			}
 			html = errorPage.getErrorPage(request, response, (HttpException)e);
 		} else {
 			if (LOG.isWarnEnabled()) {

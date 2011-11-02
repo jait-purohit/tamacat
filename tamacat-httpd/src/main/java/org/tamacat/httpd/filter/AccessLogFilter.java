@@ -15,8 +15,8 @@ import org.tamacat.httpd.util.AccessLogUtils;
  */
 public class AccessLogFilter implements RequestFilter, ResponseFilter {
 
-	static final String START_TIME = AccessLogFilter.class.getName() + "_Response.startTime";
-	static final String RESPONSE_TIME = AccessLogFilter.class.getName() + "_Response.responseTime";
+	protected static final String START_TIME = AccessLogFilter.class.getName() + "_Response.startTime";
+	protected static final String RESPONSE_TIME = AccessLogFilter.class.getName() + "_Response.responseTime";
 	protected ServiceUrl serviceUrl;
 	
 	protected boolean faviconLogging;
