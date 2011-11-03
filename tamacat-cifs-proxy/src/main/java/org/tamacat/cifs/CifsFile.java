@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.tamacat.util.DateUtils;
-import org.tamacat.util.StringUtils;
 
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
@@ -54,7 +53,7 @@ public class CifsFile extends HashMap<String, String> implements Comparable<Cifs
 			
 			put("length", getLength());
 			put("isDirectory", String.valueOf(isDirectory()));
-			put("getName", StringUtils.encode(file.getName(),"UTF-8"));
+			put("getName", file.getName()); //StringUtils.encode(file.getName(),"UTF-8"));
 			put("lastModified", getLastModified());
 		} catch (SmbException e) {
 		}
