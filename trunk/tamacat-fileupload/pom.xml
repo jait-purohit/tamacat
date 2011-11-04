@@ -5,9 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.tamacat</groupId>
   <artifactId>tamacat-fileupload</artifactId>
-  <version>0.8</version>
+  <version>0.9</version>
   <packaging>jar</packaging>
-  <name>tamacat-httpd file upload support</name>
+  <name>tamacat-httpd file upload components</name>
   <url>http://code.google.com/p/tamacat/</url>
 
   <licenses>
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.tamacat</groupId>
       <artifactId>tamacat-httpd</artifactId>
-      <version>0.8</version>
+      <version>0.9</version>
     </dependency>
             
     <dependency>
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
-      <version>1.2.1</version>
+      <version>1.2.2</version>
       <scope>compile</scope>
     </dependency>
     
@@ -153,4 +153,11 @@
       </plugin>
     </plugins>
   </reporting>
+  
+  <repositories>
+    <repository>
+      <id>tamacat.org</id>
+      <url>http://tamacat.org/maven2/</url>
+    </repository>
+  </repositories>
 </project>
