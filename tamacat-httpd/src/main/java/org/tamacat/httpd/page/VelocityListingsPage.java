@@ -85,7 +85,7 @@ public class VelocityListingsPage {
 				map.put("length", "-");
 			} else {
 				map.put("getName", StringUtils.encode(f.getName(), "UTF-8"));
-				map.put("length", String.format("%1$,3d KB", f.length()/1024));
+				map.put("length", String.format("%1$,3d KB", (long)Math.ceil(f.length()/1024d)).trim());
 			}
 			map.put("isDirectory", String.valueOf(f.isDirectory()));
 			map.put("lastModified", DateUtils.getTime(new Date(f.lastModified()), "yyyy-MM-dd HH:mm"));
