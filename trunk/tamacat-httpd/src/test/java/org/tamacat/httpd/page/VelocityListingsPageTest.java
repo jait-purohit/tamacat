@@ -59,5 +59,12 @@ public class VelocityListingsPageTest {
 			fail();
 		}
 	}
+	
+	@Test
+	public void testSize() {
+		assertEquals("2 KB", String.format("%1$,3d KB", (long)Math.ceil(1025/1024d)).trim());
+		assertEquals("1 KB", String.format("%1$,3d KB", (long)Math.ceil(1/1024d)).trim());
+		assertEquals("0 KB", String.format("%1$,3d KB", (long)Math.ceil(0/1024d)).trim());
+	}
 
 }
