@@ -32,7 +32,7 @@ public class CifsFile extends HashMap<String, String> implements Comparable<Cifs
 
 	public String getLength() {
 		if (isFile()) {
-			return String.format("%1$,3d KB", length/1024);
+			return String.format("%1$,3d KB", (long)Math.ceil(length/1024d)).trim();
 		} else {
 			return "-";
 		}
