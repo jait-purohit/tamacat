@@ -31,6 +31,10 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
+		if ("OPTIONS".equalsIgnoreCase(request.getRequestLine().getMethod())) {
+			response.setStatusCode(HttpStatus.SC_NO_CONTENT);
+			return;
+		}
 		String path = RequestUtils.getRequestPath(request);
 		if (isFreeAccessExtensions(path) == false) {
 			try {
@@ -82,7 +86,6 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 				String password = idpass.substring(pos + 1, idpass.length());
 				if (authComponent != null
 						&& authComponent.check(user, password, context)) {
-					
 					if (singleSignOn != null) {
 						singleSignOn.sign(user, request, response, context);
 					}

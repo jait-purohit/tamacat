@@ -148,7 +148,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 				return; //skip by this filter.
 			} else if (isMatchLoginUrl(request)) {
 				//login check
-				remoteUser = checkUser(request, context);
+				remoteUser = checkUser(request, response, context);
 				context.setAttribute(remoteUserKey, remoteUser);
 				Session session = SessionManager.getInstance().createSession();
 				session.setAttribute(sessionUsernameKey, remoteUser);
@@ -269,19 +269,25 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	/**
 	 * Login check with AuthComponent.
 	 * @param request
+	 * @param response
 	 * @param context
 	 * @return login username in request parameter.
 	 * @throws UnauthorizedException
 	 */
-	protected String checkUser(HttpRequest request, HttpContext context)
+	protected String checkUser(HttpRequest request, HttpResponse response, HttpContext context)
 			throws UnauthorizedException {
 		String username = RequestUtils.getParameter(context, usernameKey);
 		String password = RequestUtils.getParameter(context, passwordKey);
 		if (StringUtils.isNotEmpty(username)) {
 			if (authComponent != null
 					&& authComponent.check(username, password, context)) {
+				if (singleSignOn != null) {
+					singleSignOn.sign(username, request, response, context);
+				}
 				return username;
 			}
+		} else if (singleSignOn != null && singleSignOn.isSigned(request, context)) {
+			return singleSignOn.getSignedUser(request, context);
 		}
 		throw new UnauthorizedException();
 	}

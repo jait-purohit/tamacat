@@ -36,7 +36,7 @@ public class WSSEAuthProcessor extends AbstractAuthProcessor {
 		String path = RequestUtils.getRequestPath(request);
 		if (isFreeAccessExtensions(path) == false) {
 	        try {
-	    		String remoteUser = checkUser(request, context);
+	    		String remoteUser = checkUser(request, response, context);
 	    		context.setAttribute(remoteUserKey, remoteUser);
 	        } catch (UnauthorizedException e) {
 	        	response.setStatusCode(HttpStatus.SC_UNAUTHORIZED);
@@ -49,11 +49,12 @@ public class WSSEAuthProcessor extends AbstractAuthProcessor {
 	/**
 	 * Login check with AuthComponent.
 	 * @param request
+	 * @param response
 	 * @param context
 	 * @return login username in request parameter.
 	 * @throws UnauthorizedException
 	 */
-	protected String checkUser(HttpRequest request, HttpContext context)
+	protected String checkUser(HttpRequest request, HttpResponse response, HttpContext context)
 			throws UnauthorizedException {
 	    Header wsseAuthLine = request.getFirstHeader(X_WSSE_HEADER);
 		if (wsseAuthLine != null && StringUtils.isNotEmpty(wsseAuthLine.getValue())) {
@@ -68,9 +69,14 @@ public class WSSEAuthProcessor extends AbstractAuthProcessor {
 				if (username != null && password != null
 						&& username.equals(user.getAuthUsername())
 						&& password.equals(passwordDigest)) {
+					if (singleSignOn != null) {
+						singleSignOn.sign(username, request, response, context);
+					}
 					return user.getAuthUsername();
 				}
 			}
+		} else if (singleSignOn != null && singleSignOn.isSigned(request, context)) {
+			return singleSignOn.getSignedUser(request, context);
 		}
 	    throw new UnauthorizedException();
 	}
