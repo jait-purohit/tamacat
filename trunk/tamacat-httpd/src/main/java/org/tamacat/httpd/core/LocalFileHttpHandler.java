@@ -5,6 +5,7 @@
 package org.tamacat.httpd.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
@@ -17,6 +18,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ForbiddenException;
+import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.page.VelocityListingsPage;
 import org.tamacat.httpd.util.RequestUtils;
@@ -83,7 +85,8 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 	}
 	
 	@Override
-	public void doRequest(HttpRequest request, HttpResponse response, HttpContext context) {
+	public void doRequest(HttpRequest request, HttpResponse response, HttpContext context)
+			throws HttpException, IOException {
 		String path = RequestUtils.getRequestPath(request);
 		if (path.endsWith("/") && useDirectoryListings() == false) {
 			path = path + welcomeFile;
