@@ -4,24 +4,25 @@ import java.io.IOException;
 import java.net.Socket;
 
 import org.apache.http.HttpRequestFactory;
-import org.apache.http.impl.DefaultHttpRequestFactory;
 import org.apache.http.impl.DefaultHttpServerConnection;
 import org.apache.http.params.HttpParams;
 
 public class ServerHttpConnection extends DefaultHttpServerConnection {
 
-	private WebSocket websocket;
+	private SocketWrapper socketWrapper;
 
 	@Override
     public void bind(final Socket socket, final HttpParams params) throws IOException {
-		websocket = new WebSocket(socket);
+		socketWrapper = new SocketWrapper(socket);
 		super.bind(socket, params);
     }
 	
 	@Override
     protected HttpRequestFactory createHttpRequestFactory() {
-        if (websocket.isWebSocket()) {
+        if (socketWrapper.isWebSocketSupport()) {
         	return new WebSocketRequestFactory();
+        //} else if (socketWrapper.isWebDAVSupport()){
+        //	return new WebDavHttpRequestFactory();
         } else {
         	return new DefaultHttpRequestFactory();
         }
@@ -32,11 +33,15 @@ public class ServerHttpConnection extends DefaultHttpServerConnection {
 		return super.getSocket();
 	}
 	
-	public void setWebSocket(boolean isWebSocket) {
-		websocket.setWebSocket(isWebSocket);
+	public void setWebSocketSupport(boolean isWebSocket) {
+		socketWrapper.setWebSocketSupport(isWebSocket);
 	}
 	
-	public WebSocket getWebSocket() {
-		return websocket;
+	public void setWebDAVSupport(boolean isWebSocketSupport) {
+		socketWrapper.setWebDAVSupport(isWebSocketSupport);
+	}
+	
+	public SocketWrapper getSocketWrapper() {
+		return socketWrapper;
 	}
 }

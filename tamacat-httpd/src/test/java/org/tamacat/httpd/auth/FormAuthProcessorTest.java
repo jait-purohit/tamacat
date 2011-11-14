@@ -80,7 +80,7 @@ public class FormAuthProcessorTest {
 	public void testCheckUser() throws Exception {
 		try {
 			context = new BasicHttpContext();
-			auth.checkUser(request, context);
+			auth.checkUser(request, response, context);
 			fail();
 		} catch (UnauthorizedException e) {
 			assertEquals(BasicHttpStatus.SC_UNAUTHORIZED, e.getHttpStatus());
@@ -91,7 +91,7 @@ public class FormAuthProcessorTest {
 			context = new BasicHttpContext();
 			RequestUtils.setParameter(context, "username", "");
 			RequestUtils.setParameter(context, "password", "");
-			auth.checkUser(request, context);
+			auth.checkUser(request, response, context);
 			fail();
 		} catch (UnauthorizedException e) {
 			assertEquals(BasicHttpStatus.SC_UNAUTHORIZED, e.getHttpStatus());
@@ -102,7 +102,7 @@ public class FormAuthProcessorTest {
 			context = new BasicHttpContext();
 			RequestUtils.setParameter(context, "username", "admin");
 			RequestUtils.setParameter(context, "password", "xxxx");
-			auth.checkUser(request, context);
+			auth.checkUser(request, response, context);
 			fail();
 		} catch (UnauthorizedException e) {
 			assertEquals(BasicHttpStatus.SC_UNAUTHORIZED, e.getHttpStatus());
@@ -113,7 +113,7 @@ public class FormAuthProcessorTest {
 			context = new BasicHttpContext();
 			RequestUtils.setParameter(context, "username", "test");
 			RequestUtils.setParameter(context, "password", "pass");
-			auth.checkUser(request, context);
+			auth.checkUser(request, response, context);
 			fail();
 		} catch (UnauthorizedException e) {
 			assertEquals(BasicHttpStatus.SC_UNAUTHORIZED, e.getHttpStatus());
@@ -123,7 +123,7 @@ public class FormAuthProcessorTest {
 		context = new BasicHttpContext();
 		RequestUtils.setParameter(context, "username", "admin");
 		RequestUtils.setParameter(context, "password", "pass");
-		auth.checkUser(request, context);
+		auth.checkUser(request, response, context);
 	}
 
 	@Test

@@ -57,7 +57,7 @@ public class WSSEAuthProcessorTest {
 	@Test
 	public void testCheckUser() {
 		try {
-			String id = auth.checkUser(request, context);
+			String id = auth.checkUser(request, response, context);
 			assertNull(id);
 		} catch (UnauthorizedException e) {
 			assertTrue(true);
@@ -80,7 +80,7 @@ public class WSSEAuthProcessorTest {
 			
 			request.setHeader(WSSEAuthProcessor.X_WSSE_HEADER, "UsernameToken " + line);
 			
-			String id = auth.checkUser(request, context);
+			String id = auth.checkUser(request, response, context);
 			assertNotNull(id);
 			assertEquals("admin", id);
 		} catch (UnauthorizedException e) {

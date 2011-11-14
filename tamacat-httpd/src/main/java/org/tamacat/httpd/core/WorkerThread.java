@@ -68,7 +68,7 @@ public class WorkerThread extends Thread {
             		+ ".__DO_NOT_CLOSED__") == null) {
             	shutdown();
             } else {
-            	conn.setWebSocket(true);
+            	conn.setWebSocketSupport(true);
             }
             counter.countDown();
         }

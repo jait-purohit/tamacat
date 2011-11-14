@@ -43,7 +43,9 @@ public class DefaultHttpService extends HttpService {
     private HostRequestHandlerResolver hostResolver;
 	protected ClassLoader loader;
 	protected VelocityErrorPage errorPage;
-	
+	protected String encoding = "UTF-8";
+	protected String contentType = DEFAULT_CONTENT_TYPE;
+
 	public DefaultHttpService(HttpProcessorBuilder procBuilder,
 			ConnectionReuseStrategy connStrategy,
 			HttpResponseFactory responseFactory,
@@ -130,12 +132,20 @@ public class DefaultHttpService extends HttpService {
 	 */
 	protected HttpEntity getEntity(String html) {
 		try {
-			StringEntity entity = new StringEntity(html);
-			entity.setContentType(DEFAULT_CONTENT_TYPE);
+			StringEntity entity = new StringEntity(html, encoding);
+			entity.setContentType(contentType);
 			return entity;
 		} catch (UnsupportedEncodingException e1) {
 			return null;
 		}
+	}
+	
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+	
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 	
 	public void setClassLoader(ClassLoader loader) {
