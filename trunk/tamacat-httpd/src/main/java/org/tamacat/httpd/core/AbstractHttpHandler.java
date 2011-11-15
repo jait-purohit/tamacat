@@ -40,7 +40,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
 
 	private static Properties mimeTypes;
-	private static String serverHome;
+	protected static String serverHome;
 
 	/*
 	 * 1. using org/tamacat/httpd/mime-types.properties} in jar archive.
