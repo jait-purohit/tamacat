@@ -142,7 +142,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		}
 	}
 	
-	private void setListFileEntity(HttpRequest request, HttpResponse response, File file) {
+	protected void setListFileEntity(HttpRequest request, HttpResponse response, File file) {
 		try {
 			String html = listingPage.getListingsPage(
 					request, response, file);
@@ -153,7 +153,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		}
 	}
 	
-	private void setEntity(HttpRequest request, HttpResponse response, VelocityContext ctx, String path) {
+	protected void setEntity(HttpRequest request, HttpResponse response, VelocityContext ctx, String path) {
 		//Do not set an entity when it already exists.
 		if (response.getEntity() == null) {
 			String html = page.getPage(request, response, ctx, path);
@@ -166,7 +166,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		}
 	}
 	
-	private void setFileEntity(HttpRequest request, HttpResponse response, String path) {
+	protected void setFileEntity(HttpRequest request, HttpResponse response, String path) {
 		//Do not set an entity when it already exists.
 		if (response.getEntity() == null) {
 			try {

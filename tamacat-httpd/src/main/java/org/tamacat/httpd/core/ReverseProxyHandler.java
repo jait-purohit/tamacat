@@ -51,13 +51,13 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	static final Log LOG = LogFactory.getLog(ReverseProxyHandler.class);
 
     protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
-    private static final String CHECK_INFINITE_LOOP
+    protected static final String CHECK_INFINITE_LOOP
     	= ReverseProxyHandler.class.getName() + "_CHECK_INFINITE_LOOP";
-	private HttpRequestExecutor httpexecutor;
-    private HttpProcessor httpproc;
-    private HttpParamsBuilder builder = new HttpParamsBuilder();
-	private HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
-	private PlainSocketFactory socketFactory = PlainSocketFactory.getSocketFactory();
+	protected HttpRequestExecutor httpexecutor;
+	protected HttpProcessor httpproc;
+	protected HttpParamsBuilder builder = new HttpParamsBuilder();
+	protected HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
+	protected PlainSocketFactory socketFactory = PlainSocketFactory.getSocketFactory();
 	
 	/**
 	 * <p>Default constructor.
