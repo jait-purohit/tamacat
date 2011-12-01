@@ -4,6 +4,11 @@
  */
 package org.tamacat.dao.rdb;
 
+import org.tamacat.dao.meta.DefaultRdbColumnMetaData;
+import org.tamacat.dao.meta.DefaultRdbTableMetaData;
+import org.tamacat.dao.meta.RdbDataType;
+import org.tamacat.dao.orm.MapBasedORMappingBean;
+
 public class User extends MapBasedORMappingBean {
 
     private static final long serialVersionUID = 1L;

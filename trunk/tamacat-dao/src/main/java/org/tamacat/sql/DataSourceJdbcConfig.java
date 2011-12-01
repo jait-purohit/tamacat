@@ -12,7 +12,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.tamacat.dao.DaoException;
+import org.tamacat.dao.exception.DaoException;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.pool.ObjectActivateException;

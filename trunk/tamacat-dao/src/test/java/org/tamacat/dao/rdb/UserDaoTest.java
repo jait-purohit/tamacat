@@ -11,6 +11,10 @@ import java.util.Collection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.dao.Condition;
+import org.tamacat.dao.RdbDaoFactory;
+import org.tamacat.dao.RdbSearch;
+import org.tamacat.dao.RdbSort;
 
 public class UserDaoTest {
 
