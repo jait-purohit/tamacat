@@ -9,7 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.tamacat.dao.DaoException;
+import org.tamacat.dao.exception.DaoException;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.pool.ObjectActivateException;

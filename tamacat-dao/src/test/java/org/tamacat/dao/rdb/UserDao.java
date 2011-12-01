@@ -6,9 +6,11 @@ package org.tamacat.dao.rdb;
 
 import java.util.Collection;
 
-import org.tamacat.dao.Search;
-import org.tamacat.dao.Sort;
-import org.tamacat.dao.rdb.internal.RdbQuery;
+import org.tamacat.dao.Condition;
+import org.tamacat.dao.RdbDaoAdapter;
+import org.tamacat.dao.RdbQuery;
+import org.tamacat.dao.RdbSearch;
+import org.tamacat.dao.RdbSort;
 
 public class UserDao extends RdbDaoAdapter<User> {
 
@@ -21,7 +23,7 @@ public class UserDao extends RdbDaoAdapter<User> {
         return super.search(query);
     }
 
-    public Collection<User> searchList(Search search, Sort sort) {
+    public Collection<User> searchList(RdbSearch search, RdbSort sort) {
         RdbQuery<User> query = createQuery()
             .addSelectColumns(User.TABLE.getColumns()).andSearch(search, sort);
         return super.searchList(query, search.getStart(), search.getMax());

@@ -1,8 +1,8 @@
 package org.tamacat.dao.rdb;
 
-import org.tamacat.dao.rdb.Condition;
-import org.tamacat.dao.rdb.RdbDaoAdapter;
-import org.tamacat.dao.rdb.internal.RdbQuery;
+import org.tamacat.dao.Condition;
+import org.tamacat.dao.RdbDaoAdapter;
+import org.tamacat.dao.RdbQuery;
 
 public class FileDataDao extends RdbDaoAdapter<FileData> {
     

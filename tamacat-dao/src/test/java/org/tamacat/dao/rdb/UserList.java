@@ -6,6 +6,8 @@ package org.tamacat.dao.rdb;
 
 import java.util.ArrayList;
 
+import org.tamacat.dao.orm.MapBasedORMappingBean;
+
 public class UserList extends ArrayList<MapBasedORMappingBean> {
 
     private static final long serialVersionUID = 1L;

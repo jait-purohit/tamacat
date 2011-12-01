@@ -1,9 +1,9 @@
 package org.tamacat.dao.rdb;
 
-import org.tamacat.dao.rdb.DefaultRdbColumnMetaData;
-import org.tamacat.dao.rdb.DefaultRdbTableMetaData;
-import org.tamacat.dao.rdb.MapBasedORMappingBean;
-import org.tamacat.dao.rdb.RdbDataType;
+import org.tamacat.dao.meta.DefaultRdbColumnMetaData;
+import org.tamacat.dao.meta.DefaultRdbTableMetaData;
+import org.tamacat.dao.meta.RdbDataType;
+import org.tamacat.dao.orm.MapBasedORMappingBean;
 
 public class FileData extends MapBasedORMappingBean {
 
