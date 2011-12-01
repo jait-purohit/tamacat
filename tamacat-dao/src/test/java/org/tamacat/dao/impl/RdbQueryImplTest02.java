@@ -10,7 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.dao.impl.RdbQueryImpl;
-import org.tamacat.dao.rdb.FileData;
+import org.tamacat.dao.test.FileData;
 
 public class RdbQueryImplTest02 {
 

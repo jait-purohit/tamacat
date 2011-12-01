@@ -2,7 +2,7 @@
  * Copyright (c) 2008, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.dao.rdb;
+package org.tamacat.dao.test;
 
 import static org.junit.Assert.*;
 

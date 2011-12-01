@@ -10,7 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.dao.orm.MapBasedORMappingBean;
-import org.tamacat.dao.rdb.User;
+import org.tamacat.dao.test.User;
 
 public class MapBasedORMappingBeanTest {
 

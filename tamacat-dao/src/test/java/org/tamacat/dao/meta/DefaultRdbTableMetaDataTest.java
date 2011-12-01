@@ -3,7 +3,7 @@ package org.tamacat.dao.meta;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.tamacat.dao.rdb.Dept;
+import org.tamacat.dao.test.Dept;
 
 public class DefaultRdbTableMetaDataTest {
 
