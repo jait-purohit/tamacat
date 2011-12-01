@@ -1,4 +1,4 @@
-package org.tamacat.dao.rdb;
+package org.tamacat.dao.test;
 
 import org.tamacat.dao.Condition;
 import org.tamacat.dao.RdbDaoAdapter;

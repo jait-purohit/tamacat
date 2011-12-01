@@ -11,9 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.dao.Condition;
 import org.tamacat.dao.SQLParser;
-import org.tamacat.dao.impl.RdbQueryImpl;
-import org.tamacat.dao.rdb.Dept;
-import org.tamacat.dao.rdb.User;
+import org.tamacat.dao.test.Dept;
+import org.tamacat.dao.test.User;
 
 public class RdbQueryImplTest {
 

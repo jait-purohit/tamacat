@@ -6,8 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.dao.RdbQuery;
-import org.tamacat.dao.impl.MySQLDao;
-import org.tamacat.dao.rdb.User;
+import org.tamacat.dao.test.User;
 
 public class MySQLDaoTest {
 
