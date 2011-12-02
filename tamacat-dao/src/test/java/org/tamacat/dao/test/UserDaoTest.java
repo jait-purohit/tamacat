@@ -12,9 +12,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.dao.Condition;
-import org.tamacat.dao.RdbDaoFactory;
-import org.tamacat.dao.RdbSearch;
-import org.tamacat.dao.RdbSort;
+import org.tamacat.dao.DaoFactory;
+import org.tamacat.dao.Search;
+import org.tamacat.dao.Sort;
 
 public class UserDaoTest {
 
@@ -22,7 +22,7 @@ public class UserDaoTest {
 
     @Before
     public void setUp() throws Exception {
-        dao = RdbDaoFactory.getRdbDao(UserDao.class);
+        dao = DaoFactory.getRdbDao(UserDao.class);
     }
 
     @After
@@ -48,9 +48,9 @@ public class UserDaoTest {
 
     @Test
     public void testSearchListSearchSort() {
-        RdbSearch search = dao.createRdbSearch().and(User.USER_ID, Condition.LIKE_PART, "admin");
+        Search search = dao.createRdbSearch().and(User.USER_ID, Condition.LIKE_PART, "admin");
         search.setMax(10);
-        RdbSort sort = dao.createRdbSort();
+        Sort sort = dao.createRdbSort();
         Collection<User> list = dao.searchList(search, sort);
         for (User u : list) {
             assertNotNull(u);

@@ -4,22 +4,21 @@
  */
 package org.tamacat.dao;
 
-
 public enum Condition {
-
-    LIKE_HEAD(" like ", SQLParser.VALUE1 + "%"),
-    LIKE_PART(" like ", "%" + SQLParser.VALUE1 + "%"),
-    LIKE_TAIL(" like ", "%" + SQLParser.VALUE1),
-    EQUAL("=", SQLParser.VALUE1),
-    NOT_EQUAL("<>", SQLParser.VALUE1),
-    BETWEEN(" between ", SQLParser.VALUE1 + " and " + SQLParser.VALUE2),
-    LESS("<", SQLParser.VALUE1),
-    GREATER(">", SQLParser.VALUE1),
-    LESS_OR_EQUAL("<=", SQLParser.VALUE1),
-    GREATER_OR_EQUAL(">=", SQLParser.VALUE1),
+    
+    LIKE_HEAD(" like ", "#{value1}%"),
+    LIKE_PART(" like ", "%#{value1}%"),
+    LIKE_TAIL(" like ", "%#{value1}"),
+    EQUAL("=", "#{value1}"),
+    NOT_EQUAL("<>", "#{value1}"),
+    BETWEEN(" between ", "#{value1} and #{value2}"),
+    LESS("<", "#{value1}"),
+    GREATER(">", "#{value1}"),
+    LESS_OR_EQUAL("<=", "#{value1}"),
+    GREATER_OR_EQUAL(">=", "#{value1}"),
     IS_NULL(" is null", null),
     NOT_NULL(" not null", null),
-    IN(" in ", "(" + SQLParser.MULTI_VALUE + ")")
+    IN(" in ", "(#{values})")
     ;
 
     private final String replaceHolder;

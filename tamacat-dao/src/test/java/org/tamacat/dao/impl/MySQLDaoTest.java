@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.tamacat.dao.RdbQuery;
+import org.tamacat.dao.Query;
 import org.tamacat.dao.test.User;
 
 public class MySQLDaoTest {
@@ -29,7 +29,7 @@ public class MySQLDaoTest {
 
 	@Test
 	public void testSearchListRdbQueryOfTIntInt() {
-		RdbQuery<User> query = dao.createQuery();
+		Query<User> query = dao.createQuery();
 		//dao.searchList(query, 1, 5);
 		assertNotNull(query);
 	}

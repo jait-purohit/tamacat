@@ -7,43 +7,43 @@ package org.tamacat.dao.test;
 import java.util.Collection;
 
 import org.tamacat.dao.Condition;
-import org.tamacat.dao.RdbDaoAdapter;
-import org.tamacat.dao.RdbQuery;
-import org.tamacat.dao.RdbSearch;
-import org.tamacat.dao.RdbSort;
+import org.tamacat.dao.DaoAdapter;
+import org.tamacat.dao.Query;
+import org.tamacat.dao.Search;
+import org.tamacat.dao.Sort;
 
-public class UserDao extends RdbDaoAdapter<User> {
+public class UserDao extends DaoAdapter<User> {
 
     public UserDao() {}
 
     public User search(User data) {
-        RdbQuery<User> query = createQuery()
+        Query<User> query = createQuery()
             .addSelectColumns(User.TABLE.getColumns())
             .andWhere(param(User.USER_ID, Condition.EQUAL, data.getValue(User.USER_ID)));
         return super.search(query);
     }
 
-    public Collection<User> searchList(RdbSearch search, RdbSort sort) {
-        RdbQuery<User> query = createQuery()
+    public Collection<User> searchList(Search search, Sort sort) {
+        Query<User> query = createQuery()
             .addSelectColumns(User.TABLE.getColumns()).andSearch(search, sort);
         return super.searchList(query, search.getStart(), search.getMax());
     }
 
     @Override
     protected String getInsertSQL(User data) {
-        RdbQuery<User> query = createQuery().addUpdateColumns(User.TABLE.getColumns());
+        Query<User> query = createQuery().addUpdateColumns(User.TABLE.getColumns());
         return query.getInsertSQL(data);
     }
 
     @Override
     protected String getUpdateSQL(User data) {
-        RdbQuery<User> query = createQuery().addUpdateColumns(User.TABLE.getColumns());
+        Query<User> query = createQuery().addUpdateColumns(User.TABLE.getColumns());
         return query.getUpdateSQL(data);
     }
 
     @Override
     protected String getDeleteSQL(User data) {
-        RdbQuery<User> query = createQuery().addUpdateColumn(User.USER_ID);
+        Query<User> query = createQuery().addUpdateColumn(User.USER_ID);
         return query.getDeleteSQL(data);
     }
     

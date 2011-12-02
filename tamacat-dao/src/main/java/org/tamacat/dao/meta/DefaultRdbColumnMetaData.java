@@ -6,30 +6,30 @@ package org.tamacat.dao.meta;
 
 
 
-public class DefaultRdbColumnMetaData implements RdbColumnMetaData {
+public class DefaultRdbColumnMetaData implements ColumnMetaData {
 
     String columnName;
     String defaultValue;
     String name;
-    RdbDataType type;
+    DataType type;
     boolean isAutoGenerateId;
     boolean isAutoTimestamp;
     boolean isNotNull;
     boolean isPrimaryKey;
-    RdbTableMetaData table;
+    TableMetaData table;
 
     public DefaultRdbColumnMetaData() {}
 
     public DefaultRdbColumnMetaData(
-            RdbTableMetaData table, String columnName, RdbDataType type,
-            String name, RdbColumnDefine... defines) {
+            TableMetaData table, String columnName, DataType type,
+            String name, ColumnDefine... defines) {
         this.columnName = columnName;
         this.type = type;
         this.name = name;
         this.table = table;
         table.registerColumn(this);
         if (defines != null) {
-            for (RdbColumnDefine def : defines) {
+            for (ColumnDefine def : defines) {
                 if (PRIMARY_KEY.equals(def)) this.isPrimaryKey = true;
                 if (AUTO_GENERATE_ID.equals(def)) this.isAutoGenerateId = true;
                 if (AUTO_TIMESTAMP.equals(def)) this.isAutoTimestamp = true;
@@ -88,18 +88,18 @@ public class DefaultRdbColumnMetaData implements RdbColumnMetaData {
         this.name = name;
         return this;
     }
-    public RdbDataType getType() {
+    public DataType getType() {
         return type;
     }
-    public DefaultRdbColumnMetaData setType(RdbDataType type) {
+    public DefaultRdbColumnMetaData setType(DataType type) {
         this.type = type;
         return this;
     }
-    public RdbColumnMetaData setRdbTableMetaData(RdbTableMetaData table) {
+    public ColumnMetaData setRdbTableMetaData(TableMetaData table) {
         this.table = table;
         return this;
     }
-    public RdbTableMetaData getRdbTableMetaData() {
+    public TableMetaData getRdbTableMetaData() {
         return table;
     }
 }

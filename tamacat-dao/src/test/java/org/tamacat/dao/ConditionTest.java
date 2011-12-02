@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.tamacat.dao.Condition;
-import org.tamacat.dao.SQLParser;
+import org.tamacat.sql.SQLParser;
 
 public class ConditionTest {
 

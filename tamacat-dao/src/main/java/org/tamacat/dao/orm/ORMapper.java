@@ -9,8 +9,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import org.tamacat.dao.exception.DaoException;
-import org.tamacat.dao.meta.RdbColumnMetaData;
-import org.tamacat.dao.meta.RdbDataType;
+import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.DataType;
 import org.tamacat.dao.util.MappingUtils;
 import org.tamacat.di.DI;
 import org.tamacat.di.DIContainerException;
@@ -69,12 +69,12 @@ public class ORMapper<T extends ORMappingSupport> {
         }
     }
 
-    public ORMapper<T> mapping(Collection<RdbColumnMetaData> columns, ResultSet rs) {
+    public ORMapper<T> mapping(Collection<ColumnMetaData> columns, ResultSet rs) {
         data = createPrototype();
         try {
             int index = 1;
-            for (RdbColumnMetaData column : columns) {
-                RdbDataType type = column.getType();
+            for (ColumnMetaData column : columns) {
+                DataType type = column.getType();
                 data.mapping(column, MappingUtils.mapping(type, rs, index));
                 index++;
             }

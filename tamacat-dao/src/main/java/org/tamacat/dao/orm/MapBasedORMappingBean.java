@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.tamacat.dao.meta.RdbColumnMetaData;
+import org.tamacat.dao.meta.ColumnMetaData;
 import org.tamacat.dao.util.MappingUtils;
 
 /**
@@ -22,11 +22,11 @@ public class MapBasedORMappingBean extends LinkedHashMap<String, Object> impleme
     protected GetFilter getfilter;
     protected SetFilter setfilter;
     
-    public String getValue(RdbColumnMetaData column) {
+    public String getValue(ColumnMetaData column) {
     	return MappingUtils.parse(column, super.get(MappingUtils.getColumnName(column)));
     }
     
-    public MapBasedORMappingBean setValue(RdbColumnMetaData column, String value) {
+    public MapBasedORMappingBean setValue(ColumnMetaData column, String value) {
         put(MappingUtils.getColumnName(column), value);
         return this;
     }
@@ -65,16 +65,16 @@ public class MapBasedORMappingBean extends LinkedHashMap<String, Object> impleme
     }
 
     public boolean isUpdate(Object name) {
-        if (name instanceof RdbColumnMetaData) {
-            return updated.contains(MappingUtils.getColumnName((RdbColumnMetaData)name));
+        if (name instanceof ColumnMetaData) {
+            return updated.contains(MappingUtils.getColumnName((ColumnMetaData)name));
         } else {
             return updated.contains(name);
         }
     }
     
     public static String parse(Object data) {
-        if (data instanceof RdbColumnMetaData) {
-            return (MappingUtils.getColumnName((RdbColumnMetaData)data));
+        if (data instanceof ColumnMetaData) {
+            return (MappingUtils.getColumnName((ColumnMetaData)data));
         } else {
             return data.toString();
         }

@@ -5,24 +5,24 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.tamacat.dao.RdbDao;
-import org.tamacat.dao.RdbQuery;
-import org.tamacat.dao.RdbSearch;
-import org.tamacat.dao.meta.RdbColumnMetaData;
+import org.tamacat.dao.Dao;
+import org.tamacat.dao.Query;
+import org.tamacat.dao.Search;
+import org.tamacat.dao.meta.ColumnMetaData;
 import org.tamacat.dao.orm.ORMappingSupport;
 
-public class OracleDao<T extends ORMappingSupport> extends RdbDao<T> {
+public class OracleDao<T extends ORMappingSupport> extends Dao<T> {
 
 	public OracleDao() {}
 	
     @Override
-    public RdbSearch createRdbSearch() {
+    public Search createRdbSearch() {
         return new OracleSearch();
     }
     
     @Override
-    public Collection<T> searchList(RdbQuery<T> query, int start, int max) {
-        Collection<RdbColumnMetaData>columns = query.getSelectColumns();
+    public Collection<T> searchList(Query<T> query, int start, int max) {
+        Collection<ColumnMetaData>columns = query.getSelectColumns();
         String sql = query.getSelectSQL();
         if (start > 0) {
 	        boolean forUpdate = false;
