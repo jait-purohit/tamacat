@@ -8,16 +8,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-public class DefaultTableMetaData implements TableMetaData {
+public class DefaultTable implements Table {
 
-    private LinkedHashSet<ColumnMetaData> columns = new LinkedHashSet<ColumnMetaData>();
-    private HashSet<ColumnMetaData> primaryKeys = new HashSet<ColumnMetaData>();
+    private LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
+    private HashSet<Column> primaryKeys = new HashSet<Column>();
 
     private String schemaName;
     private String tableName;
     private String aliasName;
 
-    public DefaultTableMetaData(String... name) {
+    public DefaultTable(String... name) {
         switch (name.length) {
             case 3:
                 schemaName = name[0];
@@ -35,12 +35,12 @@ public class DefaultTableMetaData implements TableMetaData {
 
     @SuppressWarnings("unchecked")
 	@Override
-    public Collection<ColumnMetaData> getColumns() {
-        return (Collection<ColumnMetaData>) columns.clone();
+    public Collection<Column> getColumns() {
+        return (Collection<Column>) columns.clone();
     }
 
     @Override
-    public Collection<ColumnMetaData> getPrimaryKeys() {
+    public Collection<Column> getPrimaryKeys() {
         return primaryKeys;
     }
 
@@ -70,40 +70,40 @@ public class DefaultTableMetaData implements TableMetaData {
         }
     }
 
-    public DefaultTableMetaData setTableName(String tableName) {
+    public DefaultTable setTableName(String tableName) {
         this.tableName = tableName;
         return this;
     }
 
-    public DefaultTableMetaData setSchemaName(String schemaName) {
+    public DefaultTable setSchemaName(String schemaName) {
         this.schemaName = schemaName;
         return this;
     }
 
     @Override
-    public TableMetaData registerColumn(ColumnMetaData... cols) {
-        for (ColumnMetaData column : cols) {
+    public Table registerColumn(Column... cols) {
+        for (Column column : cols) {
             if (column.isPrimaryKey()) this.primaryKeys.add(column);
             this.columns.add(column);
-            column.setRdbTableMetaData(this);
+            column.setTable(this);
         }
         return this;
     }
     
     public boolean equalsTable(Object target) {
     	if (target == null) return false;
-    	if (target instanceof ColumnMetaData) {
-    		return equals(((ColumnMetaData)target).getRdbTableMetaData());
-    	} else if (target instanceof TableMetaData) {
-    		return equals(((TableMetaData)target));
+    	if (target instanceof Column) {
+    		return equals(((Column)target).getTablea());
+    	} else if (target instanceof Table) {
+    		return equals(((Table)target));
     	} else {
     		return equals(target);
     	}
     }
     
     @Override
-    public ColumnMetaData find(String columnName) {
-    	for (ColumnMetaData col : columns) {
+    public Column find(String columnName) {
+    	for (Column col : columns) {
     		if (col.getColumnName().equalsIgnoreCase(columnName)) {
     			return col;
     		}

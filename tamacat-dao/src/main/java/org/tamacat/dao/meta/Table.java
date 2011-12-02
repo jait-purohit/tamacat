@@ -6,7 +6,7 @@ package org.tamacat.dao.meta;
 
 import java.util.Collection;
 
-public interface TableMetaData {
+public interface Table {
 
     String getSchemaName();
 
@@ -16,10 +16,10 @@ public interface TableMetaData {
 
     String getTableNameWithSchema();
 
-    Collection<ColumnMetaData> getPrimaryKeys();
-    Collection<ColumnMetaData> getColumns();
+    Collection<Column> getPrimaryKeys();
+    Collection<Column> getColumns();
 
-    TableMetaData registerColumn(ColumnMetaData... columns);
+    Table registerColumn(Column... columns);
 
-    ColumnMetaData find(String columnName);
+    Column find(String columnName);
 }

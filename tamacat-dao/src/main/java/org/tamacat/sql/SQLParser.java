@@ -7,7 +7,7 @@ package org.tamacat.sql;
 import org.tamacat.dao.Condition;
 import org.tamacat.dao.Search.ValueConvertFilter;
 import org.tamacat.dao.exception.InvalidParameterException;
-import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.meta.DataType;
 import org.tamacat.dao.util.MappingUtils;
 
@@ -28,7 +28,7 @@ public class SQLParser {
         this.valueConvertFilter = valueConvertFilter;
     }
 
-    public String value(ColumnMetaData column, Condition condition, String... values) {
+    public String value(Column column, Condition condition, String... values) {
     	String colName = MappingUtils.getColumnName(column);
         StringBuffer search = new StringBuffer(colName + condition.getCondition());
         if (values != null) {
@@ -59,7 +59,7 @@ public class SQLParser {
         return search.toString();
     }
 
-    String parseMultiValue(ColumnMetaData column, String v, String... values) {
+    String parseMultiValue(Column column, String v, String... values) {
         StringBuffer parsed = new StringBuffer();
         for (int i=0; i<values.length; i++) {
             if (parsed.length() > 0) parsed.append(",");
@@ -68,7 +68,7 @@ public class SQLParser {
         return v.replace(MULTI_VALUE, parsed.toString());
     }
     
-    public String parseValue(ColumnMetaData column, String value) {
+    public String parseValue(Column column, String value) {
         String parseValue = (valueConvertFilter == null)? value : valueConvertFilter.convertValue(value);
         if (column.getType() == DataType.STRING) {
         	if (value == null) return parseValue;
@@ -87,7 +87,7 @@ public class SQLParser {
         }
     }
 
-    String parseLikeStringValue(Condition condition, ColumnMetaData column, String value) {
+    String parseLikeStringValue(Condition condition, Column column, String value) {
         if (value.indexOf('%') >= 0 || value.indexOf('_') >= 0) {
             char[] esc = new char[]{'$', '#', '~', '!', '^'};
             for (char e : esc) {

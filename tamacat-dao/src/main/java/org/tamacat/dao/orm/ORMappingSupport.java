@@ -4,16 +4,16 @@
  */
 package org.tamacat.dao.orm;
 
-import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.Column;
 
 
 public interface ORMappingSupport {
 
 	ORMappingSupport mapping(Object name, Object value);
 
-    String getValue(ColumnMetaData column);
+    String getValue(Column column);
     
-    ORMappingSupport setValue(ColumnMetaData column, String value);
+    ORMappingSupport setValue(Column column, String value);
     
     boolean isUpdate(Object name);
 }

@@ -4,7 +4,7 @@
  */
 package org.tamacat.dao.meta;
 
-public class DefaultColumnMetaData implements ColumnMetaData {
+public class DefaultColumn implements Column {
 
     String columnName;
     String defaultValue;
@@ -14,12 +14,16 @@ public class DefaultColumnMetaData implements ColumnMetaData {
     boolean isAutoTimestamp;
     boolean isNotNull;
     boolean isPrimaryKey;
-    TableMetaData table;
+    Table table;
 
-    public DefaultColumnMetaData() {}
-
-    public DefaultColumnMetaData(
-            TableMetaData table, String columnName, DataType type,
+    public DefaultColumn() {}
+    
+    public DefaultColumn(String columnName) {
+    	this.columnName = columnName;
+    }
+    
+    public DefaultColumn(
+            Table table, String columnName, DataType type,
             String name, ColumnDefine... defines) {
         this.columnName = columnName;
         this.type = type;
@@ -40,64 +44,64 @@ public class DefaultColumnMetaData implements ColumnMetaData {
         return columnName;
     }
     
-    public DefaultColumnMetaData setColumnName(String columnName) {
+    public DefaultColumn setColumnName(String columnName) {
         this.columnName = columnName;
         return this;
     }
     public String getDefaultValue() {
         return defaultValue;
     }
-    public DefaultColumnMetaData setDefaultValue(String defaultValue) {
+    public DefaultColumn setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
         return this;
     }
     public boolean isAutoGenerateId() {
         return isAutoGenerateId;
     }
-    public DefaultColumnMetaData setAutoGenerateId(boolean isAutoGenerateId) {
+    public DefaultColumn setAutoGenerateId(boolean isAutoGenerateId) {
         this.isAutoGenerateId = isAutoGenerateId;
         return this;
     }
     public boolean isAutoTimestamp() {
         return isAutoTimestamp;
     }
-    public DefaultColumnMetaData setAutoTimestamp(boolean isAutoTimestamp) {
+    public DefaultColumn setAutoTimestamp(boolean isAutoTimestamp) {
         this.isAutoTimestamp = isAutoTimestamp;
         return this;
     }
     public boolean isNotNull() {
         return isNotNull;
     }
-    public DefaultColumnMetaData setNotNull(boolean isNotNull) {
+    public DefaultColumn setNotNull(boolean isNotNull) {
         this.isNotNull = isNotNull;
         return this;
     }
     public boolean isPrimaryKey() {
         return isPrimaryKey;
     }
-    public DefaultColumnMetaData setPrimaryKey(boolean isPrimaryKey) {
+    public DefaultColumn setPrimaryKey(boolean isPrimaryKey) {
         this.isPrimaryKey = isPrimaryKey;
         return this;
     }
     public String getName() {
         return name;
     }
-    public DefaultColumnMetaData setName(String name) {
+    public DefaultColumn setName(String name) {
         this.name = name;
         return this;
     }
     public DataType getType() {
         return type;
     }
-    public DefaultColumnMetaData setType(DataType type) {
+    public DefaultColumn setType(DataType type) {
         this.type = type;
         return this;
     }
-    public ColumnMetaData setRdbTableMetaData(TableMetaData table) {
+    public Column setTable(Table table) {
         this.table = table;
         return this;
     }
-    public TableMetaData getRdbTableMetaData() {
+    public Table getTablea() {
         return table;
     }
 }
