@@ -8,16 +8,15 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.tamacat.dao.meta.DefaultRdbColumnMetaData;
 import org.tamacat.dao.meta.DataType;
 
 public class DefaultColumnMetaDataTest {
 
-    DefaultRdbColumnMetaData meta;
+    DefaultColumnMetaData meta;
 
     @Before
     public void setUp() {
-        meta = new DefaultRdbColumnMetaData();
+        meta = new DefaultColumnMetaData();
     }
 
     @Test
