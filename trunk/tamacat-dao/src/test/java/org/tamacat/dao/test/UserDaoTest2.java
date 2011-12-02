@@ -14,9 +14,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.tamacat.dao.Condition;
-import org.tamacat.dao.RdbDaoFactory;
-import org.tamacat.dao.RdbSearch;
-import org.tamacat.dao.RdbSort;
+import org.tamacat.dao.DaoFactory;
+import org.tamacat.dao.Search;
+import org.tamacat.dao.Sort;
 
 public class UserDaoTest2 {
 
@@ -24,7 +24,7 @@ public class UserDaoTest2 {
 
     @BeforeClass
     public static void createTable() {
-    	UserDao dao = RdbDaoFactory.getRdbDao(UserDao.class);
+    	UserDao dao = DaoFactory.getRdbDao(UserDao.class);
     	try {
         	dao.setDatabase("javadb");
     		dao.createTable();
@@ -37,7 +37,7 @@ public class UserDaoTest2 {
     
     @AfterClass
     public static void dropTable() {
-    	UserDao dao = RdbDaoFactory.getRdbDao(UserDao.class);
+    	UserDao dao = DaoFactory.getRdbDao(UserDao.class);
     	try {
         	dao.setDatabase("javadb");
     		dao.dropTable();
@@ -77,9 +77,9 @@ public class UserDaoTest2 {
 
     @Test
     public void testSearchListSearchSort() {
-        RdbSearch search = dao.createRdbSearch().and(User.USER_ID, Condition.LIKE_PART, "admin");
+        Search search = dao.createRdbSearch().and(User.USER_ID, Condition.LIKE_PART, "admin");
         search.setMax(10);
-        RdbSort sort = dao.createRdbSort();
+        Sort sort = dao.createRdbSort();
         Collection<User> list = dao.searchList(search, sort);
         for (User u : list) {
             assertNotNull(u);

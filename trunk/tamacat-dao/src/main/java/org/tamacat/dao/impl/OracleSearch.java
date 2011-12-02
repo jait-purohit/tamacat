@@ -1,10 +1,10 @@
 package org.tamacat.dao.impl;
 
-import org.tamacat.dao.RdbSearch;
+import org.tamacat.dao.Search;
 
-public class OracleSearch extends RdbSearch {
+public class OracleSearch extends Search {
 	
-    static class OracleValueConvertFilter implements RdbSearch.ValueConvertFilter {
+    static class OracleValueConvertFilter implements Search.ValueConvertFilter {
         public String convertValue(String value) {
             return value.replace("'", "''");
         }

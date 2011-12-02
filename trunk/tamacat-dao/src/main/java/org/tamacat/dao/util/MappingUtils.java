@@ -8,14 +8,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import org.tamacat.dao.meta.RdbColumnMetaData;
-import org.tamacat.dao.meta.RdbDataType;
-import org.tamacat.dao.meta.RdbTableMetaData;
+import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.DataType;
+import org.tamacat.dao.meta.TableMetaData;
 import org.tamacat.util.DateUtils;
 
 public class MappingUtils {
 
-    public static Object mapping(RdbDataType type, ResultSet rs, int index) throws SQLException {
+    public static Object mapping(DataType type, ResultSet rs, int index) throws SQLException {
         switch (type) {
         case STRING:
             return rs.getString(index);
@@ -33,12 +33,12 @@ public class MappingUtils {
         return null;
     }
     
-    public static String parse(RdbColumnMetaData column, Object value) {
-    	RdbDataType type = column.getType();
+    public static String parse(ColumnMetaData column, Object value) {
+    	DataType type = column.getType();
     	if (value == null) return null;
-    	if (type == RdbDataType.DATE && value instanceof Date) {
+    	if (type == DataType.DATE && value instanceof Date) {
     		return DateUtils.getTime((Date)value, "yyyy-MM-dd"); //TODO
-    	} else if (type == RdbDataType.TIME && value instanceof Date) {
+    	} else if (type == DataType.TIME && value instanceof Date) {
         	return DateUtils.getTime((Date)value, "yyyy-MM-dd HH:mm:ss"); //TODO
     	} else if (value instanceof String){
     		return (String) value;
@@ -63,8 +63,8 @@ public class MappingUtils {
 //        return null;
     }
     
-    public static String getColumnName(RdbColumnMetaData col) {
-    	RdbTableMetaData table = col.getRdbTableMetaData();
+    public static String getColumnName(ColumnMetaData col) {
+    	TableMetaData table = col.getRdbTableMetaData();
     	if (table == null) {
     		throw new IllegalArgumentException(
     			"Column [" + col.getColumnName() + "] is not registered RdbTableMetaData.");

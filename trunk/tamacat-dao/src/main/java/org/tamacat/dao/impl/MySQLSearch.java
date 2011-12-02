@@ -4,11 +4,11 @@
  */
 package org.tamacat.dao.impl;
 
-import org.tamacat.dao.RdbSearch;
+import org.tamacat.dao.Search;
 
-public class MySQLSearch extends RdbSearch {
+public class MySQLSearch extends Search {
 
-    static class MySQLValueConvertFilter implements RdbSearch.ValueConvertFilter {
+    static class MySQLValueConvertFilter implements Search.ValueConvertFilter {
         public String convertValue(String value) {
             return value.replace("'", "''").replace("\\", "\\\\");
         }
