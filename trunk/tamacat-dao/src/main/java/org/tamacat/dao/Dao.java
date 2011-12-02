@@ -20,7 +20,7 @@ import org.tamacat.dao.impl.NoneDaoExecuteHandler;
 import org.tamacat.dao.impl.NoneDaoTransactionHandler;
 import org.tamacat.dao.impl.DaoEventImpl;
 import org.tamacat.dao.impl.QueryImpl;
-import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.orm.ORMapper;
 import org.tamacat.dao.orm.ORMappingSupport;
 import org.tamacat.dao.util.BlobUtils;
@@ -102,7 +102,7 @@ public class Dao<T extends ORMappingSupport> {
     	return dbm;
     }
     
-    public String param(ColumnMetaData column, Condition condition, String... values) {
+    public String param(Column column, Condition condition, String... values) {
         return parser.value(column, condition, values);
     }
 
@@ -136,7 +136,7 @@ public class Dao<T extends ORMappingSupport> {
         return o;
     }
 
-    protected ORMapper<T> mapping(Collection<ColumnMetaData> columns, ResultSet rs) {
+    protected ORMapper<T> mapping(Collection<Column> columns, ResultSet rs) {
         return orm.mapping(columns, rs) ;
     }
     
@@ -145,7 +145,7 @@ public class Dao<T extends ORMappingSupport> {
     }
     
     public Collection<T> searchList(Query<T> query, int start, int max) {
-        Collection<ColumnMetaData>columns = query.getSelectColumns();
+        Collection<Column>columns = query.getSelectColumns();
         ResultSet rs = executeQuery(query.getSelectSQL());
         ArrayList<T> list = new ArrayList<T>();
         try {

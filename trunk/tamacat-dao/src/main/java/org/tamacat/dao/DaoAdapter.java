@@ -11,7 +11,7 @@ import java.util.Collection;
 import org.tamacat.dao.exception.DaoException;
 import org.tamacat.dao.impl.LoggingDaoExecuterHandler;
 import org.tamacat.dao.impl.LoggingDaoTransactionHandler;
-import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.orm.ORMappingSupport;
 import org.tamacat.sql.DBAccessManager;
 
@@ -47,7 +47,7 @@ public class DaoAdapter<T extends ORMappingSupport> {
     	return delegate.getDBAccessManager();
     }
     
-    public String param(ColumnMetaData column, Condition condition, String... values) {
+    public String param(Column column, Condition condition, String... values) {
         return delegate.param(column, condition, values);
     }
 

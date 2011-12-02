@@ -4,7 +4,7 @@
  */
 package org.tamacat.dao;
 
-import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.Column;
 import org.tamacat.sql.SQLParser;
 
 public class Search {
@@ -25,13 +25,13 @@ public class Search {
         parser = new SQLParser(valueConvertFilter);
     }
 
-    public Search and(ColumnMetaData column, Condition condition, String... values) {
+    public Search and(Column column, Condition condition, String... values) {
         if (search.length() > 0) search.append(" and ");
         search.append(parser.value(column, condition, values));
         return this;
     }
 
-    public Search or(ColumnMetaData column, Condition condition, String... values) {
+    public Search or(Column column, Condition condition, String... values) {
         if (search.length() > 0) search.append(" or ");
         search.append(parser.value(column, condition, values));
         return this;

@@ -12,11 +12,11 @@ import org.tamacat.dao.meta.DataType;
 
 public class DefaultColumnMetaDataTest {
 
-    DefaultColumnMetaData meta;
+    DefaultColumn meta;
 
     @Before
     public void setUp() {
-        meta = new DefaultColumnMetaData();
+        meta = new DefaultColumn();
     }
 
     @Test

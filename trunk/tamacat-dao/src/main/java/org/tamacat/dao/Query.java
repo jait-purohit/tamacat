@@ -6,23 +6,23 @@ package org.tamacat.dao;
 
 import java.util.Collection;
 
-import org.tamacat.dao.meta.ColumnMetaData;
-import org.tamacat.dao.meta.TableMetaData;
+import org.tamacat.dao.meta.Column;
+import org.tamacat.dao.meta.Table;
 import org.tamacat.dao.orm.ORMappingSupport;
 
 public interface Query<T extends ORMappingSupport>{
 
-    Query<T> addSelectColumn(ColumnMetaData column);
-    Query<T> addSelectColumns(Collection<ColumnMetaData> columns);
-    Collection<ColumnMetaData> getSelectColumns();
+    Query<T> addSelectColumn(Column column);
+    Query<T> addSelectColumns(Collection<Column> columns);
+    Collection<Column> getSelectColumns();
 
-    Query<T> addUpdateColumn(ColumnMetaData column);
-    Query<T> addUpdateColumns(Collection<ColumnMetaData> columns);
-    Collection<ColumnMetaData> getUpdateColumns();
+    Query<T> addUpdateColumn(Column column);
+    Query<T> addUpdateColumns(Collection<Column> columns);
+    Collection<Column> getUpdateColumns();
 
-    Query<ORMappingSupport> addTable(TableMetaData table);
+    Query<ORMappingSupport> addTable(Table table);
     
-    Query<T> addConnectTable(ColumnMetaData col1, ColumnMetaData col2);
+    Query<T> addConnectTable(Column col1, Column col2);
 
     Query<T> andSearch(Search search, Sort sort);
     Query<T> orSearch(Search search, Sort sort);
@@ -38,7 +38,7 @@ public interface Query<T extends ORMappingSupport>{
 
     String getDeleteSQL(T table);
     
-    String getDeleteAllSQL(TableMetaData table);
+    String getDeleteAllSQL(Table table);
     
     int getBlobIndex();
     

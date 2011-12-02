@@ -1,7 +1,7 @@
 package org.tamacat.dao.test;
 
-import org.tamacat.dao.meta.DefaultColumnMetaData;
-import org.tamacat.dao.meta.DefaultTableMetaData;
+import org.tamacat.dao.meta.DefaultColumn;
+import org.tamacat.dao.meta.DefaultTable;
 import org.tamacat.dao.meta.DataType;
 import org.tamacat.dao.orm.MapBasedORMappingBean;
 
@@ -9,13 +9,13 @@ public class FileData extends MapBasedORMappingBean {
 
 	private static final long serialVersionUID = 1L;
 
-    public static final DefaultTableMetaData TABLE = new DefaultTableMetaData("file");
-    public static final DefaultColumnMetaData FILE_ID = new DefaultColumnMetaData();
-    public static final DefaultColumnMetaData FILE_NAME = new DefaultColumnMetaData();
-    public static final DefaultColumnMetaData SIZE = new DefaultColumnMetaData();
-    public static final DefaultColumnMetaData CONTENT_TYPE = new DefaultColumnMetaData();
-    public static final DefaultColumnMetaData DATA = new DefaultColumnMetaData();
-    public static final DefaultColumnMetaData UPDATE_DATE = new DefaultColumnMetaData();
+    public static final DefaultTable TABLE = new DefaultTable("file");
+    public static final DefaultColumn FILE_ID = new DefaultColumn();
+    public static final DefaultColumn FILE_NAME = new DefaultColumn();
+    public static final DefaultColumn SIZE = new DefaultColumn();
+    public static final DefaultColumn CONTENT_TYPE = new DefaultColumn();
+    public static final DefaultColumn DATA = new DefaultColumn();
+    public static final DefaultColumn UPDATE_DATE = new DefaultColumn();
     
     static {
         FILE_ID.setType(DataType.STRING).setColumnName("file_id")

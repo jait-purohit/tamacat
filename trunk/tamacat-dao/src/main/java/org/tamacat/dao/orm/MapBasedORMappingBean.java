@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.util.MappingUtils;
 
 /**
@@ -22,11 +22,11 @@ public class MapBasedORMappingBean extends LinkedHashMap<String, Object> impleme
     protected GetFilter getfilter;
     protected SetFilter setfilter;
     
-    public String getValue(ColumnMetaData column) {
+    public String getValue(Column column) {
     	return MappingUtils.parse(column, super.get(MappingUtils.getColumnName(column)));
     }
     
-    public MapBasedORMappingBean setValue(ColumnMetaData column, String value) {
+    public MapBasedORMappingBean setValue(Column column, String value) {
         put(MappingUtils.getColumnName(column), value);
         return this;
     }
@@ -65,16 +65,16 @@ public class MapBasedORMappingBean extends LinkedHashMap<String, Object> impleme
     }
 
     public boolean isUpdate(Object name) {
-        if (name instanceof ColumnMetaData) {
-            return updated.contains(MappingUtils.getColumnName((ColumnMetaData)name));
+        if (name instanceof Column) {
+            return updated.contains(MappingUtils.getColumnName((Column)name));
         } else {
             return updated.contains(name);
         }
     }
     
     public static String parse(Object data) {
-        if (data instanceof ColumnMetaData) {
-            return (MappingUtils.getColumnName((ColumnMetaData)data));
+        if (data instanceof Column) {
+            return (MappingUtils.getColumnName((Column)data));
         } else {
             return data.toString();
         }

@@ -13,9 +13,9 @@ import org.tamacat.dao.Query;
 import org.tamacat.dao.Search;
 import org.tamacat.dao.Sort;
 import org.tamacat.dao.exception.InvalidParameterException;
-import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.meta.DataType;
-import org.tamacat.dao.meta.TableMetaData;
+import org.tamacat.dao.meta.Table;
 import org.tamacat.dao.orm.ORMappingSupport;
 import org.tamacat.dao.util.MappingUtils;
 import org.tamacat.sql.SQLParser;
@@ -31,51 +31,51 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
     static final String UPDATE = "UPDATE ${TABLE} SET ${VALUES}";
     static final String DELETE = "DELETE FROM ${TABLE}";
 
-    Collection<ColumnMetaData> selectColumns = new LinkedHashSet<ColumnMetaData>();
-    Collection<ColumnMetaData> updateColumns = new LinkedHashSet<ColumnMetaData>();
-    Set<TableMetaData> tables = new LinkedHashSet<TableMetaData>();
+    Collection<Column> selectColumns = new LinkedHashSet<Column>();
+    Collection<Column> updateColumns = new LinkedHashSet<Column>();
+    Set<Table> tables = new LinkedHashSet<Table>();
     StringBuffer where = new StringBuffer();
     StringBuffer orderBy = new StringBuffer();
 
     int blobIndex = 0;
     
-    public Query<ORMappingSupport> addTable(TableMetaData table) {
+    public Query<ORMappingSupport> addTable(Table table) {
     	tables.add(table);
     	return this;
     }
     
-    public Query<ORMappingSupport> addSelectColumn(ColumnMetaData column) {
+    public Query<ORMappingSupport> addSelectColumn(Column column) {
         selectColumns.add(column);
         return this;
     }
 
-    public Query<ORMappingSupport> addSelectColumns(Collection<ColumnMetaData> columns) {
+    public Query<ORMappingSupport> addSelectColumns(Collection<Column> columns) {
         selectColumns.addAll(columns);
         return this;
     }
 
-    public Collection<ColumnMetaData> getSelectColumns() {
+    public Collection<Column> getSelectColumns() {
         return selectColumns;
     }
 
-    public Query<ORMappingSupport> addUpdateColumn(ColumnMetaData column) {
+    public Query<ORMappingSupport> addUpdateColumn(Column column) {
         updateColumns.add(column);
         return this;
     }
 
-    public Query<ORMappingSupport> addUpdateColumns(Collection<ColumnMetaData> columns) {
+    public Query<ORMappingSupport> addUpdateColumns(Collection<Column> columns) {
         updateColumns.addAll(columns);
         return this;
     }
 
-    public Collection<ColumnMetaData> getUpdateColumns() {
+    public Collection<Column> getUpdateColumns() {
         return updateColumns;
     }
 
     public String getSelectSQL() {
     	blobIndex = 0;
         StringBuffer select = new StringBuffer();
-        for (ColumnMetaData col : getSelectColumns()) {
+        for (Column col : getSelectColumns()) {
             if (select.length() == 0) {
                 select.append(SELECT + " ");
             } else {
@@ -85,10 +85,10 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
             	blobIndex++;
             }
             select.append(getColumnName(col));
-            tables.add(col.getRdbTableMetaData());
+            tables.add(col.getTablea());
         }
         StringBuffer from = new StringBuffer();
-        for (TableMetaData tab : tables) {
+        for (Table tab : tables) {
             if (from.length() == 0) {
                 from.append(" " + FROM + " ");
             } else {
@@ -105,8 +105,8 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         StringBuffer values = new StringBuffer();
         blobIndex = 0;
         String tableName = null;
-        for (ColumnMetaData col : updateColumns.toArray(new ColumnMetaData[updateColumns.size()])) {
-            if (tableName == null) tableName = col.getRdbTableMetaData().getTableName();
+        for (Column col : updateColumns.toArray(new Column[updateColumns.size()])) {
+            if (tableName == null) tableName = col.getTablea().getTableName();
             if (columns.length() > 0) {
                 columns.append(",");
                 values.append(",");
@@ -146,8 +146,8 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         StringBuffer values = new StringBuffer();
         String tableName = null;
         blobIndex = 0;
-        for (ColumnMetaData col : updateColumns.toArray(new ColumnMetaData[updateColumns.size()])) {
-            if (tableName == null) tableName = col.getRdbTableMetaData().getTableName();
+        for (Column col : updateColumns.toArray(new Column[updateColumns.size()])) {
+            if (tableName == null) tableName = col.getTablea().getTableName();
             if (col.isPrimaryKey()) {
             	if (useAutoPrimaryKeyUpdate) {
             		addWhere("and", parser.value(col, Condition.EQUAL, data.getValue(col)));
@@ -186,8 +186,8 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         SQLParser parser = new SQLParser();
         String tableName = null;
         if (updateColumns != null) {
-        	for (ColumnMetaData col : updateColumns.toArray(new ColumnMetaData[updateColumns.size()])) {
-            	if (tableName == null) tableName = col.getRdbTableMetaData().getTableName();
+        	for (Column col : updateColumns.toArray(new Column[updateColumns.size()])) {
+            	if (tableName == null) tableName = col.getTablea().getTableName();
             	if (! useAutoPrimaryKeyUpdate) {
             		addWhere("and", parser.value(col, Condition.EQUAL, data.getValue(col)));
             	} else if (col.isPrimaryKey()) {
@@ -196,7 +196,7 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         	}
         }
         if (tableName == null) {
-        	for (TableMetaData table : tables) {
+        	for (Table table : tables) {
         		tableName = table.getTableName();
         		break;
         	}
@@ -208,15 +208,15 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         return query + where.toString();
     }
     
-    public String getDeleteAllSQL(TableMetaData table) {
+    public String getDeleteAllSQL(Table table) {
         String tableName = table.getTableName();
         String query = DELETE.replace("${TABLE}", tableName);
         return query + where.toString();
     }
 
-    public Query<ORMappingSupport> addConnectTable(ColumnMetaData col1, ColumnMetaData col2) {
-        tables.add(col1.getRdbTableMetaData());
-        tables.add(col2.getRdbTableMetaData());
+    public Query<ORMappingSupport> addConnectTable(Column col1, Column col2) {
+        tables.add(col1.getTablea());
+        tables.add(col2.getTablea());
         if (where.length() == 0) {
             where.append(" " + WHERE + " ");
         } else {
@@ -279,7 +279,7 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
     	return blobIndex;
     }
     
-    static String getColumnName(ColumnMetaData col) {
+    static String getColumnName(Column col) {
     	return MappingUtils.getColumnName(col);
     }
 }

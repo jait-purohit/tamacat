@@ -8,7 +8,7 @@ import java.util.Collection;
 import org.tamacat.dao.Dao;
 import org.tamacat.dao.Query;
 import org.tamacat.dao.Search;
-import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.orm.ORMappingSupport;
 
 public class OracleDao<T extends ORMappingSupport> extends Dao<T> {
@@ -22,7 +22,7 @@ public class OracleDao<T extends ORMappingSupport> extends Dao<T> {
     
     @Override
     public Collection<T> searchList(Query<T> query, int start, int max) {
-        Collection<ColumnMetaData>columns = query.getSelectColumns();
+        Collection<Column>columns = query.getSelectColumns();
         String sql = query.getSelectSQL();
         if (start > 0) {
 	        boolean forUpdate = false;

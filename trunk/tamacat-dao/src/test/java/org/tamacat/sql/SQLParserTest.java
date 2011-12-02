@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.dao.Condition;
 import org.tamacat.dao.Search.ValueConvertFilter;
-import org.tamacat.dao.meta.DefaultColumnMetaData;
-import org.tamacat.dao.meta.DefaultTableMetaData;
+import org.tamacat.dao.meta.DefaultColumn;
+import org.tamacat.dao.meta.DefaultTable;
 import org.tamacat.dao.meta.DataType;
 import org.tamacat.sql.SQLParser;
 
@@ -17,20 +17,20 @@ import junit.framework.TestCase;
 
 public class SQLParserTest extends TestCase {
 
-	DefaultTableMetaData table1;
-	DefaultColumnMetaData column1;
-	DefaultColumnMetaData column2;
+	DefaultTable table1;
+	DefaultColumn column1;
+	DefaultColumn column2;
 	SQLParser parser;
 	
 	@Before
 	protected void setUp() throws Exception {
-		column1 = new DefaultColumnMetaData()
+		column1 = new DefaultColumn()
 			.setColumnName("name").setType(DataType.STRING);
 		
-		column2 = new DefaultColumnMetaData()
+		column2 = new DefaultColumn()
 			.setColumnName("id").setType(DataType.NUMERIC);
 		
-		table1 = new DefaultTableMetaData("test1");
+		table1 = new DefaultTable("test1");
 		table1.registerColumn(column1, column2);
 		parser = new SQLParser();
 	}

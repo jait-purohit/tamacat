@@ -6,15 +6,15 @@ package org.tamacat.dao.meta;
 
 import java.io.Serializable;
 
-public class ColumnDefine implements Serializable {
+class ColumnDefine implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final ColumnDefine PRIMARY_KEY = new ColumnDefine("primary key");
-    public static final ColumnDefine FOREIGN_KEY = new ColumnDefine("foreign key");
-    public static final ColumnDefine AUTO_GENERATE_ID = new ColumnDefine("AutoGenerateId");
-    public static final ColumnDefine AUTO_TIMESTAMP = new ColumnDefine("AutoTimestamp");
-    public static final ColumnDefine NOT_NULL = new ColumnDefine("not null");
+    static final ColumnDefine PRIMARY_KEY = new ColumnDefine("primary key");
+    static final ColumnDefine FOREIGN_KEY = new ColumnDefine("foreign key");
+    static final ColumnDefine AUTO_GENERATE_ID = new ColumnDefine("AutoGenerateId");
+    static final ColumnDefine AUTO_TIMESTAMP = new ColumnDefine("AutoTimestamp");
+    static final ColumnDefine NOT_NULL = new ColumnDefine("not null");
 
     private String defineName;
 

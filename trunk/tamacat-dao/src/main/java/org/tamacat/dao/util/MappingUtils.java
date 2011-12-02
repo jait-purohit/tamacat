@@ -8,9 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.meta.DataType;
-import org.tamacat.dao.meta.TableMetaData;
+import org.tamacat.dao.meta.Table;
 import org.tamacat.util.DateUtils;
 
 public class MappingUtils {
@@ -33,7 +33,7 @@ public class MappingUtils {
         return null;
     }
     
-    public static String parse(ColumnMetaData column, Object value) {
+    public static String parse(Column column, Object value) {
     	DataType type = column.getType();
     	if (value == null) return null;
     	if (type == DataType.DATE && value instanceof Date) {
@@ -63,8 +63,8 @@ public class MappingUtils {
 //        return null;
     }
     
-    public static String getColumnName(ColumnMetaData col) {
-    	TableMetaData table = col.getRdbTableMetaData();
+    public static String getColumnName(Column col) {
+    	Table table = col.getTablea();
     	if (table == null) {
     		throw new IllegalArgumentException(
     			"Column [" + col.getColumnName() + "] is not registered RdbTableMetaData.");

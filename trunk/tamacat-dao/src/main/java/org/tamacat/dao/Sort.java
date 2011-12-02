@@ -4,7 +4,7 @@
  */
 package org.tamacat.dao;
 
-import org.tamacat.dao.meta.ColumnMetaData;
+import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.util.MappingUtils;
 
 public class Sort {
@@ -42,8 +42,8 @@ public class Sort {
 
     public Sort sort(Object k, Order o) {
         if (sort.length() > 0) sort.append(",");
-        if (k instanceof ColumnMetaData) {
-        	sort.append(MappingUtils.getColumnName((ColumnMetaData)k) + " " + o.toString());
+        if (k instanceof Column) {
+        	sort.append(MappingUtils.getColumnName((Column)k) + " " + o.toString());
         } else {
         	sort.append(k.toString() + " " + o.toString());
         }
