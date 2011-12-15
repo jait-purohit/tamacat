@@ -2,7 +2,7 @@
 #labels Phase-Support
 
 = Release Notes =
-==Release 0.9 (2011-12-15)==
+==0.9 Release (2011-12-15)==
 ------------------------
 The highlights in the tamacat-httpd-0.9 are the following:
 
