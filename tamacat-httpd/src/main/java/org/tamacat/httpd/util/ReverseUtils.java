@@ -47,7 +47,8 @@ public class ReverseUtils {
 	private static CharsetEncoder encoder = charset.newEncoder();
 	
 	private static Pattern PATTERN = Pattern.compile(
-		"<[^<]*\\s+(href|src|action)=('|\")([^('|\")]*)('|\")[^>]*>"
+		"<[^<]*\\s+(href|src|action)=('|\")([^('|\")]*)('|\")[^>]*>",
+		Pattern.CASE_INSENSITIVE
 	);
 	
 	private static final String HEADER_PROPERTIES = "reverse-header.properties";
@@ -190,7 +191,9 @@ public class ReverseUtils {
 		return getConvertedSetCookieHeader(
 				reverseUrl.getReverse().getPath(),
 				reverseUrl.getServiceUrl().getPath(),
-				line.replace("domain=" + dist, "domain=" + src)
+				Pattern.compile("domain=" + dist, Pattern.CASE_INSENSITIVE)
+					.matcher("domain=" + src).replaceAll(line)
+				//line.replace("domain=" + dist, "domain=" + src)
 		);
 	}
 	
@@ -205,8 +208,8 @@ public class ReverseUtils {
 		if (line != null) {
 			String d = stripEnd(dist, "/");
 			String s = stripEnd(src, "/");
-			// LOG.trace(d +"->" + s);
-			return line.replaceAll("; Path=" + d, "; Path=" + s);
+		    return Pattern.compile(";\\s*Path=" + d, Pattern.CASE_INSENSITIVE)
+		    		.matcher(line).replaceAll("; Path=" + s);
 		} else {
 			return line;
 		}
