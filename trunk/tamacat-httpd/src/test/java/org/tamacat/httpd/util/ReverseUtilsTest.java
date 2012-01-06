@@ -122,13 +122,21 @@ public class ReverseUtilsTest {
 		request.setHeader("Host", "www.example.com");
 		
 		HttpResponse response = new BasicHttpResponse(
-				new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "OK"));	
+				new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "OK"));
+		//Case-01
 		response.setHeader("Set-Cookie", "key1=value1; domain=192.168.1.1");
 		ReverseUtils.rewriteSetCookieHeader(request, response, reverseUrl);
-		
 		assertEquals("www.example.com",
 			HeaderUtils.getCookieValue(
 					response.getFirstHeader("Set-Cookie").getValue(), "domain")
+		);
+		
+		//Case-02
+		response.setHeader("Set-Cookie", "key2=value2; DOMAIN=192.168.1.1");
+		ReverseUtils.rewriteSetCookieHeader(request, response, reverseUrl);
+		assertEquals("www.example.com",
+				HeaderUtils.getCookieValue(
+						response.getFirstHeader("Set-Cookie").getValue(), "domain")
 		);
 	}
 	
@@ -148,6 +156,18 @@ public class ReverseUtilsTest {
 		String dist = "/dist";
 		String src = "/src";
 		String after = "JSESSIONID=1234567890ABCDEFGHIJKLMNOPQRSTUV; Path=/src";
+		assertEquals(after, ReverseUtils.getConvertedSetCookieHeader(dist, src, before));
+		
+		before = "JSESSIONID=1234567890ABCDEFGHIJKLMNOPQRSTUV; path=/dist";
+		assertEquals(after, ReverseUtils.getConvertedSetCookieHeader(dist, src, before));
+		
+		before = "JSESSIONID=1234567890ABCDEFGHIJKLMNOPQRSTUV; PATH=/dist";
+		assertEquals(after, ReverseUtils.getConvertedSetCookieHeader(dist, src, before));
+		
+		before = "JSESSIONID=1234567890ABCDEFGHIJKLMNOPQRSTUV;Path=/dist";
+		assertEquals(after, ReverseUtils.getConvertedSetCookieHeader(dist, src, before));
+		
+		before = "JSESSIONID=1234567890ABCDEFGHIJKLMNOPQRSTUV;path=/dist";
 		assertEquals(after, ReverseUtils.getConvertedSetCookieHeader(dist, src, before));
 		
 		assertEquals(null, ReverseUtils.getConvertedSetCookieHeader(dist, src, null));
