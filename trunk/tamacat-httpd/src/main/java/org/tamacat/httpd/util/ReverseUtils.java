@@ -192,7 +192,7 @@ public class ReverseUtils {
 				reverseUrl.getReverse().getPath(),
 				reverseUrl.getServiceUrl().getPath(),
 				Pattern.compile("domain=" + dist, Pattern.CASE_INSENSITIVE)
-					.matcher("domain=" + src).replaceAll(line)
+					.matcher(line).replaceAll("domain=" + src)
 				//line.replace("domain=" + dist, "domain=" + src)
 		);
 	}
