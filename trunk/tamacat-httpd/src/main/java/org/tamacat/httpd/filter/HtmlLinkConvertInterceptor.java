@@ -5,7 +5,9 @@
 package org.tamacat.httpd.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -19,7 +21,6 @@ import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.html.LinkConvertingEntity;
 import org.tamacat.httpd.util.HeaderUtils;
-import org.tamacat.httpd.util.HtmlUtils;
 import org.tamacat.util.StringUtils;
 
 /**
@@ -28,14 +29,14 @@ import org.tamacat.util.StringUtils;
 public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 
     protected Set<String> contentTypes = new HashSet<String>();
-    protected Pattern linkPattern = HtmlUtils.LINK_PATTERN;
+    protected List<Pattern> linkPatterns = new ArrayList<Pattern>();
 
 	public HtmlLinkConvertInterceptor() {
     	contentTypes.add("html");
     }
 	
     public void setLinkPattern(String linkPattern) {
-		this.linkPattern = Pattern.compile(linkPattern);
+		this.linkPatterns.add(Pattern.compile(linkPattern));
 	}
     
 	@Override
@@ -55,7 +56,7 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 		        	response.setEntity(entity);
 	        	} else {
 	        		response.setEntity(new LinkConvertingEntity(
-	        			response.getEntity(), before, after, linkPattern)
+	        			response.getEntity(), before, after, linkPatterns)
 	        		);
 	        	}
 	        }

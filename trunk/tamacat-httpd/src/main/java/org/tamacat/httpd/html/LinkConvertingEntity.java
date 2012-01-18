@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.http.Header;
@@ -28,21 +30,36 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 	protected String before;
 	protected String after;
 	protected long contentLength = -1;
-	protected Pattern linkPattern;
+	protected List<Pattern> linkPatterns;
 	protected String defaultCharset = "8859_1";
 
 	public LinkConvertingEntity(HttpEntity entity, String before, String after) {
 		this(entity, before, after, HtmlUtils.LINK_PATTERN);
 	}
 	
-	public LinkConvertingEntity(HttpEntity entity, String before, String after, Pattern linkPattern) {
+	public LinkConvertingEntity(HttpEntity entity, String before, String after, List<Pattern> linkPatterns) {
 		super(entity);
 		this.before = before;
 		this.after = after;
-		if (linkPattern != null) {
-			this.linkPattern = linkPattern;
+		if (linkPatterns != null) {
+			this.linkPatterns = linkPatterns;
 		} else {
-			this.linkPattern = HtmlUtils.LINK_PATTERN;
+			this.linkPatterns = new ArrayList<Pattern>();
+			this.linkPatterns.add(HtmlUtils.LINK_PATTERN);
+		}
+	}
+	
+	public LinkConvertingEntity(HttpEntity entity, String before, String after, Pattern... linkPattern) {
+		super(entity);
+		this.before = before;
+		this.after = after;
+		this.linkPatterns = new ArrayList<Pattern>();
+		if (linkPattern != null && linkPattern.length > 0) {
+			for (Pattern p : linkPattern) {
+				this.linkPatterns.add(p);
+			}
+		} else {
+			this.linkPatterns.add(HtmlUtils.LINK_PATTERN);
 		}
 	}
 	
@@ -76,9 +93,11 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = line + "\r\n";
-				ConvertData html = HtmlUtils.convertLink(line, before, after, linkPattern);
-				if (html.isConverted()) {
-					line = html.getData();
+				for (Pattern linkPattern : linkPatterns) {
+					ConvertData html = HtmlUtils.convertLink(line, before, after, linkPattern);
+					if (html.isConverted()) {
+						line = html.getData();
+					}
 				}
 				writer.write(line);
 				length += line.getBytes(charset).length;
