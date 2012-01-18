@@ -35,8 +35,12 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
     	contentTypes.add("html");
     }
 	
-    public void setLinkPattern(String linkPattern) {
-		this.linkPatterns.add(Pattern.compile(linkPattern));
+	/**
+	 * Add link convert pattern.
+	 * @param regex The expression to be compiled.(case insensitive)
+	 */
+    public void setLinkPattern(String regex) {
+		this.linkPatterns.add(Pattern.compile(regex, Pattern.CASE_INSENSITIVE));
 	}
     
 	@Override
