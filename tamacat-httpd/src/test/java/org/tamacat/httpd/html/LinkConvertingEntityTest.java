@@ -33,7 +33,7 @@ public class LinkConvertingEntityTest {
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		entity.writeTo(out);
-		System.out.println(new String(out.toByteArray()));
+		//System.out.println(new String(out.toByteArray()));
 
 		assertEquals(html.getContentLength(), entity.getContentLength());
 		assertEquals("<html><a href=\"/bbb/test.html\">aaa</a></html>\r\n", new String(out.toByteArray()));
