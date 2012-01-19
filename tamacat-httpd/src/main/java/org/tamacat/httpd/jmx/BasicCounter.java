@@ -125,4 +125,15 @@ public class BasicCounter implements PerformanceCounterMonitor, Serializable {
 			e.printStackTrace();
 		}
 	}
+	
+	public void unregister() {
+		try {
+			String name = "org.tamacat.httpd:type=Counter";
+			ObjectName oname = new ObjectName(name);	
+			MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+			server.unregisterMBean(oname);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
