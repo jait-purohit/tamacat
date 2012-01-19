@@ -9,6 +9,8 @@ import java.io.InterruptedIOException;
 import java.lang.management.ManagementFactory;
 import java.net.ServerSocket;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -72,6 +74,8 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
     private List<HttpResponseInterceptor> responseInterceptors
     	= new ArrayList<HttpResponseInterceptor>();
     
+    private static JMXConnectorServer jmxServer;
+    private static Registry rmiRegistry;
 	private boolean isMXServerStarted;
 	private ClassLoader loader;
 
@@ -274,15 +278,15 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 				
 				int rmiPort = serverConfig.getParam("JMX.rmi.port", -1);
 				if (rmiPort > 0) {
-					LocateRegistry.createRegistry(rmiPort);
+					rmiRegistry = LocateRegistry.createRegistry(rmiPort);
 				}
 				MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
 				objectName = new ObjectName(name);
 	        	server.registerMBean(this, objectName);
 	        	
-	        	JMXConnectorServer sv = JMXConnectorServerFactory.newJMXConnectorServer(
+	        	jmxServer = JMXConnectorServerFactory.newJMXConnectorServer(
 	                new JMXServiceURL(jmxUrl), null, server);
-	        	sv.start();
+	        	jmxServer.start();
 	        	isMXServerStarted = true;
 			}
 			counter.register();
@@ -296,7 +300,11 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	public void unregisterMXServer() {
 		MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
     	try {
+    		counter.unregister();
 			server.unregisterMBean(objectName);
+			if (jmxServer != null) jmxServer.stop();
+		    if (rmiRegistry != null) UnicastRemoteObject.unexportObject(rmiRegistry, true);
+			isMXServerStarted = false;
 		} catch (Exception e) {
 			LOG.error(e.getMessage());
 			LOG.warn(ExceptionUtils.getStackTrace(e));
