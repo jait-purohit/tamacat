@@ -1,8 +1,6 @@
 package org.tamacat.cifs;
 
-import java.util.Properties;
-
-import jcifs.Config;
+import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 
 import org.apache.http.HttpEntity;
@@ -29,30 +27,28 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 
 	protected SmbFileVelocityListingsPage listingPage;
 
-	private String baseUrl;
-	private String username;
-	private String password;
+	protected String baseUrl;
+	protected String domain = "WORKGROUP";
+	protected String username;
+	protected String password;
 
-	public String getBaseUrl() {
-		return baseUrl;
+	public CifsProxyHandler() {
+		CrawlerThread thread = new CrawlerThread();
+		new Thread(thread).start();
 	}
-
+	
 	public void setBaseUrl(String baseUrl) {
 		this.baseUrl = baseUrl;
 	}
 	
-	public String getUsername() {
-		return username;
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
-	public String getPassword() {
-		return password;
-	}
-
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -63,11 +59,12 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 		props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
 		listingPage = new SmbFileVelocityListingsPage(props);
 		
-		Properties properties = new Properties();
+		//Properties properties = new Properties();
 		//properties.setProperty("jcifs.netbios.wins", "192.168.0.1");
-		properties.setProperty("jcifs.smb.client.username", getUsername());
-		properties.setProperty("jcifs.smb.client.password", getPassword());
-		Config.setProperties(properties);
+		//properties.setProperty("jcifs.smb.client.username", getUsername());
+		//properties.setProperty("jcifs.smb.client.password", getPassword());
+		
+		//Config.setProperties(properties);
 	}
 	
 	/**
@@ -116,7 +113,9 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 		}
 		SmbFile file;
 		try {
-			file = new SmbFile(baseUrl + getDecodeUri(path.replace(serviceUrl.getPath(), "")));
+			NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(domain, username, password);
+			
+			file = new SmbFile(baseUrl + getDecodeUri(path.replace(serviceUrl.getPath(), "")), auth);
 			///// 404 NOT FOUND /////
 			if (!file.exists()) {
 				LOG.trace("File " + file.getPath() + " not found");
