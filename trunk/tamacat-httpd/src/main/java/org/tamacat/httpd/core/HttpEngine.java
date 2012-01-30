@@ -289,7 +289,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	        	jmxServer.start();
 	        	isMXServerStarted = true;
 			}
-			counter.register();
+			if (isMXServerStarted) counter.register();
 		} catch (Exception e) {
 			LOG.error(e.getMessage());
 			LOG.warn(ExceptionUtils.getStackTrace(e));
@@ -298,16 +298,18 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 
 	@Override
 	public void unregisterMXServer() {
-		MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
-    	try {
-    		counter.unregister();
-			server.unregisterMBean(objectName);
-			if (jmxServer != null) jmxServer.stop();
-		    if (rmiRegistry != null) UnicastRemoteObject.unexportObject(rmiRegistry, true);
-			isMXServerStarted = false;
-		} catch (Exception e) {
-			LOG.error(e.getMessage());
-			LOG.warn(ExceptionUtils.getStackTrace(e));
+		if (isMXServerStarted) {
+			MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
+	    	try {
+	    		counter.unregister();
+				server.unregisterMBean(objectName);
+				if (jmxServer != null) jmxServer.stop();
+			    if (rmiRegistry != null) UnicastRemoteObject.unexportObject(rmiRegistry, true);
+				isMXServerStarted = false;
+			} catch (Exception e) {
+				LOG.error(e.getMessage());
+				LOG.warn(ExceptionUtils.getStackTrace(e));
+			}
 		}
 	}
 	
