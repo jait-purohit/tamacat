@@ -29,13 +29,13 @@
   <bean id="CifsProxyHandler"
      class="org.tamacat.cifs.CifsProxyHandler" singleton="false">
     <property name="baseUrl">
-      <value>smb://192.168.10.10/share/</value>
+      <value>smb://192.168.10.10/public/</value>
     </property>
     <property name="username">
       <value>guest</value>
     </property>
     <property name="password">
-      <value>password</value>
+      <value>guest</value>
     </property>
     <property name="listings">
       <value>true</value>
@@ -43,9 +43,11 @@
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
+    <!--
     <property name="httpFilter">
       <ref bean="DigestAuthFilter" />
     </property>
+    -->
   </bean>
   
 </beans>

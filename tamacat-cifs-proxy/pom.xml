@@ -49,7 +49,19 @@
       <artifactId>lucene-core</artifactId>
       <version>3.5.0</version>
     </dependency>
-    
+
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analyzers</artifactId>
+      <version>3.5.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox-lucene</artifactId>
+      <version>1.6.0</version>
+    </dependency>
+
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
