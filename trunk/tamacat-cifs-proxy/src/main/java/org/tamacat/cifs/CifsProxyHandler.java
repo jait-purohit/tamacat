@@ -1,5 +1,8 @@
 package org.tamacat.cifs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 
@@ -8,6 +11,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
+import org.apache.velocity.VelocityContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.core.LocalFileHttpHandler;
 import org.tamacat.httpd.exception.ForbiddenException;
@@ -24,17 +28,16 @@ import org.tamacat.util.StringUtils;
 public class CifsProxyHandler extends LocalFileHttpHandler {
 
 	static final Log LOG = LogFactory.getLog(CifsProxyHandler.class);
-
+	
 	protected SmbFileVelocityListingsPage listingPage;
-
+	protected FileSearchVelocityListingsPage searchPage;
 	protected String baseUrl;
 	protected String domain = "WORKGROUP";
 	protected String username;
 	protected String password;
 
 	public CifsProxyHandler() {
-		CrawlerThread thread = new CrawlerThread();
-		new Thread(thread).start();
+
 	}
 	
 	public void setBaseUrl(String baseUrl) {
@@ -58,13 +61,7 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
     	super.setServiceUrl(serviceUrl);
 		props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
 		listingPage = new SmbFileVelocityListingsPage(props);
-		
-		//Properties properties = new Properties();
-		//properties.setProperty("jcifs.netbios.wins", "192.168.0.1");
-		//properties.setProperty("jcifs.smb.client.username", getUsername());
-		//properties.setProperty("jcifs.smb.client.password", getPassword());
-		
-		//Config.setProperties(properties);
+		searchPage = new FileSearchVelocityListingsPage(props);
 	}
 	
 	/**
@@ -108,6 +105,34 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 	@Override
 	public void doRequest(HttpRequest request, HttpResponse response, HttpContext context) {
 		String path = RequestUtils.getRequestPath(request);
+		if (path.startsWith(serviceUrl.getPath()+"search")) {
+			String key = RequestUtils.getParameter(context, "key");
+			String value = RequestUtils.getParameter(context, "q");
+			//System.out.println("key="+key+",value="+value);
+			VelocityContext ctx = new VelocityContext();
+			ctx.put("param", RequestUtils.getParameters(context).getParameterMap());
+			ctx.put("contextRoot", serviceUrl.getPath().replaceFirst("/$",""));
+			ctx.put("key", key);
+			ctx.put("q", value);
+			
+			List<SearchResult> files;
+			if (StringUtils.isNotEmpty(key) && StringUtils.isNotEmpty(value)) {
+				CifsFileSearch search = new CifsFileSearch();
+				files = search.search(key, value);
+			} else {
+				files = new ArrayList<SearchResult>();
+			}
+			ctx.put("hit", files.size());
+			String html = searchPage.getListingsPage(request, response, ctx, files);
+			//System.out.println(html);
+			response.setStatusCode(HttpStatus.SC_OK);
+			ResponseUtils.setEntity(response, getEntity(html));
+			return;
+		}
+		if ("true".equals(RequestUtils.getParameter(context, "remake"))) {
+			CrawlerThread thread = new CrawlerThread();
+			new Thread(thread).start();
+		}
 		if (path.endsWith("/") && useDirectoryListings() == false) {
 			path = path + welcomeFile;
 		}
@@ -147,7 +172,7 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 			throw new ServiceUnavailableException(e);
 		}
 	}
-
+	
 	protected HttpEntity getFileEntity(SmbFile file) {
 		SmbFileEntity body = new SmbFileEntity(file, getContentType(file));
         return body;

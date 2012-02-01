@@ -3,6 +3,6 @@
   <!-- default -->
   <service>
     <url path="/" type="normal" handler="DefaultHandler" />
-    <url path="/cifs/" type="normal" handler="CifsProxyHandler" />
+    <url path="/public/" type="normal" handler="CifsProxyHandler" />
   </service>
 </service-config>

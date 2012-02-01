@@ -12,9 +12,13 @@ public class CrawlerThread implements Runnable {
 		Properties props = PropertyUtils.getProperties("crawler.properties");
 		String indexDir = props.getProperty("indexDir");
 		crawler = new CifsCrawler(indexDir);
+		String baseUrl = props.getProperty("url");
+		String webUrl = props.getProperty("weburl");
 		String domain = props.getProperty("domain");
 		String username = props.getProperty("username");
 		String password = props.getProperty("password");
+		crawler.setBaseUrl(baseUrl);
+		crawler.setWebUrl(webUrl);
 		crawler.setDomain(domain);
 		crawler.setUsername(username);
 		crawler.setPassword(password);

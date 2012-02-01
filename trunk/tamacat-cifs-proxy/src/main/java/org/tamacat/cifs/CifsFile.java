@@ -12,8 +12,48 @@ public class CifsFile extends HashMap<String, String> implements Comparable<Cifs
 
 	private static final long serialVersionUID = 1L;
 	
-	private final SmbFile file;
+	private SmbFile file;
 	private String name;
+	
+	public CifsFile() {}
+	
+	public CifsFile(SmbFile file) {
+		this.file = file;
+		try {
+			this.length = file.length();
+			this.name = file.getName();
+
+			this.isDirectory = file.isDirectory();
+			this.lastModified = file.lastModified();
+			
+			put("length", getLength());
+			put("isDirectory", String.valueOf(isDirectory()));
+			put("getName", file.getName()); //StringUtils.encode(file.getName(),"UTF-8"));
+			put("lastModified", getLastModified());
+		} catch (SmbException e) {
+		}
+	}
+	
+	public SmbFile getFile() {
+		return file;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setDirectory(boolean isDirectory) {
+		this.isDirectory = isDirectory;
+	}
+
+	public void setLength(long length) {
+		this.length = length;
+	}
+
+	public void setLastModified(long lastModified) {
+		this.lastModified = lastModified;
+	}
+
 	private boolean isDirectory;
 	private long length;
 	private long lastModified;
@@ -40,23 +80,6 @@ public class CifsFile extends HashMap<String, String> implements Comparable<Cifs
 	
 	public String getLastModified() {
 		return DateUtils.getTime(new Date(lastModified), "yyyy-MM-dd HH:mm");
-	}
-
-	public CifsFile(SmbFile file) {
-		this.file = file;
-		try {
-			this.length = file.length();
-			this.name = file.getName();
-
-			this.isDirectory = file.isDirectory();
-			this.lastModified = file.lastModified();
-			
-			put("length", getLength());
-			put("isDirectory", String.valueOf(isDirectory()));
-			put("getName", file.getName()); //StringUtils.encode(file.getName(),"UTF-8"));
-			put("lastModified", getLastModified());
-		} catch (SmbException e) {
-		}
 	}
 	
 	public SmbFile getSmbFile() {

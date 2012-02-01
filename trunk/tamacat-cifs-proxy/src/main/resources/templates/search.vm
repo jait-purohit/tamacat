@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+
+    <title>Search results</title>
+    <style type="text/css">
+      html {font-size:100%;}
+      body {font-size:78%;
+            font-family:Verdana, Arial, Sans-Serif;
+            background:#fff; color:#333; 
+            margin:0; padding:0;}
+      h1{font-size:110%; color:white; background-color:#444;padding:2px; margin:0;}
+      h3{font-size:100%; color:white; background-color:#444;padding:2px;}
+      a{color:#000066;} hr{color : #666;}
+      table{margin: 10px; padding: 2px;}
+      th{text-align:left; border-bottom:1px solid #666;}
+    </style>
+  </head>
+  <body>
+    <h1>Search results : ${hit}</h1>
+    <div style="float:right">
+      <form action="${contextRoot}/search"><input type="hidden" name="key" value="url" />
+        <input type="text" name="q" size="20" value="$!{q}" /><input type="submit" value="Search" />
+      </form>
+    </div>
+    <div style="clear:both"></div>
+    <table style="width: 90%;">
+      <tr>
+        <th style="width:60%;">Name</th>
+        <th style="width:10%;" nowrap="nowrap">Last modified</th>
+        <th style="witdh:10%;text-align:right;">Size</th>
+      </tr>
+#foreach($file in $list)
+      <tr>
+        <td><a href="$!file.url" title="$!file.url"><span>$!file.name</span></a></td>
+        <td nowrap="nowrap">$!file.lastModified</td>
+        <td style="text-align:right;" nowrap="nowrap">$!file.length</td>
+      </tr>
+#end
+    </table>
+  </body>
+</html>
