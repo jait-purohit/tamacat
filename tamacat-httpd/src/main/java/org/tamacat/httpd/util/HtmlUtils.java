@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import org.apache.http.Header;
 import org.tamacat.httpd.html.ConvertData;
+import org.tamacat.util.StringUtils;
 
 public class HtmlUtils {
 	
@@ -77,5 +78,26 @@ public class HtmlUtils {
 		}
 		matcher.appendTail(result);
 		return new ConvertData(result.toString(), converted);
+	}
+	
+	public static String escapeHtmlMetaChars(String uri) {
+		if (StringUtils.isEmpty(uri)) return uri;
+		char[] chars = uri.toCharArray();
+		StringBuilder escaped = new StringBuilder();
+		for (int i=0; i<chars.length; i++) {
+			char c = chars[i];
+			if (c == '<') {
+				escaped.append("&lt;");
+			} else if (c == '>') {
+				escaped.append("&gt;");
+			} else if (c == '"') {
+				escaped.append("&quat;");
+			} else if (c== '\'') {
+				escaped.append("&#39");
+			} else {
+				escaped.append(c);
+			}
+		}
+		return escaped.toString();
 	}
 }

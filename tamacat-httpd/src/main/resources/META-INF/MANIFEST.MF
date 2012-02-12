@@ -1,8 +1,8 @@
 Implementation-Title: tamacat-httpd
-Implementation-Version: 0.9
+Implementation-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.tamacat.httpd
 Bundle-Name: tamacat-httpd
 Bundle-Vendor: TAMACAT.ORG
-Bundle-Version: 0.9
+Bundle-Version: 1.0
 Main-Class: org.tamacat.httpd.Httpd

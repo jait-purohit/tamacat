@@ -18,6 +18,7 @@ import org.tamacat.httpd.exception.UnauthorizedException;
 import org.tamacat.httpd.session.Session;
 import org.tamacat.httpd.session.SessionManager;
 import org.tamacat.httpd.util.HeaderUtils;
+import org.tamacat.httpd.util.HtmlUtils;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.StringUtils;
 
@@ -196,7 +197,9 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 				if (uri != null) {
 					try {
 						uri = URLDecoder.decode(uri, charset);
-					} catch (UnsupportedEncodingException e) {
+					} catch (Exception e) {
+						//Invaid redirect URI -> goto top page.
+						uri = topPageUrl;
 					}
 				} else {
 					uri = topPageUrl;
@@ -221,7 +224,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 			response.setHeader(HTTP.CONTENT_TYPE, "text/html; charset=" + charset);
 			response.setEntity(new StringEntity(
 				"<html><meta http-equiv=\"refresh\" content=\"0;url="
-				  + uri + "\"></html>", "UTF-8"));
+				  + HtmlUtils.escapeHtmlMetaChars(uri) + "\"></html>", "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			throw new UnauthorizedException();
 		}

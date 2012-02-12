@@ -59,7 +59,7 @@ public class WorkerThread extends Thread {
         } catch (SocketTimeoutException ex) {
         	LOG.debug("timeout >> close connection.");
         } catch (Exception ex) {
-        	//ex.printStackTrace();
+        	ex.printStackTrace();
         	LOG.error("Error: " + ex.getMessage());
         	LOG.debug(ExceptionUtils.getStackTrace(ex)); //debug
         } finally {
