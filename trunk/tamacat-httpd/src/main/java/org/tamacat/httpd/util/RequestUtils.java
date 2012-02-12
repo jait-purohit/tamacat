@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -69,7 +70,10 @@ public class RequestUtils {
 				for (String kv : param) {
 					String[] p = kv.split("=");
 					if (p.length >=2) {
-						parameters.setParameter(p[0], decode(p[1], encoding));
+						try {
+							parameters.setParameter(p[0], URLDecoder.decode(p[1], encoding));
+						} catch (Exception e) {
+						}
 					}
 				}
 			}
@@ -91,8 +95,11 @@ public class RequestUtils {
 					for (String param : params) {
 						String[] keyValue = param.split("=");
 						if (keyValue.length >= 2) {
-							parameters.setParameter(keyValue[0], 
-									decode(keyValue[1], encoding));
+							try {
+								parameters.setParameter(keyValue[0], 
+									URLDecoder.decode(keyValue[1], encoding));
+							} catch (Exception e) {
+							}
 						}
 					}
 				} catch (IOException e) {
@@ -245,11 +252,17 @@ public class RequestUtils {
 		return null;
 	}
 	
+	/**
+	 * UnsupportedEncodingException -> value returns.
+	 * @param value
+	 * @param encoding
+	 * @return
+	 */
 	static String decode(String value, String encoding) {
 		String decode = null;
 		try {
 			decode = URLDecoder.decode(value, encoding);
-		} catch (Exception e) {
+		} catch (UnsupportedEncodingException e) {
 			decode = value;
 		}
 		return decode;
