@@ -58,7 +58,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	protected HttpParamsBuilder builder = new HttpParamsBuilder();
 	protected HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
 	protected PlainSocketFactory socketFactory = PlainSocketFactory.getSocketFactory();
-	
+	protected String proxyAuthorizationHeader = "X-ReverseProxy-Authorization";
+
 	/**
 	 * <p>Default constructor.
 	 */
@@ -193,6 +194,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        }
 	        reverseUrl.countUp();
 	        
+	        //forward remote user.
+	        ReverseUtils.setReverseProxyAuthorization(targetRequest, context, proxyAuthorizationHeader);
 	        try {
 		        httpexecutor.preProcess(targetRequest, httpproc, context);
 		        HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
@@ -234,6 +237,15 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	
 	public void addHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
 		procBuilder.addInterceptor(interceptor);
+	}
+	
+	/**
+	 * Set the header name of Reverse Proxy Authorization.
+	 * default: "X-ReverseProxy-Authorization"
+	 * @param proxyAuthorizationHeader
+	 */
+	public void setProxyAuthorizationHeader(String proxyAuthorizationHeader) {
+		this.proxyAuthorizationHeader = proxyAuthorizationHeader;
 	}
 	
 	@Override

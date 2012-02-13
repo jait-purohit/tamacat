@@ -21,6 +21,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
+import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -177,6 +178,21 @@ public class ReverseUtils {
     	request.setHeader("X-Forwarded-For", RequestUtils.getRemoteIPAddress(context));
     }
 	
+    /**
+     * <p>Set the remote username to request header.
+     * @param request
+     * @param context
+     * @param headerName
+     */
+    public static void setReverseProxyAuthorization(HttpRequest request, HttpContext context, String headerName) {
+    	if (StringUtils.isNotEmpty(headerName)) {
+	    	Object user = context.getAttribute(AuthComponent.REMOTE_USER_KEY);
+	    	if (user != null && user instanceof String) {
+	    		request.setHeader(headerName, (String)user);
+	    	}
+    	}
+    }
+    
 	/**
 	 * <p>Convert backend hostname to original hostname.
 	 * @param reverseUrl
