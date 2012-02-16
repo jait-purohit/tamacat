@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import org.apache.http.ConnectionClosedException;
 import org.apache.http.HttpServerConnection;
 import org.apache.http.params.HttpParams;
@@ -54,12 +56,13 @@ public class WorkerThread extends Thread {
     	try {
         	LOG.trace("New connection thread");
             this.service.handleRequest(conn, context);
+    	} catch (SSLHandshakeException e) {
+    		LOG.debug(e.getMessage());
         } catch (ConnectionClosedException ex) {
         	LOG.debug("Client closed connection");
         } catch (SocketTimeoutException ex) {
         	LOG.debug("timeout >> close connection.");
         } catch (Exception ex) {
-        	ex.printStackTrace();
         	LOG.error("Error: " + ex.getMessage());
         	LOG.debug(ExceptionUtils.getStackTrace(ex)); //debug
         } finally {

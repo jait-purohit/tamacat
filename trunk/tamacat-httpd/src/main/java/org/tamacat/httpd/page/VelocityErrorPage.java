@@ -28,19 +28,20 @@ public class VelocityErrorPage {
 
     static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
     
-    static final String DEFAULT_ERROR_500_HTML
-		= "<html><body><p>500 Internal Server Error.</p></body></html>";
+    static final String DEFAULT_ERROR_HTML
+		= "<html><body><p>Error.</p></body></html>";
     
-    private VelocityEngine velocityEngine;
-    private Properties props;
-	private String templatesPath = "templates";
+    protected String charset = "UTF-8";
+	protected VelocityEngine velocityEngine;
+    protected Properties props;
+	protected String templatesPath = "templates";
 	
 	public VelocityErrorPage(Properties props) {
 		this.props = props;
 		init();
 	}
 	
-	void init() {
+	protected void init() {
 		try {
 			velocityEngine = new VelocityEngine();
 			//velocityEngine.setApplicationAttribute(VelocityEngine.RESOURCE_LOADER,
@@ -69,13 +70,14 @@ public class VelocityErrorPage {
 			HttpRequest request, HttpResponse response, 
 			VelocityContext context, HttpException exception) {
     	response.setStatusCode(exception.getHttpStatus().getStatusCode());
-		context.put("url", request.getRequestLine().getUri());
-		context.put("method", request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH));
-		context.put("exception", exception);
 		if (LOG.isTraceEnabled() && exception.getHttpStatus().isServerError()) {
 			exception.printStackTrace();
 		}
     	try {
+    		context.put("url", request.getRequestLine().getUri());
+    		context.put("method", request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH));
+    		context.put("exception", exception);
+    		
    			Template template = getTemplate(
    				"error" + exception.getHttpStatus().getStatusCode() + ".vm");
    			StringWriter writer = new StringWriter();
@@ -83,11 +85,32 @@ public class VelocityErrorPage {
    			return writer.toString();
     	} catch (Exception e) {
     		LOG.trace(e.getMessage());
-    		return DEFAULT_ERROR_500_HTML;
+    		return getDefaultErrorHtml(exception);
     	}
     }
     
     protected Template getTemplate(String page) throws Exception {
-    	return velocityEngine.getTemplate(templatesPath + "/" + page, "UTF-8");
+    	try {
+    		return velocityEngine.getTemplate(templatesPath + "/" + page, charset);
+    	} catch (Exception e) {
+    		return velocityEngine.getTemplate("templates/error.vm", charset);
+    	}
     }
+    
+    protected String getDefaultErrorHtml(HttpException exception) {
+    	String errorMessage = exception.getHttpStatus().getStatusCode()
+    			+ " " + exception.getHttpStatus().getReasonPhrase();
+    	StringBuilder html = new StringBuilder();
+    	html.append("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">");
+    	html.append("<html><head>");
+    	html.append("<title>" + errorMessage + "</title>");
+    	html.append("</head><body>");
+    	html.append("<h1>" + errorMessage + "</h1>");
+    	html.append("</body></html>");
+    	return html.toString();
+    }
+    
+    public void setCharset(String charset) {
+		this.charset = charset;
+	}
 }

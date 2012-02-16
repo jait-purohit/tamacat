@@ -5,6 +5,6 @@
   </head>
   <body>
     <h1>Method Not Allowed</h1>
-    <p>The requested method ${method} is not allowed for the URL ${url}.</p>
+    <p>The requested method ${method} is not allowed for the URL.</p>
   </body>
 </html>
