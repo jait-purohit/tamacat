@@ -6,6 +6,7 @@ package org.tamacat.util;
 
 import static org.junit.Assert.*;
 
+import java.net.URL;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -47,6 +48,18 @@ public class PropertyUtilsTest {
             
             Properties props4 = PropertyUtils.getProperties("log4j.properties");
             assertNotNull(props4);
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	fail();
+        }
+    }
+    
+    @Test
+    public void testGetPropertiesURL() {
+        try {
+        	URL url = ClassUtils.getURL(path1);
+            Properties props1 = PropertyUtils.getProperties(url);
+            assertNotNull(props1);
         } catch (Exception e) {
         	e.printStackTrace();
         	fail();
