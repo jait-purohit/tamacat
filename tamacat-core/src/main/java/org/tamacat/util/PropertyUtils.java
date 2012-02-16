@@ -5,6 +5,7 @@
 package org.tamacat.util;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 import java.util.Set;
 
@@ -30,6 +31,27 @@ public abstract class PropertyUtils {
         InputStream in = null;
         try {
         	in = IOUtils.getInputStream(path, loader);
+            props.load(in);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException(e);
+        } finally {
+            IOUtils.close(in);
+        }
+        return props;
+    }
+
+	/**
+	 * <p>Get the properties file, when file not found
+	 *  then throws the {@link ResourceNotFoundException}.
+	 * @param path URL path
+	 * @return Properties file.
+	 * @since 1.0
+	 */
+    public static Properties getProperties(URL path) {
+        Properties props = new Properties();
+        InputStream in = null;
+        try {
+        	in = path.openStream();
             props.load(in);
         } catch (Exception e) {
             throw new ResourceNotFoundException(e);
