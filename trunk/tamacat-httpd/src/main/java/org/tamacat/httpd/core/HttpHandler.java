@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.core;
@@ -27,5 +27,9 @@ public interface HttpHandler extends HttpRequestHandler {
 	 */
 	void setHttpFilter(HttpFilter filter);
 	
+	/**
+	 * <p>Set the {@code ClassLoader}.
+	 * @param loader
+	 */
 	void setClassLoader(ClassLoader loader);
 }
