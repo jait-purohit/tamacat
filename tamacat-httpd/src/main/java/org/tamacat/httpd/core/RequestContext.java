@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, TamaCat.org
+ * Copyright (c) 2010, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.core;
@@ -11,6 +11,10 @@ import org.apache.velocity.VelocityContext;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.StringUtils;
 
+/**
+ * <p>The Context of Request for VelocityActionFilter.
+ * (HttpRequest, HttpResponse and HttpContext)
+ */
 public class RequestContext {
 
 	private final HttpRequest request;

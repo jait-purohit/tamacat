@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.core;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
+import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.HttpFilter;
 import org.tamacat.httpd.filter.RequestFilter;
@@ -73,6 +73,10 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     protected List<ResponseFilter> responseFilters = new ArrayList<ResponseFilter>();
     protected ClassLoader loader;
     
+    /**
+     * <p>Set the ServiceUrl and initialized HttpFilters. 
+     * @param serviceUrl
+     */
 	@Override
     public void setServiceUrl(ServiceUrl serviceUrl) {
     	this.serviceUrl = serviceUrl;
@@ -83,6 +87,10 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     	errorPage = new VelocityErrorPage(props);
     }
     
+	/**
+	 * <p>Add the HttpFilter.
+	 * @param filter
+	 */
 	@Override
 	public void setHttpFilter(HttpFilter filter) {
 		filters.add(filter);
@@ -204,21 +212,30 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     
     /**
      * <p>Returns the decoded URI.
+     * When Exception is caught, a throw of the NotFoundException.
      * @param uri
-     * @return default decoding is UTF-8.
+     * @return decoded URI default decoding is UTF-8.
      */
     protected String getDecodeUri(String uri) {
     	try {
     		return URLDecoder.decode(uri, encoding);
-    	} catch (UnsupportedEncodingException e) {
-    		return uri;
+    	} catch (Exception e) {
+    		throw new NotFoundException();
     	}
     }
     
+    /**
+     * <p.Set the ClassLoader
+     * @param loader
+     */
     public void setClassLoader(ClassLoader loader) {
     	this.loader = loader;
     }
     
+    /**
+     * <p>Get the ClassLoader, default is getClass().getClassLoader().
+     * @return
+     */
     public ClassLoader getClassLoader() {
     	return loader != null ? loader : getClass().getClassLoader();
     }
