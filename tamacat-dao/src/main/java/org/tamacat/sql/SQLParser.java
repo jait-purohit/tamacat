@@ -5,6 +5,7 @@
 package org.tamacat.sql;
 
 import org.tamacat.dao.Condition;
+import org.tamacat.dao.Search;
 import org.tamacat.dao.Search.ValueConvertFilter;
 import org.tamacat.dao.exception.InvalidParameterException;
 import org.tamacat.dao.meta.Column;
@@ -22,7 +23,9 @@ public class SQLParser {
 
     ValueConvertFilter valueConvertFilter;
 
-    public SQLParser() {}
+    public SQLParser() {
+    	this.valueConvertFilter = new Search.DefaultValueConvertFilter();
+    }
 
     public SQLParser(ValueConvertFilter valueConvertFilter) {
         this.valueConvertFilter = valueConvertFilter;
