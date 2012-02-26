@@ -48,7 +48,7 @@ public class Search {
         String convertValue(String value);
     }
 
-    protected static class DefaultValueConvertFilter implements ValueConvertFilter {
+    public static class DefaultValueConvertFilter implements ValueConvertFilter {
         public String convertValue(String value) {
             return value.replace("'", "''");
         }

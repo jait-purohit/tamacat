@@ -78,6 +78,9 @@ public class SQLParserTest extends TestCase {
 	public void testInStringValue() {
 		assertEquals("test1.name in ('abc','def','xyz')",
 				parser.value(column1, Condition.IN, "abc", "def", "xyz"));
+		
+		assertEquals("test1.name in ('abc''','def','xyz')",
+				parser.value(column1, Condition.IN, "abc'", "def", "xyz"));
 	}
 	
 	@Test
