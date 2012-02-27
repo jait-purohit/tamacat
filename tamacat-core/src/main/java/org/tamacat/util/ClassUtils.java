@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, TamaCat.org
+ * Copyright (c) 2007, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.util;
@@ -356,4 +356,24 @@ public abstract class ClassUtils {
   	    }
   	    return null;
     }
+    
+    static
+      public Method setParameters(
+          Object instance, String methodName, Object... params) {
+	  	if (instance == null) return null;
+	  	Method method = null;
+	  	if (params == null) {
+		    method = searchMethod(instance.getClass(), methodName);
+	  	} else {
+	  		Class<?>[] paramTypes = new Class[params.length];
+	  		for (int i=0; i<params.length; i++) {
+	  			paramTypes[i] = params[i].getClass();
+	  		}
+	  		method = searchMethod(
+	    		instance.getClass(), methodName, paramTypes);
+	  	}
+	    if (method == null) throw new ClassUtilsException("method is null.");
+	    invoke(method, instance, params);
+	    return method;
+	}
 }

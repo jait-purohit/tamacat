@@ -1,5 +1,5 @@
-TamaCat core
-Copyright 2009 TamaCat.org.
+tamacat-core
+Copyright 2009 tamacat.org.
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
