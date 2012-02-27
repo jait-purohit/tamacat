@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, TamaCat.org
+ * Copyright (c) 2007, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.util;
@@ -296,5 +296,26 @@ public class ClassUtilsTest extends TestCase {
     
     static class StringMap extends HashMap<String,String> {
 		private static final long serialVersionUID = 1L;
+	}
+    
+	@Test
+	public void testSetParameters() {
+		Target instance = new Target();
+		String methodName = "setName";
+		String param = "scott";
+		ClassUtils.setParameters(instance, methodName, param);
+		assertEquals(param, instance.getName());
+	}
+
+	static class Target {
+		private String name;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007-2008, TamaCat.org
+ * Copyright (c) 2007-2008, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.di.impl;
