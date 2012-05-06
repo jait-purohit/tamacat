@@ -20,6 +20,7 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultHttpClientConnection;
@@ -261,7 +262,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	
 	@Override
 	protected HttpEntity getFileEntity(File file) {
-		FileEntity body = new FileEntity(file, getContentType(file));
+		FileEntity body = new FileEntity(file, ContentType.create(getContentType(file)));
         return body;
 	}
 }
