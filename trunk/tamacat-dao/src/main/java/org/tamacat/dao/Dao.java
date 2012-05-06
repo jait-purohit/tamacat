@@ -31,7 +31,7 @@ import org.tamacat.sql.SQLParser;
 import org.tamacat.sql.TransactionStateManager;
 import org.tamacat.util.ClassUtils;
 
-public class Dao<T extends ORMappingSupport> {
+public class Dao<T extends ORMappingSupport> implements AutoCloseable {
 
 	protected static final String DEFAULT_DBNAME = "default";
 	
@@ -294,4 +294,9 @@ public class Dao<T extends ORMappingSupport> {
     	DaoEvent event = createRdbDaoEvent();
     	getTransactionHandler().handleRelease(event);
     }
+
+	@Override
+	public void close() throws Exception {
+		release();
+	}
 }

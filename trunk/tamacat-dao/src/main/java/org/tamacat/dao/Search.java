@@ -50,7 +50,11 @@ public class Search {
 
     public static class DefaultValueConvertFilter implements ValueConvertFilter {
         public String convertValue(String value) {
-            return value.replace("'", "''");
+        	if (value != null) {
+        		return value.replace("'", "''");
+        	} else {
+        		return value;
+        	}
         }
     }
 
