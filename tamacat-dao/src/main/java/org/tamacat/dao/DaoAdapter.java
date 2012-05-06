@@ -15,7 +15,7 @@ import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.orm.ORMappingSupport;
 import org.tamacat.sql.DBAccessManager;
 
-public class DaoAdapter<T extends ORMappingSupport> {
+public class DaoAdapter<T extends ORMappingSupport> implements AutoCloseable {
 	
     protected Dao<T> delegate;    
     protected DaoAdapter() {
@@ -134,4 +134,9 @@ public class DaoAdapter<T extends ORMappingSupport> {
     public void release() {
    		delegate.release();
     }
+
+	@Override
+	public void close() throws Exception {
+		release();
+	}
 }

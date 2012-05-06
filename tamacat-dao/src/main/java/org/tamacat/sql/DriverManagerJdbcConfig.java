@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, TamaCat.org
+ * Copyright (c) 2008, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.sql;
@@ -14,16 +14,10 @@ import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.pool.ObjectActivateException;
 import org.tamacat.util.ClassUtils;
-import org.tamacat.util.JavaVersion;
 
 public class DriverManagerJdbcConfig implements JdbcConfig {
 
 	static final Log LOG = LogFactory.getLog(DriverManagerJdbcConfig.class);
-	
-	static final boolean USE_JDK6;
-	static {
-		USE_JDK6 = JavaVersion.JAVA_VERSION >=1.6;
-	}
 	
     private String driverClass;
     private String url;
