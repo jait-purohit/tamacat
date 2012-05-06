@@ -50,7 +50,8 @@ public class DefaultHttpRequestFactory extends
         } else if (isOneOf(RFC2616_SPECIAL_METHODS, method)) {
             return new BasicHttpRequest(requestline);
         } else {
-            return new BasicHttpEntityEnclosingRequest(requestline);
+            throw new MethodNotSupportedException(method +  " method not supported");
+            //return new BasicHttpEntityEnclosingRequest(requestline);
         }
     }
 
@@ -63,7 +64,8 @@ public class DefaultHttpRequestFactory extends
         } else if (isOneOf(RFC2616_SPECIAL_METHODS, method)) {
             return new BasicHttpRequest(method, uri);
         } else {
-            return new BasicHttpEntityEnclosingRequest(method, uri);
+            //return new BasicHttpEntityEnclosingRequest(method, uri);
+            throw new MethodNotSupportedException(method +  " method not supported");
         }
     }
 }

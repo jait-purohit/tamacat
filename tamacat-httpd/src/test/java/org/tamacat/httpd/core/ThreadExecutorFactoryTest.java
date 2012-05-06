@@ -35,6 +35,24 @@ public class ThreadExecutorFactoryTest {
 		executor.shutdown();
 	}
 	
+	@Test
+	public void testGetExecutorServiceZero() {
+		ThreadExecutorFactory factory = new ThreadExecutorFactory("httpd");
+		ExecutorService executor = factory.getExecutorService(0);
+		assertNotNull(executor);
+
+		for (int i=0; i<10; i++) {
+			Future<Long> future = executor.submit(new CallbackImpl());
+			try {
+				future.get();
+				//System.out.println("No." + i + "=" + future.get());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		executor.shutdown();
+	}
+	
 	static class CallbackImpl implements Callable<Long> {
 
 		private long time;
