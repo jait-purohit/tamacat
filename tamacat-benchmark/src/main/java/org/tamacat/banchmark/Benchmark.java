@@ -16,6 +16,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpVersion;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
@@ -75,12 +76,12 @@ public class Benchmark {
 
         // Prepare requests for each thread
         if (config.getPayloadFile() != null) {
-            entity = new FileEntity(config.getPayloadFile(), config.getContentType());
+            entity = new FileEntity(config.getPayloadFile(), ContentType.create(config.getContentType()));
             ((FileEntity) entity).setChunked(config.isUseChunking());
             contentLength = config.getPayloadFile().length();
 
         } else if (config.getPayloadText() != null) {
-            entity = new StringEntity(config.getPayloadText(), config.getContentType(), "UTF-8");
+            entity = new StringEntity(config.getPayloadText(), ContentType.create(config.getContentType(), "UTF-8"));
             ((StringEntity) entity).setChunked(config.isUseChunking());
             contentLength = config.getPayloadText().getBytes().length;
         }

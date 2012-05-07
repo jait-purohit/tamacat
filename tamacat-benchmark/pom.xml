@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.tamacat</groupId>
   <artifactId>tamacat-benchmark</artifactId>
-  <version>0.9</version>
+  <version>1.0</version>
   <packaging>jar</packaging>
   <name>tamacat-httpd benchmark</name>
   <url>http://code.google.com/p/tamacat/</url>
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.tamacat</groupId>
       <artifactId>tamacat-core</artifactId>
-      <version>0.9</version>
+      <version>1.0</version>
     </dependency>
     
     <dependency>
@@ -39,13 +39,13 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>4.1.4</version>
+      <version>4.2</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.1.3</version>
+      <version>4.2-beta1</version>
     </dependency>
 
     <dependency>
