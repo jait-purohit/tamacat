@@ -25,6 +25,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.DefaultHttpClientConnection;
 import org.apache.http.params.BasicHttpParams;
@@ -33,7 +34,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.BasicHttpProcessor;
 import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestExecutor;
 import org.apache.http.protocol.RequestConnControl;
@@ -41,11 +41,10 @@ import org.apache.http.protocol.RequestContent;
 import org.apache.http.protocol.RequestExpectContinue;
 import org.apache.http.protocol.RequestTargetHost;
 import org.apache.http.protocol.RequestUserAgent;
-import org.apache.http.util.EntityUtils;
 
 public class BenchmarkWorker implements Runnable {
 
-    private byte[] buffer = new byte[4096];
+    private byte[] buffer = new byte[8192];
     private final int verbosity;
     private final HttpParams params;
     private final HttpContext context;
@@ -211,9 +210,10 @@ public class BenchmarkWorker implements Runnable {
 
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
-                    String charset = EntityUtils.getContentCharSet(entity);
-                    if (charset == null) {
-                        charset = HTTP.DEFAULT_CONTENT_CHARSET;
+                    ContentType contentType = ContentType.getOrDefault(entity);
+                    String charset = "ISO-8859-1";
+                    if (contentType.getCharset() == null) {
+                    	charset = contentType.getCharset().name();
                     }
                     long contentlen = 0;
                     InputStream instream = entity.getContent();
