@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.lang.reflect.Method;
+import java.net.Socket;
 import java.net.URL;
 
 import org.tamacat.io.RuntimeIOException;
@@ -103,6 +104,21 @@ public class IOUtils {
 			if (closable instanceof OutputStream || closable instanceof Writer) {
 				throw new RuntimeIOException(e);
 			}
+		}
+	}
+	
+	/**
+	 * It ignores, even if an exception occurs.  
+	 * @param socket
+	 */
+	static
+	  public void close(Socket socket) {
+	    try {
+			if (socket != null) {
+				socket.close();
+			}
+		} catch (IOException e) {
+			//ignore
 		}
 	}
 }
