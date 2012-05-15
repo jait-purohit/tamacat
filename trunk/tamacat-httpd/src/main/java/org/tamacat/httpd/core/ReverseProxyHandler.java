@@ -43,6 +43,7 @@ import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.IOUtils;
 
 /**
  * <p>The {@link HttpHandler} for reverse proxy.
@@ -151,6 +152,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		}
         Socket outsocket = null;
         ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
+		DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
 		try {
 	        if (reverseUrl == null) {
 	        	throw new ServiceUnavailableException("reverseUrl is null.");
@@ -170,7 +172,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        //	reverseUrl.getTargetAddress().getPort(),
 	        //	null, -1, builder.buildParams());
 	        
-			DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
 	        conn.bind(outsocket, builder.buildParams());
 	        
 	        if (LOG.isTraceEnabled()) {
@@ -218,6 +219,9 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		} catch (Exception e) {
 			handleException(request, response, e);
 			return response;
+		} finally {
+			IOUtils.close(conn);
+			IOUtils.close(outsocket);
 		}
 	}
 	
