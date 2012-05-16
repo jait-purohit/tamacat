@@ -30,6 +30,7 @@ public class MessageDigestInputStreamTest {
 		MessageDigestInputStream in = new MessageDigestInputStream(bi);
 		int result = in.read();
 		assertEquals(84, result);
+		IOUtils.close(in);
 	}
 
 	@Test
@@ -41,6 +42,7 @@ public class MessageDigestInputStreamTest {
 		int len = "TEST".length();
 		int result = in.read(buf, off, len);
 		assertEquals(4, result);
+		IOUtils.close(in);
 	}
 
 	@Test
@@ -51,6 +53,7 @@ public class MessageDigestInputStreamTest {
 		assertEquals(2, result);
 		
 		assertEquals(0, in.skip(-999));
+		IOUtils.close(in);
 	}
 
 	@Test
@@ -60,6 +63,7 @@ public class MessageDigestInputStreamTest {
 		try {
 			assertEquals("d41d8cd98f00b204e9800998ecf8427e", in.getDigest());
 		} finally {
+			IOUtils.close(in);
 			IOUtils.close(bi);
 		}
 	}
@@ -76,6 +80,7 @@ public class MessageDigestInputStreamTest {
 		} catch (MessageDigestException e) {
 			assertNotNull(e.getMessage());
 		}
+		IOUtils.close(in);
 	}
 
 	@Test
@@ -85,5 +90,6 @@ public class MessageDigestInputStreamTest {
 		MessageDigest digest = MessageDigest.getInstance("SHA");
 		in.setMessageDigest(digest);
 		assertEquals("da39a3ee5e6b4b0d3255bfef95601890afd80709", in.getDigest());
+		IOUtils.close(in);
 	}
 }
