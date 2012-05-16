@@ -13,6 +13,7 @@ import org.apache.http.protocol.ResponseServer;
 
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.jmx.BasicCounter;
+import org.tamacat.util.IOUtils;
 import org.tamacat.util.PropertyUtils;
 
 public class WorkerThread_test {
@@ -46,6 +47,7 @@ public class WorkerThread_test {
 		thread.start();
 		thread.isClosed();
 		thread.shutdown();
+		IOUtils.close(serversocket);
 	}
 
 }
