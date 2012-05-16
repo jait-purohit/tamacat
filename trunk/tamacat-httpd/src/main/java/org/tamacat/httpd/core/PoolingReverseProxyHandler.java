@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2009, TamaCat.org
- * All rights reserved.
- */
 package org.tamacat.httpd.core;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
+import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -16,24 +13,19 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.scheme.SchemeSocketFactory;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
-import org.apache.http.protocol.HttpRequestExecutor;
-import org.apache.http.protocol.RequestConnControl;
-import org.apache.http.protocol.RequestContent;
-import org.apache.http.protocol.RequestExpectContinue;
-import org.apache.http.protocol.RequestTargetHost;
-import org.apache.http.protocol.RequestUserAgent;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
@@ -44,32 +36,28 @@ import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
-/**
- * <p>The {@link HttpHandler} for reverse proxy.
- */
-public class ReverseProxyHandler extends AbstractHttpHandler {
-	
+public class PoolingReverseProxyHandler extends AbstractHttpHandler {
+
 	static final Log LOG = LogFactory.getLog(ReverseProxyHandler.class);
 
     protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
     protected static final String CHECK_INFINITE_LOOP
     	= ReverseProxyHandler.class.getName() + "_CHECK_INFINITE_LOOP";
-	protected HttpRequestExecutor httpexecutor;
-	protected HttpProcessor httpproc;
-	protected HttpParamsBuilder builder = new HttpParamsBuilder();
-	protected HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
-	protected PlainSocketFactory socketFactory = PlainSocketFactory.getSocketFactory();
+
+//	protected HttpProcessor httpproc;
+//	protected HttpParamsBuilder builder = new HttpParamsBuilder();
+//	protected HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
 	protected String proxyAuthorizationHeader = "X-ReverseProxy-Authorization";
 
 	protected ReverseUrl reverseUrl;
 	PoolingClientConnectionManager cm;
-
+	DefaultHttpClient httpClient;
+	
 	/**
 	 * <p>Default constructor.
 	 */
-	public ReverseProxyHandler() {
-		this.httpexecutor = new HttpRequestExecutor();
-		setDefaultHttpRequestInterceptor();
+	public PoolingReverseProxyHandler() {
+//		setDefaultHttpRequestInterceptor();
 	}
 	
 	/**
@@ -86,23 +74,72 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	@Override
     public void setServiceUrl(ServiceUrl serviceUrl) {
     	super.setServiceUrl(serviceUrl);
-    	builder.socketTimeout(serviceUrl.getServerConfig().getParam("BackEndSocketTimeout", 5000))
-    	  .connectionTimeout(serviceUrl.getServerConfig().getParam("BackEndConnectionTimeout", 10000))
-          .socketBufferSize(serviceUrl.getServerConfig().getParam("BackEndSocketBufferSize", (8*1024)));
+//    	builder.socketTimeout(serviceUrl.getServerConfig().getParam("BackEndSocketTimeout", 5000))
+//    	  .connectionTimeout(serviceUrl.getServerConfig().getParam("BackEndConnectionTimeout", 10000))
+//          .socketBufferSize(serviceUrl.getServerConfig().getParam("BackEndSocketBufferSize", (8*1024)));
     	
     	reverseUrl = serviceUrl.getReverseUrl();
         if (reverseUrl == null) {
         	throw new ServiceUnavailableException("reverseUrl is null.");
         }
         
+        SchemeSocketFactory factory = reverseUrl.getReverse().getProtocol().equals("http")?
+        		PlainSocketFactory.getSocketFactory() : SSLSocketFactory.getSocketFactory();
     	Scheme http = new Scheme(reverseUrl.getReverse().getProtocol(),
-    			reverseUrl.getTargetAddress().getPort(), PlainSocketFactory.getSocketFactory());
+    			reverseUrl.getTargetAddress().getPort(), factory);
     	SchemeRegistry schemeRegistry = new SchemeRegistry();
     	schemeRegistry.register(http);
     	cm = new PoolingClientConnectionManager(schemeRegistry);
-    	cm.setMaxPerRoute(new HttpRoute(new HttpHost(reverseUrl.getTargetAddress().getHostName())), 10);
-    	cm.setMaxTotal(20);
-    }
+    	cm.setMaxPerRoute(new HttpRoute(new HttpHost(reverseUrl.getTargetAddress().getHostName())), maxPerRoute);
+    	cm.setMaxTotal(maxTotal);
+    	
+    	httpClient = new DefaultHttpClient(cm);
+    	if (keepAlive) {
+	        httpClient.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
+	            public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
+	                // Honor 'keep-alive' header
+//	                HeaderElementIterator it = new BasicHeaderElementIterator(
+//	                        response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+//	                while (it.hasNext()) {
+//	                    HeaderElement he = it.nextElement();
+//	                    String param = he.getName(); 
+//	                    String value = he.getValue();
+//	                    if (value != null && param.equalsIgnoreCase("timeout")) {
+//	                        try {
+//	                            return Long.parseLong(value) * 1000;
+//	                        } catch(NumberFormatException ignore) {
+//	                        }
+//	                    }
+//	                }
+	                // Keep alive for 5 seconds only
+	                return 5 * 1000;
+	            }
+	        });
+    	}
+        //httpClient.addRequestInterceptor(new RequestContent());
+        //httpClient.addRequestInterceptor(new RequestTargetHost());
+        //httpClient.addRequestInterceptor(new RequestConnControl());
+        //httpClient.addRequestInterceptor(new RequestUserAgent());
+        //httpClient.addRequestInterceptor(new RequestExpectContinue());
+        
+        for (HttpRequestInterceptor interceptor : requestInterceptors) {
+        	httpClient.addRequestInterceptor(interceptor);
+        }
+        for (HttpResponseInterceptor interceptor : responseInterceptors) {
+        	httpClient.addResponseInterceptor(interceptor);
+        }
+	}
+	
+	
+	int maxPerRoute = 10;
+	int maxTotal = 20;
+	
+	void setMaxPerRoute(int maxPerRoute) {
+		this.maxPerRoute = maxPerRoute;
+	}
+	public void setMaxTotal(int maxTotal) {
+		this.maxTotal = maxTotal;
+	}
 	
 	@Override
 	public void handle(HttpRequest request, HttpResponse response, 
@@ -155,7 +192,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
      */
 	protected HttpResponse forwardRequest(
 			HttpRequest request, HttpResponse response, HttpContext context) {
-		this.httpproc = procBuilder.build();
+//		this.httpproc = procBuilder.build();
         LOG.trace(">> Request URI: " + request.getRequestLine().getUri());
 
 		Object loop = context.getAttribute(CHECK_INFINITE_LOOP);
@@ -164,34 +201,12 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		} else {
         	throw new ServiceUnavailableException("reverseUrl is infinite loop.");
 		}
-        //Socket outsocket = null;
-		//DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
-        		
+		
 		try {
 	        context.setAttribute("reverseUrl", reverseUrl);
 	        ReverseUtils.setXForwardedFor(request, context);
-	        //outsocket = socketFactory.createSocket();
+	        ReverseUtils.setXForwardedHost(request);
 	        
-	        //InetAddress remoteAddress = InetAddress.getByName(reverseUrl.getTargetAddress().getHostName());
-	        //InetSocketAddress remote = new InetSocketAddress(remoteAddress, reverseUrl.getTargetAddress().getPort());
-	        //for 4.1
-	        //socketFactory.connectSocket(outsocket, remote, null, builder.buildParams());
-	        
-	        HttpClient httpClient = new DefaultHttpClient(cm);
-
-	        //for 4.0 @deprecated
-	        //socketFactory.connectSocket(outsocket, 
-	        //	reverseUrl.getTargetAddress().getHostName(),
-	        //	reverseUrl.getTargetAddress().getPort(),
-	        //	null, -1, builder.buildParams());
-	        
-	        //conn.bind(outsocket, builder.buildParams());
-	        
-	        //if (LOG.isTraceEnabled()) {
-		    //    LOG.trace("Outgoing connection to " + outsocket.getInetAddress());
-		    //    LOG.trace("request: " + request);
-		    //}
-
 	        ReverseHttpRequest targetRequest = null;
 	        if (request instanceof HttpEntityEnclosingRequest) {
 	        	targetRequest = new ReverseHttpEntityEnclosingRequest(request, context, reverseUrl);
@@ -204,11 +219,10 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        ReverseUtils.setReverseProxyAuthorization(targetRequest, context, proxyAuthorizationHeader);
 	        try {
 	        	HttpHost host = new HttpHost(reverseUrl.getTargetAddress().getHostName());
-		        //httpexecutor.preProcess(targetRequest, httpproc, context);
-		        //HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
 	        	HttpResponse targetResponse = httpClient.execute(host, targetRequest, context);
-		        //httpexecutor.postProcess(targetResponse, httpproc, context);
 		        return targetResponse;
+	        } catch (Exception e) {
+	        	throw e;
 	        } finally {
 		        reverseUrl.countDown();
 		        if (LOG.isDebugEnabled()) {
@@ -231,23 +245,26 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		}
 	}
 	
-	/**
-	 * <p>Preset the HttpRequestInterceptor.
-	 */
-	protected void setDefaultHttpRequestInterceptor() {
-		procBuilder.addInterceptor(new RequestContent())
-        .addInterceptor(new RequestTargetHost())
-        .addInterceptor(new RequestConnControl())
-        .addInterceptor(new RequestUserAgent())
-        .addInterceptor(new RequestExpectContinue());
-	}
+//	/**
+//	 * <p>Preset the HttpRequestInterceptor.
+//	 */
+//	protected void setDefaultHttpRequestInterceptor() {
+//		procBuilder.addInterceptor(new RequestContent())
+//        .addInterceptor(new RequestTargetHost())
+//        .addInterceptor(new RequestConnControl())
+//        .addInterceptor(new RequestUserAgent())
+//        .addInterceptor(new RequestExpectContinue());
+//	}
+//	
+	ArrayList<HttpRequestInterceptor> requestInterceptors = new ArrayList<HttpRequestInterceptor>();
+	ArrayList<HttpResponseInterceptor> responseInterceptors = new ArrayList<HttpResponseInterceptor>();
 	
 	public void addHttpRequestInterceptor(HttpRequestInterceptor interceptor) {
-		procBuilder.addInterceptor(interceptor);
+		requestInterceptors.add(interceptor);
 	}
 	
 	public void addHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
-		procBuilder.addInterceptor(interceptor);
+		responseInterceptors.add(interceptor);
 	}
 	
 	/**
@@ -274,5 +291,10 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	protected HttpEntity getFileEntity(File file) {
 		FileEntity body = new FileEntity(file, ContentType.create(getContentType(file)));
         return body;
+	}
+	
+	boolean keepAlive;
+	public void setKeepAlive(boolean keepAlive) {
+		this.keepAlive = keepAlive;
 	}
 }

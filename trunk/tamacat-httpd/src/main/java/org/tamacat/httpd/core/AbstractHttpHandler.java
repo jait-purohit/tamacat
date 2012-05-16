@@ -6,6 +6,7 @@ package org.tamacat.httpd.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -219,9 +220,11 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     protected String getDecodeUri(String uri) {
     	try {
     		return URLDecoder.decode(uri, encoding);
-    	} catch (Exception e) {
-    		throw new NotFoundException();
-    	}
+        } catch (UnsupportedEncodingException e) {
+            return uri;
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException();
+        }
     }
     
     /**

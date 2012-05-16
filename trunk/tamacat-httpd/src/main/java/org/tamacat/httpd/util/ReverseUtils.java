@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.config.ReverseUrl;
@@ -176,6 +177,17 @@ public class ReverseUtils {
      */
     public static void setXForwardedFor(HttpRequest request, HttpContext context) {
     	request.setHeader("X-Forwarded-For", RequestUtils.getRemoteIPAddress(context));
+    }
+    
+    /**
+     * <p>Set the forwarded Host request header for origin server.
+     * @param request
+     */
+    public static void setXForwardedHost(HttpRequest request) {
+        Header hostHeader = request.getFirstHeader(HTTP.TARGET_HOST);
+        if (hostHeader != null) {
+            request.setHeader("X-Forwarded-Host", hostHeader.getValue());
+        }
     }
 	
     /**

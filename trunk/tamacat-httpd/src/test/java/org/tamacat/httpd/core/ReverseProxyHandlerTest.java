@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -21,6 +22,7 @@ import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceType;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
+import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.mock.HttpObjectFactory;
@@ -30,7 +32,6 @@ import org.tamacat.util.PropertyUtils;
 public class ReverseProxyHandlerTest {
 
 	ReverseProxyHandler handler;
-	HttpContext context;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -43,27 +44,33 @@ public class ReverseProxyHandlerTest {
 		serviceUrl.setType(ServiceType.REVERSE);
 		serviceUrl.setHost(new URL("http://localhost/test/"));		
 		DefaultReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
-		reverseUrl.setReverse(new URL("http://localhost/test/"));
-		//serviceUrl.setReverseUrl(reverseUrl);
+		reverseUrl.setReverse(new URL("http://localhost:8080/examples/"));
+		serviceUrl.setReverseUrl(reverseUrl);
 		
 		handler.setServiceUrl(serviceUrl);
-
-		context = HttpObjectFactory.createHttpContext();
-		InetAddress address = InetAddress.getByName("127.0.0.1");
-		context.setAttribute(RequestUtils.REMOTE_ADDRESS, address);
 	}
 	
 	@After
 	public void tearDown() throws Exception {
 	}
 	
+	HttpContext createContext() {
+		HttpContext context = HttpObjectFactory.createHttpContext();
+		try {
+			InetAddress address = InetAddress.getByName("127.0.0.1");
+			context.setAttribute(RequestUtils.REMOTE_ADDRESS, address);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		return context;
+	}
+	
 	@Test
 	public void testHandle() {
-		HttpRequest request = new BasicHttpRequest("GET", "/test.html");
+		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
-
-		handler.handle(request, response, context);
-		
+		HttpContext context = createContext();
+				
 		handler.setHttpFilter(new RequestFilter() {
 			@Override
 			public void init(ServiceUrl serviceUrl) {
@@ -89,8 +96,10 @@ public class ReverseProxyHandlerTest {
 
 	@Test
 	public void testDoRequest() throws HttpException, IOException {
-		HttpRequest request = new BasicHttpRequest("GET", "/test.html");
+		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
+		HttpContext context = createContext();
+		
 		handler.doRequest(request, response, context);
 	}
 
@@ -106,9 +115,25 @@ public class ReverseProxyHandlerTest {
 
 	@Test
 	public void testForwardRequest() {
-		HttpRequest request = new BasicHttpRequest("GET", "/test.html");
+		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
+		HttpContext context = createContext();
 		handler.forwardRequest(request, response, context);
+	}
+	
+	@Test
+	public void testInfiniteLoop() {
+		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
+		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
+		HttpContext context = createContext();
+
+		handler.forwardRequest(request, response, context);
+		try {
+			handler.forwardRequest(request, response, context);
+			fail();
+		} catch (ServiceUnavailableException e) {
+			assertEquals("reverseUrl is infinite loop.", e.getMessage());
+		}
 	}
 
 	@Test
