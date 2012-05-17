@@ -24,6 +24,7 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.config.ReverseUrl;
+import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.PropertyUtils;
@@ -167,6 +168,13 @@ public class ReverseUtils {
         for (String newValue : newValues) {
         	response.addHeader("Set-Cookie", newValue);
         }
+    }
+    
+    public static void rewriteServerHeader(HttpResponse response, ReverseUrl reverseUrl) {
+    	ServiceUrl serviceUrl = reverseUrl.getServiceUrl();
+    	if (serviceUrl != null) {
+    		response.setHeader(HTTP.SERVER_HEADER, serviceUrl.getServerConfig().getParam("ServerName"));
+    	}
     }
     
     /**

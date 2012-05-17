@@ -101,8 +101,8 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 			for (Header h : cookieHeaders) {
 				String cookie = h.getValue();
 				user = HeaderUtils.getCookieValue(cookie, singleSignOnCookieName);
-				LOG.trace("CookieUser: " + user);
 				if (StringUtils.isNotEmpty(user)) {
+					LOG.trace("CookieUser: " + user);
 					return user;
 				}
 			}
@@ -126,8 +126,8 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 	@Override
 	public void sign(String remoteUser, HttpRequest request, HttpResponse response, HttpContext context) {
 		if (StringUtils.isNotEmpty(remoteUser)) {
-			response.setHeader("Set-Cookie", singleSignOnCookieName + "=" + remoteUser + "; Path=/");
-			request.setHeader("Cookie",	singleSignOnCookieName + "=" + remoteUser); //for Reverse Proxy
+			response.addHeader("Set-Cookie", singleSignOnCookieName + "=" + remoteUser + "; Path=/");
+			request.addHeader("Cookie",	singleSignOnCookieName + "=" + remoteUser); //for Reverse Proxy
 			LOG.trace("Set-Cookie: " + singleSignOnCookieName + "=" + remoteUser + "; Path=/");
 		}
 	}

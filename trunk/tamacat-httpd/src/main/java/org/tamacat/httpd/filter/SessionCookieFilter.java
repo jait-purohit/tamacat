@@ -47,6 +47,7 @@ public class SessionCookieFilter implements RequestFilter {
 					}
 				}
 			}
+
 			if (session == null) {
 				session = MANAGER.createSession();
 				response.addHeader("Set-Cookie", 

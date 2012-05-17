@@ -124,6 +124,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
         ReverseUtils.copyHttpResponse(targetResponse, response);
         ReverseUtils.rewriteContentLocationHeader(request, response, reverseUrl);
         
+        ReverseUtils.rewriteServerHeader(response, reverseUrl);
+                
         // Location Header convert. //
         ReverseUtils.rewriteLocationHeader(request, response, reverseUrl);
         
