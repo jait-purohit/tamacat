@@ -29,8 +29,24 @@ import org.tamacat.httpd.mock.HttpObjectFactory;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.PropertyUtils;
 
-public class ReverseProxyHandlerTest {
+public class ReverseProxyHandler_test {
 
+	public static void main(String[] args) throws Exception {
+		ReverseProxyHandler_test test = new ReverseProxyHandler_test();
+		
+		test.setUp();
+		
+		test.testHandle();
+		test.testDoRequest();
+		test.testGetEntity();
+		test.testGetFileEntity();
+		test.testForwardRequest();
+		test.testAddHttpRequestInterceptor();
+		test.testAddHttpResponseInterceptor();
+		test.testInfiniteLoop();
+		test.testSetDefaultHttpRequestInterceptor();
+	}
+	
 	ReverseProxyHandler handler;
 	
 	@Before

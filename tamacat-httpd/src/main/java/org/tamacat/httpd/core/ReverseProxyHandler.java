@@ -7,25 +7,24 @@ package org.tamacat.httpd.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketException;
+import java.net.URL;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.DefaultHttpClientConnection;
+import org.apache.http.message.BasicRequestLine;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.protocol.HttpRequestExecutor;
@@ -37,12 +36,14 @@ import org.apache.http.protocol.RequestUserAgent;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
+import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.IOUtils;
 
 /**
  * <p>The {@link HttpHandler} for reverse proxy.
@@ -60,9 +61,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	protected HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
 	protected PlainSocketFactory socketFactory = PlainSocketFactory.getSocketFactory();
 	protected String proxyAuthorizationHeader = "X-ReverseProxy-Authorization";
-
-	protected ReverseUrl reverseUrl;
-	PoolingClientConnectionManager cm;
 
 	/**
 	 * <p>Default constructor.
@@ -89,19 +87,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     	builder.socketTimeout(serviceUrl.getServerConfig().getParam("BackEndSocketTimeout", 5000))
     	  .connectionTimeout(serviceUrl.getServerConfig().getParam("BackEndConnectionTimeout", 10000))
           .socketBufferSize(serviceUrl.getServerConfig().getParam("BackEndSocketBufferSize", (8*1024)));
-    	
-    	reverseUrl = serviceUrl.getReverseUrl();
-        if (reverseUrl == null) {
-        	throw new ServiceUnavailableException("reverseUrl is null.");
-        }
-        
-    	Scheme http = new Scheme(reverseUrl.getReverse().getProtocol(),
-    			reverseUrl.getTargetAddress().getPort(), PlainSocketFactory.getSocketFactory());
-    	SchemeRegistry schemeRegistry = new SchemeRegistry();
-    	schemeRegistry.register(http);
-    	cm = new PoolingClientConnectionManager(schemeRegistry);
-    	cm.setMaxPerRoute(new HttpRoute(new HttpHost(reverseUrl.getTargetAddress().getHostName())), 10);
-    	cm.setMaxTotal(20);
     }
 	
 	@Override
@@ -128,11 +113,14 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     public void doRequest(
     		HttpRequest request, HttpResponse response, 
     		HttpContext context) throws HttpException, IOException {
-
-        // Access Backend server //
+    	// Set the X-Forwarded Headers.
+        ReverseUtils.setXForwardedFor(request, context);
+        ReverseUtils.setXForwardedHost(request);
+        
+        // Access Backend server. //
         HttpResponse targetResponse = forwardRequest(request, response, context);
 
-        	//(ReverseUrl) context.getAttribute("reverseUrl");
+        ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
         ReverseUtils.copyHttpResponse(targetResponse, response);
         ReverseUtils.rewriteContentLocationHeader(request, response, reverseUrl);
         
@@ -142,7 +130,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
         // Set-Cookie Header convert. //
         ReverseUtils.rewriteSetCookieHeader(request, response, reverseUrl);
         
-        // Set the entity and response headers from targetResponse.
+        // Set the entity and response headers from targetResponse. //
         response.setEntity(targetResponse.getEntity());
     }
 
@@ -164,50 +152,57 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		} else {
         	throw new ServiceUnavailableException("reverseUrl is infinite loop.");
 		}
-        //Socket outsocket = null;
-		//DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
-        		
+        Socket outsocket = null;
+        ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
+		DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
 		try {
+	        if (reverseUrl == null) {
+	        	throw new ServiceUnavailableException("reverseUrl is null.");
+	        }
 	        context.setAttribute("reverseUrl", reverseUrl);
-	        ReverseUtils.setXForwardedFor(request, context);
-	        //outsocket = socketFactory.createSocket();
+	        outsocket = socketFactory.createSocket();
 	        
-	        //InetAddress remoteAddress = InetAddress.getByName(reverseUrl.getTargetAddress().getHostName());
-	        //InetSocketAddress remote = new InetSocketAddress(remoteAddress, reverseUrl.getTargetAddress().getPort());
+	        InetAddress remoteAddress = InetAddress.getByName(reverseUrl.getTargetAddress().getHostName());
+	        InetSocketAddress remote = new InetSocketAddress(remoteAddress, reverseUrl.getTargetAddress().getPort());
 	        //for 4.1
-	        //socketFactory.connectSocket(outsocket, remote, null, builder.buildParams());
+	        socketFactory.connectSocket(outsocket, remote, null, builder.buildParams());
 	        
-	        HttpClient httpClient = new DefaultHttpClient(cm);
-
 	        //for 4.0 @deprecated
 	        //socketFactory.connectSocket(outsocket, 
 	        //	reverseUrl.getTargetAddress().getHostName(),
 	        //	reverseUrl.getTargetAddress().getPort(),
 	        //	null, -1, builder.buildParams());
 	        
-	        //conn.bind(outsocket, builder.buildParams());
+	        conn.bind(outsocket, builder.buildParams());
 	        
-	        //if (LOG.isTraceEnabled()) {
-		    //    LOG.trace("Outgoing connection to " + outsocket.getInetAddress());
-		    //    LOG.trace("request: " + request);
-		    //}
+	        if (LOG.isTraceEnabled()) {
+		        LOG.trace("Outgoing connection to " + outsocket.getInetAddress());
+		        LOG.trace("request: " + request);
+		    }
 
 	        ReverseHttpRequest targetRequest = null;
 	        if (request instanceof HttpEntityEnclosingRequest) {
 	        	targetRequest = new ReverseHttpEntityEnclosingRequest(request, context, reverseUrl);
 	        } else {
-	        	targetRequest = new ReverseHttpRequest(request, context, reverseUrl);
+	        	URL url = reverseUrl.getReverseUrl(request.getRequestLine().getUri());
+		        if (url == null) {
+		        	throw new NotFoundException("url is null.");
+		        }
+	        	BasicRequestLine line = new BasicRequestLine(
+    		    		request.getRequestLine().getMethod(),
+    		    		url.toString(),
+    		    		request.getRequestLine().getProtocolVersion());
+	        	targetRequest = new ReverseHttpRequest(line, reverseUrl);
+	        	targetRequest.setRequest(request, context);
 	        }
 	        reverseUrl.countUp();
 	        
 	        //forward remote user.
 	        ReverseUtils.setReverseProxyAuthorization(targetRequest, context, proxyAuthorizationHeader);
 	        try {
-	        	HttpHost host = new HttpHost(reverseUrl.getTargetAddress().getHostName());
-		        //httpexecutor.preProcess(targetRequest, httpproc, context);
-		        //HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
-	        	HttpResponse targetResponse = httpClient.execute(host, targetRequest, context);
-		        //httpexecutor.postProcess(targetResponse, httpproc, context);
+		        httpexecutor.preProcess(targetRequest, httpproc, context);
+		        HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
+		        httpexecutor.postProcess(targetResponse, httpproc, context);
 		        return targetResponse;
 	        } finally {
 		        reverseUrl.countDown();
@@ -226,8 +221,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 			handleException(request, response, e);
 			return response;
 		} finally {
-			//IOUtils.close(conn);
-			//IOUtils.close(outsocket);
+			IOUtils.close(conn);
+			IOUtils.close(outsocket);
 		}
 	}
 	
