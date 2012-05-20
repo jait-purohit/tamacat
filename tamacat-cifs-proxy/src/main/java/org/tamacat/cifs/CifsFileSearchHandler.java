@@ -10,6 +10,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
@@ -27,7 +28,6 @@ import org.tamacat.util.StringUtils;
 
 public class CifsFileSearchHandler extends AbstractHttpHandler {
 
-	
 	public static final String CONTENT_TYPE = "ResponseHeader__ContentType__";
 	protected String welcomeFile = "index";
 	protected boolean listings;
@@ -193,13 +193,13 @@ public class CifsFileSearchHandler extends AbstractHttpHandler {
 	}
 	
 	protected HttpEntity getFileEntity(File file, String contentType) {
-		FileEntity body = new FileEntity(file, contentType);
+		FileEntity body = new FileEntity(file, ContentType.create(contentType, encoding));
         return body;
 	}
 	
 	@Override
 	protected HttpEntity getFileEntity(File file) {
-		FileEntity body = new FileEntity(file, getContentType(file));
+		FileEntity body = new FileEntity(file,  ContentType.create(getContentType(file)));
         return body;
 	}
 }
