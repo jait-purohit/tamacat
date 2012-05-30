@@ -82,14 +82,18 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 			String idpass = new String(new Base64().decode(idpassBase64.getBytes()));
 			int pos = idpass.indexOf(':');
 			if (pos >= 0) {
-				String user = idpass.substring(0, pos);
+				String username = idpass.substring(0, pos);
 				String password = idpass.substring(pos + 1, idpass.length());
-				if (authComponent != null
-						&& authComponent.check(user, password, context)) {
-					if (singleSignOn != null) {
-						singleSignOn.sign(user, request, response, context);
+				if (authComponent != null) {
+					if (authComponent.getAuthUser(username, context).isEncrypted()) {
+						password = getEncryptedPassword(password);
 					}
-					return user;
+					if (authComponent.check(username, password, context)) {
+						if (singleSignOn != null) {
+							singleSignOn.sign(username, request, response, context);
+						}
+						return username;
+					}
 				}
 			}
 		} else if (singleSignOn != null && singleSignOn.isSigned(request, context)) {

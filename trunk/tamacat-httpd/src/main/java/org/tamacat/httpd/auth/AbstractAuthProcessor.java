@@ -4,6 +4,7 @@
  */
 package org.tamacat.httpd.auth;
 
+import java.security.MessageDigest;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,8 +12,10 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.exception.UnauthorizedException;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.filter.ResponseFilter;
+import org.tamacat.util.StringUtils;
 
 /**
  * The abstract class of authentication processor.
@@ -23,6 +26,7 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
 	protected ServiceUrl serviceUrl;
 	protected SingleSignOn singleSignOn;
+	protected String algorithmName; //ex. SHA-256
 
 	protected Set<String> freeAccessExtensions = new HashSet<String>();
 
@@ -58,10 +62,18 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 		this.remoteUserKey = remoteUserKey;
 	}
 	
+	/**
+	 * Get the Key name of Remote user.
+	 * @return remoteUserKey
+	 */
 	public String getRemoteUserKey() {
 		return remoteUserKey;
 	}
 	
+	/**
+	 * Set the SingleSignOn object.
+	 * @param singleSignOn
+	 */
 	public void setSingleSignOn(SingleSignOn singleSignOn) {
 		this.singleSignOn = singleSignOn;
 	}
@@ -91,6 +103,39 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 		String[] list = freeAccessExtensions.split(",");
 		for (String ext : list) {
 			this.freeAccessExtensions.add(ext.trim().replaceFirst("^\\.", "").toLowerCase());
+		}
+	}
+	
+	/**
+	 * Set the encryption algorithm for "getEncriptedPassword" method.
+	 * ex. "SHA-256"
+	 * @param algorithmName
+	 */
+	public void setPasswordEncryptionAlgorithm(String algorithmName) {
+		this.algorithmName = algorithmName;
+	}
+	
+	/**
+	 * Get the encrypted password.
+	 * Please set up the encryption algorithm by a "setPasswordEncryptedAlgorithm" method in advance.
+	 * if "algorithmName" is empty then returns a plain password.
+	 * @param password (Plain password)
+	 * @return encrypted password or plain password(algorithm is empty)
+	 */
+	protected String getEncryptedPassword(String password) {
+		if (StringUtils.isEmpty(password) || StringUtils.isEmpty(algorithmName)) return password;
+		try {
+			MessageDigest md = MessageDigest.getInstance(algorithmName);
+			md.update(password.getBytes());
+			byte[] digest = md.digest();
+			StringBuilder sb = new StringBuilder();
+			for (byte b : digest) {
+				String hex = String.format("%02x", b);
+				sb.append(hex);
+			}
+			return sb.toString();
+		} catch (Exception e) {
+			throw new UnauthorizedException();
 		}
 	}
 }
