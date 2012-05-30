@@ -114,9 +114,13 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 					  + ":" + digest.getNc() + ":" + digest.getCnonce()
 					  + ":" + digest.getQop() + ":" + hash2;
 					hashedPassword = encode(getMD5(digestPassword));
+				} else {
+					throw new UnsupportedOperationException(
+						"Can not use encrypted password from Digest Authorization.");
 				}
 				String username = digest.getUsername();
 				String password = digest.getResponse();
+
 				if (username != null && password != null
 						&& username.equals(user.getAuthUsername())
 						&& password.equals(hashedPassword)) {

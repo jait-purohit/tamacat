@@ -137,4 +137,15 @@ public class FormAuthProcessorTest {
 		request = HttpObjectFactory.createHttpRequest("GET", "/logout.html");
 		assertEquals("login.html", auth.getLoginPageUrlWithRedirect(request));
 	}
+	
+	@Test
+	public void testGetEncryptedPassword() {
+		String password = auth.getEncryptedPassword("password");
+		assertEquals("password", password);
+		
+		auth.setPasswordEncryptionAlgorithm("SHA-256");
+		String encpassword = auth.getEncryptedPassword("password");
+		assertEquals("5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8", encpassword);
+		//System.out.println(encpassword);
+	}
 }
