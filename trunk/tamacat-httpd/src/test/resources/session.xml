@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
   <bean id="listener" class="org.tamacat.httpd.session.DebugSessionListener" />
-  <bean id="memmorySessionStore" class="org.tamacat.httpd.session.MemorySessionStore" />
+  <bean id="memorySessionStore" class="org.tamacat.httpd.session.MemorySessionStore" />
   
   <bean id="session" class="org.tamacat.httpd.session.DefaultSessionFactory" singleton="true">
     <property name="defaultMaxInactiveInterval">
@@ -11,7 +11,7 @@
       <ref bean="listener" />
     </property>
     <property name="sessionStore">
-      <ref bean="memmorySessionStore" />
+      <ref bean="memorySessionStore" />
     </property>
   </bean>
 

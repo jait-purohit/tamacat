@@ -50,6 +50,11 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 		this.algorithm = algorithm;
 	}
 
+	@Override
+	public void setPasswordEncryptionAlgorithm(String algorithmName) {
+		this.algorithmName = null;
+	}
+	
 	/**
 	 * Set the qop. Dejault is "auth".
 	 * @param qop
@@ -114,6 +119,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 					  + ":" + digest.getNc() + ":" + digest.getCnonce()
 					  + ":" + digest.getQop() + ":" + hash2;
 					hashedPassword = encode(getMD5(digestPassword));
+					System.out.println(digestPassword);
 				} else {
 					throw new UnsupportedOperationException(
 						"Can not use encrypted password from Digest Authorization.");
