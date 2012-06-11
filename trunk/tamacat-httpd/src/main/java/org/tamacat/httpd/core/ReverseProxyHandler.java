@@ -43,7 +43,6 @@ import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
-import org.tamacat.util.IOUtils;
 
 /**
  * <p>The {@link HttpHandler} for reverse proxy.
@@ -176,7 +175,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        //	null, -1, builder.buildParams());
 	        
 	        conn.bind(outsocket, builder.buildParams());
-	        
+	        context.setAttribute("http.proxy.out-conn", conn);
 	        if (LOG.isTraceEnabled()) {
 		        LOG.trace("Outgoing connection to " + outsocket.getInetAddress());
 		        LOG.trace("request: " + request);
@@ -223,8 +222,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 			handleException(request, response, e);
 			return response;
 		} finally {
-			IOUtils.close(conn);
-			IOUtils.close(outsocket);
+			//Do not close the client connection !!
+			//IOUtils.close(conn);
 		}
 	}
 	
