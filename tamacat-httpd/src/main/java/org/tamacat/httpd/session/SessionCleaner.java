@@ -4,12 +4,14 @@ import java.util.Set;
 
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.ExceptionUtils;
 
 public class SessionCleaner implements Runnable {
 
 	static final Log LOG = LogFactory.getLog(SessionCleaner.class);
 
 	private int checkInterval =  30 * 1000; //default 30sec.
+	private int checkNextSessionIdInterval = 50; //default 50ms.
 	private String name = "Cleaner";
 	
 	private SessionFactory manager;
@@ -30,15 +32,20 @@ public class SessionCleaner implements Runnable {
 		this.checkInterval = checkInterval;
 	}
 	
+	public void setCheckNextSessionIdInterval(int checkNextSessionIdInterval) {
+		this.checkNextSessionIdInterval = checkNextSessionIdInterval;
+	}
+	
 	@Override
 	public void run() {
 		try {
-			while(true) {
+			while (true) {
 				LOG.debug("clean check.");
 				Set<String> ids = manager.getActiveSessionIds();
 				if (ids != null) {
 					for (String id : ids) {
 						checkAndCleanup(id);
+						Thread.sleep(checkNextSessionIdInterval); //wait next session id check.
 					}
 				}
 				Thread.sleep(checkInterval);
@@ -55,8 +62,8 @@ public class SessionCleaner implements Runnable {
 				Session session = manager.checkSession(id);
 				if (session == null) LOG.debug("cleanup: " + id);
 			} catch (Exception e) {
-				e.printStackTrace();
 				LOG.warn(e.getMessage());
+				LOG.debug(ExceptionUtils.getStackTrace(e));
 			}
 		}
 	}
