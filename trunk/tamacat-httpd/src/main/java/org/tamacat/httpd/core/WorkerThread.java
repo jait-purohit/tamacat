@@ -12,11 +12,10 @@ import java.net.SocketTimeoutException;
 import javax.net.ssl.SSLHandshakeException;
 
 import org.apache.http.ConnectionClosedException;
-import org.apache.http.HttpClientConnection;
+import org.apache.http.HttpConnection;
 import org.apache.http.HttpServerConnection;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
 import org.tamacat.httpd.jmx.PerformanceCounter;
@@ -68,7 +67,7 @@ public class WorkerThread extends Thread {
             while (Thread.interrupted() == false) {
                 this.service.handleRequest(conn, context);
                 
-            	HttpClientConnection clientConn = (HttpClientConnection) context.getAttribute(ExecutionContext.HTTP_CONNECTION);
+                HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
                 if (clientConn != null && this.conn.isOpen() == false) { //already closed.
                     IOUtils.close(clientConn);
                     if (isTrace) LOG.trace("client connection closed. - " + clientConn);
@@ -76,7 +75,7 @@ public class WorkerThread extends Thread {
                 }
                 
                 Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
-                if (keepalive == null || Boolean.TRUE.equals(keepalive) == false) {
+                if (keepalive == null || Boolean.TRUE.equals(keepalive) == false) { //not keep-alive
                 	if (clientConn != null) {
                 		IOUtils.close(clientConn);
                 		if (isTrace) LOG.trace("client connection closed. - " + clientConn);
