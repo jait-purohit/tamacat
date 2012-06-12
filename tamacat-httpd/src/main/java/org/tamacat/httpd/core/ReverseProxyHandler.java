@@ -26,7 +26,6 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.DefaultHttpClientConnection;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.protocol.HttpRequestExecutor;
@@ -178,7 +177,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        socketFactory.connectSocket(outsocket, remote, null, builder.buildParams());
 
 	        DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
-	        context.setAttribute(ExecutionContext.HTTP_CONNECTION, conn); //WokerThread close the client connection.
+	        context.setAttribute(HTTP_OUT_CONN, conn); //WokerThread close the client connection.
 	        conn.bind(outsocket, builder.buildParams());
 	        
 	        if (LOG.isTraceEnabled()) {
