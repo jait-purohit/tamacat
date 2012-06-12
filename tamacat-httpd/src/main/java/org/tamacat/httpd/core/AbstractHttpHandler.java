@@ -150,10 +150,10 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 		if (e instanceof HttpException) {
 			HttpStatus status = ((HttpException)e).getHttpStatus();
 			if (status.isServerError()) {
-				LOG.error("Server error:" + status + " - " + e.getMessage());
+				LOG.error("Server error: " + status + " - " + e.getMessage());
 			}
 			if (LOG.isDebugEnabled() && status.isClientError()) {
-				LOG.debug("Client error:" + status + " - " + e.getMessage());
+				LOG.debug("Client error: " + status + " - " + e.getMessage());
 			}
 			html = errorPage.getErrorPage(request, response, (HttpException)e);
 		} else {
