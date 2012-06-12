@@ -17,6 +17,7 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
 import org.tamacat.httpd.config.ReverseUrl;
+import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
@@ -53,6 +54,10 @@ public class ReverseHttpRequest extends BasicHttpRequest {
 	    		reverseUrl.getReverseUrl(request.getRequestLine().getUri()).toString(),
 	    		request.getRequestLine().getProtocolVersion())
 		);
+    	URL url = reverseUrl.getReverseUrl(request.getRequestLine().getUri());
+        if (url == null) {
+        	throw new NotFoundException("url is null.");
+        }
 		this.reverseUrl = reverseUrl;
 		setRequest(request, context);
 	}
