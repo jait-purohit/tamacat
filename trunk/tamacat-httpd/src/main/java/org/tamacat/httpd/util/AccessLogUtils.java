@@ -68,8 +68,10 @@ public class AccessLogUtils {
         DC.setMappedContext("ip", ip);
         DC.setMappedContext("user", remoteUser);
         try {
-        	ACCESS_LOG.info(method + " " + uri + " " + proto +" " + statusCode
-        		+ " [" + reasonPhrase + "] " + size + " (" + time + "ms)");
+        	String message = method + " " + uri + " " + proto +" " + statusCode
+    		+ " [" + reasonPhrase + "] " + size + " (" + time + "ms)";
+        	if (statusCode < 500) ACCESS_LOG.info(message);
+        	else ACCESS_LOG.error(message);
         } finally {
         	DC.remove("ip");
         	DC.remove("user");
