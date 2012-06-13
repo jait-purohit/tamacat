@@ -4,6 +4,7 @@
  */
 package org.tamacat.log.impl;
 
+import java.util.Hashtable;
 import java.util.Set;
 
 import org.apache.log4j.MDC;
@@ -32,7 +33,9 @@ public class Log4jDiagnosticContext implements DiagnosticContext {
 		MDC.remove(key);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	protected Set<?> keySet() {
-		return MDC.getContext().keySet();
+		Hashtable<?, ?> context = MDC.getContext();
+		return context != null ? context.keySet() : new Hashtable().keySet();
 	}
 }
