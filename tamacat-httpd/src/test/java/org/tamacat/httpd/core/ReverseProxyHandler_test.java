@@ -110,7 +110,7 @@ public class ReverseProxyHandler_test {
 		handler.handle(request, response, context);
 	}
 
-	@Test
+	//@Test
 	public void testDoRequest() throws HttpException, IOException {
 		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
@@ -129,7 +129,7 @@ public class ReverseProxyHandler_test {
 		assertNotNull(handler.getFileEntity(new File("./src/test/resources/htdocs/index.html")));
 	}
 
-	@Test
+	//@Test
 	public void testForwardRequest() {
 		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
@@ -137,7 +137,7 @@ public class ReverseProxyHandler_test {
 		handler.forwardRequest(request, response, context);
 	}
 	
-	@Test
+	//@Test
 	public void testInfiniteLoop() {
 		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
