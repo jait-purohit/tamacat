@@ -1,4 +1,4 @@
-Release 1.0 (2012-06-12)
+Release 1.0 (2012-06-14)
 ------------------------
 The highlights in the tamacat-httpd-1.0 are the following:
 
