@@ -1,7 +1,13 @@
 #summary One-sentence summary of this page.
 #labels Phase-Support
-
 = Release Notes =
+==1.0 Release (2012-06-14)==
+------------------------
+The highlights in the tamacat-httpd-1.0 are the following:
+
+* Many bug fix and refactoring.
+* Use HttpComponents 4.2 (HttpCore-4.2/HttpClient-4.2)
+
 ==0.9 Release (2012-01-10)==
 ------------------------
 The highlights in the tamacat-httpd-0.9 are the following:
