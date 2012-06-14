@@ -5,8 +5,8 @@
 ------------------------
 The highlights in the tamacat-httpd-1.0 are the following:
 
-* Many bug fix and refactoring.
-* Use HttpComponents 4.2 (HttpCore-4.2/HttpClient-4.2)
+ * Many bug fix and refactoring.
+ * Use HttpComponents 4.2 (HttpCore-4.2/HttpClient-4.2)
 
 ==0.9 Release (2012-01-10)==
 ------------------------
