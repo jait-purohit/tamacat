@@ -5,7 +5,7 @@
 == Download ==
  * Download the archive file and extract.
 
-   * http://tamacat.googlecode.com/files/tamacat-httpd-1.0-20120614.zip
+   * http://code.google.com/p/tamacat/downloads/list
 
 == Configuring httpd ==
 
