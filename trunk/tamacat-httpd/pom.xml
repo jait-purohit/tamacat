@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.tamacat</groupId>
   <artifactId>tamacat-httpd</artifactId>
-  <version>1.0</version>
+  <version>1.0.1</version>
   <packaging>jar</packaging>
   <name>tamacat-httpd components</name>
   <url>http://code.google.com/p/tamacat/</url>
@@ -45,13 +45,13 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>4.2</version>
+      <version>4.2.1</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.2</version>
+      <version>4.2.1</version>
     </dependency>
         
     <dependency>
@@ -144,7 +144,7 @@
           <show>protected</show>
           <nohelp>true</nohelp>
           <locale>en</locale>
-          <bottom>Copyright&amp;copy; 2011, tamacat.org</bottom>
+          <bottom>Copyright&amp;copy; 2012, tamacat.org</bottom>
         </configuration>
       </plugin>
     </plugins>

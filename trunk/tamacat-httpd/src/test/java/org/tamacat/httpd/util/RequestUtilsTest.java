@@ -131,9 +131,16 @@ public class RequestUtilsTest {
 		assertNull(url);
 
 		request.setHeader(HTTP.TARGET_HOST, "example.com");
-		
 		url = RequestUtils.getRequestHostURL(request, context);
-		assertEquals("http://example.com", url);	
+		assertEquals("http://example.com", url);
+		
+		request.setHeader(HTTP.TARGET_HOST, "example.com:8080");
+		url = RequestUtils.getRequestHostURL(request, context);
+		assertEquals("http://example.com:8080", url);
+		
+		request.setHeader(HTTP.TARGET_HOST, "example.com:80");
+		url = RequestUtils.getRequestHostURL(request, context);
+		assertEquals("http://example.com", url);
 	}
 	
 	@Test
