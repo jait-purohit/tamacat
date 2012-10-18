@@ -203,6 +203,13 @@ public class RequestUtils {
 		Header hostHeader = request.getFirstHeader(HTTP.TARGET_HOST);
 		if (hostHeader != null) {
 			hostName = hostHeader.getValue();
+			if (hostName != null && hostName.indexOf(':') >= 0) {
+				String[] hostAndPort = hostName.split(":");
+				if (hostAndPort.length >= 2) {
+					hostName = hostAndPort[0];
+					port = StringUtils.parse(hostAndPort[1],-1);
+				}
+			}
 		}
 		if (url != null) {
 			URL configureHost = url.getHost();
@@ -243,10 +250,7 @@ public class RequestUtils {
 			try {
 				return new URL(protocol, hostName, port,
 					request.getRequestLine().getUri());					
-//				HttpHost httpHost = new HttpHost(hostName, port);
-//				context.setAttribute(ExecutionContext.HTTP_TARGET_HOST, httpHost);
 			} catch (MalformedURLException e) {
-				//e.printStackTrace();
 			}
 		}
 		return null;
