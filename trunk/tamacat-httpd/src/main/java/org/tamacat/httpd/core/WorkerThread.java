@@ -62,9 +62,10 @@ public class WorkerThread extends Thread {
     @Override
 	public void run() {
     	counter.countUp();
-        HttpContext context = new BasicHttpContext(null);
+        HttpContext context = null;
     	try {
             while (Thread.interrupted() == false) {
+            	context = new BasicHttpContext(null);
                 this.service.handleRequest(conn, context);
                 
                 HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
@@ -99,7 +100,7 @@ public class WorkerThread extends Thread {
         	LOG.error("Error: " + e.getMessage());
         	LOG.debug(ExceptionUtils.getStackTrace(e)); //debug
         } finally {
-            if (context.getAttribute(CONNECTION_DO_NOT_CLOSED) == null) {
+            if (context != null && context.getAttribute(CONNECTION_DO_NOT_CLOSED) == null) {
             	shutdown();
             } else {
             	conn.setWebSocketSupport(true);
