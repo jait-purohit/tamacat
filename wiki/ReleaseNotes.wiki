@@ -1,6 +1,12 @@
 #summary One-sentence summary of this page.
 #labels Phase-Support
 = Release Notes =
+==1.0.1 Release (2012-10-23)==
+------------------------
+* Bug fix When httpcore-4.2.2 is used, a reverseUrl infinite loop error occurs in ReverseProxyHandler. (Issue 3)
+* Bug fix virtual host. (Host header with port number)
+* Use HttpCore-4.2.2/HttpClient-4.2.1
+
 ==1.0 Release (2012-06-14)==
 ------------------------
 The highlights in the tamacat-httpd-1.0 are the following:
