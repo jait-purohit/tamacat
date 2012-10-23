@@ -95,7 +95,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 		File file = new File(docsRoot, getDecodeUri(path.replace(serviceUrl.getPath(), "/")));
 		///// 404 NOT FOUND /////
 		if (!file.exists()) {
-			LOG.trace("File " + file.getPath() + " not found");
+			LOG.info("File " + file.getPath() + " not found");
 			throw new NotFoundException();
 		}
 		///// 403 FORBIDDEN /////
