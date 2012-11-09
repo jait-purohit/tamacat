@@ -16,6 +16,7 @@ import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 import org.tamacat.httpd.util.RequestUtils;
+import org.tamacat.httpd.util.SubnetUtils;
 
 public class ClientIPAccessControlFilterTest {
 
@@ -217,7 +218,6 @@ public class ClientIPAccessControlFilterTest {
 		}
 	}
 	
-	
 	@Test
 	public void testAllowAndDeny1() throws Exception {
 		filter.setAllow("192.168.10.123");
@@ -228,6 +228,68 @@ public class ClientIPAccessControlFilterTest {
 		filter.doFilter(request, response, context);
 		
 		InetAddress denyAddress = InetAddress.getByName("10.1.1.1");
+		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
+		try {
+			filter.doFilter(request, response, context);
+			fail();
+		} catch (Exception e) {
+			assertTrue(e instanceof ForbiddenException);
+		}
+	}
+	
+	@Test
+	public void testSubnetmask() throws Exception {
+		String address = "192.168.10.0/28";
+		assertEquals(true, new SubnetUtils(address).getInfo().isInRange("192.168.10.1"));
+		assertEquals(false, new SubnetUtils(address).getInfo().isInRange("192.168.10.100"));
+	}
+	
+	@Test
+	public void testAllowSubnet1() throws Exception {
+		filter.setAllow("192.168.10.0/28");
+		
+		InetAddress allowAddress = InetAddress.getByName("192.168.10.10");
+		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
+		filter.doFilter(request, response, context);
+		
+		InetAddress denyAddress = InetAddress.getByName("192.168.10.110");
+		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
+		try {
+			filter.doFilter(request, response, context);
+			fail();
+		} catch (Exception e) {
+			assertTrue(e instanceof ForbiddenException);
+		}
+	}
+	
+	@Test
+	public void testDenySubnet1() throws Exception {
+		filter.setDeny("192.168.10.0/28");
+		
+		InetAddress allowAddress = InetAddress.getByName("192.168.10.110");
+		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
+		filter.doFilter(request, response, context);
+		
+		InetAddress denyAddress = InetAddress.getByName("192.168.10.10");
+		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
+		try {
+			filter.doFilter(request, response, context);
+			fail();
+		} catch (Exception e) {
+			assertTrue(e instanceof ForbiddenException);
+		}
+	}
+	
+	@Test
+	public void testAllowDenySubnet1() throws Exception {
+		filter.setAllow("192.168.10.0/28");
+		filter.setDeny("192.168.11.0/28");
+		
+		InetAddress allowAddress = InetAddress.getByName("192.168.10.10");
+		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowAddress);
+		filter.doFilter(request, response, context);
+		
+		InetAddress denyAddress = InetAddress.getByName("192.168.11.10");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		try {
 			filter.doFilter(request, response, context);
