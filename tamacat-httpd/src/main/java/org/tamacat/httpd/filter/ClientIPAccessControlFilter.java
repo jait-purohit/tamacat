@@ -14,7 +14,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ForbiddenException;
-import org.tamacat.httpd.util.IpAddressMatcher;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.SubnetUtils;
 import org.tamacat.httpd.util.SubnetUtils.SubnetInfo;
