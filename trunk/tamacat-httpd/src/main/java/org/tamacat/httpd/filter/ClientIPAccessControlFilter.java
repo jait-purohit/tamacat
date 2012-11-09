@@ -4,7 +4,9 @@
  */
 package org.tamacat.httpd.filter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.http.HttpRequest;
@@ -12,19 +14,26 @@ import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ForbiddenException;
+import org.tamacat.httpd.util.IpAddressMatcher;
 import org.tamacat.httpd.util.RequestUtils;
+import org.tamacat.httpd.util.SubnetUtils;
+import org.tamacat.httpd.util.SubnetUtils.SubnetInfo;
+import org.tamacat.util.StringUtils;
 
 public class ClientIPAccessControlFilter implements RequestFilter {
 
 	private HashMap<String, Integer> allows = new HashMap<String, Integer>();
 	private HashMap<String, Integer> denies = new HashMap<String, Integer>();
+	
+	private List<SubnetInfo> allowNetmasks = new ArrayList<SubnetInfo>();
+	private List<SubnetInfo> denyNetmasks = new ArrayList<SubnetInfo>();
+
 	protected ServiceUrl serviceUrl;
 
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
 		String client = RequestUtils.getRemoteIPAddress(context);
-		
 		boolean ipv6 = RequestUtils.isRemoteIPv6Address(context);
 		String[] matcher = null;
 		if (ipv6) {
@@ -52,8 +61,16 @@ public class ClientIPAccessControlFilter implements RequestFilter {
 			}
 		}
 		if (isAllow == false) {
+			for (SubnetInfo allow : allowNetmasks) {
+				if (allow.isInRange(client)) {
+					isAllow = true;
+					break;	
+				}
+			}
+		}
+		if (isAllow == false) {
 			//allows only -> denied all.
-			if (denies.size() == 0) {
+			if (denies.size() == 0 && denyNetmasks.size() == 0) {
 				throw new ForbiddenException();
 			}
 			//match denies -> denied.
@@ -61,6 +78,11 @@ public class ClientIPAccessControlFilter implements RequestFilter {
 				String address = entry.getKey();
 				int octet = entry.getValue();
 				if (address.equals(matcher[octet-1]) || "*".equals(address)) {
+					throw new ForbiddenException();
+				}
+			}
+			for (SubnetInfo deny : denyNetmasks) {
+				if (deny.isInRange(client)) {
 					throw new ForbiddenException();
 				}
 			}
@@ -98,6 +120,21 @@ public class ClientIPAccessControlFilter implements RequestFilter {
 				}
 				pattern.append(ip[i]);
 			}
+		} else if (address.indexOf('/') >= 0) {
+			String[] ipmask = address.split("/");
+			if (ipmask.length == 2) {
+				//String ip = ipmask[0];
+				int netmask = StringUtils.parse(ipmask[1],0);
+				if (netmask > 0) {
+					//InetAddressUtils.isIPv4Address(address);
+					if (isAllow) {
+						allowNetmasks.add(new SubnetUtils(address).getInfo());
+					} else {
+						denyNetmasks.add(new SubnetUtils(address).getInfo());
+					}
+				}
+			}
+			
 		} else {
 			//match full.
 			if (isAllow) {
