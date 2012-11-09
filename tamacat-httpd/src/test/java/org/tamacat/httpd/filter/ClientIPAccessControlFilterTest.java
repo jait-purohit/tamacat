@@ -50,6 +50,10 @@ public class ClientIPAccessControlFilterTest {
 		InetAddress denyAddress = InetAddress.getByName("10.1.1.1");
 		context.setAttribute(RequestUtils.REMOTE_ADDRESS, denyAddress);
 		filter.doFilter(request, response, context);
+		
+		InetAddress allowIPv6Address = InetAddress.getByName("fe80::21f:5bff:fe33:bd68");
+		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowIPv6Address);
+		filter.doFilter(request, response, context);
 	}
 	
 	@Test
@@ -144,6 +148,15 @@ public class ClientIPAccessControlFilterTest {
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
 		}
+		
+		InetAddress allowIPv6Address = InetAddress.getByName("fe80::21f:5bff:fe33:bd68");
+		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowIPv6Address);
+		try {
+			filter.doFilter(request, response, context);
+			fail();
+		} catch (Exception e) {
+			assertTrue(e instanceof ForbiddenException);
+		}
 	}
 	
 	@Test
@@ -216,6 +229,10 @@ public class ClientIPAccessControlFilterTest {
 		} catch (Exception e) {
 			assertTrue(e instanceof ForbiddenException);
 		}
+		
+		InetAddress allowIPv6Address = InetAddress.getByName("fe80::21f:5bff:fe33:bd68");
+		context.setAttribute(RequestUtils.REMOTE_ADDRESS, allowIPv6Address);
+		filter.doFilter(request, response, context);
 	}
 	
 	@Test
