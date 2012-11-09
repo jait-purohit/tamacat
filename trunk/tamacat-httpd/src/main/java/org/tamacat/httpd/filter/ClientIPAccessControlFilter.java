@@ -27,7 +27,7 @@ public class ClientIPAccessControlFilter implements RequestFilter {
 		String client = RequestUtils.getRemoteIPAddress(context);
 		boolean isAllow = false;
 		for (IpAddressMatcher allow : allowMatchers) {
-			if (allow.matches(client)) {
+			if ("0.0.0.0/0".equals(allow.getIpAddress()) || allow.matches(client)) {
 				isAllow = true;
 				break;
 			}
@@ -38,7 +38,7 @@ public class ClientIPAccessControlFilter implements RequestFilter {
 				throw new ForbiddenException();
 			}
 			for (IpAddressMatcher deny : denyMatchers) {
-				if (deny.matches(client)) {
+				if ("0.0.0.0/0".equals(deny.getIpAddress()) || deny.matches(client)) {
 					throw new ForbiddenException();
 				}
 			}
@@ -81,7 +81,6 @@ public class ClientIPAccessControlFilter implements RequestFilter {
 		} else if ("*".equals(address)) {
 			address = "0.0.0.0/0";
 		}
-
 		IpAddressMatcher matcher = new IpAddressMatcher(address);
 		if (isAllow) {
 			allowMatchers.add(matcher);
