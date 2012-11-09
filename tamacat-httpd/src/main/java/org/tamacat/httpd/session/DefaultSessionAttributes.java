@@ -4,8 +4,13 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
+
 public class DefaultSessionAttributes extends HashMap<String, Object> implements SessionAttributes {
 
+	static final Log LOG = LogFactory.getLog(DefaultSessionAttributes.class);
+	
 	private static final long serialVersionUID = -8046047687990935361L;
 
 	@Override
@@ -26,7 +31,7 @@ public class DefaultSessionAttributes extends HashMap<String, Object> implements
 	@Override
 	public void setAttribute(String key, Object value) {
 		if (value != null && !(value instanceof Serializable)) {
-			System.err.println("SessionAttributes#setAttribute value is not Serializable: "
+			LOG.warn("SessionAttributes#setAttribute value is not Serializable: "
 				+ value.getClass().getName());
 		}
 		super.put(key, value);
