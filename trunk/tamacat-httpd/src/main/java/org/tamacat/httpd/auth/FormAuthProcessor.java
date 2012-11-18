@@ -282,7 +282,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 		String username = RequestUtils.getParameter(context, usernameKey);
 		String password = RequestUtils.getParameter(context, passwordKey);
 		if (StringUtils.isNotEmpty(username)) {
-			if (authComponent != null) {
+			if (authComponent != null && authComponent.getAuthUser(username, context) != null) {
 				if (authComponent.getAuthUser(username, context).isEncrypted()) {
 					password = getEncryptedPassword(password);
 				}
