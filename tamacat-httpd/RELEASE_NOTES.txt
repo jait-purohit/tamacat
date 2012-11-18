@@ -1,3 +1,10 @@
+Release 1.0.2 (2012-11-18)
+------------------------
+The highlights in the tamacat-httpd-1.1 are the following:
+* This is a maintenance release that fixes a number of bugs.
+* ClientIPAccessControlFilter support subnetmask.
+* Use HttpCore-4.2.2/HttpClient-4.2.2
+
 Release 1.0.1 (2012-10-23)
 ------------------------
 The highlights in the tamacat-httpd-1.0.1 are the following:
