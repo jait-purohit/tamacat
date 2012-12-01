@@ -1,6 +1,12 @@
 #summary One-sentence summary of this page.
 #labels Phase-Support
 = Release Notes =
+==1.0.2 Release (2012-11-18)==
+------------------------
+ * This is a maintenance release that fixes a number of bugs.
+ * ClientIPAccessControlFilter support subnetmask.
+ * Use HttpCore-4.2.2/HttpClient-4.2.2
+
 ==1.0.1 Release (2012-10-23)==
 ------------------------
  * Bug fix When httpcore-4.2.2 is used, a reverseUrl infinite loop error occurs in ReverseProxyHandler. (Issue 3)
