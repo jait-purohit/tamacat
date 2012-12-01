@@ -12,15 +12,12 @@
         </li>
       </ul>
       <br />
-      
-        <ul>
-          <li>SVN Repository. (read-only)<br />
-            <a href="http://tamacat.googlecode.com/svn/trunk/" target="_blank">
-             <span>http://tamacat.googlecode.com/svn/trunk/</span></a>
-          </li>
-        </ul>
-       </div>
-
+      <ul>
+        <li>SVN Repository. (read-only)<br />
+          <a href="http://tamacat.googlecode.com/svn/trunk/" target="_blank">
+           <span>http://tamacat.googlecode.com/svn/trunk/</span></a>
+        </li>
+      </ul>
     </div>
     #parse("htdocs/common/footer.vm")
   </div>
