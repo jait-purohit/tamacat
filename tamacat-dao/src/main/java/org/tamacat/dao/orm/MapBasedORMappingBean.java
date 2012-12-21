@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.util.MappingUtils;
+import org.tamacat.util.StringUtils;
 
 /**
  * Map based ORMaping bean.
@@ -23,7 +24,7 @@ public class MapBasedORMappingBean extends LinkedHashMap<String, Object> impleme
     protected SetFilter setfilter;
     
     public String getValue(Column column) {
-    	return MappingUtils.parse(column, super.get(MappingUtils.getColumnName(column)));
+    	return val(column);
     }
     
     public String val(Column column) {
@@ -31,8 +32,7 @@ public class MapBasedORMappingBean extends LinkedHashMap<String, Object> impleme
     }
     
     public MapBasedORMappingBean setValue(Column column, String value) {
-        put(MappingUtils.getColumnName(column), value);
-        return this;
+        return val(column, value);
     }
     
     public MapBasedORMappingBean val(Column column, Object value) {
@@ -79,6 +79,14 @@ public class MapBasedORMappingBean extends LinkedHashMap<String, Object> impleme
         } else {
             return updated.contains(name);
         }
+    }
+    
+    public boolean isEmpty(Column column) {
+    	return StringUtils.isEmpty(val(column));
+    }
+    
+    public boolean isNotEmpty(Column column) {
+    	return StringUtils.isNotEmpty(val(column));
     }
     
     public static String parse(Object data) {
