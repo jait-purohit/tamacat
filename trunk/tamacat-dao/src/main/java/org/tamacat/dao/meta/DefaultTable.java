@@ -38,6 +38,10 @@ public class DefaultTable implements Table {
     public Collection<Column> getColumns() {
         return (Collection<Column>) columns.clone();
     }
+    
+    public Column[] columns() {
+    	return columns.toArray(new Column[columns.size()]);
+    }
 
     @Override
     public Collection<Column> getPrimaryKeys() {
@@ -93,7 +97,7 @@ public class DefaultTable implements Table {
     public boolean equalsTable(Object target) {
     	if (target == null) return false;
     	if (target instanceof Column) {
-    		return equals(((Column)target).getTablea());
+    		return equals(((Column)target).getTable());
     	} else if (target instanceof Table) {
     		return equals(((Table)target));
     	} else {

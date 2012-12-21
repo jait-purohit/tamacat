@@ -14,7 +14,7 @@ public class DaoFactory {
 	static DIContainer di = DI.configure("orm.xml");
 	
 	@SuppressWarnings("unchecked")
-	public static <T>T getRdbDao(Class<T> type) {
+	public static <T>T getDao(Class<T> type) {
 		try {
 			return (T) di.getBean(type.getName());
 		} catch (DIContainerException e) {

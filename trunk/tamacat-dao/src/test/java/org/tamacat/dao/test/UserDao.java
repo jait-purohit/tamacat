@@ -19,13 +19,13 @@ public class UserDao extends DaoAdapter<User> {
     public User search(User data) {
         Query<User> query = createQuery()
             .addSelectColumns(User.TABLE.getColumns())
-            .andWhere(param(User.USER_ID, Condition.EQUAL, data.getValue(User.USER_ID)));
+            .where(param(User.USER_ID, Condition.EQUAL, data.getValue(User.USER_ID)));
         return super.search(query);
     }
 
     public Collection<User> searchList(Search search, Sort sort) {
         Query<User> query = createQuery()
-            .addSelectColumns(User.TABLE.getColumns()).andSearch(search, sort);
+            .addSelectColumns(User.TABLE.getColumns()).and(search, sort);
         return super.searchList(query, search.getStart(), search.getMax());
     }
 

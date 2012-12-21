@@ -106,11 +106,11 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
         return parser.value(column, condition, values);
     }
 
-    public Search createRdbSearch() {
+    public Search createSearch() {
         return new Search();
     }
 
-    public Sort createRdbSort() {
+    public Sort createSort() {
         return new Sort();
     }
 
@@ -174,7 +174,7 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
      * @throws DaoException
      */
     public void handleException(Throwable cause) {
-    	DaoEvent event = createRdbDaoEvent();
+    	DaoEvent event = createDaoEvent();
    		getTransactionHandler().handleException(event, cause);
         throw new DaoException(cause);
     }
@@ -207,16 +207,16 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
     	return callerDao != null? callerDao : getClass();
     }
     
-    DaoEvent createRdbDaoEvent(String sql) {
+    DaoEvent createDaoEvent(String sql) {
     	return new DaoEventImpl(getCallerDaoClass(), sql);
     }
     
-    DaoEvent createRdbDaoEvent() {
+    DaoEvent createDaoEvent() {
     	return new DaoEventImpl(getCallerDaoClass());
     }
 
     protected ResultSet executeQuery(String sql) throws DaoException {
-    	DaoEvent event = createRdbDaoEvent(sql);
+    	DaoEvent event = createDaoEvent(sql);
        	getExecuteHandler().handleBeforeExecuteQuery(event);
         ResultSet rs = dbm.executeQuery(sql);
         getExecuteHandler().handleAfterExecuteQuery(event);
@@ -224,7 +224,7 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
     }
 
     protected int executeUpdate(String sql) throws DaoException {
-    	DaoEvent event = createRdbDaoEvent(sql);
+    	DaoEvent event = createDaoEvent(sql);
     	getExecuteHandler().handleBeforeExecuteUpdate(event);
         int result = dbm.executeUpdate(sql);
         TransactionStateManager.getInstance().executed();
@@ -233,7 +233,7 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
     }
     
     protected int executeUpdate(String sql, int index, InputStream in) throws DaoException {
-    	DaoEvent event = createRdbDaoEvent(sql);
+    	DaoEvent event = createDaoEvent(sql);
     	getExecuteHandler().handleBeforeExecuteUpdate(event);
     	PreparedStatement stmt = dbm.preparedStatement(sql);
    		int result = BlobUtils.executeUpdate(stmt, index, in);
@@ -243,7 +243,7 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
     }
     
     protected void commit() throws DaoException {
-    	DaoEvent event = createRdbDaoEvent();
+    	DaoEvent event = createDaoEvent();
     	getTransactionHandler().handleBeforeCommit(event);
     	dbm.commit();
     	TransactionStateManager.getInstance().commit();
@@ -251,7 +251,7 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
     }
     
     protected void rollback() throws DaoException {
-    	DaoEvent event = createRdbDaoEvent();
+    	DaoEvent event = createDaoEvent();
     	getTransactionHandler().handleBeforeRollback(event);
     	dbm.rollback();
    		TransactionStateManager.getInstance().rollback();
@@ -266,7 +266,7 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
     	DBUtils.setAutoCommitFalse(dbm);
     	if (isTransactionStarted() == false) {
     		TransactionStateManager.getInstance().begin();
-    		event = createRdbDaoEvent();
+    		event = createDaoEvent();
     		getTransactionHandler().handleTransantionStart(event);
     	}
     }
@@ -281,7 +281,7 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
     	}
     	DBUtils.setAutoCommitTrue(dbm);
     	TransactionStateManager.getInstance().end();
-    	DaoEvent event = createRdbDaoEvent();
+    	DaoEvent event = createDaoEvent();
 		getTransactionHandler().handleTransantionEnd(event);
     }
     
@@ -291,7 +291,7 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
     
     protected void release() {
     	dbm.release();
-    	DaoEvent event = createRdbDaoEvent();
+    	DaoEvent event = createDaoEvent();
     	getTransactionHandler().handleRelease(event);
     }
 

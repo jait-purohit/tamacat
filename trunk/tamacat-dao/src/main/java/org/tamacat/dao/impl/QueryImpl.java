@@ -53,6 +53,13 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         selectColumns.addAll(columns);
         return this;
     }
+    
+    public Query<ORMappingSupport> select(Column... columns) {
+    	for (Column column : columns) {
+    		selectColumns.add(column);
+    	}
+        return this;
+    }
 
     public Collection<Column> getSelectColumns() {
         return selectColumns;
@@ -67,7 +74,14 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         updateColumns.addAll(columns);
         return this;
     }
-
+    
+    public Query<ORMappingSupport> addUpdateColumns(Column... columns) {
+    	for (Column column : columns) {
+    		updateColumns.add(column);
+    	}
+        return this;
+    }
+    
     public Collection<Column> getUpdateColumns() {
         return updateColumns;
     }
@@ -85,7 +99,7 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
             	blobIndex++;
             }
             select.append(getColumnName(col));
-            tables.add(col.getTablea());
+            tables.add(col.getTable());
         }
         StringBuffer from = new StringBuffer();
         for (Table tab : tables) {
@@ -106,7 +120,7 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         blobIndex = 0;
         String tableName = null;
         for (Column col : updateColumns.toArray(new Column[updateColumns.size()])) {
-            if (tableName == null) tableName = col.getTablea().getTableName();
+            if (tableName == null) tableName = col.getTable().getTableName();
             if (columns.length() > 0) {
                 columns.append(",");
                 values.append(",");
@@ -147,7 +161,7 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         String tableName = null;
         blobIndex = 0;
         for (Column col : updateColumns.toArray(new Column[updateColumns.size()])) {
-            if (tableName == null) tableName = col.getTablea().getTableName();
+            if (tableName == null) tableName = col.getTable().getTableName();
             if (col.isPrimaryKey()) {
             	if (useAutoPrimaryKeyUpdate) {
             		addWhere("and", parser.value(col, Condition.EQUAL, data.getValue(col)));
@@ -187,7 +201,7 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         String tableName = null;
         if (updateColumns != null) {
         	for (Column col : updateColumns.toArray(new Column[updateColumns.size()])) {
-            	if (tableName == null) tableName = col.getTablea().getTableName();
+            	if (tableName == null) tableName = col.getTable().getTableName();
             	if (! useAutoPrimaryKeyUpdate) {
             		addWhere("and", parser.value(col, Condition.EQUAL, data.getValue(col)));
             	} else if (col.isPrimaryKey()) {
@@ -214,9 +228,9 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         return query + where.toString();
     }
 
-    public Query<ORMappingSupport> addConnectTable(Column col1, Column col2) {
-        tables.add(col1.getTablea());
-        tables.add(col2.getTablea());
+    public Query<ORMappingSupport> join(Column col1, Column col2) {
+        tables.add(col1.getTable());
+        tables.add(col2.getTable());
         if (where.length() == 0) {
             where.append(" " + WHERE + " ");
         } else {
@@ -226,23 +240,31 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
         return this;
     }
 
-    public Query<ORMappingSupport> andSearch(Search search, Sort sort) {
+    public Query<ORMappingSupport> where(Search search, Sort sort) {
+        return addSearch("and", search, sort);
+    }
+    
+    public Query<ORMappingSupport> and(Search search, Sort sort) {
         return addSearch("and", search, sort);
     }
 
-    public Query<ORMappingSupport> orSearch(Search search, Sort sort) {
+    public Query<ORMappingSupport> or(Search search, Sort sort) {
         return addSearch("or", search, sort);
     }
 
-    public Query<ORMappingSupport> andWhere(String sql) {
+    public Query<ORMappingSupport> where(String sql) {
+        return addWhere("and", sql);
+    }
+    
+    public Query<ORMappingSupport> and(String sql) {
         return addWhere("and", sql);
     }
 
-    public Query<ORMappingSupport> orWhere(String sql) {
+    public Query<ORMappingSupport> or(String sql) {
         return addWhere("or", sql);
     }
     
-    public Query<ORMappingSupport> andSort(Sort sort) {
+    public Query<ORMappingSupport> orderBy(Sort sort) {
     	if (sort.getSortString().length() > 0) {
             if (orderBy.length() == 0) {
                 orderBy.append(" " + ORDER_BY + " ");
@@ -268,7 +290,7 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
 
     private Query<ORMappingSupport> addSearch(String condition, Search search, Sort sort) {
         addWhere(condition, search.getSearchString());
-        return andSort(sort);
+        return orderBy(sort);
     }
     
     public String getTimestampString() {

@@ -48,9 +48,15 @@ public class DefaultColumn implements Column {
         this.columnName = columnName;
         return this;
     }
+    public DefaultColumn column(String columnName) {
+        this.columnName = columnName;
+        return this;
+    }
+    
     public String getDefaultValue() {
         return defaultValue;
     }
+    
     public DefaultColumn setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
         return this;
@@ -62,6 +68,7 @@ public class DefaultColumn implements Column {
         this.isAutoGenerateId = isAutoGenerateId;
         return this;
     }
+    
     public boolean isAutoTimestamp() {
         return isAutoTimestamp;
     }
@@ -97,11 +104,16 @@ public class DefaultColumn implements Column {
         this.type = type;
         return this;
     }
+    public DefaultColumn type(DataType type) {
+        this.type = type;
+        return this;	
+    }
+    
     public Column setTable(Table table) {
         this.table = table;
         return this;
     }
-    public Table getTablea() {
+    public Table getTable() {
         return table;
     }
 }

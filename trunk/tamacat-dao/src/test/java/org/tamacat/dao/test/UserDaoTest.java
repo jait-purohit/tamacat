@@ -22,7 +22,7 @@ public class UserDaoTest {
 
     @Before
     public void setUp() throws Exception {
-        dao = DaoFactory.getRdbDao(UserDao.class);
+        dao = DaoFactory.getDao(UserDao.class);
     }
 
     @After
@@ -48,7 +48,7 @@ public class UserDaoTest {
 
     @Test
     public void testSearchListSearchSort() {
-        Search search = dao.createRdbSearch().and(User.USER_ID, Condition.LIKE_PART, "admin");
+        Search search = dao.createSearch().and(User.USER_ID, Condition.LIKE_PART, "admin");
         search.setMax(10);
         Sort sort = dao.createRdbSort();
         Collection<User> list = dao.searchList(search, sort);

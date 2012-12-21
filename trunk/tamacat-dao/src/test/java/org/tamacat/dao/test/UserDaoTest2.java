@@ -24,7 +24,7 @@ public class UserDaoTest2 {
 
     @BeforeClass
     public static void createTable() {
-    	UserDao dao = DaoFactory.getRdbDao(UserDao.class);
+    	UserDao dao = DaoFactory.getDao(UserDao.class);
     	try {
         	dao.setDatabase("javadb");
     		dao.createTable();
@@ -37,7 +37,7 @@ public class UserDaoTest2 {
     
     @AfterClass
     public static void dropTable() {
-    	UserDao dao = DaoFactory.getRdbDao(UserDao.class);
+    	UserDao dao = DaoFactory.getDao(UserDao.class);
     	try {
         	dao.setDatabase("javadb");
     		dao.dropTable();
@@ -77,7 +77,7 @@ public class UserDaoTest2 {
 
     @Test
     public void testSearchListSearchSort() {
-        Search search = dao.createRdbSearch().and(User.USER_ID, Condition.LIKE_PART, "admin");
+        Search search = dao.createSearch().and(User.USER_ID, Condition.LIKE_PART, "admin");
         search.setMax(10);
         Sort sort = dao.createRdbSort();
         Collection<User> list = dao.searchList(search, sort);

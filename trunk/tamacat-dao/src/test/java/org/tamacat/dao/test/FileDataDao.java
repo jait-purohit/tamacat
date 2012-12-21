@@ -9,7 +9,7 @@ public class FileDataDao extends DaoAdapter<FileData> {
 	public FileData search(FileData data) {
         Query<FileData> query = createQuery()
             .addSelectColumns(FileData.TABLE.getColumns())
-            .andWhere(param(FileData.FILE_ID, Condition.EQUAL,
+            .where(param(FileData.FILE_ID, Condition.EQUAL,
             			data.getValue(FileData.FILE_ID)));
         return super.search(query);
     }
@@ -26,7 +26,7 @@ public class FileDataDao extends DaoAdapter<FileData> {
         Query<FileData> query = createQuery()
         	.addUpdateColumn(FileData.UPDATE_DATE)
         	.addUpdateColumn(FileData.FILE_NAME)
-        	.andWhere(
+        	.where(
         		param(FileData.FILE_ID, Condition.EQUAL,
         				data.getValue(FileData.FILE_ID))
         	);

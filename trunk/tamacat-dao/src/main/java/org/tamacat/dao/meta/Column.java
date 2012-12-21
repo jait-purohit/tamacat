@@ -18,7 +18,7 @@ public interface Column {
     String getColumnName();
 
     DataType getType();
-
+    
     boolean isPrimaryKey();
     boolean isNotNull();
     boolean isAutoTimestamp();
@@ -27,5 +27,5 @@ public interface Column {
     String getDefaultValue();
 
     Column setTable(Table table);
-    Table getTablea();
+    Table getTable();
 }
