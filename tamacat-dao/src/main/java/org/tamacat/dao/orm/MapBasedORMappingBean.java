@@ -26,7 +26,16 @@ public class MapBasedORMappingBean extends LinkedHashMap<String, Object> impleme
     	return MappingUtils.parse(column, super.get(MappingUtils.getColumnName(column)));
     }
     
+    public String val(Column column) {
+    	return MappingUtils.parse(column, super.get(MappingUtils.getColumnName(column)));
+    }
+    
     public MapBasedORMappingBean setValue(Column column, String value) {
+        put(MappingUtils.getColumnName(column), value);
+        return this;
+    }
+    
+    public MapBasedORMappingBean val(Column column, Object value) {
         put(MappingUtils.getColumnName(column), value);
         return this;
     }

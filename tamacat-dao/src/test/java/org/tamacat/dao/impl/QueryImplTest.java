@@ -110,7 +110,7 @@ public class QueryImplTest {
 
 	@Test
 	public void testAddConnectTable() {
-		query.addConnectTable(User.DEPT_ID, Dept.DEPT_ID);
+		query.join(User.DEPT_ID, Dept.DEPT_ID);
 		assertEquals(" WHERE users.dept_id=dept.dept_id", query.where.toString());
 	}
 

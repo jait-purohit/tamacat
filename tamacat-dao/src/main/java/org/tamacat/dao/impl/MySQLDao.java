@@ -20,7 +20,7 @@ public class MySQLDao<T extends ORMappingSupport> extends Dao<T> {
     public MySQLDao() {}
 
     @Override
-    public Search createRdbSearch() {
+    public Search createSearch() {
         return new MySQLSearch();
     }
     

@@ -14,21 +14,29 @@ public interface Query<T extends ORMappingSupport>{
 
     Query<T> addSelectColumn(Column column);
     Query<T> addSelectColumns(Collection<Column> columns);
+    Query<T> select(Column... columns);
+
     Collection<Column> getSelectColumns();
 
     Query<T> addUpdateColumn(Column column);
     Query<T> addUpdateColumns(Collection<Column> columns);
+    Query<T> addUpdateColumns(Column... columns);
+
     Collection<Column> getUpdateColumns();
 
     Query<ORMappingSupport> addTable(Table table);
     
-    Query<T> addConnectTable(Column col1, Column col2);
+    Query<T> join(Column col1, Column col2);
 
-    Query<T> andSearch(Search search, Sort sort);
-    Query<T> orSearch(Search search, Sort sort);
-    Query<T> andWhere(String sql);
-    Query<T> orWhere(String sql);
-    Query<T> andSort(Sort sort);
+    Query<T> where(Search search, Sort sort);
+    Query<T> and(Search search, Sort sort);
+    Query<T> or(Search search, Sort sort);
+    
+    Query<T> where(String sql);
+    Query<T> and(String sql);
+    Query<T> or(String sql);
+    
+    Query<T> orderBy(Sort sort);
     
     String getSelectSQL();
 

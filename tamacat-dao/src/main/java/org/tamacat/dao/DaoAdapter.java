@@ -23,17 +23,17 @@ public class DaoAdapter<T extends ORMappingSupport> implements AutoCloseable {
     }
     
     protected DaoAdapter(Dao<T> delegate) {
-    	setRdbDao(delegate);
+    	setDao(delegate);
     }
 
     public void setDatabase(String dbname) {
     	Dao<T> delegate = new Dao<T>();
     	delegate.callerDao = getClass();
     	delegate.setDatabase(dbname);
-    	setRdbDao(delegate);
+    	setDao(delegate);
     }
     
-    public void setRdbDao(Dao<T> delegate) {
+    public void setDao(Dao<T> delegate) {
     	this.delegate = delegate;
     	delegate.setExecuteHandler(new LoggingDaoExecuterHandler());
         delegate.setTransactionHandler(new LoggingDaoTransactionHandler());
@@ -55,12 +55,12 @@ public class DaoAdapter<T extends ORMappingSupport> implements AutoCloseable {
         return delegate.createQuery();
     }
 
-    public Search createRdbSearch() {
-        return delegate.createRdbSearch();
+    public Search createSearch() {
+        return delegate.createSearch();
     }
 
     public Sort createRdbSort() {
-        return delegate.createRdbSort();
+        return delegate.createSort();
     }
 
     public T search(Query<T> query) {

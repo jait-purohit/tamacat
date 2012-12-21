@@ -23,7 +23,7 @@ public class MySQLDaoTest {
 
 	@Test
 	public void testCreateRdbSearch() {
-		dao.createRdbSearch();
+		dao.createSearch();
 		
 	}
 

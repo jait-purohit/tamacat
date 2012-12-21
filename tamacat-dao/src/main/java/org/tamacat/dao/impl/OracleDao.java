@@ -16,7 +16,7 @@ public class OracleDao<T extends ORMappingSupport> extends Dao<T> {
 	public OracleDao() {}
 	
     @Override
-    public Search createRdbSearch() {
+    public Search createSearch() {
         return new OracleSearch();
     }
     
