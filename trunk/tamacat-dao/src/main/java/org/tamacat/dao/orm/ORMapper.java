@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, TamaCat.org
+ * Copyright (c) 2008 Tamacat.org
  * All rights reserved.
  */
 package org.tamacat.dao.orm;
@@ -13,7 +13,6 @@ import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.meta.DataType;
 import org.tamacat.dao.util.MappingUtils;
 import org.tamacat.di.DI;
-import org.tamacat.di.DIContainerException;
 import org.tamacat.util.ClassUtils;
 
 public class ORMapper<T extends ORMappingSupport> {
@@ -35,8 +34,8 @@ public class ORMapper<T extends ORMappingSupport> {
         this.name = name;
     }
 
-    public void setPrototype(T protptype) {
-        this.data = protptype;
+    public void setPrototype(T prototype) {
+        this.data = prototype;
     }
 
     public void setPrototype(Class<T> type) {
@@ -49,10 +48,12 @@ public class ORMapper<T extends ORMappingSupport> {
 
     private T createPrototype() {
         T o = null;
-        if (name != null) {
+        if (xml != null && name != null) {
             T obj = DI.configure(xml).getBean(name, type);
-            if (obj == null) {
-            	throw new DIContainerException(name + " is not found.[" + xml + "]");
+            if (obj != null) {
+            	o = obj;
+            } else {
+            	//throw new DIContainerException(name + " is not found.[" + xml + "]");
             }
         }
         if (o == null && type != null) {

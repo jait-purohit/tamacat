@@ -8,7 +8,7 @@
     </property>
     <property name="url">
       <!-- <value><![CDATA[
-      	jdbc:mysql://localhost:3306/test?useCompression=true&useUnicode=true&characterEncoding=utf8&dumpQueriesOnException=true&logSlowQueries=true&explainSlowQueries=true&slowQueryThresholdMillis=100
+      	jdbc:mysql://localhost:3306/test?useCompression=true&useUnicode=true&characterEncoding=utf8&dumpQueriesOnException=true
       ]]></value> -->
       <value>jdbc:mock://localhost/test</value>
     </property>

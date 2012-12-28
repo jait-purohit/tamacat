@@ -6,19 +6,22 @@ package org.tamacat.dao;
 
 import org.tamacat.di.DI;
 import org.tamacat.di.DIContainer;
-import org.tamacat.di.DIContainerException;
 import org.tamacat.util.ClassUtils;
 
 public class DaoFactory {
-
-	static DIContainer di = DI.configure("orm.xml");
 	
-	@SuppressWarnings("unchecked")
 	public static <T>T getDao(Class<T> type) {
-		try {
-			return (T) di.getBean(type.getName());
-		} catch (DIContainerException e) {
-			return ClassUtils.newInstance(type);
-		}
+		return ClassUtils.newInstance(type);
+	}
+	
+	/**
+	 * Get the Dao object from orm.xml
+	 * @param id
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T>T getDao(String id) {
+		DIContainer di = DI.configure("orm.xml");
+		return (T) di.getBean(id);
 	}
 }

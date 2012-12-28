@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, TamaCat.org
+ * Copyright (c) 2008 Tamacat.org
  * All rights reserved.
  */
 package org.tamacat.dao.test;
@@ -33,7 +33,7 @@ public class UserDaoTest {
     @Test
     public void testCreate() {
         User user = new User();
-        user.setValue(User.USER_ID, "admin").setValue(User.PASSWORD, "password");
+        user.val(User.USER_ID, "admin").val(User.PASSWORD, "password");
         int result = dao.create(user);
         assertEquals(1, result);
     }
@@ -41,7 +41,7 @@ public class UserDaoTest {
     @Test
     public void testSearchUser() {
         User user = new User();
-        user.setValue(User.USER_ID, "admin");
+        user.val(User.USER_ID, "admin");
         user = dao.search(user);
         assertNotNull(user);
     }
@@ -50,7 +50,7 @@ public class UserDaoTest {
     public void testSearchListSearchSort() {
         Search search = dao.createSearch().and(User.USER_ID, Condition.LIKE_PART, "admin");
         search.setMax(10);
-        Sort sort = dao.createRdbSort();
+        Sort sort = dao.createSort();
         Collection<User> list = dao.searchList(search, sort);
         for (User u : list) {
             assertNotNull(u);
@@ -63,7 +63,7 @@ public class UserDaoTest {
     @Test
     public void testUpdate() {
         User user = new User();
-        user.setValue(User.USER_ID, "admin").setValue(User.PASSWORD, "password");
+        user.val(User.USER_ID, "admin").val(User.PASSWORD, "password");
         int result = dao.update(user);
         assertEquals(1, result);
     }
@@ -71,7 +71,7 @@ public class UserDaoTest {
     @Test
     public void testDelete() {
         User user = new User();
-        user.setValue(User.USER_ID, "admin");
+        user.val(User.USER_ID, "admin");
         int result = dao.delete(user);
         assertEquals(1, result);
     }

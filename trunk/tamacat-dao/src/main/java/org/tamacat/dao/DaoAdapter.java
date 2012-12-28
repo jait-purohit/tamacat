@@ -59,7 +59,7 @@ public class DaoAdapter<T extends ORMappingSupport> implements AutoCloseable {
         return delegate.createSearch();
     }
 
-    public Sort createRdbSort() {
+    public Sort createSort() {
         return delegate.createSort();
     }
 
