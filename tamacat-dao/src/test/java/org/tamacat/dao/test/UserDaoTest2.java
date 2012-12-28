@@ -79,7 +79,7 @@ public class UserDaoTest2 {
     public void testSearchListSearchSort() {
         Search search = dao.createSearch().and(User.USER_ID, Condition.LIKE_PART, "admin");
         search.setMax(10);
-        Sort sort = dao.createRdbSort();
+        Sort sort = dao.createSort();
         Collection<User> list = dao.searchList(search, sort);
         for (User u : list) {
             assertNotNull(u);
