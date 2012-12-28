@@ -50,7 +50,7 @@ public class OracleDao<T extends ORMappingSupport> extends Dao<T> {
         	//}
             int add = 0;
             while (rs.next()) {
-                T o = mapping(columns, rs).getMappedObject();
+                T o = mapping(columns, rs);
                 list.add(o);
                 add ++;
                 if (max > 0 && add >= max) break;

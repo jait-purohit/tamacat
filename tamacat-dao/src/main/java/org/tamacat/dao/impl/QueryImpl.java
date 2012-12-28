@@ -43,13 +43,8 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
     	tables.add(table);
     	return this;
     }
-    
-    public Query<ORMappingSupport> addSelectColumn(Column column) {
-        selectColumns.add(column);
-        return this;
-    }
 
-    public Query<ORMappingSupport> addSelectColumns(Collection<Column> columns) {
+    public Query<ORMappingSupport> select(Collection<Column> columns) {
         selectColumns.addAll(columns);
         return this;
     }

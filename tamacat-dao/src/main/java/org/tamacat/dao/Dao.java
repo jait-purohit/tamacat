@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, TamaCat.org
+ * Copyright (c) 2007-2012 tamacat.org
  * All rights reserved.
  */
 package org.tamacat.dao;
@@ -90,10 +90,6 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
     public void setPrototype(Class<T> prototype) {
         orm.setPrototype(prototype);
     }
-    
-    public void setPrototype(String name) {
-        orm.setPrototype(name);
-    }
 
     public DBAccessManager getDBAccessManager() {
     	if (dbm == null) {
@@ -124,7 +120,7 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
         T o = null;
         try {
             if (rs.next()) {
-                o = mapping(query.getSelectColumns(), rs).getMappedObject();
+                o = mapping(query.getSelectColumns(), rs);
             } else {
                 o = orm.getMappedObject();
             }
@@ -136,8 +132,8 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
         return o;
     }
 
-    protected ORMapper<T> mapping(Collection<Column> columns, ResultSet rs) {
-        return orm.mapping(columns, rs) ;
+    protected T mapping(Collection<Column> columns, ResultSet rs) {
+        return orm.mapping(columns, rs);
     }
     
     public Collection<T> searchList(Query<T> query) {
@@ -154,7 +150,7 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
         	}
             int add = 0;
             while (rs.next()) {
-                T o = mapping(columns, rs).getMappedObject();
+                T o = mapping(columns, rs);
                 list.add(o);
                 add ++;
                 if (max > 0 && add >= max) break;

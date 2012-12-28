@@ -8,7 +8,7 @@ public class FileDataDao extends DaoAdapter<FileData> {
     
 	public FileData search(FileData data) {
         Query<FileData> query = createQuery()
-            .addSelectColumns(FileData.TABLE.getColumns())
+            .select(FileData.TABLE.getColumns())
             .where(param(FileData.FILE_ID, Condition.EQUAL,
             			data.getValue(FileData.FILE_ID)));
         return super.search(query);
