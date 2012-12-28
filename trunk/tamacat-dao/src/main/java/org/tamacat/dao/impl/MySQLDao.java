@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, TamaCat.org
+ * Copyright (c) 2007-2012 tamacat.org
  * All rights reserved.
  */
 package org.tamacat.dao.impl;
@@ -39,7 +39,7 @@ public class MySQLDao<T extends ORMappingSupport> extends Dao<T> {
         	}
             int add = 0;
             while (rs.next()) {
-                T o = mapping(columns, rs).getMappedObject();
+                T o = mapping(columns, rs);
                 list.add(o);
                 add ++;
                 if (max > 0 && add >= max) break;

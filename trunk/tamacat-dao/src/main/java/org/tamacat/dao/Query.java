@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, TamaCat.org
+ * Copyright (c) 2008-2012 tamacat.org
  * All rights reserved.
  */
 package org.tamacat.dao;
@@ -12,8 +12,8 @@ import org.tamacat.dao.orm.ORMappingSupport;
 
 public interface Query<T extends ORMappingSupport>{
 
-    Query<T> addSelectColumn(Column column);
-    Query<T> addSelectColumns(Collection<Column> columns);
+    //Query<T> addSelectColumn(Column column);
+    Query<T> select(Collection<Column> columns);
     Query<T> select(Column... columns);
 
     Collection<Column> getSelectColumns();

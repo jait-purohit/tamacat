@@ -29,13 +29,13 @@ public class QueryImplTest {
 
 	@Test
 	public void testGetSelectColumns_addSelectColumn() {
-		query.addSelectColumn(User.USER_ID);
+		query.select(User.USER_ID);
 		assertEquals(1, query.getSelectColumns().size());
 	}
 	
 	@Test
 	public void testGetSelectColumns_addSelectColumns() {
-		query.addSelectColumns(User.TABLE.getColumns());
+		query.select(User.TABLE.getColumns());
 		assertEquals(3, query.getSelectColumns().size());
 	}
 	
@@ -53,9 +53,7 @@ public class QueryImplTest {
 	
 	@Test
 	public void testGetSelectSQL_AddSelectColumn() {
-		query.addSelectColumn(User.USER_ID);
-		query.addSelectColumn(User.PASSWORD);
-		query.addSelectColumn(User.DEPT_ID);
+		query.select(User.USER_ID, User.PASSWORD, User.DEPT_ID);
 		assertEquals(
 			"SELECT users.user_id,users.password,users.dept_id FROM users",
 			query.getSelectSQL()
@@ -64,7 +62,7 @@ public class QueryImplTest {
 
 	@Test
 	public void testGetSelectSQL_AddSelectColumns() {
-		query.addSelectColumns(User.TABLE.getColumns());
+		query.select(User.TABLE.getColumns());
 		assertEquals(
 			"SELECT users.user_id,users.password,users.dept_id FROM users",
 			query.getSelectSQL()
