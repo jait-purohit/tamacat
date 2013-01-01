@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.tamacat</groupId>
   <artifactId>tamacat-core</artifactId>
-  <version>1.0</version>
+  <version>1.0.1</version>
   <packaging>jar</packaging>
   <name>tamacat-core</name>
   <url>http://code.google.com/p/tamacat/</url>

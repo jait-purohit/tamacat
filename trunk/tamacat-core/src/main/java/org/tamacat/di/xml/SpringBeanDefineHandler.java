@@ -219,6 +219,7 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
 
     protected void endBean() {
         beans.put(bean.getId(), bean);
+        bean = null;
     }
 
     //protected void endInnerBean() {
@@ -228,6 +229,7 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
     protected void endProperty() {
         if (prop != null) { //<ref bean="xxx" />
         	bean.getPropertyList().add(prop);
+        	prop = null;
         }
     }
 
@@ -237,12 +239,16 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
         } else {
             prop.setName(nameBuffer, modeBuffer);
             prop.setValue(getValueBuffer());
+            nameBuffer = null;
+            modeBuffer = null;
+            valueBuffer = new StringBuilder();
         }
     }
     
     protected void endConstructorArg() {
         bean.addConstructorArgs(arg);
         isConstrctor = false;
+        arg = null;
     }
 
     protected void endRef() {
@@ -250,6 +256,7 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
             //none.
         } else {
             bean.getPropertyList().add(ref);
+            ref = null;
         }
     }
 
