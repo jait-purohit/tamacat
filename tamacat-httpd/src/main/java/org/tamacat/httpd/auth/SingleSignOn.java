@@ -24,7 +24,7 @@ public interface SingleSignOn {
 	 * @param context
 	 * @return
 	 */
-	boolean isSigned(HttpRequest request, HttpContext context);
+	boolean isSigned(HttpRequest request, HttpResponse response, HttpContext context);
 	
 	/**
 	 * Get a signed user, when isSigned() returns true. 
@@ -33,5 +33,15 @@ public interface SingleSignOn {
 	 * @param context
 	 * @return signed username. (not returns null)
 	 */
-	String getSignedUser(HttpRequest request, HttpContext context);
+	String getSignedUser(HttpRequest request, HttpResponse response, HttpContext context);
+	
+	/**
+	 * unsign
+	 * @param remoteUser
+	 * @param request
+	 * @param response
+	 * @param context
+	 * @since 1.1
+	 */
+	void unsign(String remoteUser, HttpRequest request, HttpResponse response, HttpContext context);
 }

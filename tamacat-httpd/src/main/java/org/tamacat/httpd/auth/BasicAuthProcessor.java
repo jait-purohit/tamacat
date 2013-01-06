@@ -96,8 +96,8 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 					}
 				}
 			}
-		} else if (singleSignOn != null && singleSignOn.isSigned(request, context)) {
-			return singleSignOn.getSignedUser(request, context);
+		} else if (singleSignOn != null && singleSignOn.isSigned(request, response, context)) {
+			return singleSignOn.getSignedUser(request, response, context);
 		}
 		throw new UnauthorizedException();
 	}

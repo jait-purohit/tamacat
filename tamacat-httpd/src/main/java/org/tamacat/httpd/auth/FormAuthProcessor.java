@@ -293,8 +293,8 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 					return username;
 				}
 			}
-		} else if (singleSignOn != null && singleSignOn.isSigned(request, context)) {
-			return singleSignOn.getSignedUser(request, context);
+		} else if (singleSignOn != null && singleSignOn.isSigned(request, response, context)) {
+			return singleSignOn.getSignedUser(request, response, context);
 		}
 		throw new UnauthorizedException();
 	}

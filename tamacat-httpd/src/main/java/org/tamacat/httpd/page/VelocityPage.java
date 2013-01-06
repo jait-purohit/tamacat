@@ -50,10 +50,15 @@ public class VelocityPage {
 	
 	public String getPage(HttpRequest request, HttpResponse response, 
 			VelocityContext	context, String page) {
+		return getTemplatePage(request, response, context, page+".vm");
+    }
+    
+	public String getTemplatePage(HttpRequest request, HttpResponse response, 
+			VelocityContext	context, String page) {
 		context.put("url", request.getRequestLine().getUri());
 		context.put("method", request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH));
     	try {
-   			Template template = getTemplate(page + ".vm");
+   			Template template = getTemplate(page);
    			StringWriter writer = new StringWriter();
    			template.merge(context, writer);
    			return writer.toString();
@@ -64,7 +69,7 @@ public class VelocityPage {
     		throw new ServiceUnavailableException(e);
     	}
     }
-    
+	
     protected Template getTemplate(String page) throws Exception {
     	return velocityEngine.getTemplate(page, "UTF-8");
     }
