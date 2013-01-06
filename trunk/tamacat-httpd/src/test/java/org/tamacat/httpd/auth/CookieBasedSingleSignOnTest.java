@@ -50,18 +50,20 @@ public class CookieBasedSingleSignOnTest {
 	public void testGetSignedUser() {
 		CookieBasedSingleSignOn sso = new CookieBasedSingleSignOn();
 		HttpRequest request = new BasicHttpRequest("GET", "");
+		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = new BasicHttpContext();
 		context.setAttribute(sso.remoteUserKey, "admin");
-		assertEquals("admin", sso.getSignedUser(request, context));
+		assertEquals("admin", sso.getSignedUser(request, response, context));
 	}
 	
 	@Test
 	public void testIsSigned() {
 		CookieBasedSingleSignOn sso = new CookieBasedSingleSignOn();
 		HttpRequest request = new BasicHttpRequest("GET", "");
+		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = new BasicHttpContext();
 		context.setAttribute(sso.remoteUserKey, "admin");
-		assertEquals(true, sso.isSigned(request, context));
+		assertEquals(true, sso.isSigned(request, response, context));
 	}
 
 	@Test
@@ -71,15 +73,15 @@ public class CookieBasedSingleSignOnTest {
 		HttpContext context = new BasicHttpContext();
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		try {
-			assertEquals(false, sso.isSigned(request, context));
+			assertEquals(false, sso.isSigned(request, response, context));
 		} catch (UnauthorizedException e) {
 			assertTrue(true);
 		}
 		sso.sign("admin", request, response, context);
 		context.setAttribute(sso.remoteUserKey, "admin");
-		assertEquals(true, sso.isSigned(request, context));
+		assertEquals(true, sso.isSigned(request, response, context));
 		
-		assertEquals("admin", sso.getSignedUser(request, context));
+		assertEquals("admin", sso.getSignedUser(request, response, context));
 	}
 	
 	@Test
@@ -90,7 +92,34 @@ public class CookieBasedSingleSignOnTest {
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 
 		sso.sign("admin", request, response, context);
-		assertEquals(true, sso.isSigned(request, context));
-		assertEquals("admin", sso.getSignedUser(request, context));
+		assertEquals(true, sso.isSigned(request, response, context));
+		assertEquals("admin", sso.getSignedUser(request, response, context));
+	}
+	
+	@Test
+	public void testUnsign() {
+		CookieBasedSingleSignOn sso = new CookieBasedSingleSignOn();
+		HttpRequest request = new BasicHttpRequest("GET", "");
+		HttpContext context = new BasicHttpContext();
+		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
+
+		sso.sign("admin", request, response, context);
+		context.setAttribute(sso.remoteUserKey, "admin");
+		assertEquals(true, sso.isSigned(request, response, context));
+		assertEquals("admin", sso.getSignedUser(request, response, context));
+		
+		sso.unsign("admin", request, response, context);
+		try {
+			assertEquals(false, sso.isSigned(request, response, context));
+			fail();
+		} catch (UnauthorizedException e) {
+			assertTrue(true);
+		}
+		try {
+			assertEquals(null, sso.getSignedUser(request, response, context));
+			fail();
+		} catch (UnauthorizedException e) {
+			assertTrue(true);
+		}
 	}
 }

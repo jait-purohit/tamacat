@@ -23,6 +23,7 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.util.IOUtils;
 import org.tamacat.util.StringUtils;
 
@@ -57,6 +58,10 @@ public class GzipResponseInterceptor implements HttpResponseInterceptor {
         HttpRequest request = (HttpRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
         Header aeheader = request != null ? request.getFirstHeader(ACCEPT_ENCODING) : null;
         if (aeheader != null && useCompress(response.getFirstHeader(HTTP.CONTENT_TYPE))) {
+            String ua = HeaderUtils.getHeader(request, "User-Agent");        
+            if (ua != null && ua.indexOf("MSIE 6.0") >= 0) {
+            	return; //Skipped for IE6 bug(KB823386)
+            }
 	        HeaderElement[] codecs = aeheader.getElements();
 	        for (int i=0; i<codecs.length; i++) {
 	            if (codecs[i].getName().equalsIgnoreCase(GZIP_CODEC)) {

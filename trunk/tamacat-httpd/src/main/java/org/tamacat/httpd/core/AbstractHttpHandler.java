@@ -206,9 +206,24 @@ public abstract class AbstractHttpHandler implements HttpHandler {
     protected String getContentType(File file) {
     	if (file == null) return DEFAULT_CONTENT_TYPE;
     	String fileName = file.getName();
-    	String ext = fileName.substring(fileName.lastIndexOf('.')+1, fileName.length());
-    	String contentType =  getMimeTypes().getProperty(ext.toLowerCase());
+    	String contentType =  getContentType(fileName);
     	return StringUtils.isNotEmpty(contentType)? contentType : DEFAULT_CONTENT_TYPE;
+    }
+    
+	/**
+	 * <p>The contents type is acquired from the extension. <br>
+	 * The correspondence of the extension and the contents type is
+	 *  acquired from the {@code mime-types.properties} path. <br>
+	 * When there is no file and the extension cannot be acquired,
+	 * an null is returned. 
+	 * @param path
+	 * @return contents type
+	 * @since 1.1
+	 */
+    protected String getContentType(String path) {
+    	String ext = path.substring(path.lastIndexOf('.')+1, path.length());
+    	String contentType =  getMimeTypes().getProperty(ext.toLowerCase());
+    	return contentType;
     }
     
     /**

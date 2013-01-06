@@ -4,6 +4,8 @@
  */
 package org.tamacat.httpd.auth;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,6 +19,7 @@ import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.StringUtils;
+import org.tamacat.util.UniqueCodeGenerator;
 
 /**
  * This class implements Single Sign-On with cookie.
@@ -26,7 +29,11 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 	static final Log LOG = LogFactory.getLog(CookieBasedSingleSignOn.class);
 	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
 	
-	protected String singleSignOnCookieName;
+	protected String singleSignOnCookieName = "SingleSignOnUser";
+	protected String singleSignOnCookieMessageDigest = "SingleSignOnMessageDigest";
+	protected String singleSignOnCookieNonce = "SingleSignOnNonce";
+	protected String privateKey = UniqueCodeGenerator.generate();
+
 	protected Set<String> freeAccessExtensions = new HashSet<String>();
 
 	/**
@@ -45,6 +52,10 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 		this.singleSignOnCookieName = "SingleSignOnUser";
 	}
 	
+	public void setPrivateKey(String privateKey) {
+		this.privateKey = privateKey;
+	}
+	
 	/**
 	 * Set the remote user key name. (optional)
 	 * @param remoteUserKey
@@ -60,6 +71,14 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 	 */
 	public void setSingleSignOnCookieName(String singleSignOnCookieName) {
 		this.singleSignOnCookieName = singleSignOnCookieName;
+	}
+	
+	public void setSingleSignOnCookieMessageDigest(String singleSignOnCookieMessageDigest) {
+		this.singleSignOnCookieMessageDigest = singleSignOnCookieMessageDigest;
+	}
+
+	public void setSingleSignOnCookieNonce(String singleSignOnCookieNonce) {
+		this.singleSignOnCookieNonce = singleSignOnCookieNonce;
 	}
 	
 	/**
@@ -91,28 +110,24 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 	}
 	
 	@Override
-	public String getSignedUser(HttpRequest request, HttpContext context) {
-		String remoteUser = (String) context.getAttribute(remoteUserKey);
-		if (StringUtils.isNotEmpty(remoteUser)) {
-			return remoteUser;
-		} else {
-			Header[] cookieHeaders = request.getHeaders("Cookie");
-			String user = null;
-			for (Header h : cookieHeaders) {
-				String cookie = h.getValue();
-				user = HeaderUtils.getCookieValue(cookie, singleSignOnCookieName);
-				if (StringUtils.isNotEmpty(user)) {
-					LOG.trace("CookieUser: " + user);
-					return user;
-				}
+	public String getSignedUser(HttpRequest request, HttpResponse response, HttpContext context) {
+		Header[] cookieHeaders = request.getHeaders("Cookie");
+		for (Header h : cookieHeaders) {
+			String cookie = h.getValue();
+			String user = HeaderUtils.getCookieValue(cookie, singleSignOnCookieName);
+			String nonce = HeaderUtils.getCookieValue(cookie, singleSignOnCookieNonce);
+			String md = HeaderUtils.getCookieValue(cookie, singleSignOnCookieMessageDigest);
+			if (checkMessageDigest(user, nonce, md)) {
+				LOG.trace("CookieUser: " + user);
+				return user;
 			}
 		}
 		throw new UnauthorizedException();
 	}
 	
 	@Override
-	public boolean isSigned(HttpRequest request, HttpContext context) {
-		String user = getSignedUser(request, context);
+	public boolean isSigned(HttpRequest request, HttpResponse response, HttpContext context) {
+		String user = getSignedUser(request, response, context);
 		if (StringUtils.isNotEmpty(user)) {
 			return true;
 		}
@@ -126,9 +141,61 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 	@Override
 	public void sign(String remoteUser, HttpRequest request, HttpResponse response, HttpContext context) {
 		if (StringUtils.isNotEmpty(remoteUser)) {
+			context.setAttribute(remoteUserKey, remoteUser);
 			response.addHeader("Set-Cookie", singleSignOnCookieName + "=" + remoteUser + "; Path=/");
-			request.addHeader("Cookie",	singleSignOnCookieName + "=" + remoteUser); //for Reverse Proxy
+			//for Reverse Proxy
+			request.addHeader("Cookie",	singleSignOnCookieName + "=" + remoteUser);
 			LOG.trace("Set-Cookie: " + singleSignOnCookieName + "=" + remoteUser + "; Path=/");
+			
+			String nonce = generateNonce();
+			if (nonce != null) {
+				response.addHeader("Set-Cookie", singleSignOnCookieNonce + "=" + nonce + "; Path=/");
+				request.addHeader("Cookie", singleSignOnCookieNonce + "=" + nonce);
+			}
+			String md = getMessageDigest(remoteUser, nonce);
+			if (md != null) {
+				response.addHeader("Set-Cookie", singleSignOnCookieMessageDigest + "=" + md + "; Path=/");
+				request.addHeader("Cookie", singleSignOnCookieMessageDigest + "=" + md);
+			}
 		}
+	}
+
+	@Override
+	public void unsign(String remoteUser, HttpRequest request,
+			HttpResponse response, HttpContext context) {
+		if (StringUtils.isNotEmpty(remoteUser)) {
+			context.removeAttribute(remoteUserKey);
+			request.removeHeaders("Cookie"); //for Reverse Proxy
+			response.addHeader("Set-Cookie", singleSignOnCookieName + "=; Path=/; expires=Thu, 1-Jan-1970 00:00:00 GMT");
+			response.addHeader("Set-Cookie", singleSignOnCookieNonce + "=; Path=/; expires=Thu, 1-Jan-1970 00:00:00 GMT");
+			response.addHeader("Set-Cookie", singleSignOnCookieMessageDigest + "=; Path=/; expires=Thu, 1-Jan-1970 00:00:00 GMT");
+		}
+	}
+	
+	protected String getMessageDigest(String remoteUser, String nonce) {
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] md = digest.digest((remoteUser+":"+nonce+":"+privateKey).getBytes());
+			StringBuilder buffer = new StringBuilder();
+		    for(int i=0; i<md.length; i++){
+		        String tmp = Integer.toHexString(md[i] & 0xff);
+		        if(tmp.length()==1){
+		        	buffer.append('0').append(tmp);
+		        } else {
+		        	buffer.append(tmp);
+		    	}
+		    }
+		    return buffer.toString();
+		} catch (NoSuchAlgorithmException e) {
+			return null;
+		}
+	}
+	
+	protected String generateNonce() {
+		return UniqueCodeGenerator.generate();
+	}
+	
+	protected boolean checkMessageDigest(String remoteUser, String nonce, String md) {
+		return md != null && md.equals(getMessageDigest(remoteUser, nonce));
 	}
 }
