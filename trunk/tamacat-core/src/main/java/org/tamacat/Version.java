@@ -18,6 +18,6 @@ package org.tamacat;
 public class Version {
 
     public String toString() {
-        return "1.0"; //getClass().getPackage().getImplementationVersion();
+        return "1.1"; //getClass().getPackage().getImplementationVersion();
     }
 }
