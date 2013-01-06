@@ -20,7 +20,7 @@ public class BeanDefine implements Cloneable {
     private Method initMethod;
     private Method factoryMethod;
 
-    private boolean isSingleton = true;
+    private boolean isSingleton; // = true; -> v1.1 default false
     private List<BeanDefineParam> properties = new ArrayList<BeanDefineParam>();
     private List<BeanConstructorParam> constructorArgs = new ArrayList<BeanConstructorParam>();
 

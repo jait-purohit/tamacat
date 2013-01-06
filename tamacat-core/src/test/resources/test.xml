@@ -166,7 +166,7 @@
   </bean>
   
   <!-- Factory method test (singleton) -->
-  <bean id="FactoryMethodSingleton" class="org.tamacat.core.CoreFactory" factory-method="createCore" />
+  <bean id="FactoryMethodSingleton" class="org.tamacat.core.CoreFactory" factory-method="createCore" scope="singleton" />
   
   <!-- Factory method test (not singleton) -->
   <bean id="FactoryMethodNotSingleton" class="org.tamacat.core.CoreFactory" factory-method="createCore" scope="prototype" />

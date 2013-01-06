@@ -1,7 +1,7 @@
 Implementation-Title: tamacat-core
-Implementation-Version: 1.0
+Implementation-Version: 1.1
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.tamacat.core
 Bundle-Name: tamacat-core
 Bundle-Vendor: TAMACAT.ORG
-Bundle-Version: 1.0
+Bundle-Version: 1.1

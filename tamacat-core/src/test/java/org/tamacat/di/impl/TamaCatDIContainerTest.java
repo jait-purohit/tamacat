@@ -65,7 +65,7 @@ public class TamaCatDIContainerTest extends TestCase {
         assertNotNull(core);
         //assertTrue(core instanceof Core);
         Core core2 = (Core) di.getBean("Core");
-        assertEquals(core2, core);
+        assertTrue(core2 != core);
         
         Core core3 = (Core) di.getBean("Core-singleton");
         assertNotNull(core3);
