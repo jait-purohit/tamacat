@@ -1,6 +1,15 @@
+Release 1.0.3 (2013-01-21)
+------------------------
+The highlights in the tamacat-httpd-1.0.3 are the following:
+* This is a maintenance release that fixes a number of bugs.(Issue:4,5)
+* Issue 4: Fault correction by which a scheme and authrity are contained in the path of reverse request URL.
+* tamacat-core-1.0.1 (Issue 6: DIContainer missing initialize bug)
+* Use HttpCore-4.2.3/HttpClient-4.2.3
+* We advise users of previous versions to upgrade.
+
 Release 1.0.2 (2012-11-18)
 ------------------------
-The highlights in the tamacat-httpd-1.1 are the following:
+The highlights in the tamacat-httpd-1.0.2 are the following:
 * This is a maintenance release that fixes a number of bugs.
 * ClientIPAccessControlFilter support subnetmask.
 * Use HttpCore-4.2.2/HttpClient-4.2.2
