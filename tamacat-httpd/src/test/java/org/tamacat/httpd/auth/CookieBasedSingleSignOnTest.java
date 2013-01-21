@@ -49,17 +49,24 @@ public class CookieBasedSingleSignOnTest {
 	@Test
 	public void testGetSignedUser() {
 		CookieBasedSingleSignOn sso = new CookieBasedSingleSignOn();
-		HttpRequest request = new BasicHttpRequest("GET", "");
+		sso.setPrivateKey("1234567890");
+		HttpRequest request = new BasicHttpRequest("GET", "/");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = new BasicHttpContext();
 		context.setAttribute(sso.remoteUserKey, "admin");
+		request.addHeader("Cookie", "SingleSignOnUser=admin; SingleSignOnNonce=6524693d16834c9db03dca944e3ac733; SingleSignOnMessageDigest=eee19b492c39e474a36b790f87f4ff72b05b002a61e72e5cc67881487ad062d3");
+
 		assertEquals("admin", sso.getSignedUser(request, response, context));
 	}
 	
 	@Test
 	public void testIsSigned() {
 		CookieBasedSingleSignOn sso = new CookieBasedSingleSignOn();
-		HttpRequest request = new BasicHttpRequest("GET", "");
+		sso.setPrivateKey("1234567890");
+
+		HttpRequest request = new BasicHttpRequest("GET", "/");
+		request.addHeader("Cookie", "SingleSignOnUser=admin; SingleSignOnNonce=6524693d16834c9db03dca944e3ac733; SingleSignOnMessageDigest=eee19b492c39e474a36b790f87f4ff72b05b002a61e72e5cc67881487ad062d3");
+
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = new BasicHttpContext();
 		context.setAttribute(sso.remoteUserKey, "admin");
@@ -69,11 +76,15 @@ public class CookieBasedSingleSignOnTest {
 	@Test
 	public void testSign() {
 		CookieBasedSingleSignOn sso = new CookieBasedSingleSignOn();
-		HttpRequest request = new BasicHttpRequest("GET", "");
+		sso.setPrivateKey("1234567890");
+
+		HttpRequest request = new BasicHttpRequest("GET", "/");
+		request.addHeader("Cookie", "SingleSignOnUser=admin; SingleSignOnNonce=6524693d16834c9db03dca944e3ac733; SingleSignOnMessageDigest=eee19b492c39e474a36b790f87f4ff72b05b002a61e72e5cc67881487ad062d3");
+
 		HttpContext context = new BasicHttpContext();
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		try {
-			assertEquals(false, sso.isSigned(request, response, context));
+			assertEquals(true, sso.isSigned(request, response, context));
 		} catch (UnauthorizedException e) {
 			assertTrue(true);
 		}
@@ -87,7 +98,11 @@ public class CookieBasedSingleSignOnTest {
 	@Test
 	public void testSign2() {
 		CookieBasedSingleSignOn sso = new CookieBasedSingleSignOn();
-		HttpRequest request = new BasicHttpRequest("GET", "");
+		sso.setPrivateKey("1234567890");
+
+		HttpRequest request = new BasicHttpRequest("GET", "/");
+		request.addHeader("Cookie", "SingleSignOnUser=admin; SingleSignOnNonce=6524693d16834c9db03dca944e3ac733; SingleSignOnMessageDigest=eee19b492c39e474a36b790f87f4ff72b05b002a61e72e5cc67881487ad062d3");
+
 		HttpContext context = new BasicHttpContext();
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 
@@ -99,7 +114,11 @@ public class CookieBasedSingleSignOnTest {
 	@Test
 	public void testUnsign() {
 		CookieBasedSingleSignOn sso = new CookieBasedSingleSignOn();
-		HttpRequest request = new BasicHttpRequest("GET", "");
+		sso.setPrivateKey("1234567890");
+
+		HttpRequest request = new BasicHttpRequest("GET", "/");
+		request.addHeader("Cookie", "SingleSignOnUser=admin; SingleSignOnNonce=6524693d16834c9db03dca944e3ac733; SingleSignOnMessageDigest=eee19b492c39e474a36b790f87f4ff72b05b002a61e72e5cc67881487ad062d3");
+
 		HttpContext context = new BasicHttpContext();
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 
