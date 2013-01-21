@@ -57,13 +57,26 @@ public class ReverseHttpEntityEnclosingRequestTest {
 	public void testReverseHttpRequest() throws Exception {
 		ReverseHttpEntityEnclosingRequest request =
 			new ReverseHttpEntityEnclosingRequest(
-					new BasicHttpRequest("GET","/test2/test.jsp"),
+					new BasicHttpRequest("POST","/test2/test.jsp"),
 					new BasicHttpContext(),
 					reverseUrl);
 		request.setEntity(new StringEntity("test"));
 		
 		assertNotNull(request.getAllHeaders());
-		assertEquals("http://localhost:8080/test/test.jsp", request.getRequestLine().getUri());
+		assertEquals("/test/test.jsp", request.getRequestLine().getUri());
+	}
+	
+	@Test
+	public void testReverseHttpRequest2() throws Exception {
+		ReverseHttpEntityEnclosingRequest request =
+			new ReverseHttpEntityEnclosingRequest(
+					new BasicHttpRequest("POST","/test2/test.jsp?id=123&key=value"),
+					new BasicHttpContext(),
+					reverseUrl);
+		request.setEntity(new StringEntity("test"));
+		
+		assertNotNull(request.getAllHeaders());
+		assertEquals("/test/test.jsp?id=123&key=value", request.getRequestLine().getUri());
 	}
 	
 //	@Test

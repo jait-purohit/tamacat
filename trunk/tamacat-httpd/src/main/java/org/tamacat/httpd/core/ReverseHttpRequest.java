@@ -51,7 +51,7 @@ public class ReverseHttpRequest extends BasicHttpRequest {
 	public ReverseHttpRequest(HttpRequest request, HttpContext context, ReverseUrl reverseUrl) {
 		super(new BasicRequestLine(
 	    		request.getRequestLine().getMethod(),
-	    		reverseUrl.getReverseUrl(request.getRequestLine().getUri()).toString(),
+	    		reverseUrl.getReverseUrl(request.getRequestLine().getUri()).getFile(),
 	    		request.getRequestLine().getProtocolVersion())
 		);
     	URL url = reverseUrl.getReverseUrl(request.getRequestLine().getUri());
