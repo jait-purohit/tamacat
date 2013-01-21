@@ -64,6 +64,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	protected HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
 	protected PlainSocketFactory socketFactory = PlainSocketFactory.getSocketFactory();
 	protected String proxyAuthorizationHeader = "X-ReverseProxy-Authorization";
+	protected String proxyOrignPathHeader = "X-ReverseProxy-Origin-Path"; //v1.1
 	protected ConnectionReuseStrategy connStrategy;
 	
 	/**
@@ -192,6 +193,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        	targetRequest = new ReverseHttpRequest(request, context, reverseUrl);
 	        }
 	        
+	        targetRequest.setHeader(proxyOrignPathHeader, serviceUrl.getPath()); //v1.1
+	        
 	        //forward remote user.
 	        ReverseUtils.setReverseProxyAuthorization(targetRequest, context, proxyAuthorizationHeader);
 	        try {
@@ -246,6 +249,16 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	 */
 	public void setProxyAuthorizationHeader(String proxyAuthorizationHeader) {
 		this.proxyAuthorizationHeader = proxyAuthorizationHeader;
+	}
+	
+	/**
+	 * Set the header name of Reverse Proxy Origin Path.
+	 * default: "X-ReverseProxy-Origin-Path"
+	 * @param proxyOrignPathHeader
+	 * @since 1.1
+	 */
+	public void setProxyOrignPathHeader(String proxyOrignPathHeader) {
+		this.proxyOrignPathHeader = proxyOrignPathHeader;
 	}
 	
 	@Override
