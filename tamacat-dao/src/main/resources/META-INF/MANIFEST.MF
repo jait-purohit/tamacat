@@ -1,7 +1,0 @@
-Implementation-Title: tamacat-dao
-Implementation-Version: 0.9
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.tamacat.dao
-Bundle-Name: tamacat-dao
-Bundle-Vendor: TAMACAT.ORG
-Bundle-Version: 0.9
