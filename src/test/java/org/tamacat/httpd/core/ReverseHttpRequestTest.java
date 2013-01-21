@@ -58,7 +58,19 @@ public class ReverseHttpRequestTest {
 					reverseUrl);
 		
 		assertNotNull(request.getAllHeaders());
-		assertEquals("http://localhost:8080/test/test.jsp", request.getRequestLine().getUri());
+		assertEquals("/test/test.jsp", request.getRequestLine().getUri());
+	}
+	
+	@Test
+	public void testReverseHttpRequest2() throws CloneNotSupportedException {
+		ReverseHttpRequest request =
+			new ReverseHttpRequest(
+					new BasicHttpRequest("GET","/test2/test.jsp?id=123&key=value"),
+					new BasicHttpContext(),
+					reverseUrl);
+		
+		assertNotNull(request.getAllHeaders());
+		assertEquals("/test/test.jsp?id=123&key=value", request.getRequestLine().getUri());
 	}
 	
 //	@Test
