@@ -20,13 +20,14 @@ import org.tamacat.util.StringUtils;
 /**
  * The abstract class of authentication processor.
  */
-public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFilter {
+public abstract class AbstractAuthProcessor implements RequestFilter,
+		ResponseFilter {
 
 	protected AuthComponent<?> authComponent;
 	protected String remoteUserKey = AuthComponent.REMOTE_USER_KEY;
 	protected ServiceUrl serviceUrl;
 	protected SingleSignOn singleSignOn;
-	protected String algorithmName; //ex. SHA-256
+	protected String algorithmName; // ex. SHA-256
 
 	protected Set<String> freeAccessExtensions = new HashSet<String>();
 
@@ -37,17 +38,18 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 			authComponent.init();
 		}
 	}
-	
+
 	@Override
 	public void afterResponse(HttpRequest request, HttpResponse response,
 			HttpContext context) {
 		if (authComponent != null) {
 			authComponent.release();
-		}		
+		}
 	}
-	
+
 	/**
 	 * Set the {@link AuthComponent}. (required)
+	 * 
 	 * @param authComponent
 	 */
 	public void setAuthComponent(AuthComponent<?> authComponent) {
@@ -56,31 +58,35 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 
 	/**
 	 * Set the remote user key name. (optional)
+	 * 
 	 * @param remoteUserKey
 	 */
 	public void setRemoteUserKey(String remoteUserKey) {
 		this.remoteUserKey = remoteUserKey;
 	}
-	
+
 	/**
 	 * Get the Key name of Remote user.
+	 * 
 	 * @return remoteUserKey
 	 */
 	public String getRemoteUserKey() {
 		return remoteUserKey;
 	}
-	
+
 	/**
 	 * Set the SingleSignOn object.
+	 * 
 	 * @param singleSignOn
 	 */
 	public void setSingleSignOn(SingleSignOn singleSignOn) {
 		this.singleSignOn = singleSignOn;
 	}
-	
+
 	/**
-	 * Whether it agrees to the extension that can be accessed
-	 * without the attestation is inspected.  
+	 * Whether it agrees to the extension that can be accessed without the
+	 * attestation is inspected.
+	 * 
 	 * @param uri
 	 * @return true: contains the freeAccessExtensions.
 	 */
@@ -88,7 +94,7 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 		if (freeAccessExtensions.size() > 0) {
 			int idx = uri.lastIndexOf(".");
 			if (idx >= 0) {
-				String ext = uri.substring(idx+1, uri.length()).toLowerCase().trim();
+				String ext = uri.substring(idx + 1, uri.length()).toLowerCase().trim();
 				return freeAccessExtensions.contains(ext);
 			}
 		}
@@ -97,7 +103,9 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 
 	/**
 	 * The extension skipping by the certification in comma seperated values.
-	 * @param freeAccessExtensions (CSV)
+	 * 
+	 * @param freeAccessExtensions
+	 *            (CSV)
 	 */
 	public void setFreeAccessExtensions(String freeAccessExtensions) {
 		String[] list = freeAccessExtensions.split(",");
@@ -105,25 +113,30 @@ public abstract class AbstractAuthProcessor implements RequestFilter, ResponseFi
 			this.freeAccessExtensions.add(ext.trim().replaceFirst("^\\.", "").toLowerCase());
 		}
 	}
-	
+
 	/**
-	 * Set the encryption algorithm for "getEncriptedPassword" method.
-	 * ex. "SHA-256"
+	 * Set the encryption algorithm for "getEncriptedPassword" method. ex.
+	 * "SHA-256"
+	 * 
 	 * @param algorithmName
 	 */
 	public void setPasswordEncryptionAlgorithm(String algorithmName) {
 		this.algorithmName = algorithmName;
 	}
-	
+
 	/**
-	 * Get the encrypted password.
-	 * Please set up the encryption algorithm by a "setPasswordEncryptedAlgorithm" method in advance.
-	 * if "algorithmName" is empty then returns a plain password.
-	 * @param password (Plain password)
+	 * Get the encrypted password. Please set up the encryption algorithm by a
+	 * "setPasswordEncryptedAlgorithm" method in advance. if "algorithmName" is
+	 * empty then returns a plain password.
+	 * 
+	 * @param password
+	 *            (Plain password)
 	 * @return encrypted password or plain password(algorithm is empty)
 	 */
 	protected String getEncryptedPassword(String password) {
-		if (StringUtils.isEmpty(password) || StringUtils.isEmpty(algorithmName)) return password;
+		if (StringUtils.isEmpty(password) || StringUtils.isEmpty(algorithmName)) {
+			return password;
+		}
 		try {
 			MessageDigest md = MessageDigest.getInstance(algorithmName);
 			md.update(password.getBytes());

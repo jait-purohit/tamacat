@@ -12,21 +12,19 @@ public class Digest {
 			String[] param = keyValue.trim().split("=");
 			if (param != null && param.length >= 2) {
 				String key = param[0].trim();
-	       		StringBuilder value = new StringBuilder(param[1]);
-	       		if (param.length > 2) {
-	       			for (int i=2; i<param.length; i++) {
-	       				value.append("=" + param[i]);
-	       			}
-	       		}
-	       		setParam(key, 
-	       			value.toString().replaceFirst("^\"", "")
-	       			.replaceFirst("\"$", ""));
+				StringBuilder value = new StringBuilder(param[1]);
+				if (param.length > 2) {
+					for (int i = 2; i < param.length; i++) {
+						value.append("=" + param[i]);
+					}
+				}
+				setParam(key, value.toString().replaceFirst("^\"", "").replaceFirst("\"$", ""));
 			}
 		}
 	}
-	
+
 	public Digest() {}
-	
+
 	public void setParam(String key, String value) {
 		this.params.put(key, value);
 	}
