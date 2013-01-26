@@ -5,18 +5,21 @@ import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
 /**
- * <p>{@code AbstractAuthComponent} is common implementation for {@code AuthComponent}.
- * AuthUser can be acquired from AuthUserManager when attested.
+ * <p>
+ * {@code AbstractAuthComponent} is common implementation for
+ * {@code AuthComponent}. AuthUser can be acquired from AuthUserManager when
+ * attested.
+ * 
  * @param <T> extends AuthUser
  */
 public abstract class AbstractAuthComponent<T extends AuthUser> implements AuthComponent<T> {
-	
+
 	static final Log LOG = LogFactory.getLog(AbstractAuthComponent.class);
-	
+
 	protected AuthUserCache cache;
 	protected int maxCacheSize = 100;
 	protected long cacheExpire = 30000;
-	
+
 	public void setMaxCacheSize(int maxCacheSize) {
 		this.maxCacheSize = maxCacheSize;
 	}
@@ -24,26 +27,25 @@ public abstract class AbstractAuthComponent<T extends AuthUser> implements AuthC
 	public void setCacheExpire(long cacheExpire) {
 		this.cacheExpire = cacheExpire;
 	}
-	
+
 	@Override
 	public void init() {
 		if (maxCacheSize > 0 && cacheExpire > 0) {
 			cache = new AuthUserCache(maxCacheSize, cacheExpire);
 		}
 	}
-	
+
 	@Override
 	public void release() {
 	}
-	
+
 	@Override
 	public boolean check(String id, String pass, HttpContext context) {
 		if (id != null && pass != null) {
 			if (cache != null) {
 				CacheSupportAuthUser u = cache.get(id);
 				if (u != null) {
-					if (id.equals(u.getAuthUsername())
-					 && pass.equals(u.getAuthPassword())) {
+					if (id.equals(u.getAuthUsername()) && pass.equals(u.getAuthPassword())) {
 						LOG.debug("use cache: " + u);
 						return true;
 					}
@@ -51,10 +53,9 @@ public abstract class AbstractAuthComponent<T extends AuthUser> implements AuthC
 			}
 			T user = getAuthUser(id, context);
 			if (user != null) {
-				if (id.equals(user.getAuthUsername())
-				 && pass.equals(user.getAuthPassword())) {
+				if (id.equals(user.getAuthUsername()) && pass.equals(user.getAuthPassword())) {
 					if (cache != null && user instanceof CacheSupportAuthUser) {
-						cache.put(id, (CacheSupportAuthUser)user);
+						cache.put(id, (CacheSupportAuthUser) user);
 					}
 					return true;
 				}

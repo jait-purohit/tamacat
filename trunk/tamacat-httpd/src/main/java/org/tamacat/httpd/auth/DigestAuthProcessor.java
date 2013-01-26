@@ -28,10 +28,10 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 
 	protected String algorithm = "MD5";
 	protected String qop = "auth";
-	
+
 	/**
-	 * Realm is changed.
-	 * Default realm is "Authentication required".
+	 * Realm is changed. Default realm is "Authentication required".
+	 * 
 	 * @param realm
 	 */
 	public void setRealm(String realm) {
@@ -40,6 +40,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Set the algorithm. Default algorithm is MD5
+	 * 
 	 * @param algorithm
 	 */
 	public void setAlgorithm(String algorithm) {
@@ -50,15 +51,16 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 	public void setPasswordEncryptionAlgorithm(String algorithmName) {
 		this.algorithmName = null;
 	}
-	
+
 	/**
 	 * Set the qop. Dejault is "auth".
+	 * 
 	 * @param qop
 	 */
 	public void setQop(String qop) {
 		this.qop = qop;
 	}
-	
+
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
@@ -80,24 +82,27 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 	}
 
 	/**
-	 * When the user authentication check and correct,
-	 * the username(login id) is returned. 
+	 * When the user authentication check and correct, the username(login id) is
+	 * returned.
+	 * 
 	 * @param request
 	 * @param response
 	 * @param context
 	 * @return username (login id)
 	 * @throws UnauthorizedException
 	 */
-	protected String checkUser(HttpRequest request, HttpResponse response, HttpContext context)
-			throws UnauthorizedException {
+	protected String checkUser(HttpRequest request, HttpResponse response,
+			HttpContext context) throws UnauthorizedException {
 		Header digestAuthLine = request.getFirstHeader(AUTHORIZATION);
 		if (digestAuthLine != null && StringUtils.isNotEmpty(digestAuthLine.getValue())) {
 			String line = digestAuthLine.getValue().replaceFirst("Digest ", "");
 			Digest digest = new Digest(line);
 
 			if (authComponent != null) {
-				AuthUser user = authComponent.getAuthUser(digest.getUsername(),	context);
-				if (user == null) throw new UnauthorizedException();
+				AuthUser user = authComponent.getAuthUser(digest.getUsername(), context);
+				if (user == null) {
+					throw new UnauthorizedException();
+				}
 				String username = digest.getUsername();
 				String password = digest.getResponse();
 				String hashedPassword = DigestUtils.getHashedPassword(request, user, digest);
@@ -110,7 +115,8 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 					return user.getAuthUsername();
 				}
 			}
-		} if (singleSignOn != null && singleSignOn.isSigned(request, response, context)) {
+		}
+		if (singleSignOn != null && singleSignOn.isSigned(request, response, context)) {
 			return singleSignOn.getSignedUser(request, response, context);
 		}
 		throw new UnauthorizedException();
@@ -118,12 +124,13 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Set the "WWW-Authenticate" response header of Digest authenticate realm.
+	 * 
 	 * @param response
 	 */
 	protected void setWWWAuthenticateHeader(HttpResponse response) {
 		response.addHeader(WWW_AUTHENTICATE, "Digest realm=\"" + realm + "\", "
-				+ "nonce=\"" + generateNonce() + "\", " + "algorithm=" + algorithm
-				+ ", qop=\"" + qop + "\"");
+				+ "nonce=\"" + generateNonce() + "\", " + "algorithm="
+				+ algorithm + ", qop=\"" + qop + "\"");
 	}
 
 	protected String generateNonce() {

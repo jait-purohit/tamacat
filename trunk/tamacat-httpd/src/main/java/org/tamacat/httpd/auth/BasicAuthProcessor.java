@@ -27,10 +27,9 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 
 	/** default realm. */
 	protected String realm = "Authentication required";
-	
+
 	@Override
-	public void doFilter(HttpRequest request, HttpResponse response,
-			HttpContext context) {
+	public void doFilter(HttpRequest request, HttpResponse response, HttpContext context) {
 		if ("OPTIONS".equalsIgnoreCase(request.getRequestLine().getMethod())) {
 			response.setStatusCode(HttpStatus.SC_NO_CONTENT);
 			return;
@@ -50,6 +49,7 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Set the "WWW-Authenticate" response header of Basic authenticate realm.
+	 * 
 	 * @param response
 	 */
 	protected void setWWWAuthenticateHeader(HttpResponse response) {
@@ -58,24 +58,24 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 	}
 
 	/**
-	 * Realm is changed.
-	 * Default realm is "Authentication required".
+	 * Realm is changed. Default realm is "Authentication required".
+	 * 
 	 * @param realm
 	 */
 	public void setRealm(String realm) {
 		this.realm = realm;
 	}
-	
+
 	/**
-	 * When the user authentication check and correct,
-	 * the username(login id) is returned. 
+	 * When the user authentication check and correct, the username(login id) is
+	 * returned.
+	 * 
 	 * @param request
 	 * @param context
 	 * @return username (login id)
 	 * @throws UnauthorizedException
 	 */
-	protected String checkUser(HttpRequest request, HttpResponse response, HttpContext context)
-			throws UnauthorizedException {
+	protected String checkUser(HttpRequest request, HttpResponse response, HttpContext context) throws UnauthorizedException {
 		Header basicAuthLine = request.getFirstHeader(AUTHORIZATION);
 		if (basicAuthLine != null && StringUtils.isNotEmpty(basicAuthLine.getValue())) {
 			String idpassBase64 = basicAuthLine.getValue().replaceFirst("Basic ", "");
