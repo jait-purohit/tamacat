@@ -69,7 +69,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 			return;
 		}
 		String path = RequestUtils.getRequestPath(request);
-		if (isFreeAccessExtensions(path) == false) {
+		if (isFreeAccessUrl(path) || isFreeAccessExtensions(path) == false) {
 			try {
 				String remoteUser = checkUser(request, response, context);
 				context.setAttribute(remoteUserKey, remoteUser);
