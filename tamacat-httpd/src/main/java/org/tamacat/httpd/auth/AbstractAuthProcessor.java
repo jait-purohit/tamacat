@@ -29,6 +29,7 @@ public abstract class AbstractAuthProcessor implements RequestFilter,
 	protected SingleSignOn singleSignOn;
 	protected String algorithmName; // ex. SHA-256
 
+	protected Set<String> freeAccessUrls = new HashSet<String>();
 	protected Set<String> freeAccessExtensions = new HashSet<String>();
 
 	@Override
@@ -87,20 +88,20 @@ public abstract class AbstractAuthProcessor implements RequestFilter,
 	 * Whether it agrees to the extension that can be accessed without the
 	 * attestation is inspected.
 	 * 
-	 * @param uri
+	 * @param path
 	 * @return true: contains the freeAccessExtensions.
 	 */
-	protected boolean isFreeAccessExtensions(String uri) {
+	protected boolean isFreeAccessExtensions(String path) {
 		if (freeAccessExtensions.size() > 0) {
-			int idx = uri.lastIndexOf(".");
+			int idx = path.lastIndexOf(".");
 			if (idx >= 0) {
-				String ext = uri.substring(idx + 1, uri.length()).toLowerCase().trim();
+				String ext = path.substring(idx + 1, path.length()).toLowerCase().trim();
 				return freeAccessExtensions.contains(ext);
 			}
 		}
 		return false;
 	}
-
+	
 	/**
 	 * The extension skipping by the certification in comma seperated values.
 	 * 
@@ -114,6 +115,21 @@ public abstract class AbstractAuthProcessor implements RequestFilter,
 		}
 	}
 
+	protected boolean isFreeAccessUrl(String path) {
+		if (freeAccessUrls.size() > 0) {
+			for (String freeAccessUrl : freeAccessUrls) {
+				if (path.startsWith(serviceUrl.getPath() + freeAccessUrl)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public void setFreeAccessUrl(String freeAccessUrl) {
+		this.freeAccessUrls.add(freeAccessUrl.trim().replaceFirst("^/", ""));
+	}
+	
 	/**
 	 * Set the encryption algorithm for "getEncriptedPassword" method. ex.
 	 * "SHA-256"

@@ -151,7 +151,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 			if (path.endsWith(loginPageUrl)) {
 				logoutAction(request, sessionId);
 				return;
-			} else if (isFreeAccessExtensions(path)) {
+			} else if (isFreeAccessUrl(path) || isFreeAccessExtensions(path)) {
 				if (sessionId != null) {
 					Session session = SessionManager.getInstance().getSession(sessionId, false);
 					if (session != null) {
