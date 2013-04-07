@@ -67,7 +67,6 @@ public class WorkerThread extends Thread {
             while (Thread.interrupted() == false) {
             	context = new BasicHttpContext(null);
                 this.service.handleRequest(conn, context);
-                
                 HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
                 if (clientConn != null && this.conn.isOpen() == false) { //already closed.
                     IOUtils.close(clientConn);
@@ -95,7 +94,11 @@ public class WorkerThread extends Thread {
         } catch (SocketTimeoutException e) {
         	LOG.debug("timeout >> close connection.");
         } catch (SocketException e) {
-        	LOG.warn("SocketException: " + e.getMessage());
+        	//Connection reset by peer: socket write error
+        	LOG.debug("SocketException: " + e.getMessage());
+        	if (LOG.isTraceEnabled()) {
+        		LOG.trace(ExceptionUtils.getStackTrace(e)); //debug
+        	}
         } catch (Exception e) {
         	LOG.error("Error: " + e.getMessage());
         	LOG.debug(ExceptionUtils.getStackTrace(e)); //debug
