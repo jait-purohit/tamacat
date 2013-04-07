@@ -95,12 +95,15 @@
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
+    <property name="docsRoot">
+      <value>${server.home}/src/test/resources/htdocs/</value>
+    </property>
   </bean>
 
   <bean id="DefaultHandler2"
      class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
     <property name="docsRoot">
-      <value>../htdocs/api/</value>
+      <value>${server.home}/src/test/resources/htdocs/api/</value>
     </property>
     <property name="listings">
       <value>true</value>
@@ -113,7 +116,7 @@
   <bean id="DocsHandler"
      class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
     <property name="docsRoot">
-      <value>../htdocs/</value>
+      <value>${server.home}/src/test/resources/htdocs/</value>
     </property>
     <property name="listings">
       <value>true</value>

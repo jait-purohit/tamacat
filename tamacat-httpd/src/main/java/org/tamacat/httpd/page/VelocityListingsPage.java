@@ -7,6 +7,8 @@ package org.tamacat.httpd.page;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -39,7 +41,17 @@ public class VelocityListingsPage {
     protected String listingsPage = "listings";
     protected VelocityEngine velocityEngine;
 
-    public void setListingsPage(String listingsPage) {
+    protected String encoding;
+    
+    /** 
+     * @since 1.1
+     * @param encoding
+     */
+    public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+
+	public void setListingsPage(String listingsPage) {
 		this.listingsPage = listingsPage;
 	}
     
@@ -63,7 +75,12 @@ public class VelocityListingsPage {
 	public String getListingsPage(
 			HttpRequest request, HttpResponse response, 
 			VelocityContext context, File file) {
-		context.put("url", request.getRequestLine().getUri());
+		try {
+			context.put("url", URLDecoder.decode(request.getRequestLine().getUri(),"UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			context.put("url", request.getRequestLine().getUri());
+		}
+
 		if (request.getRequestLine().getUri().lastIndexOf('/') >= 0) {
 			context.put("parent", "../");
 		}
@@ -80,11 +97,12 @@ public class VelocityListingsPage {
 		ArrayList<Map<String, String>> list = new ArrayList<Map<String,String>>();
 		for (File f : files) {
 			Map<String, String> map = new HashMap<String, String>();
+			String name = StringUtils.isNotEmpty(encoding)? StringUtils.encode(f.getName(),"UTF-8") : f.getName();
 			if (f.isDirectory()) {
-				map.put("getName", StringUtils.encode(f.getName(),"UTF-8") + "/");
+				map.put("getName", name + "/");
 				map.put("length", "-");
 			} else {
-				map.put("getName", StringUtils.encode(f.getName(), "UTF-8"));
+				map.put("getName", name);
 				map.put("length", String.format("%1$,3d KB", (long)Math.ceil(f.length()/1024d)).trim());
 			}
 			map.put("isDirectory", String.valueOf(f.isDirectory()));
