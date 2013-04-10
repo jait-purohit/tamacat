@@ -2,7 +2,7 @@
 <service-config>
   <!-- default -->
   <service>
-    <url path="/web/" type="normal" handler="DefaultHandler" />
+    <url path="/test/" type="normal" handler="DefaultHandler" />
     <url path="/" type="normal" handler="VelocityHandler" />
     
     <url path="/ex/" type="reverse" handler="ReverseHandler">

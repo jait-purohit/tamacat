@@ -22,6 +22,7 @@ import org.apache.http.HttpResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.DateUtils;
@@ -76,19 +77,25 @@ public class VelocityListingsPage {
 			HttpRequest request, HttpResponse response, 
 			VelocityContext context, File file) {
 		try {
-			context.put("url", URLDecoder.decode(request.getRequestLine().getUri(),"UTF-8"));
+			context.put("url", URLDecoder.decode(RequestUtils.getRequestPath(request),"UTF-8"));
 		} catch (UnsupportedEncodingException e) {
-			context.put("url", request.getRequestLine().getUri());
+			context.put("url", RequestUtils.getRequestPath(request));
 		}
 
 		if (request.getRequestLine().getUri().lastIndexOf('/') >= 0) {
 			context.put("parent", "../");
 		}
+		final String q = getParameter(request, "q");
+		context.put("q", q);
 		File[] files = file.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
-				return ! pathname.isHidden()
-				&& ! pathname.getName().startsWith(".");
+				if (StringUtils.isNotEmpty(q)) {
+					return pathname.getName().indexOf(q)>=0;
+				} else {
+					return ! pathname.isHidden()
+						&& ! pathname.getName().startsWith(".");
+				}
 			}
 		});
 		
@@ -132,5 +139,27 @@ public class VelocityListingsPage {
     		int diff = src.getName().compareTo(target.getName());
     		return diff;
     	}
+    }
+    
+    String getParameter(HttpRequest request, String name) {
+		String path = request.getRequestLine().getUri();
+		if (path.indexOf('?') >= 0) {
+			String[] requestParams = path.split("\\?");
+			if (requestParams.length >= 2) {
+				String params = requestParams[1];
+				String[] param = params.split("&");
+				for (String kv : param) {
+					String[] p = kv.split("=");
+					if (p.length >=2 && p[0].equals(name)) {
+						try {
+							return URLDecoder.decode(p[1], "UTF-8");
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+		return null;
     }
 }
