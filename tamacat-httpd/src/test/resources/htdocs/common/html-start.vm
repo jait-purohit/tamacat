@@ -7,10 +7,10 @@
     <meta http-equiv="Content-Script-Type" content="text/javascript" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" />
-    <link   type="text/css" rel="stylesheet" href="/web/styles/common.css" />
-    <script type="text/javascript" id="jquery.js" src="/web/js/jquery.js"></script>
-    <script type="text/javascript" id="jquery-ui.js" src="/web/js/jquery-ui.js"></script>
-    <script type="text/javascript" id="jquery.cookie.js" src="/web/js/jquery.cookie.js"></script>
+    <link   type="text/css" rel="stylesheet" href="/styles/common.css" />
+    <script type="text/javascript" id="jquery.js" src="/js/jquery.js"></script>
+    <script type="text/javascript" id="jquery-ui.js" src="/js/jquery-ui.js"></script>
+    <script type="text/javascript" id="jquery.cookie.js" src="/js/jquery.cookie.js"></script>
     <title></title>
   </head>
   

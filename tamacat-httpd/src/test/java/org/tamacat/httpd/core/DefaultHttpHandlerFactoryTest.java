@@ -22,8 +22,8 @@ public class DefaultHttpHandlerFactoryTest {
 		serverConfig = new ServerConfig();
 		serviceConfig = new ServiceConfig();
 		serviceUrl = new ServiceUrl(serverConfig);
-		serviceUrl.setHandlerName("DocsHandler");
-		serviceUrl.setPath("/docs/");
+		serviceUrl.setHandlerName("VelocityHandler");
+		serviceUrl.setPath("/");
 		serviceUrl.setType(ServiceType.NORMAL);
 		serviceConfig.addServiceUrl(serviceUrl);
 		
@@ -37,9 +37,9 @@ public class DefaultHttpHandlerFactoryTest {
 	@Test
 	public void testGetHttpHandler() {
 		HttpHandler handler = factory.getHttpHandler(serviceUrl);
-		assertEquals(true, ((LocalFileHttpHandler)handler).listings);
+		assertEquals(false, ((VelocityHttpHandler)handler).listings);
 		
 		handler = factory.getHttpHandler(serviceUrl);
-		assertEquals(true, ((LocalFileHttpHandler)handler).listings);
+		assertEquals(false, ((VelocityHttpHandler)handler).listings);
 	}
 }

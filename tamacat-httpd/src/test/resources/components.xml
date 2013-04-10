@@ -91,15 +91,15 @@
   </bean>
   
   <bean id="DefaultHandler"
-     class="org.tamacat.httpd.core.LocalFileHttpHandler">
+     class="org.tamacat.httpd.core.LocalFileStreamingHttpHandler">
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
     <property name="docsRoot">
-      <value>${server.home}/src/test/resources/htdocs/web/</value>
+      <value>${server.home}/src/test/resources/htdocs/test/</value>
     </property>
-    <property name="httpFilter">
-      <ref bean="FormAuthFilter" />
+    <property name="listings">
+      <value>true</value>
     </property>
   </bean>
 
