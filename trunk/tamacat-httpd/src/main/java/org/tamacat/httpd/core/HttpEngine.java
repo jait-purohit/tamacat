@@ -128,7 +128,8 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 			for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
 				HttpHandler handler = factory.getHttpHandler(serviceUrl);
 				if (handler != null) {
-					LOG.info(serviceUrl.getPath() + " - " + handler.getClass().getName());
+					LOG.info(serviceUrl.getPath() + " - " + serviceUrl.getHandlerName()
+						+ " (class="+handler.getClass().getName() + ")");
 					registry.register(serviceUrl.getPath() + "*", handler);
 				} else {
 					LOG.warn(serviceUrl.getPath() + " HttpHandler is not found.");

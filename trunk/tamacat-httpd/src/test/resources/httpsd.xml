@@ -7,7 +7,7 @@
     </property>
   </bean>
   
-  <bean id="server" class="org.tamacat.httpd.core.HttpEngine" singleton="false">
+  <bean id="server" class="org.tamacat.httpd.core.HttpEngine">
     <property name="propertiesName">
       <value>https-server.properties</value>
     </property>

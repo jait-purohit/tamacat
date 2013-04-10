@@ -127,7 +127,6 @@ public class LocalFileStreamingHttpHandler extends LocalFileHttpHandler {
 			rf = new RandomAccessFile(file, "r");
 			fc = rf.getChannel();
 			ByteBuffer buffer = ByteBuffer.allocate(limit);
-			buffer.clear();
 			int readed = fc.read(buffer,(int)offset);
 			byte[] array = buffer.array();
 			buffer.clear();
