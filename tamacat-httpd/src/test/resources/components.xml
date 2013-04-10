@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
   <bean id="AuthComponent"
-     class="org.tamacat.httpd.examples.UserAuthComponent" singleton="false">
+     class="org.tamacat.httpd.examples.UserAuthComponent">
     <property name="username">
       <value>admin</value>
     </property>
@@ -10,7 +10,7 @@
     </property>
   </bean>
   
-  <bean id="SingleSignOn" class="org.tamacat.httpd.auth.CookieBasedSingleSignOn" singleton="false">
+  <bean id="SingleSignOn" class="org.tamacat.httpd.auth.CookieBasedSingleSignOn">
     <property name="singleSignOnCookieName">
       <value>SingleSignOnUser</value>
     </property>
@@ -20,7 +20,7 @@
   </bean>
   
   <bean id="BasicAuthFilter"
-     class="org.tamacat.httpd.auth.BasicAuthProcessor" singleton="false">
+     class="org.tamacat.httpd.auth.BasicAuthProcessor">
     <property name="authComponent">
       <ref bean="AuthComponent" />
     </property>
@@ -36,21 +36,21 @@
   </bean>
   
   <bean id="DigestAuthFilter"
-     class="org.tamacat.httpd.auth.DigestAuthProcessor" singleton="false">
+     class="org.tamacat.httpd.auth.DigestAuthProcessor">
     <property name="authComponent">
       <ref bean="AuthComponent" />
     </property>
   </bean>
 
   <bean id="WSSEAuthFilter"
-     class="org.tamacat.httpd.auth.WSSEAuthProcessor" singleton="false">
+     class="org.tamacat.httpd.auth.WSSEAuthProcessor">
     <property name="authComponent">
       <ref bean="AuthComponent" />
     </property>
   </bean>
 
   <bean id="FormAuthFilter"
-     class="org.tamacat.httpd.auth.FormAuthProcessor" singleton="false">
+     class="org.tamacat.httpd.auth.FormAuthProcessor">
     <property name="authComponent">
       <ref bean="AuthComponent" />
     </property>
@@ -59,14 +59,14 @@
     </property>
   </bean>
   
-  <bean id="SessionFilter" class="org.tamacat.httpd.filter.SessionCookieFilter" singleton="false">
+  <bean id="SessionFilter" class="org.tamacat.httpd.filter.SessionCookieFilter">
     <property name="sessionCookieName">
       <value>tamacat-httpd-Session</value>
     </property>
   </bean>
   
   <bean id="AccessControlFilter"
-     class="org.tamacat.httpd.examples.AccessControlFilter" singleton="false">
+     class="org.tamacat.httpd.examples.AccessControlFilter">
     <property name="cacheSize">
       <value>100</value>
     </property>
@@ -75,12 +75,12 @@
     </property>
   </bean>
   
-  <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" singleton="false" />
+  <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" />
   
   <bean id="VelocityHandler" 
-     class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
+     class="org.tamacat.httpd.core.VelocityHttpHandler">
     <property name="docsRoot">
-      <value>${server.home}/src/test/resources/htdocs</value>
+      <value>${server.home}/src/test/resources/htdocs/web/</value>
     </property>
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
@@ -91,32 +91,22 @@
   </bean>
   
   <bean id="DefaultHandler"
-     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
+     class="org.tamacat.httpd.core.LocalFileHttpHandler">
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
     <property name="docsRoot">
-      <value>${server.home}/src/test/resources/htdocs/</value>
+      <value>${server.home}/src/test/resources/htdocs/web/</value>
+    </property>
+    <property name="httpFilter">
+      <ref bean="FormAuthFilter" />
     </property>
   </bean>
 
   <bean id="DefaultHandler2"
-     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
+     class="org.tamacat.httpd.core.LocalFileHttpHandler">
     <property name="docsRoot">
-      <value>${server.home}/src/test/resources/htdocs/api/</value>
-    </property>
-    <property name="listings">
-      <value>true</value>
-    </property>
-    <property name="httpFilter">
-      <ref bean="AccessLogFilter" />
-    </property>
-  </bean>
-  
-  <bean id="DocsHandler"
-     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
-    <property name="docsRoot">
-      <value>${server.home}/src/test/resources/htdocs/</value>
+      <value>${server.home}/src/test/resources/htdocs2/</value>
     </property>
     <property name="listings">
       <value>true</value>
@@ -127,7 +117,7 @@
   </bean>
   
   <bean id="ReverseHandler"
-     class="org.tamacat.httpd.core.ReverseProxyHandler" singleton="false">
+     class="org.tamacat.httpd.core.ReverseProxyHandler">
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
@@ -145,7 +135,7 @@
     </property>
   </bean>
   
-  <bean id="html" class="org.tamacat.httpd.filter.HtmlLinkConvertInterceptor" singleton="false">
+  <bean id="html" class="org.tamacat.httpd.filter.HtmlLinkConvertInterceptor">
     <property name="contentType">
       <value>html</value>
     </property>
