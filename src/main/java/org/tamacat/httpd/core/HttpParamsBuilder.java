@@ -4,12 +4,10 @@
  */
 package org.tamacat.httpd.core;
 
-import org.apache.http.params.BasicHttpParams;
-
-
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
+import org.apache.http.params.SyncBasicHttpParams;
 
 /**
  * <p>The builder class for {@link HttpParams}.<br>
@@ -90,12 +88,13 @@ public class HttpParamsBuilder {
 	 * @return Implements of {@code HttpParams}.
 	 */
 	public HttpParams buildParams() {
-		return new BasicHttpParams()
+		return new SyncBasicHttpParams()
 			.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, serverSocketTimeout)
 			.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connectionTimeout)
 			.setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, serverSocketBufferSize)
 			.setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, staleConnectionCheck)
 			.setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, tcpNoDelay)
+			.setBooleanParameter(CoreConnectionPNames.SO_KEEPALIVE, true)
 			.setParameter(CoreProtocolPNames.ORIGIN_SERVER, originServer);
 	}
 }
