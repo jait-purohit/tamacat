@@ -19,16 +19,19 @@
       a{color:#000066;} hr{color : #666;}
       table{margin: 10px; padding: 2px;}
       th{text-align:left; border-bottom:1px solid #666;}
+      tr.row:hover{background-color:#eee;}
+      #search {float:right;}
     </style>
   </head>
   <body>
     <h1>Index of ${url}</h1>
-    <div style="float:right;">
-      <form action="$!{url}" method="get">
-        <input type="text" name="q" size="12" value="$!{q}" onchange="this.submit()" />
+    <div style="width:80%;">
+      <form id="search" action="$!{url}" method="get">
+        <input type="text" name="q" size="16" value="$!{q}" onchange="this.submit()" />
+        <input type="submit" value="Search" />
       </form>
     </div>
-    <table style="width: 80%;">
+    <table style="width:80%;">
       <tr>
         <th style="width:60%;">Name</th>
         <th style="width:10%;" nowrap="nowrap">Last modified</th>
@@ -40,7 +43,7 @@
       </tr>
 #end
 #foreach($file in $list)
-      <tr>
+      <tr class="row">
         <td><a href="$!url$!file.getName"><span>$!file.getName</span></a></td>
         <td nowrap="nowrap">$!file.lastModified</td>
         <td style="text-align:right;" nowrap="nowrap">$!file.length</td>

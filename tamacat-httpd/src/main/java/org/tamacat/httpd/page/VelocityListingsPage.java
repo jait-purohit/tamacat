@@ -43,7 +43,8 @@ public class VelocityListingsPage {
     protected VelocityEngine velocityEngine;
 
     protected String encoding;
-    
+    protected boolean useSearch;
+    protected String dateFormat = "yyyy-MM-dd HH:mm";
     /** 
      * @since 1.1
      * @param encoding
@@ -61,6 +62,9 @@ public class VelocityListingsPage {
 			velocityEngine = new VelocityEngine();
 			velocityEngine.setProperty("resource.loader", "list");
 			velocityEngine.init(props);
+			if ("true".equalsIgnoreCase(props.getProperty("list.resource.search","false"))) {
+				useSearch = true;
+			}
 		} catch (Exception e) {
 			LOG.warn(e.getMessage());
 		}
@@ -85,7 +89,7 @@ public class VelocityListingsPage {
 		if (request.getRequestLine().getUri().lastIndexOf('/') >= 0) {
 			context.put("parent", "../");
 		}
-		final String q = getParameter(request, "q");
+		final String q = useSearch? getParameter(request, "q"): "";
 		context.put("q", q);
 		File[] files = file.listFiles(new FileFilter() {
 			@Override
@@ -113,7 +117,7 @@ public class VelocityListingsPage {
 				map.put("length", String.format("%1$,3d KB", (long)Math.ceil(f.length()/1024d)).trim());
 			}
 			map.put("isDirectory", String.valueOf(f.isDirectory()));
-			map.put("lastModified", DateUtils.getTime(new Date(f.lastModified()), "yyyy-MM-dd HH:mm"));
+			map.put("lastModified", DateUtils.getTime(new Date(f.lastModified()), dateFormat));
 			list.add(map);
 		}
 		context.put("list", list);
