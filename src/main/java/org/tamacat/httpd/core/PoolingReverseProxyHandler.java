@@ -36,10 +36,12 @@ import org.tamacat.httpd.util.ReverseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
+@Deprecated
 public class PoolingReverseProxyHandler extends AbstractHttpHandler {
 
 	static final Log LOG = LogFactory.getLog(ReverseProxyHandler.class);
 
+	protected static final String HTTP_CONN_KEEPALIVE = "http.proxy.conn-keepalive";
     protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
     protected static final String CHECK_INFINITE_LOOP
     	= ReverseProxyHandler.class.getName() + "_CHECK_INFINITE_LOOP";
@@ -112,7 +114,7 @@ public class PoolingReverseProxyHandler extends AbstractHttpHandler {
 //	                    }
 //	                }
 	                // Keep alive for 5 seconds only
-	                return 5 * 1000;
+	                return keepAliveDuration;
 	            }
 	        });
     	}
@@ -134,7 +136,7 @@ public class PoolingReverseProxyHandler extends AbstractHttpHandler {
 	int maxPerRoute = 10;
 	int maxTotal = 20;
 	
-	void setMaxPerRoute(int maxPerRoute) {
+	public void setMaxPerRoute(int maxPerRoute) {
 		this.maxPerRoute = maxPerRoute;
 	}
 	public void setMaxTotal(int maxTotal) {
@@ -169,7 +171,7 @@ public class PoolingReverseProxyHandler extends AbstractHttpHandler {
         // Access Backend server //
         HttpResponse targetResponse = forwardRequest(request, response, context);
 
-        	//(ReverseUrl) context.getAttribute("reverseUrl");
+        //(ReverseUrl) context.getAttribute("reverseUrl");
         ReverseUtils.copyHttpResponse(targetResponse, response);
         ReverseUtils.rewriteContentLocationHeader(request, response, reverseUrl);
         
@@ -181,6 +183,11 @@ public class PoolingReverseProxyHandler extends AbstractHttpHandler {
         
         // Set the entity and response headers from targetResponse.
         response.setEntity(targetResponse.getEntity());
+        
+        // Get the target server Connection Keep-Alive header. //
+        boolean keepalive = true;//..connStrategy.keepAlive(targetResponse, context);
+        LOG.trace("Keep-Alive: " + keepalive);
+        context.setAttribute(HTTP_CONN_KEEPALIVE, new Boolean(keepalive));
     }
 
     /**
@@ -195,12 +202,12 @@ public class PoolingReverseProxyHandler extends AbstractHttpHandler {
 //		this.httpproc = procBuilder.build();
         LOG.trace(">> Request URI: " + request.getRequestLine().getUri());
 
-		Object loop = context.getAttribute(CHECK_INFINITE_LOOP);
-		if (loop == null) {
-			context.setAttribute(CHECK_INFINITE_LOOP, Boolean.TRUE);
-		} else {
-        	throw new ServiceUnavailableException("reverseUrl is infinite loop.");
-		}
+//		Object loop = context.getAttribute(CHECK_INFINITE_LOOP);
+//		if (loop == null) {
+//			context.setAttribute(CHECK_INFINITE_LOOP, Boolean.TRUE);
+//		} else {
+//        	throw new ServiceUnavailableException("reverseUrl is infinite loop.");
+//		}
 		
 		try {
 	        context.setAttribute("reverseUrl", reverseUrl);
@@ -293,8 +300,13 @@ public class PoolingReverseProxyHandler extends AbstractHttpHandler {
         return body;
 	}
 	
-	boolean keepAlive;
+	boolean keepAlive = true;
 	public void setKeepAlive(boolean keepAlive) {
 		this.keepAlive = keepAlive;
+	}
+	
+	long keepAliveDuration = 5 * 1024;
+	public void setKeepAliveDuration(long keepAliveDuration) {
+		this.keepAliveDuration = keepAliveDuration;
 	}
 }

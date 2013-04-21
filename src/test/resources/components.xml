@@ -77,6 +77,8 @@
   
   <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" singleton="false" />
   
+  <bean id="HeaderLoggingFilter" class="org.tamacat.httpd.filter.HeaderLoggingFilter" singleton="false" />
+  
   <bean id="VelocityHandler" 
      class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
     <property name="docsRoot">
@@ -128,6 +130,15 @@
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
+    <property name="disabledKeepAlive">
+      <value>false</value>
+    </property>
+    
+    <property name="httpFilter">
+      <ref bean="HeaderLoggingFilter" />
+    </property>
+    
+    <!-- 
     <property name="httpFilter" >
       <ref bean="BasicAuthFilter" />
     </property>
@@ -137,6 +148,7 @@
     <property name="httpFilter">
       <ref bean="AccessControlFilter" />
     </property>
+    -->
     <property name="httpResponseInterceptor" mode="add">
       <ref bean="html" />
     </property>
