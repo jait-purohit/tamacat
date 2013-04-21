@@ -96,7 +96,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		//default interceptors
 		procBuilder.addInterceptor(new ResponseDate());
 		procBuilder.addInterceptor(new ResponseServer());
-		procBuilder.addInterceptor(new ResponseContent());
+		procBuilder.addInterceptor(new ResponseContent(true)); //true:override
 		procBuilder.addInterceptor(new ResponseConnControl());
 		
 		//add interceptors

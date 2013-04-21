@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.message.BasicStatusLine;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.auth.AuthComponent;
@@ -109,6 +110,21 @@ public class ReverseUtils {
         for (Header h : headers) { //add Set-Cookie headers.
         	response.addHeader(h);
         }
+    }
+    
+    /**
+     * Rewrite a response HTTP version in status line from reuested version.
+     * @param request
+     * @param response
+     * @since 1.0.4
+     */
+    public static void rewriteStatusLine(HttpRequest request, HttpResponse response) {
+    	response.setStatusLine(new BasicStatusLine(
+    		request.getRequestLine().getProtocolVersion(),
+    		response.getStatusLine().getStatusCode(), 
+    		response.getStatusLine().getReasonPhrase()
+    		)
+    	);
     }
     
     /**

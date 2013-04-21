@@ -62,32 +62,28 @@ public class WorkerThread extends Thread {
     @Override
 	public void run() {
     	counter.countUp();
-        HttpContext context = null;
+    	HttpContext context = new BasicHttpContext(null);
     	try {
             while (Thread.interrupted() == false) {
-            	context = new BasicHttpContext(null);
-                synchronized (context) {
-					
-	                if (conn.isOpen() == false) { //already closed.
-	                    IOUtils.close(conn);
-	                    if (isTrace) LOG.trace("server connection closed. - " + conn);
-	                    break;
+                if (conn.isOpen() == false) { //already closed.
+                    IOUtils.close(conn);
+                    if (isTrace) LOG.trace("server connection closed. - " + conn);
+                    break;
+                }
+                this.service.handleRequest(conn, context);
+
+                Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
+                if (Boolean.TRUE.equals(keepalive) == false) { //not keep-alive
+	                HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
+	                if (clientConn != null) {
+	                	IOUtils.close(clientConn);
+	                	shutdown(clientConn);
+	                	if (isTrace) LOG.trace("client connection closed. - " + clientConn);
 	                }
-	                this.service.handleRequest(conn, context);
-	
-	                Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
-	                if (Boolean.TRUE.equals(keepalive) == false) { //not keep-alive
-		                HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
-		                if (clientConn != null) {
-		                	IOUtils.close(clientConn);
-		                	shutdown(clientConn);
-		                	if (isTrace) LOG.trace("client connection closed. - " + clientConn);
-		                }
-		                IOUtils.close(conn);
-		                if (isTrace) LOG.trace("server connection closed. - " + conn);
-		                break;
-	                }
-	            }
+	                IOUtils.close(conn);
+	                if (isTrace) LOG.trace("server connection closed. - " + conn);
+	                break;
+                }
             }
     	} catch (SSLHandshakeException e) {
     		LOG.debug(e.getMessage());
@@ -97,7 +93,7 @@ public class WorkerThread extends Thread {
         	LOG.debug("timeout >> close connection.");
         } catch (SocketException e) {
         	LOG.warn("SocketException: " + e.getMessage());
-        	e.printStackTrace();
+        	LOG.debug(ExceptionUtils.getStackTrace(e)); //debug
         } catch (Exception e) {
         	LOG.error("Error: " + e.getMessage());
         	LOG.debug(ExceptionUtils.getStackTrace(e)); //debug
