@@ -139,5 +139,8 @@
     <property name="contentType">
       <value>html</value>
     </property>
+    <property name="linkPattern">
+      <value><![CDATA[<[^<]*\s+(href|src|action|background|.*[0-9]*;?url)=(?:'|")?([^('|")]*)(?:'|")?[^>]*>]]></value>
+    </property>
   </bean>
 </beans>
