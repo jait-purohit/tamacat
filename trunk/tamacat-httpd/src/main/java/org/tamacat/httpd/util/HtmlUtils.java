@@ -14,7 +14,7 @@ import org.tamacat.util.StringUtils;
 public class HtmlUtils {
 	
 	public static final Pattern LINK_PATTERN = Pattern.compile(
-			"<[^<]*\\s+(href|src|action|.*[0-9]*;?url)=(?:\'|\")?([^('|\")]*)(?:\'|\")?[^>]*>",
+			"<[^<]*\\s+(href|src|action|background|.*[0-9]*;?url)=(?:\'|\")?([^('|\")]*)(?:\'|\")?[^>]*>",
 			Pattern.CASE_INSENSITIVE);
 
 	public static final Pattern CHARSET_PATTERN = Pattern.compile(
