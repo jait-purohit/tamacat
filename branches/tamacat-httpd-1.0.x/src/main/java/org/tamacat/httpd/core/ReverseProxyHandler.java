@@ -24,7 +24,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultHttpClientConnection;
-import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.protocol.HttpRequestExecutor;
@@ -190,21 +189,20 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		        LOG.trace("request: " + request);
 		    }
 
-	        HttpContext clientContext = new BasicHttpContext();
 	        ReverseHttpRequest targetRequest = null;
 	        if (request instanceof HttpEntityEnclosingRequest) {
-	        	targetRequest = new ReverseHttpEntityEnclosingRequest(request, clientContext, reverseUrl);
+	        	targetRequest = new ReverseHttpEntityEnclosingRequest(request, context, reverseUrl);
 	        } else {
-	        	targetRequest = new ReverseHttpRequest(request, clientContext, reverseUrl);
+	        	targetRequest = new ReverseHttpRequest(request, context, reverseUrl);
 	        }
 	        
 	        //forward remote user.
-	        ReverseUtils.setReverseProxyAuthorization(targetRequest, clientContext, proxyAuthorizationHeader);
+	        ReverseUtils.setReverseProxyAuthorization(targetRequest, context, proxyAuthorizationHeader);
 	        try {
 		        reverseUrl.countUp();
-		        httpexecutor.preProcess(targetRequest, httpproc, clientContext);
-		        HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, clientContext);
-		        httpexecutor.postProcess(targetResponse, httpproc, clientContext);
+		        httpexecutor.preProcess(targetRequest, httpproc, context);
+		        HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
+		        httpexecutor.postProcess(targetResponse, httpproc, context);
 		        return targetResponse;
 	        } finally {
 		        reverseUrl.countDown();
