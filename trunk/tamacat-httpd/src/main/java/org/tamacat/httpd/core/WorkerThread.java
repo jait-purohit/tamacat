@@ -62,29 +62,31 @@ public class WorkerThread extends Thread {
     @Override
 	public void run() {
     	counter.countUp();
-        HttpContext context = null;
     	try {
             while (Thread.interrupted() == false) {
-            	context = new BasicHttpContext(null);
-                this.service.handleRequest(conn, context);
-                HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
-                if (clientConn != null && this.conn.isOpen() == false) { //already closed.
-                    IOUtils.close(clientConn);
-                    if (isTrace) LOG.trace("client connection closed. - " + clientConn);
-                    break;
-                }
-                
-                Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
-                if (keepalive == null || Boolean.TRUE.equals(keepalive) == false) { //not keep-alive
-                	if (clientConn != null) {
-                		IOUtils.close(clientConn);
-                		if (isTrace) LOG.trace("client connection closed. - " + clientConn);
-                	}
+                if (conn.isOpen() == false) { //already closed.
                     IOUtils.close(conn);
                     if (isTrace) LOG.trace("server connection closed. - " + conn);
                     break;
+                }
+            	HttpContext context = new BasicHttpContext(null);
+                this.service.handleRequest(conn, context);
+
+                if (context.getAttribute(CONNECTION_DO_NOT_CLOSED) != null) {
+                	conn.setWebSocketSupport(true);
                 } else {
-                	if (isTrace) LOG.trace("Keep-Alive: " + Boolean.TRUE.equals(keepalive));
+	                Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
+	                if (Boolean.TRUE.equals(keepalive) == false) { //not keep-alive
+		                HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
+		                if (clientConn != null) {
+		                	IOUtils.close(clientConn);
+		                	shutdown(clientConn);
+		                	if (isTrace) LOG.trace("client connection closed. - " + clientConn);
+		                }
+		                IOUtils.close(conn);
+		                if (isTrace) LOG.trace("server connection closed. - " + conn);
+		                break;
+	                }
                 }
             }
     	} catch (SSLHandshakeException e) {
@@ -94,20 +96,13 @@ public class WorkerThread extends Thread {
         } catch (SocketTimeoutException e) {
         	LOG.debug("timeout >> close connection.");
         } catch (SocketException e) {
-        	//Connection reset by peer: socket write error
-        	LOG.debug("SocketException: " + e.getMessage());
-        	if (LOG.isTraceEnabled()) {
-        		LOG.trace(ExceptionUtils.getStackTrace(e)); //debug
-        	}
+        	LOG.warn("SocketException: " + e.getMessage());
+        	LOG.debug(ExceptionUtils.getStackTrace(e)); //debug
         } catch (Exception e) {
         	LOG.error("Error: " + e.getMessage());
         	LOG.debug(ExceptionUtils.getStackTrace(e)); //debug
         } finally {
-            if (context != null && context.getAttribute(CONNECTION_DO_NOT_CLOSED) == null) {
-            	shutdown();
-            } else {
-            	conn.setWebSocketSupport(true);
-            }
+           	shutdown(conn);
         	counter.countDown();
         }
     }
@@ -116,7 +111,7 @@ public class WorkerThread extends Thread {
     	return insocket.isClosed();
     }
     
-    public void shutdown() {
+    public void shutdown(HttpConnection conn) {
         try {
             conn.shutdown();
             if (isTrace) LOG.trace("shutdown() - " + conn);

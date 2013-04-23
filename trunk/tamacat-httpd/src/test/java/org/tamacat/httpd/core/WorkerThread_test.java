@@ -46,7 +46,6 @@ public class WorkerThread_test {
 		thread = new WorkerThread(service, serversocket.accept(), paramsBuilder.buildParams(), counter);
 		thread.start();
 		thread.isClosed();
-		thread.shutdown();
 		IOUtils.close(serversocket);
 	}
 

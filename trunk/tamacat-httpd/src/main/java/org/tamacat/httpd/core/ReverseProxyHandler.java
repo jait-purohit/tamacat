@@ -142,7 +142,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
         response.setEntity(targetResponse.getEntity()); 
         
         // Get the target server Connection Keep-Alive header. //
-        boolean keepalive = this.connStrategy.keepAlive(targetResponse, context);
+        boolean keepalive = this.connStrategy.keepAlive(response, context);
         context.setAttribute(HTTP_CONN_KEEPALIVE, new Boolean(keepalive));
     }
 

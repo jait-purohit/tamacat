@@ -41,7 +41,7 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 		super(entity);
 		this.before = before;
 		this.after = after;
-		if (linkPatterns != null) {
+		if (linkPatterns != null && linkPatterns.size() > 0) {
 			this.linkPatterns = linkPatterns;
 		} else {
 			this.linkPatterns = new ArrayList<Pattern>();
