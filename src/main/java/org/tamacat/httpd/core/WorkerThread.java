@@ -62,7 +62,6 @@ public class WorkerThread extends Thread {
     @Override
 	public void run() {
     	counter.countUp();
-    	HttpContext context = new BasicHttpContext(null);
     	try {
             while (Thread.interrupted() == false) {
                 if (conn.isOpen() == false) { //already closed.
@@ -70,8 +69,12 @@ public class WorkerThread extends Thread {
                     if (isTrace) LOG.trace("server connection closed. - " + conn);
                     break;
                 }
+            	HttpContext context = new BasicHttpContext(null);
                 this.service.handleRequest(conn, context);
 
+                //if (context.getAttribute(CONNECTION_DO_NOT_CLOSED) != null) {
+                //	conn.setWebSocketSupport(true);
+                //}
                 Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
                 if (Boolean.TRUE.equals(keepalive) == false) { //not keep-alive
 	                HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
@@ -98,11 +101,7 @@ public class WorkerThread extends Thread {
         	LOG.error("Error: " + e.getMessage());
         	LOG.debug(ExceptionUtils.getStackTrace(e)); //debug
         } finally {
-            if (context != null && context.getAttribute(CONNECTION_DO_NOT_CLOSED) == null) {
-            	shutdown(conn);
-            } else {
-            	conn.setWebSocketSupport(true);
-            }
+           	shutdown(conn);
         	counter.countDown();
         }
     }
@@ -119,7 +118,7 @@ public class WorkerThread extends Thread {
         }
     }
     
-    void shutdown(HttpConnection conn) {
+    public void shutdown(HttpConnection conn) {
         try {
             conn.shutdown();
             if (isTrace) LOG.trace("shutdown() - " + conn);
