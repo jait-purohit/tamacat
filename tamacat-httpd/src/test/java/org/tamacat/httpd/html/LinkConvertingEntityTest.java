@@ -7,6 +7,7 @@ package org.tamacat.httpd.html;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
+import java.util.regex.Pattern;
 
 import org.apache.http.entity.StringEntity;
 import org.junit.After;
@@ -67,6 +68,20 @@ public class LinkConvertingEntityTest {
 		assertEquals("<html><a href=\"/bbbbb/test.html\">aaa</a></html>\r\n", new String(out.toByteArray()));
 	}
 	
+	@Test
+	public void testWriteToOutputStream4() throws Exception {
+		StringEntity html = new StringEntity("<html><body background=\"/aaa/images/bg.gif\"><a href=\"/aaa/test.html\">aaa</a></body></html>\r\n");
+		String before = "/aaa/";
+		String after = "/bbbbb/";
+		Pattern p = Pattern.compile("<[^<]*\\s+(href|src|action|background|.*[0-9]*;?url)=(?:\'|\")?([^('|\")]*)(?:\'|\")?[^>]*>", Pattern.CASE_INSENSITIVE);
+		LinkConvertingEntity entity = new LinkConvertingEntity(html, before, after, p);
+		assertNotNull(entity);
+		
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		entity.writeTo(out);
+		assertEquals(html.getContentLength()+2+2, entity.getContentLength());
+		assertEquals("<html><body background=\"/bbbbb/images/bg.gif\"><a href=\"/bbbbb/test.html\">aaa</a></body></html>\r\n", new String(out.toByteArray()));
+	}
 	
 	@Test
 	public void testWriteToOutputStream_NAME() throws Exception {
