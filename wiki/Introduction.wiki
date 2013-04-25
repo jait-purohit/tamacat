@@ -67,9 +67,9 @@ BackEndSocketBufferSize=8192
 url-config.file=url-config.xml
 components.file=components.xml
 
-JMX.server-url=service:jmx:rmi:///jndi/rmi://localhost/httpd
-JMX.objectname=org.tamacat.httpd:type=HttpEngine
-JMX.rmi.port=1099
+#JMX.server-url=service:jmx:rmi:///jndi/rmi://localhost:1099/httpd
+#JMX.objectname=org.tamacat.httpd:type=HttpEngine
+#JMX.rmi.port=1099
 }}}
 ===== Details explanation of the setting: =====
 || *key* || *value* || *description* ||
@@ -89,7 +89,7 @@ JMX.rmi.port=1099
 || BackEndSocketBufferSize|| 8192 || socket buffer size for reverse proxy (bytes) ||
 || url-config.file || url-config.xml || URL configuration file in CLASSPATH. ||
 || components.file || components.xml || Components configuration file in CLASSPATH. ||
-|| JMX.server-url|| service:jmx:rmi:///jndi/rmi://localhost/httpd || JMX remote access URL (option)||
+|| JMX.server-url|| service:jmx:rmi:///jndi/rmi://localhost:1099/httpd || JMX remote access URL (option)||
 || JMX.objectname || org.tamacat.httpd:type=HttpEngine || ObjectName of httpd (option)||
 || JMX.rmi.port || 1099 || JMX remote access port of RMI.(option)||
 
