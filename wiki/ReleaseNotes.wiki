@@ -1,6 +1,13 @@
 #summary One-sentence summary of this page.
 #labels Phase-Support
 = Release Notes =
+==Release 1.0.4 (2013-04-25)==
+------------------------
+ * The highlights in the tamacat-httpd-1.0.4 are the following:
+ * The ReverseProxyHandler and WorkerThread support keep-alive connection.
+ * Issue 7: The Reverse proxy fault correction from which a response status line is set to HTTP/1.1 in the case of HTTP/1.0.
+ * Use HttpCore-4.2.4/HttpClient-4.2.5
+
 ==Release 1.0.3 (2013-01-21)==
 ------------------------
  * This is a maintenance release that fixes a number of bugs.(Issue:4,5)
