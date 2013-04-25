@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
@@ -20,7 +19,6 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ReverseUrl;
-import org.tamacat.httpd.core.ReverseProxyConnectionReuseStrategy;
 import org.tamacat.httpd.html.LinkConvertingEntity;
 import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.log.Log;
@@ -36,11 +34,9 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 
     protected Set<String> contentTypes = new HashSet<String>();
     protected List<Pattern> linkPatterns = new ArrayList<Pattern>();
-	protected ConnectionReuseStrategy connStrategy;
 
 	public HtmlLinkConvertInterceptor() {
     	contentTypes.add("html");
-		this.connStrategy = new ReverseProxyConnectionReuseStrategy();
     }
 	
 	/**
@@ -73,12 +69,6 @@ public class HtmlLinkConvertInterceptor implements HttpResponseInterceptor {
 	        	}
 	        }
         }
-	    if (context.getAttribute(HTTP_CONN_KEEPALIVE) == null) {
-	        // Get the target server Connection Keep-Alive header. //
-	        boolean keepalive = this.connStrategy.keepAlive(response, context);
-	        context.setAttribute(HTTP_CONN_KEEPALIVE, new Boolean(keepalive));
-	        LOG.debug("Keep-Alive: " + keepalive);
-	    }
 	}
 
 	/**
