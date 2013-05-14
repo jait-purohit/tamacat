@@ -1,6 +1,11 @@
 #summary One-sentence summary of this page.
 #labels Phase-Support
 = Release Notes =
+==Release 1.0.5 (2013-05-14)==
+------------------------
+ * Security update
+ * We advise users of previous versions to upgrade.
+
 ==Release 1.0.4 (2013-04-25)==
 ------------------------
  * The highlights in the tamacat-httpd-1.0.4 are the following:
