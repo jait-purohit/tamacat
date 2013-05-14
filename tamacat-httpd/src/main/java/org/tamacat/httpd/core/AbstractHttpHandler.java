@@ -234,8 +234,12 @@ public abstract class AbstractHttpHandler implements HttpHandler {
      */
     protected String getDecodeUri(String uri) {
     	try {
-    		return URLDecoder.decode(uri, encoding);
-        } catch (UnsupportedEncodingException e) {
+    		String decoded = URLDecoder.decode(uri, encoding);
+    		if (decoded.indexOf("../")>=0 || decoded.indexOf("..\\")>=0) {
+    			throw new NotFoundException();
+    		}
+    		return decoded;
+    	} catch (UnsupportedEncodingException e) {
             return uri;
         } catch (IllegalArgumentException e) {
             throw new NotFoundException();
