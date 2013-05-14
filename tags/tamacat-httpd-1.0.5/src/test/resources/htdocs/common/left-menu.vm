@@ -1,0 +1,12 @@
+  <div id="left-menu">
+    <h2>MENU</h2>
+    <ul>
+      <li><a href="${contextRoot}/index.html"><span>TOP</span></a></li>
+      <li><a href="${contextRoot}/download.html"><span>DOWNLOAD</span></a></li>
+    </ul>
+
+    <h2>LOGOUT</h2>
+    <ul>
+      <li><a href="${contextRoot}/logout.html"><span>Logout</span></a></li>
+    </ul>
+  </div>
