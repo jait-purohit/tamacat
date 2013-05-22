@@ -14,7 +14,7 @@ import java.util.Locale;
  */
 public abstract class DateUtils {
 
-    static final Locale currentLocale = Locale.getDefault(); //JAPANESE;
+    static final Locale currentLocale = Locale.getDefault();
 
     public static String getTime(Date date, String pattern) {
     	return getTime(date, pattern, currentLocale);
