@@ -74,19 +74,18 @@ public class WorkerThread extends Thread {
 
                 if (context.getAttribute(CONNECTION_DO_NOT_CLOSED) != null) {
                 	conn.setWebSocketSupport(true);
-                } else {
-	                Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
-	                if (Boolean.TRUE.equals(keepalive) == false) { //not keep-alive
-		                HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
-		                if (clientConn != null) {
-		                	IOUtils.close(clientConn);
-		                	shutdown(clientConn);
-		                	if (isTrace) LOG.trace("client connection closed. - " + clientConn);
-		                }
-		                IOUtils.close(conn);
-		                if (isTrace) LOG.trace("server connection closed. - " + conn);
-		                break;
-	                }
+                }
+	            Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
+	            if (Boolean.TRUE.equals(keepalive) == false) { //not keep-alive
+		            HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
+		            if (clientConn != null) {
+		             	IOUtils.close(clientConn);
+		              	shutdown(clientConn);
+		               	if (isTrace) LOG.trace("client connection closed. - " + clientConn);
+		            }
+		            IOUtils.close(conn);
+		            if (isTrace) LOG.trace("server connection closed. - " + conn);
+		            break;
                 }
             }
     	} catch (SSLHandshakeException e) {
