@@ -59,7 +59,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
     	= ReverseProxyHandler.class.getName() + "_CHECK_INFINITE_LOOP";
     
 	protected HttpRequestExecutor httpexecutor;
-	protected HttpProcessor httpproc;
 	protected HttpParamsBuilder builder = new HttpParamsBuilder();
 	protected HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
 	protected PlainSocketFactory socketFactory = PlainSocketFactory.getSocketFactory();
@@ -128,6 +127,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 
         ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
         ReverseUtils.copyHttpResponse(targetResponse, response);
+        ReverseUtils.rewriteStatusLine(request, response);
         ReverseUtils.rewriteContentLocationHeader(request, response, reverseUrl);
         
         ReverseUtils.rewriteServerHeader(response, reverseUrl);
@@ -155,7 +155,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
      */
 	protected HttpResponse forwardRequest(
 			HttpRequest request, HttpResponse response, HttpContext context) {
-		this.httpproc = procBuilder.build();
         LOG.trace(">> Request URI: " + request.getRequestLine().getUri());
 
 		Object loop = context.getAttribute(CHECK_INFINITE_LOOP);
@@ -198,6 +197,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	        //forward remote user.
 	        ReverseUtils.setReverseProxyAuthorization(targetRequest, context, proxyAuthorizationHeader);
 	        try {
+	        	HttpProcessor httpproc = procBuilder.build();
 		        reverseUrl.countUp();
 		        httpexecutor.preProcess(targetRequest, httpproc, context);
 		        HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
