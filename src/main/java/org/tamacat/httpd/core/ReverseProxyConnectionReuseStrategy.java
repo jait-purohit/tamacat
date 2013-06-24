@@ -174,8 +174,9 @@ public class ReverseProxyConnectionReuseStrategy extends DefaultConnectionReuseS
         }
 
         // default since HTTP/1.1 is persistent, before it was non-persistent
-    	LOG.debug("Keep-Alive: false (HTTP1.1) ["+ver+"]");
-        return !ver.lessEquals(HttpVersion.HTTP_1_0);
+        boolean result = !ver.lessEquals(HttpVersion.HTTP_1_0);
+    	LOG.debug("Keep-Alive: "+result+" ("+ver+")");
+    	return result;
     }
 
     private boolean canResponseHaveBody(final HttpResponse response) {
