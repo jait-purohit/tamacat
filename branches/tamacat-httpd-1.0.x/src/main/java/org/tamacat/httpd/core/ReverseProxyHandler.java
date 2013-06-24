@@ -18,6 +18,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.HttpVersion;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.entity.ContentType;
@@ -123,6 +124,14 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
         // Access Backend server. //
         HttpResponse targetResponse = forwardRequest(request, response, context);
 
+        // Get the target server Connection Keep-Alive header. //
+        boolean keepAlive = false;
+        if (request.getProtocolVersion().greaterEquals(HttpVersion.HTTP_1_1)) {
+        	keepAlive = this.connStrategy.keepAlive(targetResponse, context);
+        	context.setAttribute(HTTP_CONN_KEEPALIVE, new Boolean(keepAlive));
+        }
+        LOG.debug("Keep-Alive: " + keepAlive);
+
         ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
         ReverseUtils.copyHttpResponse(targetResponse, response);
         ReverseUtils.rewriteStatusLine(request, response);
@@ -138,16 +147,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
         
         // Set the entity and response headers from targetResponse. //
         response.setEntity(targetResponse.getEntity());
-
-        if (this.connStrategy.isDisabledKeepAlive()) {
-	        context.setAttribute(HTTP_CONN_KEEPALIVE, new Boolean(false));
-	        LOG.debug("Keep-Alive: false (DisabledKeepAlive)");
-        } else if (context.getAttribute(HTTP_CONN_KEEPALIVE) == null) {
-	        // Get the target server Connection Keep-Alive header. //
-	        boolean keepalive = this.connStrategy.keepAlive(response, context);
-	        context.setAttribute(HTTP_CONN_KEEPALIVE, new Boolean(keepalive));
-	        LOG.debug("Keep-Alive: " + keepalive);
-        }
     }
 
     /**
@@ -272,9 +271,18 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	/**
 	 * force disabled Keep-Alive.
 	 * @param disabledKeepAlive
+	 * @since 1.0.5
 	 */
 	public void setDisabledKeepAlive(boolean disabledKeepAlive) {
 		this.connStrategy.setDisabledKeepAlive(disabledKeepAlive);
 	}
-
+	
+	/**
+	 * Always Keep-Alive. (Priority is given over disabledKeepAlive.)
+	 * @param alwaysKeepAlive
+	 * @since 1.0.6
+	 */
+	public void setAlwaysKeepAlive(boolean alwaysKeepAlive) {
+		this.connStrategy.setAlwaysKeepAlive(alwaysKeepAlive);
+	}
 }
