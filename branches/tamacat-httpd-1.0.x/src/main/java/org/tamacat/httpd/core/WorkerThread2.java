@@ -27,9 +27,9 @@ import org.tamacat.util.IOUtils;
 /**
  * <p>This class is a worker thread for multi thread server.
  */
-public class WorkerThread extends Thread {
-	static final Log LOG = LogFactory.getLog(WorkerThread.class);
-    static final String HTTP_IN_CONN = "http.proxy.in-conn";
+public class WorkerThread2 extends Thread {
+	static final Log LOG = LogFactory.getLog(WorkerThread2.class);
+	
     static final String HTTP_OUT_CONN = "http.proxy.out-conn";
     static final String HTTP_CONN_KEEPALIVE = "http.proxy.conn-keepalive";
     static final String CONNECTION_DO_NOT_CLOSED = HttpServerConnection.class.getName() + ".__DO_NOT_CLOSED__";
@@ -39,6 +39,7 @@ public class WorkerThread extends Thread {
 	protected PerformanceCounter counter;
 	protected Socket insocket;
     protected boolean isTrace;
+    HttpParams params;
     
     /**
      * <p>Constructs with the specified {@link HttpService}.
@@ -47,13 +48,12 @@ public class WorkerThread extends Thread {
      * @param params
      * @throws IOException
      */
-    public WorkerThread(
+    public WorkerThread2(
     		HttpService service, Socket insocket, 
     		HttpParams params, PerformanceCounter counter) throws IOException {
     	this.service = service;
     	this.insocket = insocket;
-    	this.conn = new ServerHttpConnection();
-    	this.conn.bind(insocket, params);
+    	this.params = params;
     	this.counter = counter;
 		isTrace = LOG.isTraceEnabled();
     	LOG.trace("New worker thread");
@@ -64,14 +64,17 @@ public class WorkerThread extends Thread {
     	counter.countUp();
     	try {
             while (Thread.interrupted() == false) {
+            	if (conn == null) {
+                	this.conn = new ServerHttpConnection();
+                	this.conn.bind(insocket, params);
+            	}
                 if (conn.isOpen() == false) { //already closed.
                     IOUtils.close(conn);
-                    LOG.debug("server connection closed(isOpen:false). - " + conn);
+                    if (isTrace) LOG.trace("server connection closed. - " + conn);
                     break;
                 }
+
             	HttpContext context = new BasicHttpContext(null);
-                // Bind connection objects to the execution context
-                context.setAttribute(HTTP_IN_CONN, conn);
                 this.service.handleRequest(conn, context);
 
                 //if (context.getAttribute(CONNECTION_DO_NOT_CLOSED) != null) {
@@ -87,7 +90,7 @@ public class WorkerThread extends Thread {
 	                	if (isTrace) LOG.trace("client connection closed. - " + clientConn);
 	                }
 	                IOUtils.close(conn);
-	                LOG.debug("server connection closed. - " + conn);
+	                if (isTrace) LOG.trace("server connection closed. - " + conn);
 	                break;
                 }
                 LOG.debug("Keep-Alive: loop...");
@@ -95,12 +98,11 @@ public class WorkerThread extends Thread {
     	} catch (SSLHandshakeException e) {
     		LOG.debug(e.getMessage());
         } catch (ConnectionClosedException e) {
-        	LOG.trace("Client closed connection");
+        	LOG.debug("Client closed connection");
         } catch (SocketTimeoutException e) {
-        	LOG.trace("timeout >> close connection.");
+        	LOG.debug("timeout >> close connection.");
         } catch (SocketException e) {
-        	//Connection reset by peer: socket write error
-        	LOG.trace("SocketException: " + e.getMessage());
+        	LOG.debug("SocketException: " + e.getMessage());
         	LOG.trace(ExceptionUtils.getStackTrace(e)); //debug
         } catch (Exception e) {
         	LOG.error("Error: " + e.getMessage());
