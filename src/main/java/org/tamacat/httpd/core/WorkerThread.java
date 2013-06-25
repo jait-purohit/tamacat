@@ -63,22 +63,21 @@ public class WorkerThread extends Thread {
 	public void run() {
     	counter.countUp();
     	try {
+        	HttpContext context = new BasicHttpContext(null);
+            // Bind connection objects to the execution context
+            context.setAttribute(HTTP_IN_CONN, conn);
             while (Thread.interrupted() == false) {
                 if (conn.isOpen() == false) { //already closed.
                     IOUtils.close(conn);
                     LOG.debug("server connection closed(isOpen:false). - " + conn);
                     break;
                 }
-            	HttpContext context = new BasicHttpContext(null);
-                // Bind connection objects to the execution context
-                context.setAttribute(HTTP_IN_CONN, conn);
                 this.service.handleRequest(conn, context);
 
                 //if (context.getAttribute(CONNECTION_DO_NOT_CLOSED) != null) {
                 //	conn.setWebSocketSupport(true);
                 //}
                 Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
-                if (keepalive != null) LOG.debug("Keep-Alive: " + keepalive);
                 if (Boolean.TRUE.equals(keepalive) == false) { //not keep-alive -> close
 	                HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
 	                if (clientConn != null) {
@@ -90,7 +89,7 @@ public class WorkerThread extends Thread {
 	                LOG.debug("server connection closed. - " + conn);
 	                break;
                 }
-                LOG.debug("Keep-Alive: loop...");
+                LOG.debug("Keep-Alive: true - waiting. - " + conn);
             }
     	} catch (SSLHandshakeException e) {
     		LOG.debug(e.getMessage());
@@ -118,7 +117,7 @@ public class WorkerThread extends Thread {
     public void shutdown() {
         try {
             conn.shutdown();
-            if (isTrace) LOG.trace("shutdown() - " + conn);
+            LOG.debug("shutdown() - " + conn);
         } catch (IOException ignore) {
         }
     }
@@ -126,7 +125,7 @@ public class WorkerThread extends Thread {
     public void shutdown(HttpConnection conn) {
         try {
             conn.shutdown();
-            if (isTrace) LOG.trace("shutdown() - " + conn);
+            LOG.debug("shutdown() - " + conn);
         } catch (IOException ignore) {
         }
     }
