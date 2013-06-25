@@ -54,8 +54,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	protected static final String HTTP_CONN_KEEPALIVE = "http.proxy.conn-keepalive";
 	
     protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
-    protected static final String CHECK_INFINITE_LOOP
-    	= ReverseProxyHandler.class.getName() + "_CHECK_INFINITE_LOOP";
     
 	protected HttpRequestExecutor httpexecutor;
 	protected HttpParamsBuilder builder = new HttpParamsBuilder();
@@ -160,13 +158,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 			HttpRequest request, HttpResponse response, HttpContext context) {
 		HttpProcessor httpproc = procBuilder.build();
         LOG.trace(">> Request URI: " + request.getRequestLine());
-
-//		Object loop = context.getAttribute(CHECK_INFINITE_LOOP);
-//		if (loop == null) {
-//			context.setAttribute(CHECK_INFINITE_LOOP, Boolean.TRUE);
-//		} else {
-//        	throw new ServiceUnavailableException("reverseUrl is infinite loop.");
-//		}
+        
         Socket outsocket = null;
         ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
 		try {
