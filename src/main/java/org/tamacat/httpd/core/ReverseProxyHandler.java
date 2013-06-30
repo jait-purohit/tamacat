@@ -12,6 +12,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -25,6 +26,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultHttpClientConnection;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.protocol.HttpRequestExecutor;
@@ -52,8 +54,10 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	
 	protected static final String HTTP_OUT_CONN = "http.proxy.out-conn";
 	protected static final String HTTP_CONN_KEEPALIVE = "http.proxy.conn-keepalive";
-	
+	protected static final String HTTP_KEEPALIVE_TIMEOUT = "http.proxy.keepalive-timeout";
     protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
+    protected static final String CHECK_INFINITE_LOOP
+    	= ReverseProxyHandler.class.getName() + "_CHECK_INFINITE_LOOP";
     
 	protected HttpRequestExecutor httpexecutor;
 	protected HttpParamsBuilder builder = new HttpParamsBuilder();
@@ -61,7 +65,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	protected PlainSocketFactory socketFactory = PlainSocketFactory.getSocketFactory();
 	protected String proxyAuthorizationHeader = "X-ReverseProxy-Authorization";
 	protected ReverseProxyConnectionReuseStrategy connStrategy;
-	
+	protected int keepAliveTimeout = 30000; //msec.
+
 	/**
 	 * <p>Default constructor.
 	 */
@@ -124,8 +129,15 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 
         // Get the target server Connection Keep-Alive header. //
         boolean keepAlive = false;
-        if (request.getProtocolVersion().greaterEquals(HttpVersion.HTTP_1_1)) {
+        Header conh = request.getFirstHeader("Connection");
+        if (conh != null && HTTP.CONN_CLOSE.equalsIgnoreCase(conh.getValue())) {
+        	context.setAttribute(HTTP_CONN_KEEPALIVE, new Boolean(false));
+        } else if (request.getProtocolVersion().greaterEquals(HttpVersion.HTTP_1_1)) {
         	keepAlive = this.connStrategy.keepAlive(targetResponse, context);
+        	if (keepAlive) {
+        		LOG.trace("Set Keep-Alive Timeout: " + keepAliveTimeout + " msec.");
+        		context.setAttribute(HTTP_KEEPALIVE_TIMEOUT, new Integer(keepAliveTimeout));
+        	}
         	context.setAttribute(HTTP_CONN_KEEPALIVE, new Boolean(keepAlive));
         }
         LOG.debug("Keep-Alive: " + keepAlive);
@@ -158,7 +170,13 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 			HttpRequest request, HttpResponse response, HttpContext context) {
 		HttpProcessor httpproc = procBuilder.build();
         LOG.trace(">> Request URI: " + request.getRequestLine());
-        
+
+//		Object loop = context.getAttribute(CHECK_INFINITE_LOOP);
+//		if (loop == null) {
+//			context.setAttribute(CHECK_INFINITE_LOOP, Boolean.TRUE);
+//		} else {
+//        	throw new ServiceUnavailableException("reverseUrl is infinite loop.");
+//		}
         Socket outsocket = null;
         ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
 		try {
@@ -276,5 +294,14 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	 */
 	public void setAlwaysKeepAlive(boolean alwaysKeepAlive) {
 		this.connStrategy.setAlwaysKeepAlive(alwaysKeepAlive);
+	}
+	
+	/**
+	 * Set the Keep-Alive Timeout.
+	 * @param keepAliveTimeout (msec)
+	 * @since 1.0.6
+	 */
+	public void setKeepAliveTimeout(int keepAliveTimeout) {
+		this.keepAliveTimeout = keepAliveTimeout;
 	}
 }

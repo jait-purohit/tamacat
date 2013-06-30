@@ -176,11 +176,6 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
                 executors.execute(new WorkerThread(
                     service, serversocket.accept(), paramsBuilder.buildParams(), counter)
                 );
-                //Thread t = new WorkerThread2(
-                //   	service, serversocket.accept(), paramsBuilder.buildParams(), counter)
-                //;
-                //t.setDaemon(true);
-                //t.start();
             } catch (InterruptedIOException e) {
             	counter.error();
             	LOG.error(e.getMessage());
