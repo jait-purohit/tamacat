@@ -32,6 +32,8 @@ public class WorkerThread extends Thread {
     static final String HTTP_IN_CONN = "http.proxy.in-conn";
     static final String HTTP_OUT_CONN = "http.proxy.out-conn";
     static final String HTTP_CONN_KEEPALIVE = "http.proxy.conn-keepalive";
+    static final String HTTP_KEEPALIVE_TIMEOUT = "http.proxy.keepalive-timeout";
+    static final String HTTP_KEEPALIVE_START = "http.proxy.keepalive-start";
     static final String CONNECTION_DO_NOT_CLOSED = HttpServerConnection.class.getName() + ".__DO_NOT_CLOSED__";
     
 	protected HttpService service;
@@ -62,37 +64,53 @@ public class WorkerThread extends Thread {
     @Override
 	public void run() {
     	counter.countUp();
+    	HttpContext parent = new BasicHttpContext(); //for Keep-Alive timeout
     	try {
-        	HttpContext context = new BasicHttpContext(null);
-            // Bind connection objects to the execution context
-            context.setAttribute(HTTP_IN_CONN, conn);
-            while (Thread.interrupted() == false) {
+    		while (Thread.interrupted() == false) {
                 if (conn.isOpen() == false) { //already closed.
                     IOUtils.close(conn);
                     LOG.debug("server connection closed(isOpen:false). - " + conn);
                     break;
                 }
+            	HttpContext context = new BasicHttpContext(parent);
+                // Bind connection objects to the execution context
+                context.setAttribute(HTTP_IN_CONN, conn);
                 this.service.handleRequest(conn, context);
 
+                HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
+                if (clientConn != null) {
+                	IOUtils.close(clientConn);
+                	shutdown(clientConn);
+                	if (isTrace) LOG.trace("client connection closed. - " + clientConn);
+                }
+                
                 //if (context.getAttribute(CONNECTION_DO_NOT_CLOSED) != null) {
                 //	conn.setWebSocketSupport(true);
                 //}
+                
+                // check Keep-Alive timeout.
                 Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
+                Integer keepAliveTimeout = (Integer) context.getAttribute(HTTP_KEEPALIVE_TIMEOUT);
+                Long keepAliveStart = (Long) parent.getAttribute(HTTP_KEEPALIVE_START);
+                if (Boolean.TRUE.equals(keepalive) && keepAliveTimeout != null && keepAliveStart != null) {
+                	long end = System.currentTimeMillis() - keepAliveStart;
+                	if (end > keepAliveTimeout) {
+                		keepalive = false; //timeout
+                		LOG.debug("Keep-Alive Timeout: " + end + " > " + keepAliveTimeout + " msec.");
+                	}
+                }
+                
+                //if (keepalive != null) LOG.debug("Keep-Alive: " + keepalive);
                 if (Boolean.TRUE.equals(keepalive) == false) { //not keep-alive -> close
-	                HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
-	                if (clientConn != null) {
-	                	IOUtils.close(clientConn);
-	                	shutdown(clientConn);
-	                	if (isTrace) LOG.trace("client connection closed. - " + clientConn);
-	                }
 	                IOUtils.close(conn);
 	                LOG.debug("server connection closed. - " + conn);
 	                break;
                 }
-                LOG.debug("Keep-Alive: true - waiting. - " + conn);
+                parent.setAttribute(HTTP_KEEPALIVE_START, new Long(System.currentTimeMillis()));
+                LOG.debug("Keep-Alive: true -> waiting. - " + conn);
             }
     	} catch (SSLHandshakeException e) {
-    		LOG.debug(e.getMessage());
+    		LOG.trace(e.getMessage());
         } catch (ConnectionClosedException e) {
         	LOG.trace("Client closed connection");
         } catch (SocketTimeoutException e) {
