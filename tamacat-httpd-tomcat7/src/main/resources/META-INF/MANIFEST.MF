@@ -1,7 +1,0 @@
-Implementation-Title: tamacat-httpd-tomcat7
-Implementation-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.tamacat.servlet
-Bundle-Name: tamacat-httpd-tomcat7
-Bundle-Vendor: TAMACAT.ORG
-Bundle-Version: 1.0
