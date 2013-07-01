@@ -15,7 +15,7 @@ import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.ssl.SSLContextCreator;
 import org.tamacat.util.PropertyUtils;
 
-public class HttpEngineTest {
+public class HttpEngine_test {
 
 	HttpEngine engine;
 	
