@@ -14,7 +14,11 @@ import org.apache.http.params.HttpParams;
 /**
  * <p>The builder class for {@link HttpParams}.<br>
  * The {@link #buildParams} method execute a build {@code HttpParams} and returns.
+ *
+ *  @deprecated (1.1) use configuration classes provided 'org.apache.http.config'
+ *  and 'org.apache.http.client.config'
  */
+@Deprecated
 public class HttpParamsBuilder {
 
 	//default
@@ -24,7 +28,7 @@ public class HttpParamsBuilder {
 	private boolean staleConnectionCheck = false;
 	private boolean tcpNoDelay = true;
 	private String originServer = "tamacat-httpd";
-	
+
 	/**
 	 * <p>Set a server socket timeout, default {@code 5000} ms.
 	 * @param serverSocketTimeout
@@ -34,7 +38,7 @@ public class HttpParamsBuilder {
 		this.serverSocketTimeout = serverSocketTimeout;
 		return this;
 	}
-	
+
 	/**
 	 * <p>Set a connection timeout, default {@code 30000} ms.
 	 * @param connectionTimeout
@@ -44,7 +48,7 @@ public class HttpParamsBuilder {
 		this.connectionTimeout = connectionTimeout;
 		return this;
 	}
-	
+
 	/**
 	 * <p>Set a server socket buffer siize, default {@code 8192} bytes.
 	 * @param serverSocketBufferSize
@@ -54,7 +58,7 @@ public class HttpParamsBuilder {
 		this.serverSocketBufferSize = serverSocketBufferSize;
 		return this;
 	}
-	
+
 	/**
 	 * <p>Set a boolean value of stale connection check.
 	 * @param staleConnectionCheck
@@ -64,7 +68,7 @@ public class HttpParamsBuilder {
 		this.staleConnectionCheck = staleConnectionCheck;
 		return this;
 	}
-	
+
 	/**
 	 * <p>Set a boolean value of tcpNoDelay.
 	 * @param tcpNoDelay
@@ -74,7 +78,7 @@ public class HttpParamsBuilder {
 		this.tcpNoDelay = tcpNoDelay;
 		return this;
 	}
-	
+
 	/**
 	 * <p>Set a origin server name.
 	 * @param originServer
@@ -84,7 +88,7 @@ public class HttpParamsBuilder {
 		this.originServer = originServer;
 		return this;
 	}
-	
+
 	/**
 	 * Create a new {@code HttpParams} and returns.
 	 * @return Implements of {@code HttpParams}.

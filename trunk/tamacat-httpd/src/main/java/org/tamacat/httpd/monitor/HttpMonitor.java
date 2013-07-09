@@ -8,7 +8,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
@@ -20,26 +20,26 @@ import org.tamacat.log.LogFactory;
 public class HttpMonitor<T> implements Runnable {
 
 	static final Log LOG = LogFactory.getLog("Monitor");
-	
+
 	private MonitorConfig config;
 	private T target;
 	private MonitorEvent<T> checkTarget;
 	private boolean isNormal = true;
 	private boolean isStarted;
-	
+
 	public void setHealthCheckTarget(
 			MonitorEvent<T> checkTarget) {
 		this.checkTarget = checkTarget;
 	}
-	
+
 	public void setTarget(T target) {
 		this.target = target;
 	}
-	
+
 	public void setMonitorConfig(MonitorConfig config) {
 		this.config = config;
 	}
-	
+
 	@Override
 	public void run() {
 		while (true) {
@@ -65,10 +65,10 @@ public class HttpMonitor<T> implements Runnable {
 			}
 		}
 	}
-	
+
 	protected boolean check() {
 		if (config == null) return true;
-		HttpClient client= new DefaultHttpClient();
+		HttpClient client= HttpClientBuilder.create().build();
 		boolean result = false;
 		try {
 			HttpResponse response = client.execute(new HttpGet(config.getUrl()));
@@ -80,15 +80,15 @@ public class HttpMonitor<T> implements Runnable {
 		}
 		return result;
 	}
-	
+
 	public boolean isNormal() {
 		return isNormal;
 	}
-	
+
 	public void startMonitor() {
 		isStarted = true;
 	}
-	
+
 	public void stopMonitor() {
 		isStarted = false;
 	}

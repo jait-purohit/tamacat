@@ -13,6 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+@Deprecated
 public class HttpParamsBuilderTest {
 
 	@Before
@@ -43,7 +44,7 @@ public class HttpParamsBuilderTest {
 		builder.staleConnectionCheck(true);
 		builder.tcpNoDelay(false);
 		builder.originServer("TEST/1.1");
-		
+
 		HttpParams params = builder.buildParams();
 		assertEquals(3000, params.getParameter(CoreConnectionPNames.SO_TIMEOUT));
 		assertEquals(10000, params.getParameter(CoreConnectionPNames.CONNECTION_TIMEOUT));

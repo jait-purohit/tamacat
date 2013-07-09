@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.protocol.BasicHttpProcessor;
 import org.apache.http.protocol.HttpProcessor;
+import org.apache.http.protocol.ImmutableHttpProcessor;
 
 /**
  * <p>The builder class for {@link HttpProcessor}.<br>
@@ -20,7 +20,7 @@ public class HttpProcessorBuilder {
 
 	private List<HttpRequestInterceptor> req = new ArrayList<HttpRequestInterceptor>();
 	private List<HttpResponseInterceptor> res = new ArrayList<HttpResponseInterceptor>();
-	
+
 	/**
 	 * <p>Add the {@link HttpRequestInterceptor}.
 	 * @param interceptor
@@ -30,7 +30,7 @@ public class HttpProcessorBuilder {
 		req.add(interceptor);
 		return this;
 	}
-	
+
 	/**
 	 * <p>Add the {@link HttpResponseInterceptor}.
 	 * @param interceptor
@@ -40,19 +40,12 @@ public class HttpProcessorBuilder {
 		res.add(interceptor);
 		return this;
 	}
-	
+
 	/**
 	 * <p>Create a new {@code HttpProcessor} and returns.
 	 * @return Implements of {@code HttpProcessor}.
 	 */
 	public HttpProcessor build() {
-        BasicHttpProcessor proc = new BasicHttpProcessor();
-        for (HttpRequestInterceptor interceptor : req) {
-        	proc.addInterceptor(interceptor);
-        }
-        for (HttpResponseInterceptor interceptor : res) {
-        	proc.addInterceptor(interceptor);
-        }
-        return proc;
+		return new ImmutableHttpProcessor(req, res);
 	}
 }
