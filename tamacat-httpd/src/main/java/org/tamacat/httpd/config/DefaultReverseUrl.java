@@ -5,10 +5,10 @@
 package org.tamacat.httpd.config;
 
 import java.net.InetSocketAddress;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.http.HttpHost;
 import org.tamacat.httpd.jmx.BasicCounter;
 import org.tamacat.httpd.jmx.PerformanceCounter;
 import org.tamacat.util.CloneUtils;
@@ -27,7 +27,7 @@ public class DefaultReverseUrl implements ReverseUrl, PerformanceCounter, Clonea
 	/**
 	 * <p>
 	 * Constructs with the specified {@link ServiceUrl}.
-	 * 
+	 *
 	 * @param serviceUrl
 	 */
 	public DefaultReverseUrl(ServiceUrl serviceUrl) {
@@ -80,6 +80,12 @@ public class DefaultReverseUrl implements ReverseUrl, PerformanceCounter, Clonea
 	public InetSocketAddress getTargetAddress() {
 		return targetAddress;
 	}
+
+	@Override
+	public HttpHost getTargetHost() {
+		return new HttpHost(targetAddress.getHostName(), targetAddress.getPort());
+	}
+
 
 	@Override
 	public void setReverse(URL reverseUrl) {

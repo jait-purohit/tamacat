@@ -17,33 +17,37 @@ import org.tamacat.util.IOUtils;
 import org.tamacat.util.PropertyUtils;
 
 public class WorkerThread_test {
-	
+
 	WorkerThread thread;
 
 	public void testWorkerThread() throws Exception {
 		Properties props = PropertyUtils.getProperties("server.properties");
 		ServerConfig serverConfig = new ServerConfig(props);
-		HttpParamsBuilder paramsBuilder = new HttpParamsBuilder();
-	    paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
-	          .socketBufferSize(serverConfig.getSocketBufferSize())
-	          .originServer(serverConfig.getParam("ServerName"));
-	    
-	    HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
-		
+//		HttpParamsBuilder paramsBuilder = new HttpParamsBuilder();
+//		paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
+//			  .socketBufferSize(serverConfig.getSocketBufferSize())
+//			  .originServer(serverConfig.getParam("ServerName"));
+
+		HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
+
 		//default interceptors
 		procBuilder.addInterceptor(new ResponseDate());
 		procBuilder.addInterceptor(new ResponseServer());
 		procBuilder.addInterceptor(new ResponseContent());
 		procBuilder.addInterceptor(new ResponseConnControl());
-		
-	    DefaultHttpService service = new DefaultHttpService(
-				procBuilder, new DefaultConnectionReuseStrategy(), 
-	        	new DefaultHttpResponseFactory(), null, null,
-	        	paramsBuilder.buildParams());
-		
-	    BasicCounter counter = new BasicCounter();
-	    ServerSocket serversocket = new ServerSocket(8080);
-		thread = new WorkerThread(service, serversocket.accept(), paramsBuilder.buildParams(), counter);
+
+		DefaultHttpService service = new DefaultHttpService(
+				procBuilder, new DefaultConnectionReuseStrategy(),
+				new DefaultHttpResponseFactory(), null, null
+		);
+		//DefaultHttpService service = new DefaultHttpService(
+		//		procBuilder, new DefaultConnectionReuseStrategy(),
+		//   	new DefaultHttpResponseFactory(), null, null,
+		//    	paramsBuilder.buildParams());
+
+		BasicCounter counter = new BasicCounter();
+		ServerSocket serversocket = new ServerSocket(8080);
+		thread = new WorkerThread(service, serversocket.accept(), serverConfig, counter);
 		thread.start();
 		thread.isClosed();
 		IOUtils.close(serversocket);

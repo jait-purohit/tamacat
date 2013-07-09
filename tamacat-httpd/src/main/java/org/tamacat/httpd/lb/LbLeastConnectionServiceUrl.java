@@ -10,17 +10,19 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.http.HttpHost;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
+import org.tamacat.httpd.jmx.PerformanceCounter;
 
 /**
  * <p>It is service URL setting of the round robin type load balancer.
- * 
+ *
  * <pre>ex. url-config.xml
- * {@code 
- * <?xml version="1.0" encoding="UTF-8"?> 
+ * {@code
+ * <?xml version="1.0" encoding="UTF-8"?>
  * <service-config>
  *   <service host="http://localhost">
  *     <url path="/lb/" type="lb" handler="ReverseHandler">
@@ -30,13 +32,13 @@ import org.tamacat.httpd.exception.ServiceUnavailableException;
  *   </service>
  * </service-config>}
  * </pre>
- * 
+ *
  * <pre>ex. monitor.properties
  * {@code
  * default.url=check.html
  * default.interval=15000
  * default.timeout=5000
- * 
+ *
  * /lb/.url=test/check.html
  * /lb/.interval=60000
  * /lb/.timeout=15000
@@ -48,25 +50,25 @@ public class LbLeastConnectionServiceUrl extends LbHealthCheckServiceUrl {
 	public LbLeastConnectionServiceUrl() {
 		loadMonitorConfig();
 	}
-	
+
 	public LbLeastConnectionServiceUrl(ServerConfig serverConfig) {
 		super(serverConfig);
 		loadMonitorConfig();
 	}
-	
+
 	@Override
 	public void setReverseUrl(ReverseUrl reverseUrl) {
 		SortableReverseUrl url = new SortableReverseUrl(reverseUrl);
 		url.reset();
 		this.reverseUrls.add(url);
 	}
-	
+
 	@Override
 	public void addTarget(ReverseUrl target) {
 		LOG.trace("add: " + target.getReverse());
 		setReverseUrl(target);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public ReverseUrl getReverseUrl() {
@@ -88,35 +90,39 @@ public class LbLeastConnectionServiceUrl extends LbHealthCheckServiceUrl {
 class SortableReverseUrl implements ReverseUrl, Comparable<SortableReverseUrl> {
 
 	ReverseUrl reverseUrl;
-	
+	PerformanceCounter counter;
+
 	public SortableReverseUrl(ReverseUrl reverseUrl) {
+		if (reverseUrl instanceof PerformanceCounter) {
+			counter = (PerformanceCounter) reverseUrl;
+		}
 		this.reverseUrl = reverseUrl;
 	}
-	
+
 	public int getActiveConnections() {
-		return reverseUrl.getActiveConnections();
+		return counter.getActiveConnections();
 	}
-	
+
 	public int countUp() {
-		return reverseUrl.countUp();
+		return counter.countUp();
 	}
-	
+
 	public int countDown() {
-		return reverseUrl.countDown();
+		return counter.countDown();
 	}
-	
+
 	public void reset() {
-		reverseUrl.reset();
+		counter.reset();
 	}
 
 	public long getAverageResponseTime() {
-		return reverseUrl.getAverageResponseTime();
+		return counter.getAverageResponseTime();
 	}
-	
+
 	public long getMaximumResponseTime() {
-		return reverseUrl.getMaximumResponseTime();
+		return counter.getMaximumResponseTime();
 	}
-	
+
 	@Override
 	public int compareTo(SortableReverseUrl target) {
 		int t = target.getActiveConnections();
@@ -164,7 +170,12 @@ class SortableReverseUrl implements ReverseUrl, Comparable<SortableReverseUrl> {
 	@Override
 	public InetSocketAddress getTargetAddress() {
 		return reverseUrl.getTargetAddress();
-	}	
+	}
+
+	@Override
+	public HttpHost getTargetHost() {
+		return reverseUrl.getTargetHost();
+	}
 }
 
 class ReverseUrlComparator implements Comparator<SortableReverseUrl> {
@@ -173,5 +184,5 @@ class ReverseUrlComparator implements Comparator<SortableReverseUrl> {
 	public int compare(SortableReverseUrl o1, SortableReverseUrl o2) {
 		return o1.compareTo(o2);
 	}
-	
+
 }

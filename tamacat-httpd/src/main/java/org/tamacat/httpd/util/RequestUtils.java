@@ -23,9 +23,9 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpServerConnection;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.core.RequestParameters;
@@ -48,12 +48,12 @@ public class RequestUtils {
 		}
 		return path;
 	}
-	
+
 	public static void setParameter(HttpContext context, String name, String... values) throws IOException {
 		RequestParameters parameters = getParameters(context);
 		parameters.setParameter(name, values);
 	}
-	
+
 	public static void setParameters(
 			HttpRequest request, HttpContext context, String encoding) {
 		String path = request.getRequestLine().getUri();
@@ -96,7 +96,7 @@ public class RequestUtils {
 						String[] keyValue = param.split("=");
 						if (keyValue.length >= 2) {
 							try {
-								parameters.setParameter(keyValue[0], 
+								parameters.setParameter(keyValue[0],
 									URLDecoder.decode(keyValue[1], encoding));
 							} catch (Exception e) {
 							}
@@ -111,11 +111,11 @@ public class RequestUtils {
 			}
 		}
 	}
-	
+
 	public static void setParameters(HttpContext context, RequestParameters parameters) {
 		context.setAttribute(REQUEST_PARAMETERS_CONTEXT_KEY, parameters);
 	}
-	
+
 	public static RequestParameters getParameters(HttpContext context) {
 		synchronized (context) {
 			RequestParameters params = (RequestParameters) context.getAttribute(REQUEST_PARAMETERS_CONTEXT_KEY);
@@ -126,26 +126,26 @@ public class RequestUtils {
 			return params;
 		}
 	}
-	
+
 	public static String getParameter(HttpContext context, String name) {
 		RequestParameters params = getParameters(context);
 		return params != null ? params.getParameter(name) : null;
 	}
-	
+
 	public static String[] getParameters(HttpContext context, String name) {
 		RequestParameters params = getParameters(context);
 		return params != null ? params.getParameters(name) : null;
 	}
-	
+
 	public static Set<String> getParameterNames(HttpContext context) {
 		RequestParameters params = getParameters(context);
 		return params != null ? params.getParameterNames() : null;
 	}
-	
+
 	public static HttpConnection getHttpConnection(HttpContext context) {
-		return (HttpConnection) context.getAttribute(ExecutionContext.HTTP_CONNECTION);
+		return (HttpConnection) context.getAttribute(HttpCoreContext.HTTP_CONNECTION);
 	}
-	
+
 	/**
 	 * Set the remote IP address to {@code HttpContext}.
 	 * @param context
@@ -157,7 +157,7 @@ public class RequestUtils {
 			context.setAttribute(REMOTE_ADDRESS, address);
 		}
 	}
-	
+
 	/**
 	 * Get the remote IP address in {@code HttpContext}.
 	 * @param context
@@ -168,7 +168,7 @@ public class RequestUtils {
 		if (address != null) return address.getHostAddress();
 		else return "";
 	}
-	
+
 	public static boolean isRemoteIPv6Address(HttpContext context) {
 		InetAddress address = (InetAddress) context.getAttribute(REMOTE_ADDRESS);
 		if (address != null && address instanceof Inet6Address) {
@@ -184,18 +184,18 @@ public class RequestUtils {
 		return host != null ? host.getProtocol()
 				+ "://" + host.getAuthority() : null;
 	}
-	
+
 	public static String getRequestHostURL(
 			HttpRequest request, HttpContext context, ServiceUrl url) {
 		URL host = getRequestURL(request, context, url);
 		return host != null ? host.getProtocol()
 				+ "://" + host.getAuthority() : null;
 	}
-	
+
 	public static URL getRequestURL(HttpRequest request, HttpContext context) {
 		return getRequestURL(request, context, null);
 	}
-	
+
 	public static URL getRequestURL(HttpRequest request, HttpContext context, ServiceUrl url) {
 		String protocol = "http";
 		String hostName = null;
@@ -242,20 +242,20 @@ public class RequestUtils {
 				}
 			}
 		}
-		if (("http".equalsIgnoreCase(protocol) && port == 80) 
+		if (("http".equalsIgnoreCase(protocol) && port == 80)
 			|| ("https".equalsIgnoreCase(protocol) && port == 443)){
 			port = -1;
 		}
 		if (hostName != null) {
 			try {
 				return new URL(protocol, hostName, port,
-					request.getRequestLine().getUri());					
+					request.getRequestLine().getUri());
 			} catch (MalformedURLException e) {
 			}
 		}
 		return null;
 	}
-	
+
 	/**
 	 * UnsupportedEncodingException -> value returns.
 	 * @param value
@@ -271,11 +271,11 @@ public class RequestUtils {
 		}
 		return decode;
 	}
-	
+
 	public static boolean isEntityEnclosingRequest(HttpRequest request) {
 		return request != null && request instanceof HttpEntityEnclosingRequest;
 	}
-	
+
 	public static HttpEntity getEntity(HttpRequest request) {
 		if (isEntityEnclosingRequest(request)) {
 			return ((HttpEntityEnclosingRequest)request).getEntity();
@@ -283,12 +283,12 @@ public class RequestUtils {
 			return null;
 		}
 	}
-	
+
 	public static InputStream getInputStream(HttpRequest request) throws IOException {
 		HttpEntity entity = getEntity(request);
 		return entity != null? entity.getContent() : null;
 	}
-	
+
 	public static boolean isMultipart(HttpRequest request) {
 		if ("post".equalsIgnoreCase(request.getRequestLine().getMethod())) {
 			return HeaderUtils.isMultipart(
@@ -296,7 +296,7 @@ public class RequestUtils {
 		}
 		return false;
 	}
-	
+
 	public static String getPathPrefix(HttpRequest request) {
 		String path = request.getRequestLine().getUri();
 		int idx = path.lastIndexOf("/");

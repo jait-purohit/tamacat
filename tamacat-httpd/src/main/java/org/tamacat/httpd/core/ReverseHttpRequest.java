@@ -32,7 +32,7 @@ public class ReverseHttpRequest extends BasicHttpRequest {
 	static final Log LOG = LogFactory.getLog(ReverseHttpRequest.class);
 
 	protected ReverseUrl reverseUrl;
-	
+
 	/**
 	 * <p>Constructs with the {@link RequestLine}.
 	 * @param line
@@ -42,7 +42,7 @@ public class ReverseHttpRequest extends BasicHttpRequest {
 		super(line);
 		this.reverseUrl = reverseUrl;
 	}
-	
+
 	/**
 	 * <p>Constructs with the original request of {@link HttpRequest}.
 	 * @param request
@@ -50,53 +50,53 @@ public class ReverseHttpRequest extends BasicHttpRequest {
 	 */
 	public ReverseHttpRequest(HttpRequest request, HttpContext context, ReverseUrl reverseUrl) {
 		super(new BasicRequestLine(
-	    		request.getRequestLine().getMethod(),
-	    		reverseUrl.getReverseUrl(request.getRequestLine().getUri()).getFile(),
-	    		request.getRequestLine().getProtocolVersion())
+				request.getRequestLine().getMethod(),
+				reverseUrl.getReverseUrl(request.getRequestLine().getUri()).getFile(),
+				request.getRequestLine().getProtocolVersion())
 		);
-    	URL url = reverseUrl.getReverseUrl(request.getRequestLine().getUri());
-        if (url == null) {
-        	throw new NotFoundException("url is null.");
-        }
+		URL url = reverseUrl.getReverseUrl(request.getRequestLine().getUri());
+		if (url == null) {
+			throw new NotFoundException("url is null.");
+		}
 		this.reverseUrl = reverseUrl;
 		setRequest(request, context);
 	}
-	
+
 	/**
 	 * <p>Set the original request.
 	 * @param request
 	 */
 	public void setRequest(HttpRequest request, HttpContext context) {
-        rewriteHostHeader(request, context);
-        
-        setHeaders(request.getAllHeaders());
-        setParams(request.getParams());
-        ReverseUtils.removeRequestHeaders(this);
+		rewriteHostHeader(request, context);
+
+		setHeaders(request.getAllHeaders());
+		//setParams(request.getParams());
+		ReverseUtils.removeRequestHeaders(this);
 	}
-	
+
 	//rewrite Host Header
 	protected void rewriteHostHeader(HttpRequest request, HttpContext context) {
-        Header[] hostHeaders = request.getHeaders(HTTP.TARGET_HOST);
-        for (Header hostHeader : hostHeaders) {
-        	String value = hostHeader.getValue();
-        	URL host = RequestUtils.getRequestURL(request, context, reverseUrl.getServiceUrl());
-        	reverseUrl.setHost(host);
-        	String before = host.getAuthority();
-        	int beforePort = host.getPort();
-        	if (beforePort != 80 && beforePort > 0) {
-        		before = before + ":" + beforePort;
-        	}
-        	String after = reverseUrl.getReverse().getHost();
-        	int afterPort = reverseUrl.getReverse().getPort();
-        	if (afterPort != 80 && afterPort > 0) {
-        		after = after + ":" + afterPort;
-        	}
-        	String newValue = value.replace(before, after);
+		Header[] hostHeaders = request.getHeaders(HTTP.TARGET_HOST);
+		for (Header hostHeader : hostHeaders) {
+			String value = hostHeader.getValue();
+			URL host = RequestUtils.getRequestURL(request, context, reverseUrl.getServiceUrl());
+			reverseUrl.setHost(host);
+			String before = host.getAuthority();
+			int beforePort = host.getPort();
+			if (beforePort != 80 && beforePort > 0) {
+				before = before + ":" + beforePort;
+			}
+			String after = reverseUrl.getReverse().getHost();
+			int afterPort = reverseUrl.getReverse().getPort();
+			if (afterPort != 80 && afterPort > 0) {
+				after = after + ":" + afterPort;
+			}
+			String newValue = value.replace(before, after);
 
-        	LOG.trace("Host: " + value + " >> " + newValue);
-        	Header newHeader = new BasicHeader(hostHeader.getName(), newValue);
-        	request.removeHeader(hostHeader);
-        	request.addHeader(newHeader);
-        }	
+			LOG.trace("Host: " + value + " >> " + newValue);
+			Header newHeader = new BasicHeader(hostHeader.getName(), newValue);
+			request.removeHeader(hostHeader);
+			request.addHeader(newHeader);
+		}
 	}
 }

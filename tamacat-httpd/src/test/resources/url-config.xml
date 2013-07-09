@@ -1,31 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="UTF-8"?>
 <service-config>
-  <!-- default -->
-  <service>
-    <url path="/test/" type="normal" handler="DefaultHandler" />
-    <url path="/" type="normal" handler="VelocityHandler" />
-    
-    <url path="/ex/" type="reverse" handler="ReverseHandler">
-      <reverse>http://localhost:8080/examples/</reverse>
-    </url>
-    
-    <url path="/ex2/" type="reverse" handler="ReverseHandler">
-      <reverse>http://localhost:8080/examples/</reverse>
-    </url>
-    
-    
-    <!-- Load balancer lb-method is "RoundRobin" or "LeastConnection" -->
-    <url path="/lb/" type="lb" lb-method="LeastConnection" handler="ReverseHandler">
-      <reverse>http://localhost:8080/lb1/</reverse>
-      <reverse>http://localhost:8080/lb2/</reverse>
-    </url>
-  </service>
-  
-  <!-- Virtual host -->
-  <service host="http://dev.tamacat.org">
-    <url path="/" type="normal" handler="DefaultHandler2" />
-    <url path="/test/" type="reverse" handler="ReverseHandler">
-      <reverse>http://localhost:8080/test/</reverse>
-    </url>
-  </service>
+	<!-- default -->
+	<service>
+		<url path="/test/" type="normal" handler="DefaultHandler" />
+		<url path="/" type="normal" handler="VelocityHandler" />
+
+		<url path="/ex/" type="reverse" handler="ReverseHandler">
+			<reverse>http://localhost:8080/examples/</reverse>
+		</url>
+
+		<url path="/ex2/" type="reverse" handler="ReverseHandler">
+			<reverse>http://localhost:8080/test/</reverse>
+		</url>
+
+
+		<!-- Load balancer lb-method is "RoundRobin" or "LeastConnection" -->
+		<!--
+		<url path="/lb/" type="lb" lb-method="LeastConnection" handler="ReverseHandler">
+			<reverse>http://localhost:8080/lb1/</reverse>
+			<reverse>http://localhost:8080/lb2/</reverse>
+		</url>
+		-->
+	</service>
+
+	<!-- Virtual host -->
+	<service host="http://dev.tamacat.org">
+		<url path="/" type="normal" handler="DefaultHandler2" />
+		<url path="/test/" type="reverse" handler="ReverseHandler">
+			<reverse>http://localhost:8080/test/</reverse>
+		</url>
+	</service>
 </service-config>

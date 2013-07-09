@@ -13,34 +13,34 @@ public class SessionCleaner implements Runnable {
 	private int checkInterval =  30 * 1000; //default 30sec.
 	private int checkNextSessionIdInterval = 50; //default 50ms.
 	private String name = "Cleaner";
-	
+
 	private SessionFactory manager;
-	
+
 	public void setSessionFactory(SessionFactory manager) {
 		this.manager = manager;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setCheckInterval(int checkInterval) {
 		this.checkInterval = checkInterval;
 	}
-	
+
 	public void setCheckNextSessionIdInterval(int checkNextSessionIdInterval) {
 		this.checkNextSessionIdInterval = checkNextSessionIdInterval;
 	}
-	
+
 	@Override
 	public void run() {
 		try {
 			while (true) {
-				LOG.debug("clean check.");
+				LOG.trace("clean check.");
 				Set<String> ids = manager.getActiveSessionIds();
 				if (ids != null) {
 					for (String id : ids) {
@@ -55,7 +55,7 @@ public class SessionCleaner implements Runnable {
 			LOG.warn("stop.");
 		}
 	}
-	
+
 	void checkAndCleanup(String id) {
 		if (id != null) {
 			try {

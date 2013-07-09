@@ -12,9 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
@@ -36,9 +39,14 @@ import org.tamacat.util.StringUtils;
  * <p>This class is implements of the abstraction of {@link HttpHandler} interface.
  */
 public abstract class AbstractHttpHandler implements HttpHandler {
-	
-    static final Log LOG = LogFactory.getLog(AbstractHttpHandler.class);
-    protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
+
+	static final Log LOG = LogFactory.getLog(AbstractHttpHandler.class);
+	protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
+	protected static final String HTTP_CONN_KEEPALIVE = "http.conn-keepalive";
+	protected static final String HTTP_KEEPALIVE_TIMEOUT = "http.keepalive-timeout";
+	protected ConnectionReuseStrategy connStrategy;
+
+	protected int keepAliveTimeout = 30000; //msec.
 
 	private static Properties mimeTypes;
 	protected static String serverHome;
@@ -47,9 +55,9 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	 * 1. using org/tamacat/httpd/mime-types.properties} in jar archive.
 	 * 2. override or add the mime-types.properties in CLASSPATH. (optional)
 	 */
-    static {
-    	mimeTypes = PropertyUtils.marge(
-    			"org/tamacat/httpd/mime-types.properties", "mime-types.properties");
+	static {
+		mimeTypes = PropertyUtils.marge(
+				"org/tamacat/httpd/mime-types.properties", "mime-types.properties");
 		try {
 			serverHome = System.getProperty("server.home");
 			if (serverHome == null) serverHome = System.getProperty("user.dir");
@@ -58,36 +66,40 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 		} catch (Exception e) {
 			LOG.error(e);
 		}
-    }
-	
+	}
+
 	public static Properties getMimeTypes() {
 		return mimeTypes;
 	}
-	
+
 	protected VelocityErrorPage errorPage;
-    protected ServiceUrl serviceUrl;
-    protected String docsRoot;
-    protected String encoding = "UTF-8";
-    
-    protected List<HttpFilter> filters = new ArrayList<HttpFilter>();
-    protected List<RequestFilter> requestFilters = new ArrayList<RequestFilter>();
-    protected List<ResponseFilter> responseFilters = new ArrayList<ResponseFilter>();
-    protected ClassLoader loader;
-    
-    /**
-     * <p>Set the ServiceUrl and initialized HttpFilters. 
-     * @param serviceUrl
-     */
+	protected ServiceUrl serviceUrl;
+	protected String docsRoot;
+	protected String encoding = "UTF-8";
+
+	protected List<HttpFilter> filters = new ArrayList<HttpFilter>();
+	protected List<RequestFilter> requestFilters = new ArrayList<RequestFilter>();
+	protected List<ResponseFilter> responseFilters = new ArrayList<ResponseFilter>();
+	protected ClassLoader loader;
+
+	protected AbstractHttpHandler() {
+		this.connStrategy = new DefaultConnectionReuseStrategy();
+	}
+
+	/**
+	 * <p>Set the ServiceUrl and initialized HttpFilters.
+	 * @param serviceUrl
+	 */
 	@Override
-    public void setServiceUrl(ServiceUrl serviceUrl) {
-    	this.serviceUrl = serviceUrl;
-    	for (HttpFilter filter : filters) {
-    		filter.init(serviceUrl);
-    	}
+	public void setServiceUrl(ServiceUrl serviceUrl) {
+		this.serviceUrl = serviceUrl;
+		for (HttpFilter filter : filters) {
+			filter.init(serviceUrl);
+		}
 		Properties props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
-    	errorPage = new VelocityErrorPage(props);
-    }
-    
+		errorPage = new VelocityErrorPage(props);
+	}
+
 	/**
 	 * <p>Add the HttpFilter.
 	 * @param filter
@@ -102,7 +114,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 			responseFilters.add((ResponseFilter)filter);
 		}
 	}
-	
+
 	/**
 	 * <p>Set the path of document root.
 	 * @param docsRoot
@@ -110,7 +122,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	public void setDocsRoot(String docsRoot) {
 		this.docsRoot = docsRoot.replace("${server.home}", serverHome).replace("\\", "/");
 	}
-	
+
 	/**
 	 * <p>Set the character encoding. (default UTF-8)
 	 * @param encoding
@@ -118,9 +130,9 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
 	}
-	
+
 	@Override
-	public void handle(HttpRequest request, HttpResponse response, 
+	public void handle(HttpRequest request, HttpResponse response,
 			HttpContext context) {
 		RequestUtils.setParameters(request, context, encoding);
 		try {
@@ -128,6 +140,9 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 				filter.doFilter(request, response, context);
 			}
 			doRequest(request, response, context);
+			// Get the target server Connection Keep-Alive header. //
+			boolean keepAlive = keepAlive(request, response, context);
+			LOG.debug("Keep-Alive: " + keepAlive);
 		} catch (Exception e) {
 			handleException(request, response, e);
 		} finally {
@@ -136,11 +151,11 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 			}
 		}
 	}
-	
+
 	/**
 	 * <p>When the exception is generated by processing {@link handleRequest},
-	 *  this method is executed. 
-	 *  
+	 *  this method is executed.
+	 *
 	 * @param request
 	 * @param response
 	 * @param e
@@ -153,7 +168,8 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 				LOG.error("Server error: " + status + " - " + e.getMessage());
 			}
 			if (LOG.isDebugEnabled() && status.isClientError()) {
-				LOG.debug("Client error: " + status + " - " + e.getMessage());
+				LOG.debug("Client error: "+request.getRequestLine()
+					+ " " + status.getStatusCode() + " [" + status.getReasonPhrase() + "]");
 			}
 			html = errorPage.getErrorPage(request, response, (HttpException)e);
 		} else {
@@ -166,7 +182,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 		HttpEntity entity = getEntity(html);
 		ResponseUtils.setEntity(response, entity);
 	}
-	
+
 	/**
 	 * <p>Handling the request, this method is executed after {@link RequestFilter}.
 	 * @see {@link executeRequestFilter}
@@ -181,84 +197,97 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 			throws HttpException, IOException;
 
 	/**
-	 * <p>The entity is acquired based on the string. 
+	 * <p>The entity is acquired based on the string.
 	 * @param html
 	 * @return {@link HttpEntity}
 	 */
 	protected abstract HttpEntity getEntity(String html);
-	
+
 	/**
-	 * <p>The entity is acquired based on the file. 
+	 * <p>The entity is acquired based on the file.
 	 * @param file
 	 * @return {@link HttpEntity}
 	 */
 	protected abstract HttpEntity getFileEntity(File file);
-	
+
+	protected boolean keepAlive(HttpRequest request, HttpResponse response, HttpContext context) {
+		boolean keepAlive = false;
+		if (request.getProtocolVersion().greaterEquals(HttpVersion.HTTP_1_1)) {
+			keepAlive = this.connStrategy.keepAlive(response, context);
+			if (keepAlive) {
+				LOG.trace("Set Keep-Alive Timeout: " + keepAliveTimeout + " msec.");
+				context.setAttribute(HTTP_KEEPALIVE_TIMEOUT, new Integer(keepAliveTimeout));
+			}
+			context.setAttribute(HTTP_CONN_KEEPALIVE, new Boolean(keepAlive));
+		}
+		return keepAlive;
+	}
+
 	/**
 	 * <p>The contents type is acquired from the extension. <br>
 	 * The correspondence of the extension and the contents type is
 	 *  acquired from the {@code mime-types.properties} file. <br>
 	 * When there is no file and the extension cannot be acquired,
-	 * an {@link DEFAULT_CONTENT_TYPE} is returned. 
+	 * an {@link DEFAULT_CONTENT_TYPE} is returned.
 	 * @param file
 	 * @return contents type
 	 */
-    protected String getContentType(File file) {
-    	if (file == null) return DEFAULT_CONTENT_TYPE;
-    	String fileName = file.getName();
-    	String contentType =  getContentType(fileName);
-    	return StringUtils.isNotEmpty(contentType)? contentType : DEFAULT_CONTENT_TYPE;
-    }
-    
+	protected String getContentType(File file) {
+		if (file == null) return DEFAULT_CONTENT_TYPE;
+		String fileName = file.getName();
+		String contentType =  getContentType(fileName);
+		return StringUtils.isNotEmpty(contentType)? contentType : DEFAULT_CONTENT_TYPE;
+	}
+
 	/**
 	 * <p>The contents type is acquired from the extension. <br>
 	 * The correspondence of the extension and the contents type is
 	 *  acquired from the {@code mime-types.properties} path. <br>
 	 * When there is no file and the extension cannot be acquired,
-	 * an null is returned. 
+	 * an null is returned.
 	 * @param path
 	 * @return contents type
 	 * @since 1.1
 	 */
-    protected String getContentType(String path) {
-    	String ext = path.substring(path.lastIndexOf('.')+1, path.length());
-    	String contentType =  getMimeTypes().getProperty(ext.toLowerCase());
-    	return contentType;
-    }
-    
-    /**
-     * <p>Returns the decoded URI.
-     * When Exception is caught, a throw of the NotFoundException.
-     * @param uri
-     * @return decoded URI default decoding is UTF-8.
-     */
-    protected String getDecodeUri(String uri) {
-    	try {
-    		String decoded = URLDecoder.decode(uri, encoding);
-    		if (decoded.indexOf("../")>=0 || decoded.indexOf("..\\")>=0) {
-    			throw new NotFoundException();
-    		}
-    		return decoded;
-    	} catch (UnsupportedEncodingException e) {
-            return uri;
-        } catch (IllegalArgumentException e) {
-            throw new NotFoundException();
-        }
-    }
-    
-    /**
-     * <p.Set the ClassLoader
-     * @param loader
-     */
-    public void setClassLoader(ClassLoader loader) {
-    	this.loader = loader;
-    }
-    
-    /**
-     * <p>Get the ClassLoader, default is getClass().getClassLoader().
-     * @return
-     */
-    public ClassLoader getClassLoader() {
-    	return loader != null ? loader : getClass().getClassLoader();
-    }
+	protected String getContentType(String path) {
+		String ext = path.substring(path.lastIndexOf('.')+1, path.length());
+		String contentType =  getMimeTypes().getProperty(ext.toLowerCase());
+		return contentType;
+	}
+
+	/**
+	 * <p>Returns the decoded URI.
+	 * When Exception is caught, a throw of the NotFoundException.
+	 * @param uri
+	 * @return decoded URI default decoding is UTF-8.
+	 */
+	protected String getDecodeUri(String uri) {
+		try {
+			String decoded = URLDecoder.decode(uri, encoding);
+			if (decoded.indexOf("../")>=0 || decoded.indexOf("..\\")>=0) {
+				throw new NotFoundException();
+			}
+			return decoded;
+		} catch (UnsupportedEncodingException e) {
+			return uri;
+		} catch (IllegalArgumentException e) {
+			throw new NotFoundException();
+		}
+	}
+
+	/**
+	 * <p.Set the ClassLoader
+	 * @param loader
+	 */
+	public void setClassLoader(ClassLoader loader) {
+		this.loader = loader;
+	}
+
+	/**
+	 * <p>Get the ClassLoader, default is getClass().getClassLoader().
+	 * @return
+	 */
+	public ClassLoader getClassLoader() {
+		return loader != null ? loader : getClass().getClassLoader();
+	}
 }
