@@ -54,21 +54,6 @@ public class DefaultHttpService extends HttpService {
 			handleMapper, verifier);
 	}
 
-//	public DefaultHttpService(HttpProcessorBuilder procBuilder,
-//			ConnectionReuseStrategy connStrategy,
-//			HttpResponseFactory responseFactory,
-//			HttpRequestHandlerResolver handlerResolver,
-//			HttpExpectationVerifier verifier,
-//			HttpParams params) {
-//		super(procBuilder.build(), connStrategy, responseFactory,
-//			handlerResolver, verifier, params);
-//	}
-
-//    @Override
-//    public void setHandlerResolver(HttpRequestHandlerResolver handlerResolver) {
-//        this.handlerResolver = handlerResolver;
-//    }
-
 	public void setHostHandlerResolver(HostRequestHandlerMapper hostResolver) {
 		this.hostResolver = hostResolver;
 	}
