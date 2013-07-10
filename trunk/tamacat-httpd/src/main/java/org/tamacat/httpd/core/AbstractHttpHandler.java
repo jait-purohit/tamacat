@@ -12,12 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
@@ -42,11 +39,6 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 
 	static final Log LOG = LogFactory.getLog(AbstractHttpHandler.class);
 	protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
-	protected static final String HTTP_CONN_KEEPALIVE = "http.conn-keepalive";
-	protected static final String HTTP_KEEPALIVE_TIMEOUT = "http.keepalive-timeout";
-	protected ConnectionReuseStrategy connStrategy;
-
-	protected int keepAliveTimeout = 30000; //msec.
 
 	private static Properties mimeTypes;
 	protected static String serverHome;
@@ -81,10 +73,6 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	protected List<RequestFilter> requestFilters = new ArrayList<RequestFilter>();
 	protected List<ResponseFilter> responseFilters = new ArrayList<ResponseFilter>();
 	protected ClassLoader loader;
-
-	protected AbstractHttpHandler() {
-		this.connStrategy = new DefaultConnectionReuseStrategy();
-	}
 
 	/**
 	 * <p>Set the ServiceUrl and initialized HttpFilters.
@@ -140,9 +128,6 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 				filter.doFilter(request, response, context);
 			}
 			doRequest(request, response, context);
-			// Get the target server Connection Keep-Alive header. //
-			boolean keepAlive = keepAlive(request, response, context);
-			LOG.debug("Keep-Alive: " + keepAlive);
 		} catch (Exception e) {
 			handleException(request, response, e);
 		} finally {
@@ -209,19 +194,6 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	 * @return {@link HttpEntity}
 	 */
 	protected abstract HttpEntity getFileEntity(File file);
-
-	protected boolean keepAlive(HttpRequest request, HttpResponse response, HttpContext context) {
-		boolean keepAlive = false;
-		if (request.getProtocolVersion().greaterEquals(HttpVersion.HTTP_1_1)) {
-			keepAlive = this.connStrategy.keepAlive(response, context);
-			if (keepAlive) {
-				LOG.trace("Set Keep-Alive Timeout: " + keepAliveTimeout + " msec.");
-				context.setAttribute(HTTP_KEEPALIVE_TIMEOUT, new Integer(keepAliveTimeout));
-			}
-			context.setAttribute(HTTP_CONN_KEEPALIVE, new Boolean(keepAlive));
-		}
-		return keepAlive;
-	}
 
 	/**
 	 * <p>The contents type is acquired from the extension. <br>

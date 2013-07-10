@@ -24,7 +24,6 @@ import org.tamacat.io.RuntimeIOException;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.ExceptionUtils;
-import org.tamacat.util.IOUtils;
 
 /**
  * <p>This class is a worker thread for multi thread server.
@@ -33,9 +32,7 @@ public class WorkerThread extends Thread {
 	static final Log LOG = LogFactory.getLog(WorkerThread.class);
 	static final String HTTP_IN_CONN = "http.proxy.in-conn";
 	static final String HTTP_OUT_CONN = "http.proxy.out-conn";
-	static final String HTTP_CONN_KEEPALIVE = "http.conn-keepalive";
-	static final String HTTP_KEEPALIVE_TIMEOUT = "http.keepalive-timeout";
-	static final String HTTP_IN_CONN_START = "http.proxy.in-conn-start";
+
 	static final String CONNECTION_DO_NOT_CLOSED = HttpServerConnection.class.getName() + ".__DO_NOT_CLOSED__";
 	ServerConfig config;
 
@@ -44,24 +41,7 @@ public class WorkerThread extends Thread {
 	protected PerformanceCounter counter;
 	protected Socket insocket;
 
-//	/**
-//	 * <p>Constructs with the specified {@link HttpService}.
-//	 * @param service
-//	 * @param insocket
-//	 * @param params
-//	 * @throws IOException
-//	 */
-//	public WorkerThread(
-//			HttpService service, Socket insocket,
-//			HttpParams params, PerformanceCounter counter) throws IOException {
-//		this.service = service;
-//		this.insocket = insocket;
-//		this.conn = new ServerHttpConnection();
-//		this.conn.bind(insocket, params);
-//		this.counter = counter;
-//	}
-
-	public WorkerThread(
+	public WorkerThread(String threadName,
 			HttpService service, Socket insocket,
 			ServerConfig config, PerformanceCounter counter) throws IOException {
 		this.service = service;
@@ -69,6 +49,7 @@ public class WorkerThread extends Thread {
 		this.conn = new ServerHttpConnection(config.getSocketBufferSize());
 		this.conn.bind(insocket);
 		this.counter = counter;
+		setName(getName().replace("Thread", threadName));
 	}
 
 	@Override
@@ -78,10 +59,10 @@ public class WorkerThread extends Thread {
 		HttpContext parent = new BasicHttpContext(); //for Keep-Alive timeout
 		// Bind connection objects to the execution context
 		parent.setAttribute(HTTP_IN_CONN, conn);
-		parent.setAttribute(HTTP_IN_CONN_START, new Long(System.currentTimeMillis()));
 		try {
 			HttpConnectionMetrics metrics = this.conn.getMetrics();
 			while (Thread.interrupted() == false && conn.isOpen()) {
+				LOG.debug("count:" + metrics.getRequestCount() + " - " + conn);
 				HttpContext context = new BasicHttpContext(parent);
 				this.service.handleRequest(conn, context);
 
@@ -92,12 +73,10 @@ public class WorkerThread extends Thread {
 					LOG.debug("client connection closed - " + clientConn);
 				}
 				// check Keep-Alive timeout or not keep-alive -> close
-				if (isKeepAlive(context) == false || isKeepAliveTimeout(context)) {
-					IOUtils.close(conn);
-					break;
-				}
-				//parent.setAttribute(HTTP_CONN_KEEPALIVE, new Boolean(true));
-				LOG.debug("keep-alive:true -> reuse (" + metrics.getRequestCount() + "). - " + conn);
+				//if (isKeepAlive(context) == false || isKeepAliveTimeout(context)) {
+				//	IOUtils.close(conn);
+				//	break;
+				//}
 			}
 		} catch (Exception e) {
 			handleException(e);
@@ -123,30 +102,6 @@ public class WorkerThread extends Thread {
 			LOG.error(e.getClass() + ": " + e.getMessage() + " - " + conn);
 			LOG.debug(ExceptionUtils.getStackTrace(e));
 		}
-	}
-
-	boolean isKeepAlive(HttpContext context) {
-		Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
-		if (Boolean.TRUE.equals(keepalive) == false) {
-			LOG.debug("server connection closed(keep-alive:false). - " + conn);
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	boolean isKeepAliveTimeout(HttpContext context) {
-		Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
-		Integer keepAliveTimeout = (Integer) context.getAttribute(HTTP_KEEPALIVE_TIMEOUT);
-		Long connStart = (Long) context.getAttribute(HTTP_IN_CONN_START);
-		if (Boolean.TRUE.equals(keepalive) && keepAliveTimeout != null && connStart != null) {
-			long end = System.currentTimeMillis() - connStart;
-			if (end > keepAliveTimeout) { //timeout
-				LOG.debug("server connection closed(keep-alive timeout[" + end + " > " + keepAliveTimeout + " msec.]) - " + conn);
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public boolean isClosed() {

@@ -47,7 +47,7 @@ public class WorkerThread_test {
 
 		BasicCounter counter = new BasicCounter();
 		ServerSocket serversocket = new ServerSocket(8080);
-		thread = new WorkerThread(service, serversocket.accept(), serverConfig, counter);
+		thread = new WorkerThread("httpd", service, serversocket.accept(), serverConfig, counter);
 		thread.start();
 		thread.isClosed();
 		IOUtils.close(serversocket);

@@ -60,7 +60,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	protected PlainSocketFactory socketFactory = PlainSocketFactory.getSocketFactory();
 	protected String proxyAuthorizationHeader = "X-ReverseProxy-Authorization";
 	protected String proxyOrignPathHeader = "X-ReverseProxy-Origin-Path"; //v1.1
-	protected int keepAliveTimeout = 30000; //msec.
 	protected int connectionTimeout = 30000;
 	protected int socketBufferSize = 8192;
 	protected SocketConfig config;
@@ -120,10 +119,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 
 		// Access Backend server. //
 		HttpResponse targetResponse = forwardRequest(request, response, context);
-
-		// Get the target server Connection Keep-Alive header. //
-		boolean keepAlive = keepAlive(request, targetResponse, context);
-		LOG.debug("Keep-Alive: " + keepAlive);
 
 		ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
 		ReverseUtils.copyHttpResponse(targetResponse, response);

@@ -26,8 +26,6 @@ import javax.net.ssl.SSLServerSocket;
 
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.config.SocketConfig;
-import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.protocol.ResponseConnControl;
 import org.apache.http.protocol.ResponseContent;
@@ -63,7 +61,6 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 
 	private SSLContextCreator sslContextCreator;
 	private ServerSocket serversocket;
-	//private HttpParamsBuilder paramsBuilder;
 	private HttpProcessorBuilder procBuilder;
 
 	private BasicCounter counter = new BasicCounter();
@@ -88,8 +85,8 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 			serverConfig = new ServerConfig(props);
 		}
 		//org.apache.http.config.
-		SocketConfig socketConfig = SocketConfig.custom()
-			.setSoTimeout(serverConfig.getSocketTimeout()).build();
+		//SocketConfig socketConfig = SocketConfig.custom()
+		//	.setSoTimeout(serverConfig.getSocketTimeout()).build();
 
 
 		//paramsBuilder = new HttpParamsBuilder();
@@ -112,14 +109,10 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 			procBuilder.addInterceptor(interceptor);
 		}
 		service = new DefaultHttpService(
-				procBuilder, DefaultConnectionReuseStrategy.INSTANCE,
+				procBuilder, KeepAliveConnReuseStrategy.INSTANCE,
 				new DefaultHttpResponseFactory(), null, null
 		);
-		//service = new DefaultHttpService(
-		//		procBuilder, new DefaultConnectionReuseStrategy(),
-		//		new DefaultHttpResponseFactory(), null, null,
-		//		paramsBuilder.buildParams());
-		//service.setClassLoader(getClassLoader());
+
 		if (isMXServerStarted == false) {
 			registerMXServer();
 		}
@@ -131,7 +124,6 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		HostRequestHandlerMapper hostResolver = new HostRequestHandlerMapper();
 		HostServiceConfig hostConfig = new ServiceConfigParser(serverConfig).getConfig();
 		for (String host : hostConfig.getHosts()) {
-			//HttpRequestHandlerRegistry registry = new HttpRequestHandlerRegistry();
 			UriHttpRequestHandlerMapper mapper = new UriHttpRequestHandlerMapper();
 			ServiceConfig serviceConfig = hostConfig.getServiceConfig(host);
 			for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
@@ -140,7 +132,6 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 					LOG.info(serviceUrl.getPath() + " - " + serviceUrl.getHandlerName()
 						+ " (class="+handler.getClass().getName() + ")");
 					mapper.register(serviceUrl.getPath() + "*", handler);
-					//registry.register(serviceUrl.getPath() + "*", handler);
 				} else {
 					LOG.warn(serviceUrl.getPath() + " HttpHandler is not found.");
 				}
@@ -174,18 +165,17 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		}
 
 		//set the maximun worker threads.
-		int maxThreads = serverConfig.getMaxThreads();
-		LOG.info("MaxServerThreads: " + maxThreads);
+		//int maxThreads = serverConfig.getMaxThreads();
+		//LOG.info("MaxServerThreads: " + maxThreads);
 		String threadName = serverConfig.getParam("WorkerThreadName", "httpd");
 
 		LOG.info("Listen: " + serverConfig.getPort());
 		while (!Thread.interrupted()) {
 			try {
-				Thread t = new WorkerThread(
+				Thread t = new WorkerThread(threadName,
 					service, serversocket.accept(),
 					serverConfig, counter
 				);
-				t.setName(t.getName().replace("Thread", threadName));
 				t.start();
 			} catch (InterruptedIOException e) {
 				counter.error();

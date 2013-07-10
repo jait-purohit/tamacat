@@ -7,6 +7,8 @@ import org.apache.http.impl.DefaultBHttpServerConnection;
 
 public class ServerHttpConnection extends DefaultBHttpServerConnection {
 
+	final long HTTP_IN_CONN_START = new Long(System.currentTimeMillis());
+
 	public ServerHttpConnection(int buffersize) {
 		super(buffersize);
 	}
