@@ -22,12 +22,11 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 	public static final KeepAliveConnReuseStrategy INSTANCE = new KeepAliveConnReuseStrategy();
 	static final Log LOG = LogFactory.getLog(KeepAliveConnReuseStrategy.class);
 
-	static final String HTTP_CONN_KEEPALIVE = "http.conn-keepalive";
-	static final String HTTP_KEEPALIVE_TIMEOUT = "http.keepalive-timeout";
-	static final String HTTP_IN_CONN_START = "http.proxy.in-conn-start";
+	static final String HTTP_IN_CONN = "http.in-conn";
 
 	boolean disabledKeepAlive;
 	boolean alwaysKeepAlive;
+	int keepAliveTimeout = 5000;
 
 	public boolean isAlwaysKeepAlive() {
 		return alwaysKeepAlive;
@@ -69,7 +68,11 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 		} else if (disabledKeepAlive) {
 			return false;
 		} else {
-			return _keepAlive(response, context);
+			boolean result = keepAliveCheck(response, context);
+			if (result) {
+				return !isKeepAliveTimeout(context);
+			}
+			return false;
 		}
 	}
 
@@ -78,7 +81,7 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 	 * @param response
 	 * @param context
 	 */
-	public boolean _keepAlive(HttpResponse response, HttpContext context) {
+	public boolean keepAliveCheck(HttpResponse response, HttpContext context) {
 		if (response == null) {
 			throw new IllegalArgumentException
 				("HTTP response may not be null.");
@@ -184,24 +187,14 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 		return result;
 	}
 
-	boolean isKeepAlive(HttpContext context) {
-		Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
-		if (Boolean.TRUE.equals(keepalive) == false) {
-			//LOG.debug("server connection closed(keep-alive:false). - " + conn);
-			return false;
-		} else {
-			return true;
-		}
-	}
-
 	boolean isKeepAliveTimeout(HttpContext context) {
-		Boolean keepalive = (Boolean) context.getAttribute(HTTP_CONN_KEEPALIVE);
-		Integer keepAliveTimeout = (Integer) context.getAttribute(HTTP_KEEPALIVE_TIMEOUT);
-		Long connStart = (Long) context.getAttribute(HTTP_IN_CONN_START);
-		if (Boolean.TRUE.equals(keepalive) && keepAliveTimeout != null && connStart != null) {
+		ServerHttpConnection conn = (ServerHttpConnection) context.getAttribute(HTTP_IN_CONN);
+		if (conn != null) {
+			long connStart = conn.getConnectionStartTime();
 			long end = System.currentTimeMillis() - connStart;
 			if (end > keepAliveTimeout) { //timeout
-				//LOG.debug("server connection closed(keep-alive timeout[" + end + " > " + keepAliveTimeout + " msec.]) - " + conn);
+				conn.setSocketTimeout(1);
+				LOG.debug("keep-alive timeout[" + end + " > " + keepAliveTimeout + " msec.]) - " + conn);
 				return true;
 			}
 		}

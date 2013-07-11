@@ -7,13 +7,17 @@ import org.apache.http.impl.DefaultBHttpServerConnection;
 
 public class ServerHttpConnection extends DefaultBHttpServerConnection {
 
-	final long HTTP_IN_CONN_START = new Long(System.currentTimeMillis());
+	final long CONN_START = new Long(System.currentTimeMillis());
 
 	public ServerHttpConnection(int buffersize) {
 		super(buffersize);
 	}
 
 	private SocketWrapper socketWrapper;
+
+	public long getConnectionStartTime() {
+		return CONN_START;
+	}
 
 	@Override
 	public void bind(final Socket socket) throws IOException {
