@@ -14,7 +14,6 @@ import javax.net.ssl.SSLHandshakeException;
 import org.apache.http.ConnectionClosedException;
 import org.apache.http.HttpConnection;
 import org.apache.http.HttpConnectionMetrics;
-import org.apache.http.HttpServerConnection;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
@@ -30,10 +29,9 @@ import org.tamacat.util.ExceptionUtils;
  */
 public class WorkerThread extends Thread {
 	static final Log LOG = LogFactory.getLog(WorkerThread.class);
-	static final String HTTP_IN_CONN = "http.proxy.in-conn";
-	static final String HTTP_OUT_CONN = "http.proxy.out-conn";
+	static final String HTTP_IN_CONN = "http.in-conn";
+	static final String HTTP_OUT_CONN = "http.out-conn";
 
-	static final String CONNECTION_DO_NOT_CLOSED = HttpServerConnection.class.getName() + ".__DO_NOT_CLOSED__";
 	ServerConfig config;
 
 	protected HttpService service;
@@ -72,11 +70,6 @@ public class WorkerThread extends Thread {
 					shutdownClient(clientConn);
 					LOG.debug("client connection closed - " + clientConn);
 				}
-				// check Keep-Alive timeout or not keep-alive -> close
-				//if (isKeepAlive(context) == false || isKeepAliveTimeout(context)) {
-				//	IOUtils.close(conn);
-				//	break;
-				//}
 			}
 		} catch (Exception e) {
 			handleException(e);

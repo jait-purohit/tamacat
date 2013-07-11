@@ -13,7 +13,6 @@ import java.net.Socket;
 import java.net.SocketException;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -52,7 +51,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 
 	static final Log LOG = LogFactory.getLog(ReverseProxyHandler.class);
 
-	protected static final String HTTP_OUT_CONN = "http.proxy.out-conn";
+	protected static final String HTTP_OUT_CONN = "http.out-conn";
 	protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
 
 	protected HttpRequestExecutor httpexecutor;
@@ -150,14 +149,13 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 			LOG.info(">> " + request.getRequestLine().getMethod() + " " + request.getRequestLine().getUri() + " " + request.getProtocolVersion());
 		}
 
-		Socket outsocket = null;
 		ReverseUrl reverseUrl = serviceUrl.getReverseUrl();
+		if (reverseUrl == null) {
+			throw new ServiceUnavailableException("reverseUrl is null.");
+		}
 		try {
-			if (reverseUrl == null) {
-				throw new ServiceUnavailableException("reverseUrl is null.");
-			}
 			context.setAttribute("reverseUrl", reverseUrl);
-			outsocket = socketFactory.createSocket(context);
+			Socket outsocket = socketFactory.createSocket(context);
 
 			InetAddress remoteAddress = InetAddress.getByName(reverseUrl.getTargetAddress().getHostName());
 			InetSocketAddress remote = new InetSocketAddress(remoteAddress, reverseUrl.getTargetAddress().getPort());
@@ -173,12 +171,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 				LOG.trace("request: " + request);
 			}
 
-			ReverseHttpRequest targetRequest = null;
-			if (request instanceof HttpEntityEnclosingRequest) {
-				targetRequest = new ReverseHttpEntityEnclosingRequest(request, context, reverseUrl);
-			} else {
-				targetRequest = new ReverseHttpRequest(request, context, reverseUrl);
-			}
+			ReverseHttpRequest targetRequest =
+					ReverseHttpRequestFactory.getInstance(request, response, context, reverseUrl);
 
 			targetRequest.setHeader(proxyOrignPathHeader, serviceUrl.getPath()); //v1.1
 
