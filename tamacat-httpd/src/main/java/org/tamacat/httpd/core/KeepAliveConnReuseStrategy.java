@@ -11,11 +11,14 @@ import org.apache.http.TokenIterator;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.Args;
+import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
+import org.tamacat.util.StringUtils;
 
 /**
- * ConnectionReuseStrategy for Reverse Proxy.
+ * ConnectionReuseStrategy.
  */
 public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 
@@ -26,7 +29,16 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 
 	boolean disabledKeepAlive;
 	boolean alwaysKeepAlive;
-	int keepAliveTimeout = 5000;
+	int keepAliveTimeout = 15000;
+	int maxKeepAliveRequests = 100;
+
+	public void setKeepAliveTimeout(int keepAliveTimeout) {
+		this.keepAliveTimeout = keepAliveTimeout;
+	}
+
+	public void setMaxKeepAliveRequests(int maxKeepAliveRequests) {
+		this.maxKeepAliveRequests = maxKeepAliveRequests;
+	}
 
 	public boolean isAlwaysKeepAlive() {
 		return alwaysKeepAlive;
@@ -35,7 +47,6 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 	/**
 	 * Always Keep-Alive. (Priority is given over disabledKeepAlive.)
 	 * @param alwaysKeepAlive
-	 * @since 1.0.6
 	 */
 	public void setAlwaysKeepAlive(boolean alwaysKeepAlive) {
 		this.alwaysKeepAlive = alwaysKeepAlive;
@@ -48,7 +59,6 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 	/**
 	 * force disabled Keep-Alive.
 	 * @param disabledKeepAlive
-	 * @since 1.0.5
 	 */
 	public void setDisabledKeepAlive(boolean disabledKeepAlive) {
 		this.disabledKeepAlive = disabledKeepAlive;
@@ -82,14 +92,8 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 	 * @param context
 	 */
 	public boolean keepAliveCheck(HttpResponse response, HttpContext context) {
-		if (response == null) {
-			throw new IllegalArgumentException
-				("HTTP response may not be null.");
-		}
-		if (context == null) {
-			throw new IllegalArgumentException
-				("HTTP context may not be null.");
-		}
+		Args.notNull(response, "HTTP response");
+		Args.notNull(context, "HTTP context");
 
 		// Check for a self-terminating entity. If the end of the entity will
 		// be indicated by closing the connection, there is no keep-alive.
@@ -97,27 +101,21 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 		Header teh = response.getFirstHeader(HTTP.TRANSFER_ENCODING);
 		if (teh != null) {
 			if (!HTTP.CHUNK_CODING.equalsIgnoreCase(teh.getValue())) {
-				LOG.debug("Keep-Alive: false (Transfer-Encoding: not chunked)");
+				LOG.debug("Keep-Alive:false (Transfer-Encoding: not chunked)");
 				return false;
 			}
 		} else {
 			if (canResponseHaveBody(response)) {
-				Header[] clhs = response.getHeaders(HTTP.CONTENT_LEN);
+				String cl = HeaderUtils.getHeader(response, HTTP.CONTENT_LEN);
 				// Do not reuse if not properly content-length delimited
-				if (clhs.length == 1) {
-					Header clh = clhs[0];
-					try {
-						int contentLen = Integer.parseInt(clh.getValue());
-						if (contentLen < 0) {
-							LOG.debug("Keep-Alive: false (Content-Length<0 ["+contentLen+"])");
-							return false;
-						}
-					} catch (NumberFormatException ex) {
-						LOG.debug("Keep-Alive: false ("+ex+")");
+				if (StringUtils.isNotEmpty(cl)) {
+					int contentLen = StringUtils.parse(cl, -1);
+					if (contentLen < 0) {
+						LOG.debug("Keep-Alive:false (Content-Length<0 ["+contentLen+"])");
 						return false;
 					}
 				} else {
-					LOG.debug("Keep-Alive: false (Content-Length!=1 ["+clhs.length+"])");
+					LOG.debug("Keep-Alive:false (Content-Length is null)");
 					return false;
 				}
 			}
@@ -152,7 +150,6 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 		// "close" and "keep-alive". As "close" is specified by RFC 2068,
 		// it takes precedence and indicates a non-persistent connection.
 		// If there is no "close" but a "keep-alive", we take the hint.
-
 		if (hit.hasNext()) {
 			try {
 				TokenIterator ti = createTokenIterator(hit);
@@ -164,7 +161,7 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 						return false;
 					} else if (HTTP.CONN_KEEP_ALIVE.equalsIgnoreCase(token)) {
 						// continue the loop, there may be a "close" afterwards
-						LOG.debug("Keep-Alive: true (Connection:Keep-Alive)");
+						LOG.debug("Keep-Alive:true (Connection:Keep-Alive)");
 						keepalive = true;
 					}
 				}
@@ -172,18 +169,17 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 					return true;
 				}
 				// neither "close" nor "keep-alive", use default policy
-
 			} catch (ParseException px) {
 				// invalid connection header means no persistent connection
 				// we don't have logging in HttpCore, so the exception is lost
-				LOG.debug("Keep-Alive: false ("+px+")");
+				LOG.debug("Keep-Alive:false (" + px + ")");
 				return false;
 			}
 		}
 
 		// default since HTTP/1.1 is persistent, before it was non-persistent
 		boolean result = !ver.lessEquals(HttpVersion.HTTP_1_0);
-		LOG.debug("Keep-Alive: "+result+" ("+ver+")");
+		LOG.debug("Keep-Alive:" + result + " (" + ver + ")");
 		return result;
 	}
 
@@ -194,7 +190,12 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 			long end = System.currentTimeMillis() - connStart;
 			if (end > keepAliveTimeout) { //timeout
 				conn.setSocketTimeout(1);
-				LOG.debug("keep-alive timeout[" + end + " > " + keepAliveTimeout + " msec.]) - " + conn);
+				LOG.debug("keep-alive timeout[" + end + " > " + keepAliveTimeout + " msec.] - " + conn);
+				return true;
+			}
+			if (maxKeepAliveRequests <= conn.getMetrics().getRequestCount()) {
+				conn.setSocketTimeout(1);
+				LOG.debug("keep-alive max requests:" + maxKeepAliveRequests + " - " + conn);
 				return true;
 			}
 		}

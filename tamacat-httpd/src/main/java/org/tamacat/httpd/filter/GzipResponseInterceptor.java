@@ -5,7 +5,6 @@
 package org.tamacat.httpd.filter;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
@@ -159,13 +158,7 @@ public class GzipResponseInterceptor implements HttpResponseInterceptor {
 			}
 			GZIPOutputStream gzip = new GZIPOutputStream(outstream);
 			try {
-				InputStream in = wrappedEntity.getContent();
-				byte[] tmp = new byte[2048];
-				int l;
-				while ((l = in.read(tmp)) != -1) {
-					gzip.write(tmp, 0, l);
-				}
-
+				wrappedEntity.writeTo(gzip);
 			} finally {
 				IOUtils.close(gzip);
 			}
