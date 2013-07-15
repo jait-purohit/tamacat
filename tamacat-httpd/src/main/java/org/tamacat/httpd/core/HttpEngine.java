@@ -108,8 +108,11 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		for (HttpResponseInterceptor interceptor : responseInterceptors) {
 			procBuilder.addInterceptor(interceptor);
 		}
-		service = new DefaultHttpService(
-				procBuilder, KeepAliveConnReuseStrategy.INSTANCE,
+		KeepAliveConnReuseStrategy reuse = new KeepAliveConnReuseStrategy();
+		reuse.setKeepAliveTimeout(serverConfig.getParam("KeepAliveTimeout", 15000));
+		reuse.setMaxKeepAliveRequests(serverConfig.getParam("MaxKeepAliveRequests", 100));
+
+		service = new DefaultHttpService(procBuilder, reuse,
 				new DefaultHttpResponseFactory(), null, null
 		);
 
