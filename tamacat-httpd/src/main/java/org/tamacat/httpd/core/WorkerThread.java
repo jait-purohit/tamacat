@@ -39,7 +39,7 @@ public class WorkerThread extends Thread {
 	protected PerformanceCounter counter;
 	protected Socket insocket;
 
-	public WorkerThread(String threadName,
+	public WorkerThread(//String threadName,
 			HttpService service, Socket insocket,
 			ServerConfig config, PerformanceCounter counter) throws IOException {
 		this.service = service;
@@ -47,7 +47,7 @@ public class WorkerThread extends Thread {
 		this.conn = new ServerHttpConnection(config.getSocketBufferSize());
 		this.conn.bind(insocket);
 		this.counter = counter;
-		setName(getName().replace("Thread", threadName));
+		//setName(getName().replace("Thread", threadName));
 	}
 
 	@Override
