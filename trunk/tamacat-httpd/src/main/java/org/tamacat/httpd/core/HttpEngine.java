@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -70,6 +71,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 
 	private List<HttpResponseInterceptor> responseInterceptors
 		= new ArrayList<HttpResponseInterceptor>();
+	ExecutorService executors;
 
 	private static JMXConnectorServer jmxServer;
 	private static Registry rmiRegistry;
@@ -168,18 +170,22 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		}
 
 		//set the maximun worker threads.
-		//int maxThreads = serverConfig.getMaxThreads();
-		//LOG.info("MaxServerThreads: " + maxThreads);
+		int maxThreads = serverConfig.getMaxThreads();
+		LOG.info("MaxServerThreads: " + maxThreads);
 		String threadName = serverConfig.getParam("WorkerThreadName", "httpd");
-
+		executors = new ThreadExecutorFactory(threadName).getExecutorService(maxThreads);
 		LOG.info("Listen: " + serverConfig.getPort());
 		while (!Thread.interrupted()) {
 			try {
-				Thread t = new WorkerThread(threadName,
+				executors.execute(new WorkerThread(//threadName,
 					service, serversocket.accept(),
 					serverConfig, counter
-				);
-				t.start();
+				));
+				//Thread t = new WorkerThread(threadName,
+				//	service, serversocket.accept(),
+				//	serverConfig, counter
+				//);
+				//t.start();
 			} catch (InterruptedIOException e) {
 				counter.error();
 				LOG.error(e.getMessage());
@@ -204,7 +210,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 		} finally {
-			//if (executors != null) executors.shutdown();
+			if (executors != null) executors.shutdown();
 		}
 	}
 
