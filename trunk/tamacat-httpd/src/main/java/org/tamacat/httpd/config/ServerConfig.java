@@ -15,9 +15,6 @@ import org.tamacat.util.StringUtils;
  */
 public class ServerConfig {
 
-	static final int DEFAULT_PORT = 80;
-	static final int MAX_SERVER_THREADS = 5;
-
 	private Properties props;
 
 	/**
@@ -33,33 +30,24 @@ public class ServerConfig {
 	 */
 	public ServerConfig(Properties props) {
 		this.props = props;
-		try {
-			String home = System.getProperty("server.home");
-			if (StringUtils.isNotEmpty(home)) {
-				//Velocity.setProperty(VelocityEngine.RUNTIME_LOG, home + "/logs/velocity.log");
-			}
-			//Velocity.init(props);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
 	 * <p>Returns the Listen port.
 	 * @return Get the parameter value key of "Port",
-	 * if value is null then returns {@code DEFAULT_PORT}.
+	 * if value is null then returns {@code 8080}.
 	 */
 	public int getPort() {
-		return getParam("Port", DEFAULT_PORT);
+		return getParam("Port", 8080);
 	}
 
 	/**
 	 * <p>Returns the maximum server threads.
 	 * @return Get the parameter value key of "MaxServerThreads",
-	 * if value is null then returns {@code MAX_SERVER_THREADS}.
+	 * if value is null then returns {@code 0}.
 	 */
 	public int getMaxThreads() {
-		return getParam("MaxServerThreads", MAX_SERVER_THREADS);
+		return getParam("MaxServerThreads", 0);
 	}
 
 	/**
@@ -83,10 +71,10 @@ public class ServerConfig {
 	/**
 	 * <p>Returns the Socket buffer size.
 	 * @return Get the parameter value key of "ServerSocketBufferSize",
-	 * if value is null then returns {@code (8*1024)}.
+	 * if value is null then returns {@code 8192}.
 	 */
 	public int getSocketBufferSize() {
-		return getParam("ServerSocketBufferSize", (8*1024));
+		return getParam("ServerSocketBufferSize", 8192);
 	}
 
 	/**

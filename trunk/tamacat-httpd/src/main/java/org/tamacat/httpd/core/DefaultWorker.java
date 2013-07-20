@@ -18,6 +18,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
 import org.tamacat.httpd.config.ServerConfig;
+import org.tamacat.httpd.core.WorkerThreadCreator.Worker;
 import org.tamacat.httpd.jmx.PerformanceCounter;
 import org.tamacat.io.RuntimeIOException;
 import org.tamacat.log.Log;
@@ -27,55 +28,66 @@ import org.tamacat.util.ExceptionUtils;
 /**
  * <p>This class is a worker thread for multi thread server.
  */
-public class WorkerThread extends Thread {
-	static final Log LOG = LogFactory.getLog(WorkerThread.class);
+public class DefaultWorker implements Worker {
+	static final Log LOG = LogFactory.getLog(DefaultWorker.class);
 	static final String HTTP_IN_CONN = "http.in-conn";
 	static final String HTTP_OUT_CONN = "http.out-conn";
 
-	ServerConfig config;
-
-	protected HttpService service;
-	protected ServerHttpConnection conn;
+	protected ServerConfig serverConfig;
+	protected HttpService httpService;
+	protected Socket socket;
 	protected PerformanceCounter counter;
-	protected Socket insocket;
+	protected ServerHttpConnection conn;
 
-	public WorkerThread(//String threadName,
-			HttpService service, Socket insocket,
-			ServerConfig config, PerformanceCounter counter) throws IOException {
-		this.service = service;
-		this.insocket = insocket;
-		this.conn = new ServerHttpConnection(config.getSocketBufferSize());
-		this.conn.bind(insocket);
+	@Override
+	public void setServerConfig(ServerConfig serverConfig) {
+		this.serverConfig = serverConfig;
+		this.conn = new ServerHttpConnection(serverConfig.getSocketBufferSize());
+	}
+
+	@Override
+	public void setHttpService(HttpService httpService) {
+		this.httpService = httpService;
+	}
+
+	@Override
+	public void setSocket(Socket socket) {
+		this.socket = socket;
+	}
+
+	@Override
+	public void setPerformanceCounter(PerformanceCounter counter) {
 		this.counter = counter;
-		//setName(getName().replace("Thread", threadName));
 	}
 
 	@Override
 	public void run() {
-		LOG.debug("start worker thread - " + conn);
-		counter.countUp();
 		HttpContext parent = new BasicHttpContext(); //for Keep-Alive timeout
 		// Bind connection objects to the execution context
 		parent.setAttribute(HTTP_IN_CONN, conn);
 		try {
+			countUp();
+			this.conn.bind(socket);
+			LOG.debug("start worker - " + conn);
+
 			HttpConnectionMetrics metrics = this.conn.getMetrics();
 			while (Thread.interrupted() == false && conn.isOpen()) {
 				LOG.debug("count:" + metrics.getRequestCount() + " - " + conn);
 				HttpContext context = new BasicHttpContext(parent);
-				this.service.handleRequest(conn, context);
+				this.httpService.handleRequest(conn, context);
 
 				// close client connection. (unsupported keep-alive)
 				HttpConnection clientConn = (HttpConnection) context.getAttribute(HTTP_OUT_CONN);
 				if (clientConn != null) {
 					shutdownClient(clientConn);
-					LOG.debug("client connection closed - " + clientConn);
+					LOG.debug("client conn closed - " + clientConn);
 				}
 			}
 		} catch (Exception e) {
 			handleException(e);
 		} finally {
 			shutdown(conn);
-			counter.countDown();
+			countDown();
 		}
 	}
 
@@ -97,25 +109,33 @@ public class WorkerThread extends Thread {
 		}
 	}
 
-	public boolean isClosed() {
-		return insocket.isClosed();
+	boolean isClosed() {
+		return socket.isClosed();
 	}
 
 	void shutdownClient(HttpConnection clientConn) {
 		try {
 			clientConn.close();
-			if (LOG.isTraceEnabled()) LOG.trace("client connection closed. - " + clientConn);
+			if (LOG.isTraceEnabled()) LOG.trace("client conn closed. - " + clientConn);
 			clientConn.shutdown();
-			if (LOG.isTraceEnabled()) LOG.trace("client connection shutdown. - " + clientConn);
+			if (LOG.isTraceEnabled()) LOG.trace("client conn shutdown. - " + clientConn);
 		} catch (IOException ignore) {
 		}
 	}
 
-	public void shutdown(HttpConnection conn) {
+	void shutdown(HttpConnection conn) {
 		try {
 			conn.shutdown();
-			LOG.debug("server connection shutdown. - " + conn);
+			LOG.debug("server conn shutdown. - " + conn);
 		} catch (IOException ignore) {
 		}
+	}
+
+	void countUp() {
+		if (counter != null) counter.countUp();
+	}
+
+	void countDown() {
+		if (counter != null) counter.countDown();
 	}
 }

@@ -5,6 +5,7 @@
 package org.tamacat.httpd.util;
 
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p>Implements the default {@link ThreadFactory}.<br>
@@ -12,15 +13,15 @@ import java.util.concurrent.ThreadFactory;
  */
 public class DefaultThreadFactory implements ThreadFactory {
 
-	private static volatile int COUNT = 0;
-    private final String name;
-    
-	public DefaultThreadFactory(String name) {
+	private static final AtomicInteger threadPoolNumber = new AtomicInteger(1);
+	private String name = "Thread";
+
+	public void setName(String name) {
 		this.name = name;
 	}
-	
-    @Override
-    public Thread newThread(final Runnable r) {
-        return new Thread(r, name + "-" + (++COUNT));
-    }
+
+	@Override
+	public Thread newThread(final Runnable r) {
+		return new Thread(r, name + "-" + threadPoolNumber.incrementAndGet());
+	}
 }

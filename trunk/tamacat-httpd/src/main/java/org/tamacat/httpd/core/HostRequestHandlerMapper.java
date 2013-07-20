@@ -10,6 +10,12 @@ import org.apache.http.HttpRequest;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.protocol.HttpRequestHandlerMapper;
+import org.apache.http.protocol.UriHttpRequestHandlerMapper;
+import org.tamacat.httpd.config.HostServiceConfig;
+import org.tamacat.httpd.config.ServerConfig;
+import org.tamacat.httpd.config.ServiceConfig;
+import org.tamacat.httpd.config.ServiceConfigParser;
+import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -29,6 +35,30 @@ public class HostRequestHandlerMapper {
 		= new HashMap<String, HttpRequestHandlerMapper>();
 
 	private boolean useVirtualHost = false;
+
+	public HostRequestHandlerMapper create(
+			ServerConfig serverConfig, String componentsXML) {
+		HttpHandlerFactory factory = new DefaultHttpHandlerFactory(
+				componentsXML, getClass().getClassLoader());
+
+		HostServiceConfig hostConfig = new ServiceConfigParser(serverConfig).getConfig();
+		for (String host : hostConfig.getHosts()) {
+			UriHttpRequestHandlerMapper mapper = new UriHttpRequestHandlerMapper();
+			ServiceConfig serviceConfig = hostConfig.getServiceConfig(host);
+			for (ServiceUrl serviceUrl : serviceConfig.getServiceUrlList()) {
+				HttpHandler handler = factory.getHttpHandler(serviceUrl);
+				if (handler != null) {
+					LOG.info(serviceUrl.getPath() + " - " + serviceUrl.getHandlerName()
+						+ " (class="+handler.getClass().getName() + ")");
+					mapper.register(serviceUrl.getPath() + "*", handler);
+				} else {
+					LOG.warn(serviceUrl.getPath() + " HttpHandler is not found.");
+				}
+			}
+			this.setHostRequestHandlerMapper(host, mapper);
+		}
+		return this;
+	}
 
 	/**
 	 * <p>Set the Host and {@link HttpRequestHandlerMapper}.
