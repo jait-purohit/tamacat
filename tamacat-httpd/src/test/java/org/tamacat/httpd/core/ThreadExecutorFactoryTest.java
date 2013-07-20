@@ -15,8 +15,8 @@ public class ThreadExecutorFactoryTest {
 
 	@Test
 	public void testGetExecutorService() {
-		ThreadExecutorFactory factory = new ThreadExecutorFactory("httpd");
-		ExecutorService executor = factory.getExecutorService(10);
+		DefaultExecutorFactory factory = new DefaultExecutorFactory();
+		ExecutorService executor = factory.getExecutorService();
 		assertNotNull(executor);
 //		executor.execute(new Thread(){
 //			public void run() {
@@ -34,11 +34,11 @@ public class ThreadExecutorFactoryTest {
 		}
 		executor.shutdown();
 	}
-	
+
 	@Test
 	public void testGetExecutorServiceZero() {
-		ThreadExecutorFactory factory = new ThreadExecutorFactory("httpd");
-		ExecutorService executor = factory.getExecutorService(0);
+		DefaultExecutorFactory factory = new DefaultExecutorFactory();
+		ExecutorService executor = factory.getExecutorService();
 		assertNotNull(executor);
 
 		for (int i=0; i<10; i++) {
@@ -52,17 +52,17 @@ public class ThreadExecutorFactoryTest {
 		}
 		executor.shutdown();
 	}
-	
+
 	static class CallbackImpl implements Callable<Long> {
 
 		private long time;
 		public CallbackImpl() {
 			this.time = System.currentTimeMillis();
 		}
-		
+
 		@Override
 		public Long call() throws Exception {
 			return System.currentTimeMillis() - time;
-		}		
+		}
 	}
 }

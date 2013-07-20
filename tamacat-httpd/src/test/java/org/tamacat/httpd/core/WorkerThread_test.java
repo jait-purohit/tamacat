@@ -18,7 +18,7 @@ import org.tamacat.util.PropertyUtils;
 
 public class WorkerThread_test {
 
-	WorkerThread thread;
+	DefaultWorker thread;
 
 	public void testWorkerThread() throws Exception {
 		Properties props = PropertyUtils.getProperties("server.properties");
@@ -47,8 +47,12 @@ public class WorkerThread_test {
 
 		BasicCounter counter = new BasicCounter();
 		ServerSocket serversocket = new ServerSocket(8080);
-		thread = new WorkerThread(/*"httpd", */service, serversocket.accept(), serverConfig, counter);
-		thread.start();
+		thread = new DefaultWorker();
+		thread.setHttpService(service);
+		thread.setServerConfig(serverConfig);
+		thread.setPerformanceCounter(counter);
+		thread.setSocket(serversocket.accept());
+		new Thread(thread).start();
 		thread.isClosed();
 		IOUtils.close(serversocket);
 	}

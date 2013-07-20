@@ -23,10 +23,10 @@ import org.tamacat.util.StringUtils;
 
 /**
  * <p>It is service URL setting of the round robin type load balancer.
- * 
+ *
  * <pre>ex. url-config.xml
- * {@code 
- * <?xml version="1.0" encoding="UTF-8"?> 
+ * {@code
+ * <?xml version="1.0" encoding="UTF-8"?>
  * <service-config>
  *   <service host="http://localhost">
  *     <url path="/lb/" type="lb" handler="ReverseHandler">
@@ -36,13 +36,13 @@ import org.tamacat.util.StringUtils;
  *   </service>
  * </service-config>}
  * </pre>
- * 
+ *
  * <pre>ex. monitor.properties
  * {@code
  * default.url=check.html
  * default.interval=15000
  * default.timeout=5000
- * 
+ *
  * /lb/.url=test/check.html
  * /lb/.interval=60000
  * /lb/.timeout=15000
@@ -51,29 +51,29 @@ import org.tamacat.util.StringUtils;
  */
 public abstract class LbHealthCheckServiceUrl extends ServiceUrl
 		implements HealthCheckSupport<ReverseUrl> {
-	
+
 	static final Log LOG = LogFactory.getLog(LbHealthCheckServiceUrl.class);
 	protected static final String MONITOR_PROPERTIES = "monitor.properties";
 	protected static final String DEFAULT_URL_KEY = "default.url";
 	protected static final String DEFAULT_INTERVAL_KEY = "default.interval";
 	protected static final String DEFAULT_TIMEOUT_KEY = "default.timeout";
-	
+
 	protected List<ReverseUrl> reverseUrls = new ArrayList<ReverseUrl>();
-	
+
 	protected Properties monitorProps;
 	protected int defaultInterval = 15000;
 	protected int defaultTimeout = 5000;
 	protected String defaultCheckUrl = "check.html";
-	
+
 	protected LbHealthCheckServiceUrl() {
 		loadMonitorConfig();
 	}
-	
+
 	protected LbHealthCheckServiceUrl(ServerConfig serverConfig) {
 		super(serverConfig);
 		loadMonitorConfig();
 	}
-	
+
 	protected void loadMonitorConfig() {
 		try {
 			monitorProps = PropertyUtils.getProperties(MONITOR_PROPERTIES);
@@ -89,16 +89,16 @@ public abstract class LbHealthCheckServiceUrl extends ServiceUrl
 			monitorProps.setProperty(DEFAULT_TIMEOUT_KEY, String.valueOf(defaultTimeout));
 		}
 	}
-	
+
 	public List<ReverseUrl> getReverseUrls() {
 		return reverseUrls;
 	}
-	
+
 	@Override
 	public void setReverseUrl(ReverseUrl reverseUrl) {
 		this.reverseUrls.add(reverseUrl);
 	}
-	
+
 	@Override
 	public abstract ReverseUrl getReverseUrl();
 
@@ -116,16 +116,18 @@ public abstract class LbHealthCheckServiceUrl extends ServiceUrl
 
 	@Override
 	public void startHealthCheck() {
+		DefaultThreadFactory factory = new DefaultThreadFactory();
+		factory.setName("Monitor");
 		for (ReverseUrl url : reverseUrls) {
 			HttpMonitor<ReverseUrl> monitor = new HttpMonitor<ReverseUrl>();
 			monitor.setHealthCheckTarget(this);
 			monitor.setMonitorConfig(getMonitorConfig(url));
 			monitor.setTarget(url);
-			new DefaultThreadFactory("Monitor").newThread(monitor).start();
 			monitor.startMonitor();
+			factory.newThread(monitor).start();
 		}
 	}
-	
+
 	MonitorConfig getMonitorConfig(ReverseUrl url) {
 		String key = url.getServiceUrl().getPath();
 		if (key == null) {
