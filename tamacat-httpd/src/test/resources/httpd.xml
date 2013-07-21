@@ -6,14 +6,14 @@
 		</property>
 	</bean>
 
-	<bean id="executorFactory" class="org.tamacat.httpd.core.DefaultExecutorFactory" />
+	<bean id="executor" class="org.tamacat.httpd.core.DefaultWorkerExecutor" />
 
 	<bean id="server" class="org.tamacat.httpd.core.HttpEngine">
 		<property name="propertiesName">
 			<value>server.properties</value>
 		</property>
-		<property name="executorFactory">
-			<ref bean="executorFactory" />
+		<property name="workerExecutor">
+			<ref bean="executor" />
 		</property>
 		<!--
 		<property name="httpResponseInterceptor">

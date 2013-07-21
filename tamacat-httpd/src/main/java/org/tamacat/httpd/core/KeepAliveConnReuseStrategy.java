@@ -11,6 +11,7 @@ import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
+import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -30,9 +31,19 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 	public static final KeepAliveConnReuseStrategy INSTANCE = new KeepAliveConnReuseStrategy();
 	protected static final String HTTP_IN_CONN = "http.in-conn";
 
+	protected ServerConfig serverConfig;
+
 	protected boolean disabledKeepAlive;
 	protected int keepAliveTimeout = 15000;
 	protected int maxKeepAliveRequests = 100;
+
+	public KeepAliveConnReuseStrategy() {}
+
+	public KeepAliveConnReuseStrategy(ServerConfig serverConfig) {
+		this.serverConfig = serverConfig;
+		setKeepAliveTimeout(serverConfig.getParam("KeepAliveTimeout", 15000));
+		setMaxKeepAliveRequests(serverConfig.getParam("MaxKeepAliveRequests", 100));
+	}
 
 	/**
 	 * Set the Keep-Alive timeout (millisecond).

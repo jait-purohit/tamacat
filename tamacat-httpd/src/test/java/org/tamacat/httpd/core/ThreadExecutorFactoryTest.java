@@ -15,7 +15,7 @@ public class ThreadExecutorFactoryTest {
 
 	@Test
 	public void testGetExecutorService() {
-		DefaultExecutorFactory factory = new DefaultExecutorFactory();
+		DefaultWorkerExecutor factory = new DefaultWorkerExecutor();
 		ExecutorService executor = factory.getExecutorService();
 		assertNotNull(executor);
 //		executor.execute(new Thread(){
@@ -37,7 +37,7 @@ public class ThreadExecutorFactoryTest {
 
 	@Test
 	public void testGetExecutorServiceZero() {
-		DefaultExecutorFactory factory = new DefaultExecutorFactory();
+		DefaultWorkerExecutor factory = new DefaultWorkerExecutor();
 		ExecutorService executor = factory.getExecutorService();
 		assertNotNull(executor);
 
