@@ -9,7 +9,7 @@ import java.util.HashMap;
 import org.tamacat.di.define.BeanDefine;
 import org.tamacat.di.define.BeanDefineMap;
 import org.tamacat.di.impl.DIContainerFactory;
-import org.tamacat.di.impl.TamaCatDIContainer;
+import org.tamacat.di.impl.DefaultDIContainer;
 import org.tamacat.util.ClassUtils;
 
 /**
@@ -49,7 +49,7 @@ public final class DI {
 		for (BeanDefine def : defines) {
 			defineMap.add(def);
 		}
-		return new TamaCatDIContainer(defineMap, ClassUtils.getDefaultClassLoader());
+		return new DefaultDIContainer(defineMap, ClassUtils.getDefaultClassLoader());
 	}
 
 	/**
@@ -59,7 +59,7 @@ public final class DI {
 	 * @return {@link DIContainer}
 	 */
 	public static DIContainer configure(BeanDefineMap defines, ClassLoader loader) {
-		return new TamaCatDIContainer(defines, loader);
+		return new DefaultDIContainer(defines, loader);
 	}
 	 
 	/**

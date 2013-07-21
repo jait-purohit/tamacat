@@ -36,7 +36,7 @@ public class DIContainerFactory {
         } catch (Exception e) {
         }
         if (defaultDIContainerClass == null) {
-        	defaultDIContainerClass = TamaCatDIContainer.class;
+        	defaultDIContainerClass = DefaultDIContainer.class;
         }
     }
     

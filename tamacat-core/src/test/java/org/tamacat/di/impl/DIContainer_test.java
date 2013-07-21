@@ -30,7 +30,7 @@ public class DIContainer_test {
         def2.setSingleton(false);
         defines.put(def2.getId(), def2);
         
-		DIContainer di = new TamaCatDIContainer(defines, loader);
+		DIContainer di = new DefaultDIContainer(defines, loader);
 		Super get1 = di.getBean("sub", Super.class);
 		System.out.println(get1);
 		

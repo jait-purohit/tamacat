@@ -18,7 +18,7 @@ import org.tamacat.di.xml.SpringBeanDefineHandler;
 import org.tamacat.util.ClassUtils;
 import org.tamacat.util.PropertyUtils;
 
-public class TamaCatDIContainer implements DIContainer {
+public class DefaultDIContainer implements DIContainer {
 
     static final String PROPERTIES_FILE = "org.tamacat.di.DIContainer.properties";
     static final String BEAN_DEFINE_HANDLER_KEY = "DIContainerBeanDefineHandler";
@@ -28,15 +28,15 @@ public class TamaCatDIContainer implements DIContainer {
     protected BeanCreator creator;
     protected Properties props;
 
-    public TamaCatDIContainer(String xml) {
+    public DefaultDIContainer(String xml) {
         init(xml, getClassLoader());
     }
 
-    public TamaCatDIContainer(String xml, ClassLoader parent) {
+    public DefaultDIContainer(String xml, ClassLoader parent) {
         init(xml, getClassLoader(parent));
     }
 
-    public TamaCatDIContainer(BeanDefineMap defines, ClassLoader parent) {
+    public DefaultDIContainer(BeanDefineMap defines, ClassLoader parent) {
     	init(defines, getClassLoader(parent));
     }
 
