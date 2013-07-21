@@ -23,7 +23,7 @@ import org.tamacat.util.ResourceNotFoundException;
 public class TamaCatDIContainerTest extends TestCase {
 
     ClassLoader loader;
-    TamaCatDIContainer di;
+    DefaultDIContainer di;
 
     @Before
     protected void setUp() {
@@ -33,7 +33,7 @@ public class TamaCatDIContainerTest extends TestCase {
     @Test
     public void testDIContainerConstructorException() {
         try {
-            di = new TamaCatDIContainer("not_found.xml", loader);
+            di = new DefaultDIContainer("not_found.xml", loader);
             fail(di.toString() + " is not fail.");
         } catch (Exception e) {
             //e.printStackTrace();
@@ -53,14 +53,14 @@ public class TamaCatDIContainerTest extends TestCase {
         def.setSingleton(false);
         defines.put(def.getId(), def);
 
-        di = new TamaCatDIContainer(defines, loader);
+        di = new DefaultDIContainer(defines, loader);
         Object o = di.getBean("test");
         assertEquals(o.getClass(), ClassUtils.forName("org.tamacat.core.SampleCore", loader));
     }
 
     @Test
     public void testGetBeanSingleton() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Core core = (Core) di.getBean("Core");
         assertNotNull(core);
         //assertTrue(core instanceof Core);
@@ -79,7 +79,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanScopeSingleton() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
 
         Core core1 = di.getBean("Core-scope-singleton", Core.class);
         assertNotNull(core1);
@@ -90,7 +90,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanPrototype() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Core core = di.getBean("Core2", Core.class);
         assertNotNull(core);
         //assertTrue(core instanceof Core);
@@ -101,7 +101,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanScopePrototype() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Core core = di.getBean("Core-scope-prototype", Core.class);
         assertNotNull(core);
         //assertTrue(core instanceof Core);
@@ -112,7 +112,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanRef() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         SampleCore core = di.getBean("Core3", SampleCore.class);
         assertNotNull(core);
         //assertTrue(core instanceof Core);
@@ -123,7 +123,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanParamTestSetterBasicType() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param t = di.getBean("ParamTestSetterBasicType", Param.class);
         assertNotNull(t);
         //assertTrue(t instanceof Param);
@@ -139,7 +139,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanParamTestConstructorArgString() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param t = (Param) di.getBean("ParamTestConstructorArgsString");
         assertNotNull(t);
         //assertTrue(t instanceof Param);
@@ -149,7 +149,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanParamTestConstructorMultiArgsStringAutoTypes() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param t = (Param) di.getBean("ParamTestConstructorMultiArgsStringAutoTypes");
         assertNotNull(t);
         //assertTrue(t instanceof Param);
@@ -160,7 +160,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanParamTestConstructorMultiArgsStringFixedTypes() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param t = (Param) di.getBean("ParamTestConstructorMultiArgsStringFixedTypes");
         assertNotNull(t);
         //assertTrue(t instanceof Param);
@@ -171,7 +171,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanParamTestConstructorArgsRef() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param t = (Param) di.getBean("ParamTestConstructorArgsRef");
         assertNotNull(t);
         //assertTrue(t instanceof Param);
@@ -181,7 +181,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanParamTestConstructorMultiArgsRefAutoTypes() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param t = (Param) di.getBean("ParamTestConstructorMultiArgsRefAutoTypes");
         assertNotNull(t);
         //assertTrue(t instanceof Param);
@@ -192,7 +192,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanParamTestConstructorMultiArgsRefFixedTypes() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param t = (Param) di.getBean("ParamTestConstructorMultiArgsRefFixedTypes");
         assertNotNull(t);
         //assertTrue(t instanceof Param);
@@ -203,7 +203,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanParamTestConstructorArgsNull() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param t = (Param) di.getBean("ParamTestConstructorArgsNull");
         assertNotNull(t);
         //assertTrue(t instanceof Param);
@@ -213,7 +213,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanParamTestSetterNull() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param t = (Param) di.getBean("ParamTestSetterNull");
         assertNotNull(t);
         //assertTrue(t instanceof Param);
@@ -223,7 +223,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanParamTestSetterEmpty() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param t = (Param) di.getBean("ParamTestSetterEmpty");
         assertNotNull(t);
         //assertTrue(t instanceof Param);
@@ -233,7 +233,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetBeanParamTestInitMethod() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param t = (Param) di.getBean("ParamTestInitMethod");
         assertNotNull(t);
         //assertTrue(t instanceof Param);
@@ -246,7 +246,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testGetInstanceOfType() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
 
         List<?> list = di.getInstanceOfType(Core.class);
         for (Object o : list) {
@@ -261,20 +261,20 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testTrace() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         di.trace(System.out);
     }
 
     @Test
     public void testParamTestCDATA() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param param = (Param) di.getBean("ParamTestCDATA");
         assertEquals("<html>TEST</html>", param.getStringValue().trim());
     }
 
     @Test
     public void testFactoryMethodSingleton() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Object o1 = di.getBean("FactoryMethodSingleton");
         assertTrue(o1 instanceof Core);
         assertTrue(o1.getClass() == DBCore.class);
@@ -285,7 +285,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testFactoryMethodNotSingleton() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Object o1 = di.getBean("FactoryMethodNotSingleton");
         assertTrue(o1 instanceof Core);
         assertTrue(o1.getClass() == DBCore.class);
@@ -296,7 +296,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testSingleAliases() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param param = (Param)di.getBean("AliasTest");
         assertEquals("Test", param.getStringValue());
 
@@ -306,7 +306,7 @@ public class TamaCatDIContainerTest extends TestCase {
 
     @Test
     public void testMultiAliases() {
-        di = new TamaCatDIContainer("test.xml", loader);
+        di = new DefaultDIContainer("test.xml", loader);
         Param param1 = (Param)di.getBean("AliasTest1");
         assertEquals("Test", param1.getStringValue());
 
