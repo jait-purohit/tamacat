@@ -18,10 +18,11 @@ import org.tamacat.util.PropertyUtils;
 public class HttpEngineTest {
 
 	HttpEngine engine;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		engine = new HttpEngine();
+		engine.setWorkerExecutor(new DefaultWorkerExecutor());
 	}
 
 	@After
@@ -36,17 +37,17 @@ public class HttpEngineTest {
 
 	@Test
 	public void testStartHttpd() {
-		
+
 	}
 
 	@Test
 	public void testStopHttpd() {
-		
+
 	}
 
 	@Test
 	public void testRestartHttpd() {
-		
+
 	}
 
 	@Test
@@ -55,10 +56,10 @@ public class HttpEngineTest {
 		engine.setServerConfig(serverConfig);
 		//ServerSocket socket = engine.createSecureServerSocket(8080);
 		//socket.close();
-		
+
 		SSLContextCreator sslContextCreator = new SSLContextCreator(serverConfig);
 		engine.setSSLContextCreator(sslContextCreator);
-		
+
 		//socket = engine.createSecureServerSocket(8080);
 		//socket.close();
 	}
@@ -109,7 +110,7 @@ public class HttpEngineTest {
 	@Test
 	public void testGetClassLoader() {
 		assertNotNull(engine.getClassLoader());
-		
+
 		ClassLoader loader = getClass().getClassLoader();
 		engine.setClassLoader(loader);
 		assertSame(loader, engine.getClassLoader());

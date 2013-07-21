@@ -18,7 +18,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
 import org.tamacat.httpd.config.ServerConfig;
-import org.tamacat.httpd.core.WorkerThreadCreator.Worker;
+import org.tamacat.httpd.core.Worker;
 import org.tamacat.httpd.jmx.PerformanceCounter;
 import org.tamacat.io.RuntimeIOException;
 import org.tamacat.log.Log;
@@ -39,10 +39,19 @@ public class DefaultWorker implements Worker {
 	protected PerformanceCounter counter;
 	protected ServerHttpConnection conn;
 
+	public DefaultWorker() {}
+
+	public DefaultWorker(ServerConfig serverConfig, HttpService httpService, Socket socket) {
+		setServerConfig(serverConfig);
+		setHttpService(httpService);
+		setSocket(socket);
+	}
+
 	@Override
 	public void setServerConfig(ServerConfig serverConfig) {
 		this.serverConfig = serverConfig;
 		this.conn = new ServerHttpConnection(serverConfig.getSocketBufferSize());
+		//serverConfig.getParam("WorkerThreadName", "httpd");
 	}
 
 	@Override

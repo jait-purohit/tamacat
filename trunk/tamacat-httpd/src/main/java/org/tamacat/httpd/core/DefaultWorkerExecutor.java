@@ -4,8 +4,13 @@
  */
 package org.tamacat.httpd.core;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
+import org.apache.http.protocol.HttpService;
 
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.util.DefaultThreadFactory;
@@ -17,14 +22,29 @@ import org.tamacat.log.LogFactory;
  *  Support {@link Executors#newFixedThreadPool} or {@link Executors#newCachedThreadPool}.
  * @since 1.1
  */
-public class DefaultExecutorFactory implements ExecutorFactory {
-	static final Log LOG = LogFactory.getLog(DefaultExecutorFactory.class);
+public class DefaultWorkerExecutor implements WorkerExecutor {
+	static final Log LOG = LogFactory.getLog(DefaultWorkerExecutor.class);
 
 	protected ServerConfig serverConfig;
-	protected String name;
+	protected HttpService httpService;
+
 	protected int maxThreads;
+
 	protected ExecutorService executorService;
-	protected DefaultThreadFactory factory = new DefaultThreadFactory();
+	protected ThreadFactory threadFactory = new DefaultThreadFactory();
+
+	public void execute(Socket socket) throws IOException {
+		ExecutorService executors = getExecutorService();
+		executors.execute(createWorker(socket));
+	}
+
+	protected Worker createWorker(Socket socket) {
+		return new DefaultWorker(serverConfig, httpService, socket);
+	}
+
+	public void setThreadFactory(ThreadFactory threadFactory) {
+		this.threadFactory = threadFactory;
+	}
 
 	@Override
 	public void setServerConfig(ServerConfig serverConfig) {
@@ -32,8 +52,13 @@ public class DefaultExecutorFactory implements ExecutorFactory {
 		//set the maximun worker threads.
 		maxThreads = serverConfig.getMaxThreads();
 		LOG.info("MaxServerThreads: " + maxThreads);
-		name = serverConfig.getParam("WorkerThreadName", "httpd");
-		factory.setName(name);
+		//String name = serverConfig.getParam("WorkerThreadName", "httpd");
+		//threadFactory.setName(name);
+	}
+
+	@Override
+	public void setHttpService(HttpService httpService) {
+		this.httpService = httpService;
 	}
 
 	/**
@@ -42,13 +67,12 @@ public class DefaultExecutorFactory implements ExecutorFactory {
 	 * of {@code ExecutorService}.
 	 * @return {@link ThreadPoolExecutor}
 	 */
-	@Override
-	public ExecutorService getExecutorService() {
+	protected ExecutorService getExecutorService() {
 		if (executorService == null) {
 			if (maxThreads > 0) {
-				executorService = Executors.newFixedThreadPool(maxThreads, factory);
+				executorService = Executors.newFixedThreadPool(maxThreads, threadFactory);
 			} else {
-				executorService = Executors.newCachedThreadPool(factory);
+				executorService = Executors.newCachedThreadPool(threadFactory);
 			}
 		}
 		return executorService;
@@ -59,10 +83,5 @@ public class DefaultExecutorFactory implements ExecutorFactory {
 		if (executorService != null) {
 			executorService.shutdown();
 		}
-	}
-
-	@Override
-	public void setName(String name) {
-		this.name = name;
 	}
 }

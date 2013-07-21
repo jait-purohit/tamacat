@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -32,7 +31,6 @@ import org.apache.http.protocol.ResponseConnControl;
 import org.apache.http.protocol.ResponseContent;
 import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
-
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.jmx.BasicCounter;
 import org.tamacat.httpd.jmx.JMXReloadableHttpd;
@@ -55,11 +53,10 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 
 	private ServerConfig serverConfig;
 	private ObjectName objectName;
-	private DefaultHttpService service;
 
 	private SSLContextCreator sslContextCreator;
 	private ServerSocket serverSocket;
-	private HttpProcessorBuilder procBuilder;
+	private WorkerExecutor workerExecutor = new DefaultWorkerExecutor();
 
 	private BasicCounter counter = new BasicCounter();
 
@@ -68,7 +65,8 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 
 	private List<HttpResponseInterceptor> responseInterceptors
 		= new ArrayList<HttpResponseInterceptor>();
-	private ExecutorFactory executorFactory;
+
+
 	private static JMXConnectorServer jmxServer;
 	private static Registry rmiRegistry;
 	private boolean isMXServerStarted;
@@ -82,17 +80,11 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		//Initalize engine.
 		init();
 
-		serverSocket = createServerSocket();
-		executorFactory.setServerConfig(serverConfig);
-		ExecutorService executors = executorFactory.getExecutorService();
-
-		WorkerThreadCreator wokerCreator = new WorkerThreadCreator(serverConfig, service, serverSocket);
-		wokerCreator.setCounter(counter);
-
 		LOG.info("Listen: " + serverConfig.getPort());
+		serverSocket = createServerSocket();
 		while (!Thread.interrupted()) {
 			try {
-				executors.execute(wokerCreator.createWorkerThread());
+				workerExecutor.execute(serverSocket.accept());
 			} catch (InterruptedIOException e) {
 				counter.error();
 				LOG.error(e.getMessage());
@@ -117,7 +109,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 		} finally {
-			if (executorFactory != null) executorFactory.shutdown();
+			if (workerExecutor != null) workerExecutor.shutdown();
 		}
 	}
 
@@ -128,12 +120,11 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 				stopHttpd();
 				startHttpd();
 				break;
-			} else {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -149,12 +140,12 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 	}
 
 	/**
-	 *
-	 * @param executorFactory
+	 * Set the WorkerExecutor.
+	 * @param WorkerExecutor
 	 * @sinse 1.1
 	 */
-	public void setExecutorFactory(ExecutorFactory executorFactory) {
-		this.executorFactory = executorFactory;
+	public void setWorkerExecutor(WorkerExecutor workerExecutor) {
+		this.workerExecutor = workerExecutor;
 	}
 
 	/**
@@ -183,6 +174,8 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 			Properties props = PropertyUtils.getProperties(propertiesName);
 			serverConfig = new ServerConfig(props);
 		}
+		workerExecutor.setServerConfig(serverConfig);
+
 		//org.apache.http.config.
 		//SocketConfig socketConfig = SocketConfig.custom()
 		//	.setSoTimeout(serverConfig.getSocketTimeout()).build();
@@ -191,8 +184,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		//paramsBuilder.socketTimeout(serverConfig.getSocketTimeout())
 		//	.socketBufferSize(serverConfig.getSocketBufferSize())
 		//	.originServer(serverConfig.getParam("ServerName"));
-		procBuilder = new HttpProcessorBuilder();
-
+		HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
 		//default interceptors
 		procBuilder.addInterceptor(new ResponseDate());
 		procBuilder.addInterceptor(new ResponseServer());
@@ -206,13 +198,9 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		for (HttpResponseInterceptor interceptor : responseInterceptors) {
 			procBuilder.addInterceptor(interceptor);
 		}
-		KeepAliveConnReuseStrategy reuse = new KeepAliveConnReuseStrategy();
-		reuse.setKeepAliveTimeout(serverConfig.getParam("KeepAliveTimeout", 15000));
-		reuse.setMaxKeepAliveRequests(serverConfig.getParam("MaxKeepAliveRequests", 100));
-
-		service = new DefaultHttpService(procBuilder, reuse,
-				new DefaultHttpResponseFactory(), null, null
-		);
+		DefaultHttpService service = new DefaultHttpService(
+			procBuilder, new KeepAliveConnReuseStrategy(serverConfig),
+			new DefaultHttpResponseFactory(), null, null);
 
 		if (isMXServerStarted == false) {
 			registerMXServer();
@@ -221,9 +209,11 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 		String componentsXML = serverConfig.getParam("components.file", "components.xml");
 		HostRequestHandlerMapper hostResolver = new HostRequestHandlerMapper().create(serverConfig, componentsXML);
 		service.setHostHandlerResolver(hostResolver);
+		workerExecutor.setHttpService(service);
 	}
 
 	protected ServerSocket createServerSocket() {
+		ServerSocket serverSocket = null;
 		try {
 			//setup the server port.
 			int port = serverConfig.getPort();
