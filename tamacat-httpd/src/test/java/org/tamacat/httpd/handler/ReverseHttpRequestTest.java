@@ -2,7 +2,7 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.core;
+package org.tamacat.httpd.handler;
 
 import static org.junit.Assert.*;
 
@@ -19,6 +19,7 @@ import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.config.ServiceConfig;
 import org.tamacat.httpd.config.ServiceType;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.handler.ReverseHttpRequest;
 
 public class ReverseHttpRequestTest {
 

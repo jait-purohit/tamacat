@@ -20,12 +20,18 @@ import org.tamacat.httpd.session.SessionManager;
 import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.httpd.util.HtmlUtils;
 import org.tamacat.httpd.util.RequestUtils;
+import org.tamacat.log.DiagnosticContext;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 import org.tamacat.util.StringUtils;
 
 /**
  * Implements of HTML Form based authentication.
  */
 public class FormAuthProcessor extends AbstractAuthProcessor {
+
+	static Log LOG = LogFactory.getLog(FormAuthProcessor.class);
+	static final DiagnosticContext DC = LogFactory.getDiagnosticContext(LOG);
 
 	protected static final String SC_UNAUTHORIZED = FormAuthProcessor.class.getName() + ".SC_UNAUTHORIZED";
 	protected static final String SC_AUTHORIZED = FormAuthProcessor.class.getName() + ".SC_AUTHORIZED";
@@ -44,7 +50,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Setting the HTTP charset parameter.
-	 * 
+	 *
 	 * @param charset default: "UTF-8"
 	 */
 	public void setCharset(String charset) {
@@ -53,7 +59,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Setting the form login page.
-	 * 
+	 *
 	 * @param loginPageUrl
 	 *            default: "login.html"
 	 */
@@ -63,11 +69,11 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Setting the form action URL.
-	 * 
+	 *
 	 * <pre>
 	 * &lt;form action="check.html"&gt;
 	 * </pre>
-	 * 
+	 *
 	 * @param loginActionUrl
 	 *            default: "check.html"
 	 */
@@ -77,7 +83,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Setting the logout action URL.
-	 * 
+	 *
 	 * @param logoutActionUrl
 	 *            default: "logout.html"
 	 */
@@ -87,7 +93,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * URL on the top page that moves after log in is set.
-	 * 
+	 *
 	 * @param topPageUrl
 	 */
 	public void setTopPageUrl(String topPageUrl) {
@@ -96,7 +102,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Set the key of username for input text form.
-	 * 
+	 *
 	 * @param usernameKey
 	 */
 	public void setUsernameKey(String usernameKey) {
@@ -105,7 +111,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Set the key of password for input text form.
-	 * 
+	 *
 	 * @param passwordKey
 	 */
 	public void setPasswordKey(String passwordKey) {
@@ -115,7 +121,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 	/**
 	 * <p>
 	 * Setting the request parameter of redirect key.
-	 * 
+	 *
 	 * @param redirectKey
 	 *            default: "redirect"
 	 */
@@ -125,7 +131,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Set the cookie name for session.
-	 * 
+	 *
 	 * @param sessionCookieName
 	 */
 	public void setSessionCookieName(String sessionCookieName) {
@@ -134,7 +140,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Set the key of username for session.
-	 * 
+	 *
 	 * @param sessionUsernameKey
 	 */
 	public void setSessionUsernameKey(String sessionUsernameKey) {
@@ -158,6 +164,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 						remoteUser = (String) session.getAttribute(sessionUsernameKey);
 						if (remoteUser != null) {
 							context.setAttribute(remoteUserKey, remoteUser);
+							DC.setMappedContext("user", remoteUser);
 						}
 					}
 				}
@@ -166,6 +173,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 				// login check
 				remoteUser = checkUser(request, response, context);
 				context.setAttribute(remoteUserKey, remoteUser);
+				DC.setMappedContext("user", remoteUser);
 				Session session = SessionManager.getInstance().createSession();
 				session.setAttribute(sessionUsernameKey, remoteUser);
 				response.setHeader("Set-Cookie", sessionCookieName + "=" + session.getId() + "; Path=/");
@@ -181,6 +189,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 					throw new UnauthorizedException();
 				}
 				context.setAttribute(remoteUserKey, remoteUser);
+				DC.setMappedContext("user", remoteUser);
 				if (path.endsWith(logoutActionUrl)) {
 					// logout -> session delete -> login page.
 					logoutAction(request, sessionId);
@@ -229,7 +238,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Redirect for login action.
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @param uri
@@ -248,7 +257,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Logout the system with invalidate this session.
-	 * 
+	 *
 	 * @param sessionId
 	 */
 	protected void logoutAction(HttpRequest request, String sessionId) {
@@ -262,7 +271,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Request URI confirms whether to match to loginActionUrl.
-	 * 
+	 *
 	 * @param request
 	 * @return true: Request URI is considered to be loginActionURL and the
 	 *         same.
@@ -273,7 +282,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * After log in is attested, URL redirected to requested URL is acquired.
-	 * 
+	 *
 	 * @param request
 	 * @return loginPageUrl?redirectKey=/path/to/requestURL
 	 */
@@ -290,7 +299,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Login check with AuthComponent.
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @param context

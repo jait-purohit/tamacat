@@ -2,7 +2,7 @@
  * Copyright (c) 2010, tamacat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.core;
+package org.tamacat.httpd.filter;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;

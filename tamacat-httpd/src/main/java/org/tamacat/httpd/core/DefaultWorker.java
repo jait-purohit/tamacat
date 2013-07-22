@@ -21,6 +21,7 @@ import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.core.Worker;
 import org.tamacat.httpd.jmx.PerformanceCounter;
 import org.tamacat.io.RuntimeIOException;
+import org.tamacat.log.DiagnosticContext;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.ExceptionUtils;
@@ -30,6 +31,8 @@ import org.tamacat.util.ExceptionUtils;
  */
 public class DefaultWorker implements Worker {
 	static final Log LOG = LogFactory.getLog(DefaultWorker.class);
+	static final DiagnosticContext DC = LogFactory.getDiagnosticContext(LOG);
+
 	static final String HTTP_IN_CONN = "http.in-conn";
 	static final String HTTP_OUT_CONN = "http.out-conn";
 
@@ -97,6 +100,7 @@ public class DefaultWorker implements Worker {
 		} finally {
 			shutdown(conn);
 			countDown();
+			DC.remove();
 		}
 	}
 
@@ -137,6 +141,8 @@ public class DefaultWorker implements Worker {
 			conn.shutdown();
 			LOG.debug("server conn shutdown. - " + conn);
 		} catch (IOException ignore) {
+		} finally {
+			DC.remove();
 		}
 	}
 

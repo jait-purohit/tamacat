@@ -4,7 +4,7 @@
  */
 package org.tamacat.httpd.action;
 
-import org.tamacat.httpd.core.RequestContext;
+import org.tamacat.httpd.filter.RequestContext;
 
 public class DefaultAction {
 

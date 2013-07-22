@@ -1,4 +1,4 @@
-package org.tamacat.httpd.core;
+package org.tamacat.httpd.handler;
 
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;

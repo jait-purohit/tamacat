@@ -2,7 +2,7 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.core;
+package org.tamacat.httpd.handler;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +35,8 @@ import org.apache.http.protocol.RequestTargetHost;
 import org.apache.http.protocol.RequestUserAgent;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.core.BasicHttpStatus;
+import org.tamacat.httpd.core.HttpProcessorBuilder;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.RequestFilter;

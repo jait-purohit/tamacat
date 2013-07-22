@@ -23,6 +23,7 @@ import org.apache.http.protocol.HttpRequestHandlerMapper;
 import org.apache.http.protocol.HttpService;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
+import org.tamacat.httpd.handler.HostRequestHandlerMapper;
 import org.tamacat.httpd.page.VelocityErrorPage;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;

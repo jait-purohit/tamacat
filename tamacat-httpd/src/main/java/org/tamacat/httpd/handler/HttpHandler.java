@@ -2,7 +2,7 @@
  * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.core;
+package org.tamacat.httpd.handler;
 
 import org.apache.http.protocol.HttpRequestHandler;
 import org.tamacat.httpd.config.ServiceUrl;

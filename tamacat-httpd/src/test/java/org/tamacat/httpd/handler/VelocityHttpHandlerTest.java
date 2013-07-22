@@ -1,8 +1,9 @@
-package org.tamacat.httpd.core;
+package org.tamacat.httpd.handler;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.tamacat.httpd.handler.VelocityHttpHandler;
 
 public class VelocityHttpHandlerTest {
 		
