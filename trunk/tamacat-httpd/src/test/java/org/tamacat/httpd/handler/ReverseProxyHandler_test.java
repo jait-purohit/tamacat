@@ -1,4 +1,4 @@
-package org.tamacat.httpd.core;
+package org.tamacat.httpd.handler;
 
 import static org.junit.Assert.*;
 
@@ -25,6 +25,7 @@ import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.filter.ResponseFilter;
+import org.tamacat.httpd.handler.ReverseProxyHandler;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.PropertyUtils;

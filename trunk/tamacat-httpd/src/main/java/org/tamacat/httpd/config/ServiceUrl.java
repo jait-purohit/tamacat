@@ -6,7 +6,8 @@ package org.tamacat.httpd.config;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import org.tamacat.httpd.core.HttpHandler;
+
+import org.tamacat.httpd.handler.HttpHandler;
 
 /**
  * <p>It is setting of the service URL.

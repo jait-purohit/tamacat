@@ -2,7 +2,7 @@
  * Copyright (c) 2010, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.core;
+package org.tamacat.httpd.handler;
 
 import java.util.HashMap;
 

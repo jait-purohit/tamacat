@@ -7,7 +7,6 @@ package org.tamacat.httpd.auth;
 import java.util.Date;
 
 import org.apache.commons.codec.binary.Base64;
-
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -15,12 +14,18 @@ import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.exception.UnauthorizedException;
 import org.tamacat.httpd.util.RequestUtils;
+import org.tamacat.log.DiagnosticContext;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 import org.tamacat.util.StringUtils;
 
 /**
  * Implements of Basic authentication.
  */
 public class BasicAuthProcessor extends AbstractAuthProcessor {
+
+	static Log LOG = LogFactory.getLog(BasicAuthProcessor.class);
+	static final DiagnosticContext DC = LogFactory.getDiagnosticContext(LOG);
 
 	static final String AUTHORIZATION = "Authorization";
 	static final String WWW_AUTHENTICATE = "WWW-Authenticate";
@@ -39,6 +44,7 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 			try {
 				String remoteUser = checkUser(request, response, context);
 				context.setAttribute(remoteUserKey, remoteUser);
+				DC.setMappedContext("user", remoteUser);
 			} catch (UnauthorizedException e) {
 				response.setStatusCode(HttpStatus.SC_UNAUTHORIZED);
 				setWWWAuthenticateHeader(response);
@@ -49,7 +55,7 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Set the "WWW-Authenticate" response header of Basic authenticate realm.
-	 * 
+	 *
 	 * @param response
 	 */
 	protected void setWWWAuthenticateHeader(HttpResponse response) {
@@ -59,7 +65,7 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Realm is changed. Default realm is "Authentication required".
-	 * 
+	 *
 	 * @param realm
 	 */
 	public void setRealm(String realm) {
@@ -69,7 +75,7 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 	/**
 	 * When the user authentication check and correct, the username(login id) is
 	 * returned.
-	 * 
+	 *
 	 * @param request
 	 * @param context
 	 * @return username (login id)

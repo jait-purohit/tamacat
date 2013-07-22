@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import org.apache.http.protocol.HttpService;
 
@@ -31,7 +30,7 @@ public class DefaultWorkerExecutor implements WorkerExecutor {
 	protected int maxThreads;
 
 	protected ExecutorService executorService;
-	protected ThreadFactory threadFactory = new DefaultThreadFactory();
+	protected DefaultThreadFactory threadFactory = new DefaultThreadFactory();
 
 	public void execute(Socket socket) throws IOException {
 		ExecutorService executors = getExecutorService();
@@ -42,18 +41,14 @@ public class DefaultWorkerExecutor implements WorkerExecutor {
 		return new DefaultWorker(serverConfig, httpService, socket);
 	}
 
-	public void setThreadFactory(ThreadFactory threadFactory) {
-		this.threadFactory = threadFactory;
-	}
-
 	@Override
 	public void setServerConfig(ServerConfig serverConfig) {
 		this.serverConfig = serverConfig;
 		//set the maximun worker threads.
 		maxThreads = serverConfig.getMaxThreads();
 		LOG.info("MaxServerThreads: " + maxThreads);
-		//String name = serverConfig.getParam("WorkerThreadName", "httpd");
-		//threadFactory.setName(name);
+		String name = serverConfig.getParam("WorkerThreadName", "httpd");
+		threadFactory.setName(name);
 	}
 
 	@Override

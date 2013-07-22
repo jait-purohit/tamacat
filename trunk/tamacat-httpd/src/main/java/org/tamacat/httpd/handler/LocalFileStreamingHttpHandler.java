@@ -1,4 +1,4 @@
-package org.tamacat.httpd.core;
+package org.tamacat.httpd.handler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +13,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.protocol.HttpContext;
-
 import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.exception.HttpException;
