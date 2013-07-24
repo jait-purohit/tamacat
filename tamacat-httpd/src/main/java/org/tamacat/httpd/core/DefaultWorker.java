@@ -127,19 +127,23 @@ public class DefaultWorker implements Worker {
 	}
 
 	void shutdownClient(HttpConnection clientConn) {
-		try {
-			clientConn.close();
-			if (LOG.isTraceEnabled()) LOG.trace("client conn closed. - " + clientConn);
-			clientConn.shutdown();
-			if (LOG.isTraceEnabled()) LOG.trace("client conn shutdown. - " + clientConn);
-		} catch (IOException ignore) {
+		if (clientConn != null) {
+			try {
+				clientConn.close();
+				if (LOG.isTraceEnabled()) LOG.trace("client conn closed. - " + clientConn);
+				clientConn.shutdown();
+				if (LOG.isTraceEnabled()) LOG.trace("client conn shutdown. - " + clientConn);
+			} catch (IOException ignore) {
+			}
 		}
 	}
 
 	void shutdown(HttpConnection conn) {
 		try {
-			conn.shutdown();
-			LOG.debug("server conn shutdown. - " + conn);
+			if (conn != null) {
+				conn.shutdown();
+				LOG.debug("server conn shutdown. - " + conn);
+			}
 		} catch (IOException ignore) {
 		} finally {
 			DC.remove();
