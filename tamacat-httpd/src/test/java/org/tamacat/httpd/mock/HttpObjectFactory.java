@@ -15,13 +15,18 @@ public class HttpObjectFactory {
 	public static HttpRequest createHttpRequest(String method, String uri) {
 		return new BasicHttpRequest(method, uri);
 	}
-	
+
 	public static HttpResponse createHttpResponse(int status, String reason) {
 		StatusLine statusLine = new BasicStatusLine(
 			new ProtocolVersion("HTTP",1,1), status, reason);
 		return new BasicHttpResponse(statusLine);
 	}
-	
+
+	public static HttpResponse createHttpResponse(ProtocolVersion ver, int status, String reason) {
+		StatusLine statusLine = new BasicStatusLine(ver, status, reason);
+		return new BasicHttpResponse(statusLine);
+	}
+
 	public static HttpContext createHttpContext() {
 		return new BasicHttpContext();
 	}
