@@ -90,7 +90,23 @@ public class KeepAliveConnReuseStrategyTest {
 
 
 	@Test
-	public void testIsKeepAliveTimeout() {
+	public void testIsKeepAliveTimeout() throws Exception {
+		assertFalse(reuse.isKeepAliveTimeout(context));
+
+		context.setAttribute(KeepAliveConnReuseStrategy.HTTP_IN_CONN, new Object());
+		assertFalse(reuse.isKeepAliveTimeout(context));
+
+		ServerHttpConnection conn = new ServerHttpConnection(8192);
+		context.setAttribute(KeepAliveConnReuseStrategy.HTTP_IN_CONN, conn);
+		assertFalse(reuse.isKeepAliveTimeout(context));
+
+		reuse.setKeepAliveTimeout(1);
+		Thread.sleep(100);
+		assertTrue(reuse.isKeepAliveTimeout(context));
+
+		reuse.setKeepAliveTimeout(5000);
+		reuse.setMaxKeepAliveRequests(0);
+		assertTrue(reuse.isKeepAliveTimeout(context));
 	}
 
 	@Test

@@ -204,8 +204,10 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 	 * @return true -> timeout
 	 */
 	protected boolean isKeepAliveTimeout(HttpContext context) {
-		ServerHttpConnection conn = (ServerHttpConnection) context.getAttribute(HTTP_IN_CONN);
-		if (conn != null) {
+		Object value = context.getAttribute(HTTP_IN_CONN);
+		if (value != null && value instanceof ServerHttpConnection) {
+			@SuppressWarnings("resource")
+			ServerHttpConnection conn = (ServerHttpConnection) value;
 			long connStart = conn.getConnectionStartTime();
 			long end = System.currentTimeMillis() - connStart;
 			if (end > keepAliveTimeout) { //timeout
