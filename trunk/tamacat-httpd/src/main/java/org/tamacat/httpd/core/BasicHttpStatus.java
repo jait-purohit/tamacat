@@ -12,12 +12,12 @@ import java.util.HashMap;
  * @see {@link http://www.ietf.org/rfc/rfc2616.txt}
  */
 public enum BasicHttpStatus implements HttpStatus {
-	
+
 	//RFC 2616(HTTP/1.1) Informational 1xx
 	SC_CONTINUE(100, "Continue"),
 	SC_SWITCHING_PROTOCOLS(101, "Switching Protocols"),
 	SC_PROCESSING(102, "Processing"),
-	
+
 	//RFC 2616(HTTP/1.1) 10.2 Success 2xx
 	SC_OK(200, "OK"),
 	SC_CREATED(201, "Created"),
@@ -28,7 +28,7 @@ public enum BasicHttpStatus implements HttpStatus {
 	SC_PARTIAL_CONTENT(206,"Partial Content"),
 	SC_MULTI_STATUS(207,"Multi-Status"),
 	SC_IM_USED(226,"IM Used"),
-	
+
 	//RFC 2616(HTTP/1.1) 10.3 Redirection 3xx
 	SC_MULTIPLE_CHOICES(300,"Multiple Choices"),
 	SC_MOVED_PERMANENTLY(301,"Moved Permanently"),
@@ -38,7 +38,7 @@ public enum BasicHttpStatus implements HttpStatus {
 	SC_USE_PROXY(305,"Use Proxy"),
 	SC_UNUSED(306,"(Unused)"),
 	SC_TEMPORARY_REDIRECT(307,"Temporary Redirect"),
-	
+
 	//RFC 2616(HTTP/1.1) 10.4 Client Error 4xx
 	SC_BAD_REQUEST(400,"Bad Request"),
 	SC_UNAUTHORIZED(401,"Unauthorized"),
@@ -63,7 +63,7 @@ public enum BasicHttpStatus implements HttpStatus {
 	SC_LOCKED(423,"Locked"),
 	SC_FAILED_DEPENDENCY(424,"Failed Dependency"),
 	SC_UPGRADE_REQUIRED(426,"Upgrade Required"),
-	
+
 	//RFC 2616(HTTP/1.1) 10.5 Server Error 4xx
 	SC_INTERNAL_SERVER_ERROR(500,"Internal Server Error"),
 	SC_NOT_IMPLEMENTED(501,"Not Implemented"),
@@ -74,57 +74,57 @@ public enum BasicHttpStatus implements HttpStatus {
 	SC_VARIANT_ALSO_NEGOTIATES(506,"Variant Also Negotiates"),
 	SC_INSUFFICIENT_STORAGE(507,"Insufficient Storage"),
 	SC_NOT_EXTENDED(510,"Not Extended"),
-	
+
 	//Undefined RFC 2615 status code.
 	SC_UNKNOWN(-1,"Unknown");
-	
+
 	private final int statusCode;
 	private final String reasonPhrase;
-	
+
 	BasicHttpStatus(int statusCode, String reasonPhrase) {
 		this.statusCode = statusCode;
 		this.reasonPhrase = reasonPhrase;
 	}
-	
+
 	static HashMap<Integer,HttpStatus> find = new HashMap<Integer,HttpStatus>();
-	
+
 	static {
 		for (HttpStatus s : values()) {
 			find.put(Integer.valueOf(s.getStatusCode()), s);
 		}
 	}
-	
-	public static HttpStatus getHttpStatus(int statusCode) {	
+
+	public static HttpStatus getHttpStatus(int statusCode) {
 		HttpStatus status = find.get(Integer.valueOf(statusCode));
 		if (status != null) return status;
 		else return SC_UNKNOWN;
 	}
-	
+
 	public int getStatusCode() {
 		return statusCode;
 	}
-	
+
 	public String getReasonPhrase() {
 		return reasonPhrase;
 	}
-	
+
 	public boolean isInformational() {
 		return 100 <= statusCode && statusCode <= 199;
 	}
-	
+
 	public boolean isSuccess() {
 		return 200 <= statusCode && statusCode <= 299;
 	}
-	
+
 	public boolean isRedirection() {
-		return 300 <= statusCode && statusCode <= 399;	
+		return 300 <= statusCode && statusCode <= 399;
 	}
-	
+
 	public boolean isClientError() {
-		return 400 <= statusCode && statusCode <= 499;	
+		return 400 <= statusCode && statusCode <= 499;
 	}
-	
+
 	public boolean isServerError() {
-		return 500 <= statusCode && statusCode <= 599;	
+		return 500 <= statusCode && statusCode <= 599;
 	}
 }
