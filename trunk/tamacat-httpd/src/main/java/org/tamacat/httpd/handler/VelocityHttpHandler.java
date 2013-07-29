@@ -30,14 +30,14 @@ import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.util.PropertyUtils;
 
 /**
- * <p>It is implements of {@link HttpHandler} that uses {@code Apache Velocity}. 
+ * <p>It is implements of {@link HttpHandler} that uses {@code Apache Velocity}.
  */
 public class VelocityHttpHandler extends AbstractHttpHandler {
-	
+
 	public static final String CONTENT_TYPE = "ResponseHeader__ContentType__";
 	protected String welcomeFile = "index";
 	protected boolean listings;
-	
+
 	protected VelocityListingsPage listingPage;
 	protected VelocityPage page;
 	protected final Set<String> urlPatterns = new HashSet<String>();
@@ -47,7 +47,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			urlPatterns.add(pattern.trim());
 		}
 	}
-	
+
 	public boolean isMatchUrlPattern(String path) {
 		if (urlPatterns.size() > 0) {
 			for (String pattern : urlPatterns) {
@@ -62,16 +62,26 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		}
 		return false;
 	}
-	
+
 	@Override
-    public void setServiceUrl(ServiceUrl serviceUrl) {
-    	super.setServiceUrl(serviceUrl);
-    	Properties props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
+	public void setDocsRoot(String docsRoot) {
+		super.setDocsRoot(docsRoot);
+		if (page != null) {
+			page.init(docsRoot);
+		}
+	}
+
+	@Override
+	public void setServiceUrl(ServiceUrl serviceUrl) {
+		super.setServiceUrl(serviceUrl);
+		Properties props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
 		listingPage = new VelocityListingsPage(props);
 		page = new VelocityPage(props);
-		page.init(this.docsRoot);
+		if (docsRoot != null) {
+			page.init(docsRoot);
+		}
 	}
-	
+
 	/**
 	 * <p>Set the welcome file.
 	 * This method use after {@link #setListings}.
@@ -80,16 +90,16 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 	public void setWelcomeFile(String welcomeFile) {
 		this.welcomeFile = welcomeFile;
 	}
-	
+
 	/**
 	 * <p>Should directory listings be produced
 	 * if there is no welcome file in this directory.</p>
-	 * 
+	 *
 	 * <p>The welcome file becomes unestablished when I set true.<br>
 	 * When I set the welcome file, please set it after having
 	 * carried out this method.</p>
-	 * 
-	 * @param listings true: directory listings be produced (if welcomeFile is null). 
+	 *
+	 * @param listings true: directory listings be produced (if welcomeFile is null).
 	 */
 	public void setListings(boolean listings) {
 		this.listings = listings;
@@ -97,11 +107,11 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			this.welcomeFile = null;
 		}
 	}
-	
+
 	public void setListingsPage(String listingsPage) {
 		listingPage.setListingsPage(listingsPage);
 	}
-	
+
 	protected boolean useDirectoryListings() {
 		if (listings) {
 			return true;
@@ -142,7 +152,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			setFileEntity(request, response, path);
 		}
 	}
-	
+
 	protected void setListFileEntity(HttpRequest request, HttpResponse response, File file) {
 		try {
 			String html = listingPage.getListingsPage(
@@ -153,7 +163,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			throw new NotFoundException(e);
 		}
 	}
-	
+
 	protected void setEntity(HttpRequest request, HttpResponse response, VelocityContext ctx, String path) {
 		//Do not set an entity when it already exists.
 		if (response.getEntity() == null) {
@@ -166,7 +176,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			}
 		}
 	}
-	
+
 	protected void setFileEntity(HttpRequest request, HttpResponse response, String path) {
 		//Do not set an entity when it already exists.
 		if (response.getEntity() == null) {
@@ -191,7 +201,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			return null;
 		}
 	}
-	
+
 	@Override
 	protected HttpEntity getEntity(String html) {
 		try {
@@ -202,15 +212,15 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			return null;
 		}
 	}
-	
+
 	protected HttpEntity getFileEntity(File file, String contentType) {
 		FileEntity body = new FileEntity(file, ContentType.create(contentType, encoding));
-        return body;
+		return body;
 	}
-	
+
 	@Override
 	protected HttpEntity getFileEntity(File file) {
 		FileEntity body = new FileEntity(file, ContentType.create(getContentType(file)));
-        return body;
+		return body;
 	}
 }

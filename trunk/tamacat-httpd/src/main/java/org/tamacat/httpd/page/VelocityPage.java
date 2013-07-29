@@ -24,14 +24,14 @@ import org.tamacat.log.LogFactory;
  */
 public class VelocityPage {
 	static final Log LOG = LogFactory.getLog(VelocityPage.class);
-	
-    private VelocityEngine velocityEngine;
-    private Properties props;
-	
+
+	private VelocityEngine velocityEngine;
+	private Properties props;
+
 	public VelocityPage(Properties props) {
 		this.props = props;
 	}
-	
+
 	public void init(String docsRoot) {
 		try {
 			velocityEngine = new VelocityEngine();
@@ -42,35 +42,35 @@ public class VelocityPage {
 			LOG.warn(e.getMessage());
 		}
 	}
-	
+
 	public String getPage(HttpRequest request, HttpResponse response, String page) {
 		VelocityContext context = new VelocityContext();
 		return getPage(request, response, context, page);
 	}
-	
-	public String getPage(HttpRequest request, HttpResponse response, 
+
+	public String getPage(HttpRequest request, HttpResponse response,
 			VelocityContext	context, String page) {
 		return getTemplatePage(request, response, context, page+".vm");
-    }
-    
-	public String getTemplatePage(HttpRequest request, HttpResponse response, 
+	}
+
+	public String getTemplatePage(HttpRequest request, HttpResponse response,
 			VelocityContext	context, String page) {
 		context.put("url", request.getRequestLine().getUri());
 		context.put("method", request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH));
-    	try {
-   			Template template = getTemplate(page);
-   			StringWriter writer = new StringWriter();
-   			template.merge(context, writer);
-   			return writer.toString();
-    	} catch (ResourceNotFoundException e) {
-    		LOG.trace(e.getMessage());
-    		throw new NotFoundException(e);
-    	} catch (Exception e) {
-    		throw new ServiceUnavailableException(e);
-    	}
-    }
-	
-    protected Template getTemplate(String page) throws Exception {
-    	return velocityEngine.getTemplate(page, "UTF-8");
-    }
+		try {
+			Template template = getTemplate(page);
+			StringWriter writer = new StringWriter();
+			template.merge(context, writer);
+			return writer.toString();
+		} catch (ResourceNotFoundException e) {
+			LOG.trace(e.getMessage());
+			throw new NotFoundException(e);
+		} catch (Exception e) {
+			throw new ServiceUnavailableException(e);
+		}
+	}
+
+	protected Template getTemplate(String page) throws Exception {
+		return velocityEngine.getTemplate(page, "UTF-8");
+	}
 }
