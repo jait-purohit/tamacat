@@ -10,6 +10,7 @@ import java.net.URL;
 
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.junit.After;
 import org.junit.Before;
@@ -83,6 +84,9 @@ public class ReverseHttpRequestTest {
 						new BasicHttpRequest("GET","/test2/test.jsp"),
 						new BasicHttpContext(),
 						reverseUrl);
+
+		request.setHeader(HTTP.TARGET_HOST, "www.example.com:8080");
+
 		HttpContext context = HttpObjectFactory.createHttpContext();
 		request.rewriteHostHeader(request, context);
 

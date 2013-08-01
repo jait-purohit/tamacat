@@ -8,10 +8,28 @@ import org.apache.http.protocol.HttpContext;
 import org.junit.Test;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.NotFoundException;
+import org.tamacat.httpd.filter.AccessLogFilter;
 import org.tamacat.httpd.handler.LocalFileHttpHandler;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 
 public class LocalFileHttpHandlerTest {
+
+	@Test
+	public void testHandle() {
+		LocalFileHttpHandler handler = new LocalFileHttpHandler();
+		HttpRequest request = HttpObjectFactory.createHttpRequest("GET", "/");
+		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
+		HttpContext context = HttpObjectFactory.createHttpContext();
+
+		ServiceUrl serviceUrl = new ServiceUrl();
+		serviceUrl.setPath("/");
+		handler.setServiceUrl(serviceUrl);
+		handler.setListings(true);
+		handler.setDocsRoot("./src/test/resources/htdocs/web/");
+
+		handler.setHttpFilter(new AccessLogFilter());
+		handler.handle(request, response, context);
+	}
 
 	@Test
 	public void testDoRequest() throws Exception {
@@ -53,6 +71,15 @@ public class LocalFileHttpHandlerTest {
 		handler.setListingsPage("");
 		assertNotNull(handler.listingPage);
 
+	}
+
+	@Test
+	public void testSetEncoding() {
+		LocalFileHttpHandler handler = new LocalFileHttpHandler();
+		assertEquals("UTF-8", handler.encoding);
+
+		handler.setEncoding("Windows-31J");
+		assertEquals("Windows-31J", handler.encoding);
 	}
 
 	@Test

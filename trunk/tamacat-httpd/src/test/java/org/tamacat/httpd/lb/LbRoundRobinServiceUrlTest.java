@@ -15,7 +15,6 @@ import org.tamacat.httpd.config.DefaultReverseUrl;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
-import org.tamacat.httpd.monitor.MonitorConfig;
 
 public class LbRoundRobinServiceUrlTest {
 

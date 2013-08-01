@@ -34,9 +34,9 @@ public class ReverseProxyHandler_test {
 
 	public static void main(String[] args) throws Exception {
 		ReverseProxyHandler_test test = new ReverseProxyHandler_test();
-		
+
 		test.setUp();
-		
+
 		test.testHandle();
 		test.testDoRequest();
 		test.testGetEntity();
@@ -47,30 +47,30 @@ public class ReverseProxyHandler_test {
 		test.testInfiniteLoop();
 		test.testSetDefaultHttpRequestInterceptor();
 	}
-	
+
 	ReverseProxyHandler handler;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		handler = new ReverseProxyHandler();
 
 		ServerConfig serverConfig = new ServerConfig(PropertyUtils.getProperties("server.properties"));
 		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
-		
+
 		serviceUrl.setPath("/test/");
 		serviceUrl.setType(ServiceType.REVERSE);
-		serviceUrl.setHost(new URL("http://localhost/test/"));		
+		serviceUrl.setHost(new URL("http://localhost/test/"));
 		DefaultReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
 		reverseUrl.setReverse(new URL("http://localhost:8080/examples/"));
 		serviceUrl.setReverseUrl(reverseUrl);
-		
+
 		handler.setServiceUrl(serviceUrl);
 	}
-	
+
 	@After
 	public void tearDown() throws Exception {
 	}
-	
+
 	HttpContext createContext() {
 		HttpContext context = HttpObjectFactory.createHttpContext();
 		try {
@@ -81,20 +81,20 @@ public class ReverseProxyHandler_test {
 		}
 		return context;
 	}
-	
+
 	@Test
 	public void testHandle() {
 		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = createContext();
-				
+
 		handler.setHttpFilter(new RequestFilter() {
 			@Override
 			public void init(ServiceUrl serviceUrl) {
 			}
 			@Override
 			public void doFilter(HttpRequest request, HttpResponse response,
-					HttpContext context) {				
+					HttpContext context) {
 			}
 		});
 		handler.handle(request, response, context);
@@ -105,7 +105,7 @@ public class ReverseProxyHandler_test {
 			}
 			@Override
 			public void afterResponse(HttpRequest request, HttpResponse response,
-					HttpContext context) {				
+					HttpContext context) {
 			}
 		});
 		handler.handle(request, response, context);
@@ -116,7 +116,7 @@ public class ReverseProxyHandler_test {
 		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = createContext();
-		
+
 		handler.doRequest(request, response, context);
 	}
 
@@ -137,7 +137,7 @@ public class ReverseProxyHandler_test {
 		HttpContext context = createContext();
 		handler.forwardRequest(request, response, context);
 	}
-	
+
 	//@Test
 	public void testInfiniteLoop() {
 		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
@@ -163,7 +163,7 @@ public class ReverseProxyHandler_test {
 		handler.addHttpRequestInterceptor(new HttpRequestInterceptor() {
 			@Override
 			public void process(HttpRequest request, HttpContext context)
-					throws org.apache.http.HttpException, IOException {				
+					throws org.apache.http.HttpException, IOException {
 			}
 		});
 	}
@@ -173,7 +173,7 @@ public class ReverseProxyHandler_test {
 		handler.addHttpResponseInterceptor(new HttpResponseInterceptor() {
 			@Override
 			public void process(HttpResponse response, HttpContext context)
-					throws org.apache.http.HttpException, IOException {				
+					throws org.apache.http.HttpException, IOException {
 			}
 		});
 	}

@@ -4,8 +4,6 @@
  */
 package org.tamacat.httpd.lb;
 
-import org.tamacat.httpd.monitor.HttpMonitor;
-import org.tamacat.httpd.monitor.MonitorEvent;
 
 
 /**
