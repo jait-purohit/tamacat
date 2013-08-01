@@ -17,8 +17,8 @@ public class PerformanceCounterFilter implements RequestFilter, ResponseFilter {
 
 	private static final URLBasicCounter urlCounter = new URLBasicCounter();
 
-	private ServiceUrl serviceUrl;
-	
+	protected ServiceUrl serviceUrl;
+
 	/**
 	 * <p>Set the base ObjectName for JMX.
 	 * ObjectName is append the URL path.<br>
@@ -28,7 +28,7 @@ public class PerformanceCounterFilter implements RequestFilter, ResponseFilter {
 	public void setObjectName(String objectName) {
 		urlCounter.setObjectName(objectName);
 	}
-	
+
 	@Override
 	public void doFilter(HttpRequest request, HttpResponse response,
 			HttpContext context) {
@@ -48,11 +48,16 @@ public class PerformanceCounterFilter implements RequestFilter, ResponseFilter {
 		BasicCounter counter = urlCounter.getCounter(getPath(serviceUrl));
 		if (counter != null) counter.countDown();
 	}
-	
-	private static String getPath(ServiceUrl serviceUrl) {
+
+	/**
+	 *
+	 * @param serviceUrl
+	 * @return
+	 */
+	protected String getPath(ServiceUrl serviceUrl) {
 		URL host = serviceUrl.getHost();
-		String name = host != null? 
-			host.getHost() + serviceUrl.getPath() : serviceUrl.getPath();
-		return name; 
+		String name = host != null?
+			host.getAuthority().replace(":", "_") + serviceUrl.getPath() : serviceUrl.getPath();
+		return name;
 	}
 }

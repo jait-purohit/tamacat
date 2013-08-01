@@ -2,7 +2,7 @@
  * Copyright (c) 2010, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.monitor;
+package org.tamacat.httpd.lb;
 
 /**
  * <p>It is interface to express that I support a monitoring target function.
