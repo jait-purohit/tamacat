@@ -235,17 +235,15 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	 * @return decoded URI default decoding is UTF-8.
 	 */
 	protected String getDecodeUri(String uri) {
+		String decoded = uri;
 		try {
-			String decoded = URLDecoder.decode(uri, encoding);
-			if (decoded.indexOf("../")>=0 || decoded.indexOf("..\\")>=0) {
-				throw new NotFoundException();
-			}
-			return decoded;
+			decoded = URLDecoder.decode(uri, encoding);
 		} catch (UnsupportedEncodingException e) {
-			return uri;
-		} catch (IllegalArgumentException e) {
+		}
+		if (StringUtils.isEmpty(decoded) || decoded.indexOf("../")>=0 || decoded.indexOf("..\\")>=0) {
 			throw new NotFoundException();
 		}
+		return decoded;
 	}
 
 	/**
