@@ -6,7 +6,6 @@ package org.tamacat.httpd.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -216,7 +215,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		.addInterceptor(new RequestTargetHost())
 		.addInterceptor(new RequestConnControl())
 		.addInterceptor(new RequestUserAgent())
-		.addInterceptor(new RequestExpectContinue());
+		.addInterceptor(new RequestExpectContinue(true));
 	}
 
 	public void addHttpRequestInterceptor(HttpRequestInterceptor interceptor) {
@@ -252,7 +251,8 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 			StringEntity entity = new StringEntity(html, encoding);
 			entity.setContentType(DEFAULT_CONTENT_TYPE);
 			return entity;
-		} catch (UnsupportedEncodingException e1) {
+		} catch (Exception e) {
+			//UnsupportedEncodingException or UnsupportedCharsetException
 			return null;
 		}
 	}

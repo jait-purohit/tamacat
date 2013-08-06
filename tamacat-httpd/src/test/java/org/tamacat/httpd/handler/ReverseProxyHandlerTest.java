@@ -22,7 +22,6 @@ import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceType;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
-import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.handler.ReverseProxyHandler;
@@ -30,23 +29,7 @@ import org.tamacat.httpd.mock.HttpObjectFactory;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.PropertyUtils;
 
-public class ReverseProxyHandler_test {
-
-	public static void main(String[] args) throws Exception {
-		ReverseProxyHandler_test test = new ReverseProxyHandler_test();
-
-		test.setUp();
-
-		test.testHandle();
-		test.testDoRequest();
-		test.testGetEntity();
-		test.testGetFileEntity();
-		test.testForwardRequest();
-		test.testAddHttpRequestInterceptor();
-		test.testAddHttpResponseInterceptor();
-		test.testInfiniteLoop();
-		test.testSetDefaultHttpRequestInterceptor();
-	}
+public class ReverseProxyHandlerTest {
 
 	ReverseProxyHandler handler;
 
@@ -123,6 +106,9 @@ public class ReverseProxyHandler_test {
 	@Test
 	public void testGetEntity() {
 		assertNotNull(handler.getEntity("<html>TEST</html>"));
+
+		handler.setEncoding("none");
+		assertNull(handler.getEntity("<html>TEST</html>"));
 	}
 
 	@Test
@@ -136,21 +122,6 @@ public class ReverseProxyHandler_test {
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = createContext();
 		handler.forwardRequest(request, response, context);
-	}
-
-	//@Test
-	public void testInfiniteLoop() {
-		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
-		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
-		HttpContext context = createContext();
-
-		handler.forwardRequest(request, response, context);
-		try {
-			handler.forwardRequest(request, response, context);
-			fail();
-		} catch (ServiceUnavailableException e) {
-			assertEquals("reverseUrl is infinite loop.", e.getMessage());
-		}
 	}
 
 	@Test
@@ -176,6 +147,24 @@ public class ReverseProxyHandler_test {
 					throws org.apache.http.HttpException, IOException {
 			}
 		});
+	}
+
+	@Test
+	public void testSetProxyAuthorizationHeader() {
+		//default
+		assertEquals("X-ReverseProxy-Authorization", handler.proxyAuthorizationHeader);
+
+		handler.setProxyAuthorizationHeader("Custom-ReverseProxy-Authorization");
+		assertEquals("Custom-ReverseProxy-Authorization", handler.proxyAuthorizationHeader);
+	}
+
+	@Test
+	public void testSetProxyOrignPathHeader() {
+		//default
+		assertEquals("X-ReverseProxy-Origin-Path", handler.proxyOrignPathHeader);
+
+		handler.setProxyOrignPathHeader("Custom-ProxyOrignPathHeader");
+		assertEquals("Custom-ProxyOrignPathHeader", handler.proxyOrignPathHeader);
 	}
 
 }

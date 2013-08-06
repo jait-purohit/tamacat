@@ -2,6 +2,8 @@ package org.tamacat.httpd.handler;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
@@ -101,27 +103,56 @@ public class LocalFileHttpHandlerTest {
 			handler.getDecodeUri("/%2e%2e/index.html");
 			fail();
 		} catch (NotFoundException e) {
+			assertTrue(true);
 		}
 		try {
 			handler.getDecodeUri("/%2e%2e%2findex.html");
 			fail();
 		} catch (NotFoundException e) {
+			assertTrue(true);
 		}
 		try {
 			handler.getDecodeUri("/../");
 			fail();
 		} catch (NotFoundException e) {
+			assertTrue(true);
 		}
 		try {
 			handler.getDecodeUri("../");
 			fail();
 		} catch (NotFoundException e) {
+			assertTrue(true);
 		}
 
 		try {
 			handler.getDecodeUri("..\\index.html");
 			fail();
 		} catch (NotFoundException e) {
+			assertTrue(true);
 		}
+
+		handler.setEncoding("none");
+		assertEquals("/index.html", handler.getDecodeUri("/index.html"));
+		assertEquals("/%20index.html", handler.getDecodeUri("/%20index.html"));
+		try {
+			assertEquals("/../index.html", handler.getDecodeUri("/../index.html"));
+			fail();
+		} catch (NotFoundException e) {
+		}
+	}
+
+	@Test
+	public void testGetFileEntity() {
+		LocalFileHttpHandler handler = new LocalFileHttpHandler();
+		assertNotNull(handler.getFileEntity(new File("./src/test/resources/htdocs/index.html")));
+	}
+
+	@Test
+	public void testSetClassLoader() {
+		LocalFileHttpHandler handler = new LocalFileHttpHandler();
+		assertEquals(getClass().getClassLoader(), handler.getClassLoader());
+
+		handler.setClassLoader(Thread.currentThread().getContextClassLoader());
+		assertEquals(Thread.currentThread().getContextClassLoader(), handler.getClassLoader());
 	}
 }
