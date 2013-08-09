@@ -2,7 +2,7 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.html;
+package org.tamacat.httpd.filter;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.Header;
@@ -36,7 +37,7 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 	public LinkConvertingEntity(HttpEntity entity, String before, String after) {
 		this(entity, before, after, HtmlUtils.LINK_PATTERN);
 	}
-	
+
 	public LinkConvertingEntity(HttpEntity entity, String before, String after, List<Pattern> linkPatterns) {
 		super(entity);
 		this.before = before;
@@ -48,7 +49,7 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 			this.linkPatterns.add(HtmlUtils.LINK_PATTERN);
 		}
 	}
-	
+
 	public LinkConvertingEntity(HttpEntity entity, String before, String after, Pattern... linkPattern) {
 		super(entity);
 		this.before = before;
@@ -62,7 +63,7 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 			this.linkPatterns.add(HtmlUtils.LINK_PATTERN);
 		}
 	}
-	
+
 	public void setBufferSize(int bufferSize) {
 		this.bufferSize = bufferSize;
 	}
@@ -94,7 +95,7 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 			while ((line = reader.readLine()) != null) {
 				line = line + "\r\n";
 				for (Pattern linkPattern : linkPatterns) {
-					ConvertData html = HtmlUtils.convertLink(line, before, after, linkPattern);
+					ConvertData html = convertLink(line, before, after, linkPattern);
 					if (html.isConverted()) {
 						line = html.getData();
 					}
@@ -111,8 +112,43 @@ public class LinkConvertingEntity extends HttpEntityWrapper {
 			IOUtils.close(writer);
 		}
 	}
-	
+
 	public void setDefaultCharset(String defaultCharset) {
 		this.defaultCharset = defaultCharset;
+	}
+
+	public static ConvertData convertLink(String html, String before, String after, Pattern pattern) {
+		Matcher matcher = pattern.matcher(html);
+		StringBuffer result = new StringBuffer();
+		boolean converted = false;
+		while (matcher.find()) {
+			String url = matcher.group(2);
+			if (url.startsWith("http://") || url.startsWith("https://")) {
+				continue;
+			}
+			String rev = matcher.group().replaceFirst(before, after);
+			matcher.appendReplacement(result, rev.replace("$", "\\$"));
+			converted = true;
+		}
+		matcher.appendTail(result);
+		return new ConvertData(result.toString(), converted);
+	}
+
+	static class ConvertData {
+		private final boolean converted;
+		private final String data;
+
+		public ConvertData(String data, boolean converted) {
+			this.data = data;
+			this.converted = converted;
+		}
+
+		public String getData() {
+			return data;
+		}
+
+		public boolean isConverted() {
+			return converted;
+		}
 	}
 }

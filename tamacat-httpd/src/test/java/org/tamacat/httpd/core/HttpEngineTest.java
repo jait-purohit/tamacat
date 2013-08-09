@@ -12,7 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.httpd.config.ServerConfig;
-import org.tamacat.httpd.ssl.SSLContextCreator;
+import org.tamacat.httpd.core.ssl.SSLContextCreator;
 import org.tamacat.util.PropertyUtils;
 
 public class HttpEngineTest {
