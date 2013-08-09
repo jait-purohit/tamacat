@@ -2,7 +2,7 @@
  * Copyright (c) 2010, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.html;
+package org.tamacat.httpd.filter;
 
 import static org.junit.Assert.*;
 
@@ -13,6 +13,7 @@ import org.apache.http.entity.StringEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.httpd.filter.LinkConvertingEntity;
 
 public class LinkConvertingEntityMultipleTest {
 	Pattern[] patterns;

@@ -8,11 +8,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.Header;
-import org.tamacat.httpd.html.ConvertData;
 import org.tamacat.util.StringUtils;
 
 public class HtmlUtils {
-	
+
 	public static final Pattern LINK_PATTERN = Pattern.compile(
 			"<[^<]*\\s+(href|src|action|background|.*[0-9]*;?url)=(?:\'|\")?([^('|\")]*)(?:\'|\")?[^>]*>",
 			Pattern.CASE_INSENSITIVE);
@@ -20,7 +19,7 @@ public class HtmlUtils {
 	public static final Pattern CHARSET_PATTERN = Pattern.compile(
 			"<meta[^<]*\\s+(content)=(.*);\\s?(charset)=(.*)['|\"][^>]*>",
 			Pattern.CASE_INSENSITIVE);
-	
+
 	/**
 	 * Get the character set from Content-type header.
 	 * @param contentType
@@ -58,28 +57,7 @@ public class HtmlUtils {
 		}
 		return defaultCharset;
 	}
-	
-	public static ConvertData convertLink(String html, String before, String after) {
-		return convertLink(html, before, after, LINK_PATTERN);
-	}
-	
-	public static ConvertData convertLink(String html, String before, String after, Pattern pattern) {
-		Matcher matcher = pattern.matcher(html);
-		StringBuffer result = new StringBuffer();
-		boolean converted = false;
-		while (matcher.find()) {
-			String url = matcher.group(2);
-			if (url.startsWith("http://") || url.startsWith("https://")) {
-				continue;
-			}
-			String rev = matcher.group().replaceFirst(before, after);
-			matcher.appendReplacement(result, rev.replace("$", "\\$"));
-			converted = true;
-		}
-		matcher.appendTail(result);
-		return new ConvertData(result.toString(), converted);
-	}
-	
+
 	public static String escapeHtmlMetaChars(String uri) {
 		if (StringUtils.isEmpty(uri)) return uri;
 		char[] chars = uri.toCharArray();

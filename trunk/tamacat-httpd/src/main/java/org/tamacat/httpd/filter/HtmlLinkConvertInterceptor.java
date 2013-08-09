@@ -19,7 +19,6 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ReverseUrl;
-import org.tamacat.httpd.html.LinkConvertingEntity;
 import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.util.StringUtils;
 
