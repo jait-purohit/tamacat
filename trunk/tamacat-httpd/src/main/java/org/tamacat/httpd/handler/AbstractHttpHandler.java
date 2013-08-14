@@ -24,7 +24,7 @@ import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.HttpFilter;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.filter.ResponseFilter;
-import org.tamacat.httpd.page.VelocityErrorPage;
+import org.tamacat.httpd.handler.page.VelocityErrorPage;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;

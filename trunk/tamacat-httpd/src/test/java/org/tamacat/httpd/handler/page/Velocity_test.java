@@ -1,4 +1,4 @@
-package org.tamacat.httpd.page;
+package org.tamacat.httpd.handler.page;
 
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;

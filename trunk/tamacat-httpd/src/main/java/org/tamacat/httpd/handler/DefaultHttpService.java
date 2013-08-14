@@ -2,10 +2,9 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.core;
+package org.tamacat.httpd.handler;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 import org.apache.http.ConnectionReuseStrategy;
@@ -21,10 +20,10 @@ import org.apache.http.protocol.HttpExpectationVerifier;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.protocol.HttpRequestHandlerMapper;
 import org.apache.http.protocol.HttpService;
+import org.tamacat.httpd.core.HttpProcessorBuilder;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
-import org.tamacat.httpd.handler.HostRequestHandlerMapper;
-import org.tamacat.httpd.page.VelocityErrorPage;
+import org.tamacat.httpd.handler.page.VelocityErrorPage;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
@@ -129,7 +128,7 @@ public class DefaultHttpService extends HttpService {
 			StringEntity entity = new StringEntity(html, encoding);
 			entity.setContentType(contentType);
 			return entity;
-		} catch (UnsupportedEncodingException e1) {
+		} catch (Exception e1) {
 			return null;
 		}
 	}

@@ -33,6 +33,7 @@ import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.core.ssl.SSLContextCreator;
+import org.tamacat.httpd.handler.DefaultHttpService;
 import org.tamacat.httpd.handler.HostRequestHandlerMapper;
 import org.tamacat.httpd.jmx.BasicCounter;
 import org.tamacat.httpd.jmx.JMXReloadableHttpd;

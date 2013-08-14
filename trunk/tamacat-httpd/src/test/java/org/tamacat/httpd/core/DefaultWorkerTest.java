@@ -14,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.httpd.config.ServerConfig;
+import org.tamacat.httpd.handler.DefaultHttpService;
 import org.tamacat.httpd.mock.DummySocket;
 import org.tamacat.io.RuntimeIOException;
 

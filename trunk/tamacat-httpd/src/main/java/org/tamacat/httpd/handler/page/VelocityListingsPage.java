@@ -2,12 +2,11 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.page;
+package org.tamacat.httpd.handler.page;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,28 +34,28 @@ public class VelocityListingsPage {
 
 	static final Log LOG = LogFactory.getLog(VelocityListingsPage.class);
 
-    protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
-    
-    protected static final String DEFAULT_ERROR_500_HTML
-		= "<html><body><p>500 Internal Server Error.<br /></p></body></html>";
-    protected String listingsPage = "listings";
-    protected VelocityEngine velocityEngine;
+	protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
 
-    protected String encoding;
-    protected boolean useSearch;
-    protected String dateFormat = "yyyy-MM-dd HH:mm";
-    /** 
-     * @since 1.1
-     * @param encoding
-     */
-    public void setEncoding(String encoding) {
+	protected static final String DEFAULT_ERROR_500_HTML
+		= "<html><body><p>500 Internal Server Error.<br /></p></body></html>";
+	protected String listingsPage = "listings";
+	protected VelocityEngine velocityEngine;
+
+	protected String encoding;
+	protected boolean useSearch;
+	protected String dateFormat = "yyyy-MM-dd HH:mm";
+	/**
+	 * @since 1.1
+	 * @param encoding
+	 */
+	public void setEncoding(String encoding) {
 		this.encoding = encoding;
 	}
 
 	public void setListingsPage(String listingsPage) {
 		this.listingsPage = listingsPage;
 	}
-    
+
 	public VelocityListingsPage(Properties props) {
 		try {
 			velocityEngine = new VelocityEngine();
@@ -76,13 +75,13 @@ public class VelocityListingsPage {
 		VelocityContext context = new VelocityContext();
 		return getListingsPage(request, response, context, file);
 	}
-	
+
 	public String getListingsPage(
-			HttpRequest request, HttpResponse response, 
+			HttpRequest request, HttpResponse response,
 			VelocityContext context, File file) {
 		try {
 			context.put("url", URLDecoder.decode(RequestUtils.getRequestPath(request),"UTF-8"));
-		} catch (UnsupportedEncodingException e) {
+		} catch (Exception e) {
 			context.put("url", RequestUtils.getRequestPath(request));
 		}
 
@@ -102,9 +101,9 @@ public class VelocityListingsPage {
 				}
 			}
 		});
-		
+
 		Arrays.sort(files, new FileSort());
-		
+
 		ArrayList<Map<String, String>> list = new ArrayList<Map<String,String>>();
 		for (File f : files) {
 			Map<String, String> map = new HashMap<String, String>();
@@ -121,31 +120,31 @@ public class VelocityListingsPage {
 			list.add(map);
 		}
 		context.put("list", list);
-    	try {
-   			Template template = getTemplate(listingsPage + ".vm");
-   			StringWriter writer = new StringWriter();
-   			template.merge(context, writer);
-   			return writer.toString();
-    	} catch (Exception e) {
-    		LOG.trace(e.getMessage());
-    		return DEFAULT_ERROR_500_HTML;
-    	}
-    }
-    
-    protected Template getTemplate(String page) throws Exception {
-    	return velocityEngine.getTemplate("templates/" + page, "UTF-8");
-    }
-    
-    static class FileSort implements Comparator<File> {
-    	public int compare(File src, File target) {
-    		if (src.isDirectory() && target.isFile()) return -1;
-    		if (src.isFile() && target.isDirectory()) return 1;
-    		int diff = src.getName().compareTo(target.getName());
-    		return diff;
-    	}
-    }
-    
-    String getParameter(HttpRequest request, String name) {
+		try {
+			Template template = getTemplate(listingsPage + ".vm");
+			StringWriter writer = new StringWriter();
+			template.merge(context, writer);
+			return writer.toString();
+		} catch (Exception e) {
+			LOG.trace(e.getMessage());
+			return DEFAULT_ERROR_500_HTML;
+		}
+	}
+
+	protected Template getTemplate(String page) throws Exception {
+		return velocityEngine.getTemplate("templates/" + page, "UTF-8");
+	}
+
+	static class FileSort implements Comparator<File> {
+		public int compare(File src, File target) {
+			if (src.isDirectory() && target.isFile()) return -1;
+			if (src.isFile() && target.isDirectory()) return 1;
+			int diff = src.getName().compareTo(target.getName());
+			return diff;
+		}
+	}
+
+	String getParameter(HttpRequest request, String name) {
 		String path = request.getRequestLine().getUri();
 		if (path.indexOf('?') >= 0) {
 			String[] requestParams = path.split("\\?");
@@ -158,12 +157,12 @@ public class VelocityListingsPage {
 						try {
 							return URLDecoder.decode(p[1], "UTF-8");
 						} catch (Exception e) {
-							e.printStackTrace();
+							LOG.warn(e.getMessage());
 						}
 					}
 				}
 			}
 		}
 		return null;
-    }
+	}
 }
