@@ -10,8 +10,8 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.config.ServiceUrl;
-import org.tamacat.httpd.jmx.BasicCounter;
-import org.tamacat.httpd.jmx.URLBasicCounter;
+import org.tamacat.httpd.core.jmx.BasicCounter;
+import org.tamacat.httpd.core.jmx.URLBasicCounter;
 
 public class PerformanceCounterFilter implements RequestFilter, ResponseFilter {
 

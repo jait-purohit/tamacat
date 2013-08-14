@@ -2,7 +2,7 @@
  * Copyright (c) 2010, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.lb;
+package org.tamacat.httpd.config.lb;
 
 import static org.junit.Assert.*;
 
@@ -14,6 +14,8 @@ import org.junit.Test;
 import org.tamacat.httpd.config.DefaultReverseUrl;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.config.lb.LbRoundRobinServiceUrl;
+import org.tamacat.httpd.config.lb.MonitorConfig;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 
 public class LbRoundRobinServiceUrlTest {

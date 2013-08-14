@@ -2,7 +2,7 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.lb;
+package org.tamacat.httpd.config.lb;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;

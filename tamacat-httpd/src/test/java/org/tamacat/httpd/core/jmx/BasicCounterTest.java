@@ -1,10 +1,11 @@
-package org.tamacat.httpd.jmx;
+package org.tamacat.httpd.core.jmx;
 
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.httpd.core.jmx.BasicCounter;
 
 public class BasicCounterTest {
 	

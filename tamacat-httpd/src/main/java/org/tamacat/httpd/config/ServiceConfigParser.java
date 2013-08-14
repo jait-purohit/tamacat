@@ -5,17 +5,16 @@
 package org.tamacat.httpd.config;
 
 import java.net.MalformedURLException;
-
 import java.net.URL;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.tamacat.httpd.config.ServiceType;
-import org.tamacat.httpd.lb.LbHealthCheckServiceUrl;
-import org.tamacat.httpd.lb.LbServiceUrlFactory;
+import org.tamacat.httpd.config.lb.LbHealthCheckServiceUrl;
+import org.tamacat.httpd.config.lb.LbServiceUrlFactory;
 import org.tamacat.util.IOUtils;
 import org.tamacat.util.StringUtils;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;

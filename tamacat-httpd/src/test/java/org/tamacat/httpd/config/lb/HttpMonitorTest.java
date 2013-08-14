@@ -1,13 +1,13 @@
-package org.tamacat.httpd.lb;
+package org.tamacat.httpd.config.lb;
 
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.tamacat.httpd.lb.HttpMonitor;
-import org.tamacat.httpd.lb.MonitorConfig;
-import org.tamacat.httpd.lb.MonitorEvent;
+import org.tamacat.httpd.config.lb.HttpMonitor;
+import org.tamacat.httpd.config.lb.MonitorConfig;
+import org.tamacat.httpd.config.lb.MonitorEvent;
 
 public class HttpMonitorTest {
 	HttpMonitor<String> monitor;

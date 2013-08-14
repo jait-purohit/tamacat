@@ -1,4 +1,4 @@
-package org.tamacat.httpd.lb;
+package org.tamacat.httpd.config.lb;
 
 import static org.junit.Assert.*;
 
@@ -7,6 +7,8 @@ import java.net.URL;
 import org.junit.Test;
 import org.tamacat.httpd.config.DefaultReverseUrl;
 import org.tamacat.httpd.config.ReverseUrl;
+import org.tamacat.httpd.config.lb.LbLeastConnectionServiceUrl;
+import org.tamacat.httpd.config.lb.SortableReverseUrl;
 
 public class LbLeastConnectionServiceUrlTest {
 
