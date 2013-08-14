@@ -1,4 +1,4 @@
-package org.tamacat.httpd.core;
+package org.tamacat.httpd.handler;
 
 import static org.junit.Assert.*;
 
@@ -11,8 +11,12 @@ import org.apache.http.protocol.HttpContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.httpd.core.HttpProcessorBuilder;
+import org.tamacat.httpd.core.KeepAliveConnReuseStrategy;
+import org.tamacat.httpd.core.ServerHttpConnection;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
+import org.tamacat.httpd.handler.DefaultHttpService;
 import org.tamacat.httpd.mock.DummySocket;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 
@@ -66,6 +70,11 @@ public class DefaultHttpServiceTest {
 
 	@Test
 	public void testGetEntity() {
+		service.setEncoding("UTF-8");
+		assertNotNull(service.getEntity("<html />"));
+
+		service.setEncoding("none");
+		assertNull(service.getEntity("<html />"));
 	}
 
 	@Test

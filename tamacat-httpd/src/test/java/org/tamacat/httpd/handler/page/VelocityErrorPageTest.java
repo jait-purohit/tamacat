@@ -1,4 +1,4 @@
-package org.tamacat.httpd.page;
+package org.tamacat.httpd.handler.page;
 
 import static org.junit.Assert.*;
 
@@ -14,16 +14,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.exception.HttpException;
+import org.tamacat.httpd.handler.page.VelocityErrorPage;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 import org.tamacat.util.PropertyUtils;
 
 public class VelocityErrorPageTest {
 	private Properties props;
-	
+
 	@Before
 	public void setUp() throws Exception {
-    	props = PropertyUtils.getProperties("velocity.properties",
-    			  getClass().getClassLoader());
+		props = PropertyUtils.getProperties("velocity.properties",
+				getClass().getClassLoader());
 	}
 
 	@After
@@ -51,10 +52,17 @@ public class VelocityErrorPageTest {
 		try {
 			StringWriter writer = new StringWriter();
 			Template template = page.getTemplate("error500.vm");
-			
+
 			VelocityContext context = new VelocityContext();
-   			template.merge(context, writer);
+			template.merge(context, writer);
 			assertNotNull(writer.toString());
+		} catch (Exception e) {
+			fail();
+		}
+
+		try {
+			page.setCharset("UTF-8");
+			page.getTemplate("listings.vm");
 		} catch (Exception e) {
 			fail();
 		}

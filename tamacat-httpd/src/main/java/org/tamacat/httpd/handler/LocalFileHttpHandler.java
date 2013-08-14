@@ -21,7 +21,7 @@ import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
-import org.tamacat.httpd.page.VelocityListingsPage;
+import org.tamacat.httpd.handler.page.VelocityListingsPage;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;

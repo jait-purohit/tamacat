@@ -1,4 +1,4 @@
 /**
  * <p>Provides the classes for web pages. 
  */
-package org.tamacat.httpd.page;
+package org.tamacat.httpd.handler.page;

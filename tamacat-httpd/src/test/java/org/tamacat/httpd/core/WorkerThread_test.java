@@ -10,8 +10,8 @@ import org.apache.http.protocol.ResponseConnControl;
 import org.apache.http.protocol.ResponseContent;
 import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
-
 import org.tamacat.httpd.config.ServerConfig;
+import org.tamacat.httpd.handler.DefaultHttpService;
 import org.tamacat.httpd.jmx.BasicCounter;
 import org.tamacat.util.IOUtils;
 import org.tamacat.util.PropertyUtils;

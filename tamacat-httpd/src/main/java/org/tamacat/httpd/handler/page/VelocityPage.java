@@ -2,7 +2,7 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.page;
+package org.tamacat.httpd.handler.page;
 
 import java.io.StringWriter;
 import java.util.Locale;
