@@ -2,7 +2,7 @@
  * Copyright (c) 2011, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.lb;
+package org.tamacat.httpd.config.lb;
 
 import java.net.InetSocketAddress;
 import java.net.URL;
@@ -14,8 +14,8 @@ import org.apache.http.HttpHost;
 import org.tamacat.httpd.config.ReverseUrl;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceUrl;
+import org.tamacat.httpd.core.jmx.PerformanceCounter;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
-import org.tamacat.httpd.jmx.PerformanceCounter;
 
 /**
  * <p>It is service URL setting of the round robin type load balancer.

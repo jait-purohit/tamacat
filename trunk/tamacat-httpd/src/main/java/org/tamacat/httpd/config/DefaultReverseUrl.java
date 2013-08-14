@@ -9,8 +9,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.http.HttpHost;
-import org.tamacat.httpd.jmx.BasicCounter;
-import org.tamacat.httpd.jmx.PerformanceCounter;
+import org.tamacat.httpd.core.jmx.BasicCounter;
+import org.tamacat.httpd.core.jmx.PerformanceCounter;
 import org.tamacat.util.CloneUtils;
 
 /**

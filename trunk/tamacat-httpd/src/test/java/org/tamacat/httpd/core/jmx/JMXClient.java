@@ -2,7 +2,7 @@
  * Copyright (c) 2009, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.jmx;
+package org.tamacat.httpd.core.jmx;
 
 import java.io.IOException;
 import javax.management.MBeanServerConnection;

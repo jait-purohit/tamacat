@@ -19,7 +19,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.core.Worker;
-import org.tamacat.httpd.jmx.PerformanceCounter;
+import org.tamacat.httpd.core.jmx.PerformanceCounter;
 import org.tamacat.io.RuntimeIOException;
 import org.tamacat.log.DiagnosticContext;
 import org.tamacat.log.Log;

@@ -2,7 +2,7 @@
  * Copyright (c) 2011, TamaCat.org
  * All rights reserved.
  */
-package org.tamacat.httpd.lb;
+package org.tamacat.httpd.config.lb;
 
 import java.net.URL;
 import java.util.ArrayList;
