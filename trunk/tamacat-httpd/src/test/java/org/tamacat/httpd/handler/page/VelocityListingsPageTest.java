@@ -68,6 +68,14 @@ public class VelocityListingsPageTest {
 	}
 
 	@Test
+	public void testGetParameter() {
+		HttpRequest request = HttpObjectFactory.createHttpRequest("GET", "/test/test.html?id=123");
+		VelocityListingsPage page = new VelocityListingsPage(props);
+		String value = page.getParameter(request, "id");
+		assertEquals("123", value);
+	}
+
+	@Test
 	public void testSize() {
 		assertEquals("2 KB", String.format("%1$,3d KB", (long)Math.ceil(1025/1024d)).trim());
 		assertEquals("1 KB", String.format("%1$,3d KB", (long)Math.ceil(1/1024d)).trim());

@@ -22,6 +22,7 @@ import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceType;
 import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.exception.HttpException;
+import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.handler.ReverseProxyHandler;
@@ -31,13 +32,14 @@ import org.tamacat.util.PropertyUtils;
 
 public class ReverseProxyHandlerTest {
 
+	ServerConfig serverConfig;
 	ReverseProxyHandler handler;
 
 	@Before
 	public void setUp() throws Exception {
 		handler = new ReverseProxyHandler();
 
-		ServerConfig serverConfig = new ServerConfig(PropertyUtils.getProperties("server.properties"));
+		serverConfig = new ServerConfig(PropertyUtils.getProperties("server.properties"));
 		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
 
 		serviceUrl.setPath("/test/");
@@ -116,12 +118,19 @@ public class ReverseProxyHandlerTest {
 		assertNotNull(handler.getFileEntity(new File("./src/test/resources/htdocs/index.html")));
 	}
 
-	//@Test
+	@Test
 	public void testForwardRequest() {
 		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = createContext();
-		handler.forwardRequest(request, response, context);
+		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
+
+		handler.setServiceUrl(serviceUrl);
+		try {
+			handler.forwardRequest(request, response, context);
+		} catch (ServiceUnavailableException e) {
+			assertEquals("reverseUrl is null.", e.getMessage());
+		}
 	}
 
 	@Test

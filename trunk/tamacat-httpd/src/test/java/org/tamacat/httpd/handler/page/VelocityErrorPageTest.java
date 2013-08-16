@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
+import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.handler.page.VelocityErrorPage;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 import org.tamacat.util.PropertyUtils;
@@ -82,5 +83,11 @@ public class VelocityErrorPageTest {
 		HttpException exception = new NotFoundException();
 		String page = template.getErrorPage(request, response, exception);
 		assertNotNull(page);
+	}
+
+	@Test
+	public void testGetDefaultErrorHtml() {
+		VelocityErrorPage template = new VelocityErrorPage(props);
+		template.getDefaultErrorHtml(new ServiceUnavailableException());
 	}
 }
