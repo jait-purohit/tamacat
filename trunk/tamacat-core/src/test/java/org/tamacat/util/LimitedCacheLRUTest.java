@@ -9,17 +9,19 @@ import org.junit.Test;
 public class LimitedCacheLRUTest {
 
 	LimitedCacheLRU<String, CacheImpl> cache;
-	
+
 	static class CacheImpl implements LimitedCacheObject {
+		long created = System.currentTimeMillis();
+
 		@Override
 		public boolean isCacheExpired(long expire) {
-			return false;
+			return System.currentTimeMillis() - created > expire;
 		}
 	}
-	
+
 	@Before
 	public void setUp() throws Exception {
-		cache = new LimitedCacheLRU<String, CacheImpl>(5,10);
+		cache = new LimitedCacheLRU<>(5, 10);
 	}
 
 	@After
@@ -33,8 +35,17 @@ public class LimitedCacheLRUTest {
 	}
 
 	@Test
-	public void testLimitedCacheLRU() {
-		cache = new LimitedCacheLRU<String, CacheImpl>(5,10);
+	public void testLimitedCacheLRU() throws Exception {
+
+		cache.put("test", new CacheImpl());
+		assertNotNull(cache.get("test"));
+		Thread.sleep(100);
+		assertNull(cache.get("test"));
+
+		cache = new LimitedCacheLRU<String, CacheImpl>(5, 1000);
+		cache.put("test", new CacheImpl());
+		assertNotNull(cache.get("test"));
+		assertNotNull(cache.get("test"));
 	}
 
 }
