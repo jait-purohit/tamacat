@@ -25,42 +25,53 @@ import org.tamacat.log.impl.NoneDiagnosticContext;
 
 public class LogFactoryTest {
 
-    Log logger;
+	Log logger;
 
-    @Before
-    public void setUp() throws Exception {
-        logger = LogFactory.getLog(LogFactoryTest.class);
-    }
+	@Before
+	public void setUp() throws Exception {
+		logger = LogFactory.getLog(LogFactoryTest.class);
+	}
 
-    @Test
-    public void testDebugString() {
-        logger.debug("test");
-    }
+	@Test
+	public void testDebugString() {
+		logger.debug("test");
+	}
 
-    @Test
-    public void testDebugStringStringArray() {
-        logger.debug("arg0=${0}, arg1=${1}", "one", "two");
-    }
+	@Test
+	public void testDebugStringStringArray() {
+		logger.debug("arg0=${0}, arg1=${1}", "one", "two");
+	}
 
-    @Test
-    public void testIsEnabled() {
-        assertTrue(logger.isFatalEnabled());
-        assertTrue(logger.isErrorEnabled());
-        assertTrue(logger.isWarnEnabled());
-        assertTrue(logger.isInfoEnabled());
-        assertTrue(logger.isDebugEnabled());
-        assertTrue(logger.isTraceEnabled());
-    }
-    
-    @Test
-    public void testLoadLogger() {
-    	assertTrue(LogFactory.SELF.loadLogger("test") instanceof Log4jLogger);
-    	
-    }
-    
-    @Test
-    public void testGetDiagnosticContext() {
-    	assertTrue(LogFactory.getDiagnosticContext(new Log4jLogger("test")) instanceof Log4jDiagnosticContext);
-    	assertTrue(LogFactory.getDiagnosticContext(null) instanceof NoneDiagnosticContext);
-    }
+	@Test
+	public void testIsEnabled() {
+		assertTrue(logger.isFatalEnabled());
+		assertTrue(logger.isErrorEnabled());
+		assertTrue(logger.isWarnEnabled());
+		assertTrue(logger.isInfoEnabled());
+		assertTrue(logger.isDebugEnabled());
+		assertTrue(logger.isTraceEnabled());
+	}
+
+	@Test
+	public void testGetLog() {
+		Log l1 = LogFactory.getLog("test");
+		Log l2 = LogFactory.getLog("test");
+		assertSame(l1, l2);
+	}
+
+	@Test
+	public void testLoadLogger() {
+		assertTrue(LogFactory.SELF.loadLogger("test") instanceof Log4jLogger);
+
+		Log l1 = LogFactory.SELF.loadLogger("test");
+		Log l2 = LogFactory.SELF.loadLogger("test");
+		assertNotSame(l1, l2);
+	}
+
+
+	@Test
+	public void testGetDiagnosticContext() {
+		assertTrue(LogFactory.getDiagnosticContext(new Log4jLogger("test")) instanceof Log4jDiagnosticContext);
+		assertTrue(LogFactory.getDiagnosticContext(null) instanceof NoneDiagnosticContext);
+	}
 }
