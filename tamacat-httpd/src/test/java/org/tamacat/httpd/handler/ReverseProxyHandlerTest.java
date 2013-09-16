@@ -12,6 +12,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.HttpVersion;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.protocol.HttpContext;
 import org.junit.After;
@@ -47,8 +48,8 @@ public class ReverseProxyHandlerTest {
 		serviceUrl.setHost(new URL("http://localhost/test/"));
 		DefaultReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
 		reverseUrl.setReverse(new URL("http://localhost:8080/examples/"));
-		serviceUrl.setReverseUrl(reverseUrl);
 
+		serviceUrl.setReverseUrl(reverseUrl);
 		handler.setServiceUrl(serviceUrl);
 	}
 
@@ -69,7 +70,7 @@ public class ReverseProxyHandlerTest {
 
 	@Test
 	public void testHandle() {
-		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
+		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html", HttpVersion.HTTP_1_0);
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = createContext();
 
@@ -93,12 +94,11 @@ public class ReverseProxyHandlerTest {
 					HttpContext context) {
 			}
 		});
-		handler.handle(request, response, context);
 	}
 
 	//@Test
 	public void testDoRequest() throws HttpException, IOException {
-		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
+		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html", HttpVersion.HTTP_1_0);
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = createContext();
 
@@ -120,7 +120,7 @@ public class ReverseProxyHandlerTest {
 
 	@Test
 	public void testForwardRequest() {
-		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html");
+		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html", HttpVersion.HTTP_1_0);
 		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
 		HttpContext context = createContext();
 		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
@@ -128,6 +128,7 @@ public class ReverseProxyHandlerTest {
 		handler.setServiceUrl(serviceUrl);
 		try {
 			handler.forwardRequest(request, response, context);
+			fail();
 		} catch (ServiceUnavailableException e) {
 			assertEquals("reverseUrl is null.", e.getMessage());
 		}

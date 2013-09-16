@@ -6,20 +6,15 @@ package org.tamacat.httpd.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.socket.PlainSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
@@ -33,7 +28,6 @@ import org.apache.http.protocol.RequestExpectContinue;
 import org.apache.http.protocol.RequestTargetHost;
 import org.apache.http.protocol.RequestUserAgent;
 import org.tamacat.httpd.config.ReverseUrl;
-import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.core.HttpProcessorBuilder;
 import org.tamacat.httpd.core.jmx.PerformanceCounter;
@@ -57,12 +51,10 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 
 	protected HttpRequestExecutor httpexecutor;
 	protected HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
-	protected PlainSocketFactory socketFactory = PlainSocketFactory.getSocketFactory();
 	protected String proxyAuthorizationHeader = "X-ReverseProxy-Authorization";
 	protected String proxyOrignPathHeader = "X-ReverseProxy-Origin-Path"; //v1.1
 	protected int connectionTimeout = 30000;
 	protected int socketBufferSize = 8192;
-	protected SocketConfig config;
 
 	/**
 	 * <p>Default constructor.
@@ -70,26 +62,6 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	public ReverseProxyHandler() {
 		this.httpexecutor = new HttpRequestExecutor();
 		setDefaultHttpRequestInterceptor();
-	}
-
-	/**
-	 * <p>Get the backend server configuration parameters
-	 * from the server.properties.
-	 *
-	 * <p> default value is:
-	 * <pre>
-	 * BackEndSocketTimeout=5000
-	 * BackEndConnectionTimeout=10000
-	 * BackEndSocketBufferSize=8192
-	 * </pre>
-	 */
-	@Override
-	public void setServiceUrl(ServiceUrl serviceUrl) {
-		super.setServiceUrl(serviceUrl);
-		config = SocketConfig.custom().setSoTimeout(
-			serviceUrl.getServerConfig().getParam("BackEndSocketTimeout", 5000)).build();
-		connectionTimeout = serviceUrl.getServerConfig().getParam("BackEndConnectionTimeout", 30000);
-		socketBufferSize = serviceUrl.getServerConfig().getParam("BackEndSocketBufferSize", (8*1024));
 	}
 
 	@Override
@@ -156,14 +128,17 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		}
 		try {
 			context.setAttribute("reverseUrl", reverseUrl);
-			Socket outsocket = socketFactory.createSocket(context);
-
-			InetAddress remoteAddress = InetAddress.getByName(reverseUrl.getTargetAddress().getHostName());
-			InetSocketAddress remote = new InetSocketAddress(remoteAddress, reverseUrl.getTargetAddress().getPort());
-			HttpHost target = reverseUrl.getTargetHost();
-			socketFactory.connectSocket(connectionTimeout, outsocket, target, remote, null, context);
-
-			DefaultBHttpClientConnection conn = new DefaultBHttpClientConnection(socketBufferSize);
+	        Socket outsocket = new Socket(reverseUrl.getTargetAddress().getAddress(),
+	        		reverseUrl.getTargetAddress().getPort());
+	     
+            // Get the backend server configuration parameters from the server.properties.
+            // default value is:
+            //  - BackEndSocketBufferSize=8192
+	        //  - BackEndSocketTimeout=5000
+            //  - BackEndConnectionTimeout=10000
+			DefaultBHttpClientConnection conn = new DefaultBHttpClientConnection(
+					serviceUrl.getServerConfig().getParam("BackEndSocketBufferSize", 8192));
+			conn.setSocketTimeout(serviceUrl.getServerConfig().getParam("BackEndSocketTimeout", 5000));
 			context.setAttribute(HTTP_OUT_CONN, conn); //WokerThread close the client connection.
 			conn.bind(outsocket);
 
@@ -174,7 +149,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 
 			ReverseHttpRequest targetRequest =
 					ReverseHttpRequestFactory.getInstance(request, response, context, reverseUrl);
-
+			
 			targetRequest.setHeader(proxyOrignPathHeader, serviceUrl.getPath()); //v1.1
 
 			//forward remote user.
