@@ -20,7 +20,7 @@
   <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" />
   
   <bean id="DefaultHandler"
-     class="org.tamacat.httpd.core.LocalFileHttpHandler" singleton="false">
+     class="org.tamacat.httpd.handler.LocalFileHttpHandler" singleton="false">
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
@@ -29,7 +29,7 @@
   <bean id="CifsProxyHandler"
      class="org.tamacat.cifs.CifsProxyHandler" singleton="false">
     <property name="baseUrl">
-      <value>smb://192.168.10.10/public/</value>
+      <value>smb://192.168.10.160/public/</value>
     </property>
     <property name="username">
       <value>guest</value>

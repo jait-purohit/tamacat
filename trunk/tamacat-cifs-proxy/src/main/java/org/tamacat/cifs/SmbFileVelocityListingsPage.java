@@ -1,6 +1,7 @@
 package org.tamacat.cifs;
 
 import java.io.StringWriter;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -14,7 +15,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.tamacat.httpd.page.VelocityListingsPage;
+import org.tamacat.httpd.handler.page.VelocityListingsPage;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
@@ -36,12 +37,12 @@ public class SmbFileVelocityListingsPage extends VelocityListingsPage {
 	public String getListingsPage(
 			HttpRequest request, HttpResponse response, 
 			VelocityContext context, SmbFile file) {
-		context.put("url", request.getRequestLine().getUri());
-		if (request.getRequestLine().getUri().lastIndexOf('/') >= 0) {
-			context.put("parent", "../");
-		}
 		
 		try {
+			context.put("url", URLDecoder.decode(request.getRequestLine().getUri(),"UTF-8"));
+			if (request.getRequestLine().getUri().lastIndexOf('/') >= 0) {
+				context.put("parent", "../");
+			}
 			SmbFile[] smbfiles = file.listFiles(new SmbFileFilter() {
 				@Override
 				public boolean accept(SmbFile pathname) {
