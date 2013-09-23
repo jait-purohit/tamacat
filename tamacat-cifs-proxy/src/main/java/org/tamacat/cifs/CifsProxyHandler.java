@@ -13,7 +13,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 import org.apache.velocity.VelocityContext;
 import org.tamacat.httpd.config.ServiceUrl;
-import org.tamacat.httpd.core.LocalFileHttpHandler;
+import org.tamacat.httpd.handler.LocalFileHttpHandler;
 import org.tamacat.httpd.exception.ForbiddenException;
 import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
@@ -36,9 +36,7 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 	protected String username;
 	protected String password;
 
-	public CifsProxyHandler() {
-
-	}
+	public CifsProxyHandler() {}
 	
 	public void setBaseUrl(String baseUrl) {
 		this.baseUrl = baseUrl;

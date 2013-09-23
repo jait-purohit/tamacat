@@ -9,8 +9,9 @@ import java.util.Properties;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
@@ -31,17 +32,17 @@ public class CifsFileSearch {
 		List<SearchResult> files = new ArrayList<SearchResult>();
 	    IndexReader reader = null;
 	    try {
-	    	reader = IndexReader.open(FSDirectory.open(new File(indexDir)));
+	    	reader = DirectoryReader.open(FSDirectory.open(new File(indexDir)));
 	    
 		    IndexSearcher searcher = new IndexSearcher(reader);
-		    Analyzer analyzer = new CJKAnalyzer(Version.LUCENE_35);
+		    Analyzer analyzer = new CJKAnalyzer(Version.LUCENE_44);
 		    
-		    QueryParser parser = new QueryParser(Version.LUCENE_35, key, analyzer);
-		    
+		    QueryParser parser = new QueryParser(Version.LUCENE_44, key, analyzer);
+		    int max = 100;
 		    //Query query = new TermQuery(new Term(key, value));
-		    TopDocs rs = searcher.search(parser.parse(value), null, 100);
+		    TopDocs rs = searcher.search(parser.parse(value), null, max);
 		    //System.out.println(rs.totalHits);
-		    for (int i=0; i<rs.totalHits; i++) {
+		    for (int i=0; i<rs.scoreDocs.length; i++) {
 		    	//Query query = parser.parse("");
 		    	Document firstHit = searcher.doc(rs.scoreDocs[i].doc);
 		    	//System.out.print(firstHit.get("folder"));

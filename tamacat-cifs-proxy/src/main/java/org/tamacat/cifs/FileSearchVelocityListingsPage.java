@@ -8,7 +8,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.tamacat.httpd.page.VelocityListingsPage;
+import org.tamacat.httpd.handler.page.VelocityListingsPage;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 
