@@ -11,6 +11,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.IndexDeletionPolicy;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -44,12 +45,12 @@ public class CifsCrawler {
 	Directory dir;
 	IndexWriter writer;
 	IndexDeletionPolicy deletionPolicy = new KeepOnlyLastCommitDeletionPolicy(); 
-	Analyzer analyzer = new CJKAnalyzer(Version.LUCENE_35);
+	Analyzer analyzer = new CJKAnalyzer(Version.LUCENE_44);
 	
 	public CifsCrawler(String indexDir) {
 		try {
 			dir = FSDirectory.open(new File(indexDir));//new RAMDirectory();
-			IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_35, analyzer);
+			IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
 			iwc.setOpenMode(OpenMode.CREATE);
 			writer = new IndexWriter(dir, iwc);
 		} catch (IOException e) {
