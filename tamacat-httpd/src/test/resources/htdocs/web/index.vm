@@ -1,39 +1,45 @@
 #parse("htdocs/common/html-start.vm")
 <body>
-  <div id="contents">
-    <div id="header"><h1>TOP</h1></div>
-    
-    #parse("htdocs/common/left-menu.vm")
-    <div id="main">
-      <h1>Top page.</h1>
-      <p>This is top page.</p>
-      <p>URL: ${url}</p>
-      
-    <h3>Welcome</h3>
-    <p>tamacat-httpd is a open source Java Web Server software, Powered by 
-      "<a href="http://hc.apache.org/" title="Go to Apache HttpComponents project site." target="_blank">
-        <span>Apache HttpComponents</span>
-      </a>". 
-    </p>
+    <div id="wrap">
+#parse("htdocs/common/top-menu.vm")
 
-    <h3>Feature</h3>
-    <ul>
-      <li>Supported HTTP and HTTPS protocols.</li>
-      <li>Supported Basic, Digest, Form-based and WSSE authentication.</li>
-      <li>Container design of URL path, such as Servlet Container.</li>
-      <li>Prepared containers: Reverse Proxy, Velocity Template Server and Simple local file Web Server.</li>
-      <li>Required Java Platform, Standard Edition 7 (JDK7).</li>
-    </ul>
+      <div class="container-fluid">
+        
+		<div class="row">
+			<div id="left-menu" class="span2 bs-docs-sidebar">
+				#parse("htdocs/common/left-menu.vm")
+			</div>
+			<div class="span10">
+				
+				<h1>Welcome</h1>
+				<p>tamacat-httpd is a open source Java Web Server software, Powered by 
+					"<a href="http://hc.apache.org/" title="Go to Apache HttpComponents project site." target="_blank">
+					<span>Apache HttpComponents</span></a>". 
+				</p>
+				
+				<h2>Feature</h2>
+				<p>
+					<ul>
+						<li>Supported HTTP and HTTPS protocols.</li>
+						<li>Supported Basic, Digest, Form-based and WSSE authentication.</li>
+						<li>Container design of URL path, such as Servlet Container.</li>
+						<li>Prepared containers: Reverse Proxy, Velocity Template Server and Simple local file Web Server.</li>
+						<li>Required Java Platform, Standard Edition 7 (JDK7).</li>
+					</ul>
+				</p>
+				
+				<h2>License</h2>
+				<p>tamacat-httpd is licensed under the terms of the 
+					<a href="http://www.apache.org/licenses/LICENSE-2.0.html" target="_blank">
+						<span>Apache License, Version 2.0.</span>
+					</a>
+				</p>
+			</div>
+		</div>
 
-    <h3>License</h3>
-    <p>tamacat-httpd is licensed under the terms of the 
-      <a href="http://www.apache.org/licenses/LICENSE-2.0.html" target="_blank">
-        <span>Apache License, Version 2.0.</span>
-      </a>
-    </p>
-   </div>
-    
-    #parse("htdocs/common/footer.vm")
-  </div>
+	</div>
+	<div id="push"></div>
+</div>
+#parse("htdocs/common/footer.vm")
 </body>
 #parse("htdocs/common/html-end.vm")

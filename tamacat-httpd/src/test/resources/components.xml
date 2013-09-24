@@ -55,7 +55,7 @@
 			<ref bean="AuthComponent" />
 		</property>
 		<property name="freeAccessExtensions">
-			<value>.css,.js</value>
+			<value>.css,.js,.map</value>
 		</property>
 	</bean>
 

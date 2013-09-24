@@ -149,7 +149,7 @@
 					<show>protected</show>
 					<nohelp>true</nohelp>
 					<locale>en</locale>
-					<bottom>Copyright&amp;copy; 2012, tamacat.org</bottom>
+					<bottom>Copyright&amp;copy; 2013, tamacat.org</bottom>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -171,13 +171,13 @@
 				<version>2.8</version>
 				<configuration>
 					<show>protected</show>
-					<source>1.6</source>
-					<encoding>MS932</encoding>
+					<source>1.7</source>
+					<encoding>UTF-8</encoding>
 					<docencoding>UTF-8</docencoding>
 					<charset>UTF-8</charset>
 					<locale>en</locale>
 					<links>
-						<link>http://java.sun.com/javase/6/docs/api/</link>
+						<link>http://docs.oracle.com/javase/7/docs/api/</link>
 					</links>
 				</configuration>
 			</plugin>

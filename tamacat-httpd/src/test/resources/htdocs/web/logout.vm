@@ -1,15 +1,17 @@
 #parse("htdocs/common/html-start.vm")
-<body>
-  <div id="contents">
-    <div id="header"><h1>LOGOUT</h1></div>
-    <div id="main" style="border:0px">
-      <h1>LOGOUT</h1>
+
+<body data-spy="scroll" data-target=".bs-docs-sidebar">
+<div id="wrap">
+	#parse("htdocs/common/top-menu.vm")
+
+	<div class="container-fluid">
+	
+    <h1>LOGOUT</h1>
       <p>
         <a href="${contextRoot}/login.html">Login</a>
       </p>
-    </div>
-    <div id="menu"></div>
-    #parse("htdocs/common/footer.vm")
   </div>
+</div>
+#parse("htdocs/common/footer.vm")
 </body>
 #parse("htdocs/common/html-end.vm")

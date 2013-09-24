@@ -1,12 +1,7 @@
-  <div id="left-menu">
-    <h2>MENU</h2>
-    <ul>
-      <li><a href="${contextRoot}/index.html"><span>TOP</span></a></li>
-      <li><a href="${contextRoot}/download.html"><span>DOWNLOAD</span></a></li>
-    </ul>
-
-    <h2>LOGOUT</h2>
-    <ul>
-      <li><a href="${contextRoot}/logout.html"><span>Logout</span></a></li>
-    </ul>
-  </div>
+	<p>
+		<ul class="nav nav-tabs bs-docs-sidenav nav-stacked">
+			<li><a href="${contextRoot}/index.html">TOP <i class="icon-chevron-right"></i></a></li>
+			<li><a href="${contextRoot}/download.html">DOWNLOAD <i class="icon-chevron-right"></i></a></li>
+			<li><a href="${contextRoot}/logout.html">Logout <i class="icon-chevron-right"></i></a></li>
+		</ul>
+	</p>

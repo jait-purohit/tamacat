@@ -1,0 +1,42 @@
+@charset "utf-8";
+/*
+body,h1,h2,h3,h4,h5,h6,p,pre,button,caption,input,option,select,textarea,dl,ol,ul,table,tr,
+ form,fieldset,legend,address,blockquote,dd,dt,li,td,th,div {
+    font-size: 14px;
+    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+*/
+
+h1 { font-size:1.6em; }
+h2 { font-size:1.4em; }
+h3 { font-size:1.2em; }
+h4 { font-size:1.1em; }
+h5 { font-size:1.0em; }
+h6 { font-size:0.95em; }
+
+input[type="checkbox"],input[type="radio"] { display:inline; /* vertical-align:bottom; */ margin-left:5px; }
+label { font-weight: normal; display:inline; }
+
+select,textarea,input[type="text"],input[type="password"],input[type="file"],
+input[type="checkbox"],input[type="radio"],input[type="number"] {
+	padding:0.2em; width:auto; margin-bottom:2px;
+	-webkit-border-radius:0px; -moz-border-radius:0px; border-radius:0px;
+}
+.label { margin-left:4px; }
+p { margin: 0 0 0.1em; }
+.table thead>tr>th, .table tbody>tr>th, .table tfoot>tr>th,
+.table thead>tr>td, .table tbody>tr>td, .table tfoot>tr>td { 
+	padding:0.1em 0.4em; vertical-align:middle;
+}
+.row-fluid { padding:0.5em 0.1em; }
+
+a { color:#2a6496; }
+a:hover, a:focus { color:#2a6496; }
+
+hr { border:0; height:0; border-top:1px solid rgba(0, 0, 0, 0.1); border-bottom:1px solid rgba(255, 255, 255, 0.3); }
+
+#left-menu { margin-top:1em; }
+
+.bs-docs-sidenav .icon-chevron-right { float: right;
+margin-top: 2px; margin-right: -6px;
+}
