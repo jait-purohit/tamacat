@@ -1,25 +1,38 @@
 #parse("htdocs/common/html-start.vm")
-<body>
-  <div id="contents">
-    <div id="header"><h1>DOWNLOAD</h1></div>
-    #parse("htdocs/common/left-menu.vm")
-    <div id="main">
-      <h1>Download page.</h1>
-      <ul>
-        <li>Download this software.<br />
-        <a href="http://code.google.com/p/tamacat/downloads/list" target="_blank">
-          <span>http://code.google.com/p/tamacat/downloads/list</span></a>
-        </li>
-      </ul>
-      <br />
-      <ul>
-        <li>SVN Repository. (read-only)<br />
-          <a href="http://tamacat.googlecode.com/svn/trunk/" target="_blank">
-           <span>http://tamacat.googlecode.com/svn/trunk/</span></a>
-        </li>
-      </ul>
+<body data-spy="scroll" data-target=".bs-docs-sidebar">
+	
+<div id="wrap">
+	#parse("htdocs/common/top-menu.vm")
+
+	<div class="container-fluid">
+		<div class="row">
+			<div id="left-menu" class="span2 bs-docs-sidebar">
+				#parse("htdocs/common/left-menu.vm")
+			</div>
+			<div class="span10">
+			
+			  <h1>DOWNLOAD</h1>
+			  <p>
+			      <ul>
+			        <li>Download this software.<br />
+			        <a href="http://code.google.com/p/tamacat/downloads/list" target="_blank">
+			          <span>http://code.google.com/p/tamacat/downloads/list</span></a>
+			        </li>
+			      </ul>
+		      </p>
+		      <p>
+			      <ul>
+			        <li>SVN Repository. (read-only)<br />
+			          <a href="http://tamacat.googlecode.com/svn/trunk/" target="_blank">
+			           <span>http://tamacat.googlecode.com/svn/trunk/</span></a>
+			        </li>
+			      </ul>
+		      </p>
+	    </div>
+	  </div>
     </div>
-    #parse("htdocs/common/footer.vm")
-  </div>
+    <div id="push"></div>
+</div>	  
+#parse("htdocs/common/footer.vm")
 </body>
 #parse("htdocs/common/html-end.vm")
