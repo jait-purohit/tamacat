@@ -1,7 +1,7 @@
 	<p>
 		<ul class="nav nav-tabs bs-docs-sidenav nav-stacked">
-			<li><a href="${contextRoot}/index.html">TOP <i class="icon-chevron-right"></i></a></li>
-			<li><a href="${contextRoot}/download.html">DOWNLOAD <i class="icon-chevron-right"></i></a></li>
-			<li><a href="${contextRoot}/logout.html">Logout <i class="icon-chevron-right"></i></a></li>
+			<li><a href="${contextRoot}/index.html">Home <i class="icon-chevron-right"></i></a></li>
+			<li><a href="${contextRoot}/download.html">Download <i class="icon-chevron-right"></i></a></li>
+			<li><a href="${contextRoot}/about.html">Overview <i class="icon-chevron-right"></i></a></li>
 		</ul>
 	</p>
