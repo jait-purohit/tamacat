@@ -23,7 +23,7 @@ input[type="checkbox"],input[type="radio"],input[type="number"] {
 	-webkit-border-radius:0px; -moz-border-radius:0px; border-radius:0px;
 }
 .label { margin-left:4px; }
-p { margin: 0 0 0.1em; }
+p { margin:0 0 0.1em; }
 .table thead>tr>th, .table tbody>tr>th, .table tfoot>tr>th,
 .table thead>tr>td, .table tbody>tr>td, .table tfoot>tr>td { 
 	padding:0.1em 0.4em; vertical-align:middle;
@@ -37,6 +37,16 @@ hr { border:0; height:0; border-top:1px solid rgba(0, 0, 0, 0.1); border-bottom:
 
 #left-menu { margin-top:1em; }
 
-.bs-docs-sidenav .icon-chevron-right { float: right;
-margin-top: 2px; margin-right: -6px;
-}
+.bs-docs-sidenav .icon-chevron-right { float:right; margin-top:2px; margin-right:-6px; }
+
+.com { color:#93A1A1; }
+.lit { color:#195F91; }
+.pun, .opn, .clo { color:#93A1A1; }
+.fun { color:#DC322F; }
+.str, .atv { color:#DD1144; }
+.kwd, .linenums .tag { color:#1E347B; }
+.typ, .atn, .dec, .var { color:teal; }
+.pln { color:#48484C; }
+.prettyprint { background-color:#F7F7F9; border:1px solid #E1E1E8; padding:8px; }
+ol.linenums { margin:0 0 0 33px; }
+ol.linenums li { color:#BEBEC5; line-height:18px; padding-left:12px; text-shadow:0 1px 0 #FFFFFF; }

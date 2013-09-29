@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
 	<bean id="AuthComponent"
-		 class="org.tamacat.httpd.examples.UserAuthComponent">
+		class="org.tamacat.httpd.examples.UserAuthComponent">
 		<property name="username">
 			<value>admin</value>
 		</property>
@@ -20,7 +20,7 @@
 	</bean>
 
 	<bean id="BasicAuthFilter"
-		 class="org.tamacat.httpd.auth.BasicAuthProcessor">
+		class="org.tamacat.httpd.auth.BasicAuthProcessor">
 		<property name="authComponent">
 			<ref bean="AuthComponent" />
 		</property>
@@ -36,23 +36,26 @@
 	</bean>
 
 	<bean id="DigestAuthFilter"
-		 class="org.tamacat.httpd.auth.DigestAuthProcessor">
+		class="org.tamacat.httpd.auth.DigestAuthProcessor">
 		<property name="authComponent">
 			<ref bean="AuthComponent" />
 		</property>
 	</bean>
 
 	<bean id="WSSEAuthFilter"
-		 class="org.tamacat.httpd.auth.WSSEAuthProcessor">
+		class="org.tamacat.httpd.auth.WSSEAuthProcessor">
 		<property name="authComponent">
 			<ref bean="AuthComponent" />
 		</property>
 	</bean>
 
 	<bean id="FormAuthFilter"
-		 class="org.tamacat.httpd.auth.FormAuthProcessor">
+		class="org.tamacat.httpd.auth.FormAuthProcessor">
 		<property name="authComponent">
 			<ref bean="AuthComponent" />
+		</property>
+		<property name="loginPageUrl">
+			<value>/login.html</value>
 		</property>
 		<property name="freeAccessExtensions">
 			<value>.css,.js,.map</value>
@@ -66,7 +69,7 @@
 	</bean>
 
 	<bean id="AccessControlFilter"
-		 class="org.tamacat.httpd.examples.AccessControlFilter">
+		class="org.tamacat.httpd.examples.AccessControlFilter">
 		<property name="cacheSize">
 			<value>100</value>
 		</property>
@@ -78,7 +81,7 @@
 	<bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" />
 
 	<bean id="VelocityHandler"
-		 class="org.tamacat.httpd.handler.VelocityHttpHandler">
+		class="org.tamacat.httpd.handler.VelocityHttpHandler">
 		<property name="docsRoot">
 			<value>${server.home}/src/test/resources/htdocs/web/</value>
 		</property>
@@ -91,7 +94,7 @@
 	</bean>
 
 	<bean id="DefaultHandler"
-		 class="org.tamacat.httpd.handler.LocalFileStreamingHttpHandler">
+		class="org.tamacat.httpd.handler.LocalFileStreamingHttpHandler">
 		<property name="httpFilter">
 			<ref bean="AccessLogFilter" />
 		</property>
@@ -104,7 +107,7 @@
 	</bean>
 
 	<bean id="DefaultHandler2"
-		 class="org.tamacat.httpd.handler.LocalFileHttpHandler">
+		class="org.tamacat.httpd.handler.LocalFileHttpHandler">
 		<property name="docsRoot">
 			<value>${server.home}/src/test/resources/htdocs2/</value>
 		</property>
@@ -117,7 +120,7 @@
 	</bean>
 
 	<bean id="ReverseHandler"
-		 class="org.tamacat.httpd.handler.ReverseProxyHandler">
+		class="org.tamacat.httpd.handler.ReverseProxyHandler">
 		<property name="httpFilter">
 			<ref bean="AccessLogFilter" />
 		</property>
