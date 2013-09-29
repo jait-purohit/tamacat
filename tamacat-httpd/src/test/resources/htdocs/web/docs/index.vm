@@ -1,0 +1,96 @@
+#parse("htdocs/common/html-start.vm")
+<body data-spy="scroll" data-target=".bs-docs-sidebar">
+
+<div id="wrap">
+	#parse("htdocs/common/top-menu.vm")
+
+	<div class="container-fluid">
+		<div class="row">
+			<div id="left-menu" class="span2 bs-docs-sidebar">
+				#parse("htdocs/common/left-menu.vm")
+			</div>
+			<div class="span10">
+
+				<h1>Introduction</h1>
+
+				<h2>Download</h2>
+				<p>Download the archive file and extract.
+					<a href="http://code.google.com/p/tamacat/downloads/list">http://code.google.com/p/tamacat/downloads/list</a>
+				</p>
+
+				<h2>Configuring httpd</h2>
+				<p>
+				Please make the following configuration files for the place where in CLASSPATH.
+				(It makes it referring to tamacat-httpd/conf.)
+				</p>
+
+				<ul>
+					<li><a href="#httpd.xml">httpd.xml</a></li>
+					<li><a href="#httpd.xml">server.properties</a></li>
+					<li><a href="#httpd.xml">components.xml</a></li>
+					<li><a href="#httpd.xml">url-config.xml</a></li>
+					<li><a href="#httpd.xml">velocity.properties (use by default it)</a></li>
+					<li><a href="#httpd.xml">log4j.properties (use by default it)</a></li>
+					<li><a href="#httpd.xml">mime-types.properties (option)</a></li>
+				</ul>
+
+				<h3 id="httpd.xml">httpd.xml (required)</h3>
+				<pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans&gt;
+	&lt;bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor"&gt;
+		&lt;property name="contentType"&gt;
+			&lt;value&gt;html,xml,css,javascript&lt;/value&gt;
+		&lt;/property&gt;
+	&lt;/bean&gt;
+	&lt;bean id="server" class="org.tamacat.httpd.core.HttpEngine"&gt;
+		&lt;property name="propertiesName"&gt;
+			&lt;value&gt;server.properties&lt;/value&gt;
+		&lt;/property&gt;
+		&lt;property name="httpResponseInterceptor"&gt;
+			&lt;ref bean="gzip" /&gt;
+		&lt;/property&gt;
+	&lt;/bean&gt;
+&lt;/beans&gt;
+				</code></pre>
+
+				<h3 id="server.properties">server.properties (required)</h3>
+				<pre class="prettyprint linenums"><code class="language-xml">ServerName=tamacat-httpd
+Port=80
+
+https=false
+https.keyStoreFile=test.keystore
+https.keyPassword=nopassword
+https.keyStoreType=JKS
+https.protocol=TLS
+https.clientAuth=false
+
+MaxServerThreads=0
+ServerSocketTimeout=15000
+ConnectionTimeout=15000
+ServerSocketBufferSize=8192
+WorkerThreadName=httpd
+
+BackEndSocketTimeout=15000
+BackEndConnectionTimeout=15000
+BackEndSocketBufferSize=8192
+
+url-config.file=url-config.xml
+components.file=components.xml
+
+#JMX.server-url=service:jmx:rmi:///jndi/rmi://localhost:1099/httpd
+#JMX.objectname=org.tamacat.httpd:type=HttpEngine
+#JMX.rmi.port=1099
+</pre>
+			</div>
+		</div>
+		</div>
+		<div id="push"></div>
+</div>
+<script>
+$(document).ready(function() {
+	prettyPrint();
+});
+</script>
+#parse("htdocs/common/footer.vm")
+</body>
+#parse("htdocs/common/html-end.vm")
