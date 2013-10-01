@@ -1,17 +1,17 @@
-tamacat-httpd Tomcat7 integration
+tamacat-httpd Tomcat integration
 =================================
-- Reverse proxy with Tomcat7 embedded integration.
-- tamacat-httpd and Tomcat7 works in the same process. 
+- Reverse proxy with Tomcat embedded integration.
+- tamacat-httpd and Tomcat works in the same process. 
 - Implements TomcatHandler based on ReverseProxyHandler.
 
 JARS
 =====
-lib/tamacat-httpd-tomcat7-1.0.jar
+lib/tamacat-httpd-tomcat8-0.0.jar
 
 Requires third party jars:
-- lib/tomcat-embed-core-7.0.30.jar
-- lib/tomcat-embed-jasper-7.0.30.jar
-- lib/tomcat-embed-logging-log4j-7.0.30.jar
+- lib/tomcat-embed-core-8.0.0.jar
+- lib/tomcat-embed-jasper-8.0.0.jar
+- lib/tomcat-embed-logging-log4j-8.0.0.jar
 - lib/ecj-3.7.2.jar
 
 

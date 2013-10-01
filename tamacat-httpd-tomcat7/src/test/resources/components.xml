@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-  <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" singleton="false" />
+  <bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" />
   
   <bean id="VelocityHandler" 
-     class="org.tamacat.httpd.core.VelocityHttpHandler" singleton="false">
+     class="org.tamacat.httpd.core.VelocityHttpHandler">
     <property name="docsRoot">
       <value>${server.home}/src/test/resources/htdocs</value>
     </property>
@@ -12,7 +12,7 @@
     </property>
   </bean>
   
-  <bean id="TomcatHandler" class="org.tamacat.httpd.tomcat.TomcatHandler" singleton="false">
+  <bean id="TomcatHandler" class="org.tamacat.httpd.tomcat.TomcatHandler">
     <property name="httpFilter">
       <ref bean="AccessLogFilter" />
     </property>
@@ -29,8 +29,28 @@
       <ref bean="html" />
     </property>
   </bean>
-  
-  <bean id="html" class="org.tamacat.httpd.filter.HtmlLinkConvertInterceptor" singleton="false">
+
+  <bean id="WebdavHandler" class="org.tamacat.httpd.tomcat.TomcatWebdavHandler">
+    <property name="httpFilter">
+      <ref bean="AccessLogFilter" />
+    </property>
+    <property name="port">
+      <value>8080</value>
+    </property>
+    <property name="webapps">
+      <value>${server.home}/webapps</value>
+    </property>
+    <property name="work">
+      <value>${server.home}/work</value>
+    </property>
+    <!--
+    <property name="httpResponseInterceptor" mode="add">
+      <ref bean="html" />
+    </property>
+    -->
+  </bean>
+    
+  <bean id="html" class="org.tamacat.httpd.filter.HtmlLinkConvertInterceptor">
     <property name="contentType">
       <value>html</value>
     </property>
