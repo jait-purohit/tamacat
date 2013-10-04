@@ -26,8 +26,8 @@
 
 				<ul>
 					<li><a href="#httpd.xml">httpd.xml</a></li>
-					<li><a href="#httpd.xml">server.properties</a></li>
-					<li><a href="#httpd.xml">components.xml</a></li>
+					<li><a href="#server.properties">server.properties</a></li>
+					<li><a href="#url-config.xml">components.xml</a></li>
 					<li><a href="#httpd.xml">url-config.xml</a></li>
 					<li><a href="#httpd.xml">velocity.properties (use by default it)</a></li>
 					<li><a href="#httpd.xml">log4j.properties (use by default it)</a></li>
@@ -35,24 +35,43 @@
 				</ul>
 
 				<h3 id="httpd.xml">httpd.xml (required)</h3>
+
+				<h4 id="httpd.xml-3">default (use server.properties)</h4>
 				<pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans&gt;
-	&lt;bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor"&gt;
-		&lt;property name="contentType"&gt;
-			&lt;value&gt;html,xml,css,javascript&lt;/value&gt;
-		&lt;/property&gt;
-	&lt;/bean&gt;
-	&lt;bean id="server" class="org.tamacat.httpd.core.HttpEngine"&gt;
-		&lt;property name="propertiesName"&gt;
-			&lt;value&gt;server.properties&lt;/value&gt;
-		&lt;/property&gt;
-		&lt;property name="httpResponseInterceptor"&gt;
-			&lt;ref bean="gzip" /&gt;
-		&lt;/property&gt;
-	&lt;/bean&gt;
+  &lt;bean id="server" class="org.tamacat.httpd.core.HttpEngine" /&gt;
 &lt;/beans&gt;
-				</code></pre>
+</code></pre>
 
+				<h4 id="httpd.xml-2">use another server.properties</h4>
+				<pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans&gt;
+  &lt;bean id="server" class="org.tamacat.httpd.core.HttpEngine"&gt;
+    &lt;property name="propertiesName"&gt;
+      &lt;value&gt;server-test.properties&lt;/value&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre>
+
+				<h4 id="httpd.xml-3">use compression (use GzipResponseInterceptor)</h4>
+				<pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans&gt;
+  &lt;bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor"&gt;
+    &lt;property name="contentType"&gt;
+      &lt;value&gt;html,xml,css,javascript&lt;/value&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;
+  &lt;bean id="server" class="org.tamacat.httpd.core.HttpEngine"&gt;
+    &lt;property name="propertiesName"&gt;
+      &lt;value&gt;server.properties&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property name="httpResponseInterceptor"&gt;
+      &lt;ref bean="gzip" /&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre>
 				<h3 id="server.properties">server.properties (required)</h3>
 				<pre class="prettyprint linenums"><code class="language-xml">ServerName=tamacat-httpd
 Port=80
@@ -80,7 +99,52 @@ components.file=components.xml
 #JMX.server-url=service:jmx:rmi:///jndi/rmi://localhost:1099/httpd
 #JMX.objectname=org.tamacat.httpd:type=HttpEngine
 #JMX.rmi.port=1099
-</pre>
+</code></pre>
+
+<h3 id="url-config.xml">url-config.xml (required)</h3>
+<pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;service-config&gt;
+  &lt;service&gt;
+    &lt;url path="/" type="normal" handler="DefaultHandler" /&gt;
+  &lt;/service&gt;
+&lt;/service-config&gt;
+</code></pre>
+
+<table class="table">
+  <tr>
+    <th>name</th><th>value</th><th>description</th>
+  </tr>
+  <tr>
+    <td>type</td><td>normal, reverse, lb</td><td>"normal" is standard web server. "reverse" is Reverse proxy. "lb" is Load balancing with reverse proxy.</td>
+  </tr>
+  <tr>
+    <td>handler</td><td>The name of handler in components.xml</td><td>The Bean name in components.xml.
+  <tr>
+    <td>lb-method</td><td>The name of load balancing method for type="lb"</td><td>lb-method="RoundRobin" or "LeastConnection" default is "RoundRobin"</td>
+  </tr>
+</table>
+
+<h3 id="components.xml">components.xml (required)</h3>
+<pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans&gt;
+  &lt;bean id="DefaultHandler" class="org.tamacat.httpd.handler.LocalFileHttpHandler" /&gt;
+&lt;/beans&gt;
+</code></pre>
+<table class="table">
+  <tr>
+    <th>class</th><th>description</th>
+  </tr>
+  <tr>
+    <td>org.tamacat.httpd.handler.LocalFileHttpHandler</td><td>returns local contents.<td>
+  </tr>
+  <tr>
+    <td>org.tamacat.httpd.handler.VelocityHttpHandler</td><td>returns local contents using velocity templates.<td>
+  </tr>
+  <tr>
+    <td>org.tamacat.httpd.handler.ReverseProxyHttpHandler</td><td>returns remote server contents.(Reverse Proxy)<td>
+  </tr>
+</table>
+
 			</div>
 		</div>
 		</div>
