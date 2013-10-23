@@ -34,7 +34,7 @@
 					<li><a href="#httpd.xml">mime-types.properties (option)</a></li>
 				</ul>
 
-				<h3 id="httpd.xml">httpd.xml (required)</h3>
+				<h3 id="httpd.xml">httpd.xml <span class="label label-important">Required</span></h3>
 
 				<h4 id="httpd.xml-3">default (use server.properties)</h4>
 				<pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
@@ -72,7 +72,7 @@
   &lt;/bean&gt;
 &lt;/beans&gt;
 </code></pre>
-				<h3 id="server.properties">server.properties (required)</h3>
+				<h3 id="server.properties">server.properties <span class="label label-important">Required</span></h3>
 				<pre class="prettyprint linenums"><code class="language-xml">ServerName=tamacat-httpd
 Port=80
 
@@ -101,7 +101,7 @@ components.file=components.xml
 #JMX.rmi.port=1099
 </code></pre>
 
-<h3 id="url-config.xml">url-config.xml (required)</h3>
+<h3 id="url-config.xml">url-config.xml <span class="label label-important">Required</span></h3>
 <pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;service-config&gt;
   &lt;service&gt;
@@ -124,7 +124,7 @@ components.file=components.xml
   </tr>
 </table>
 
-<h3 id="components.xml">components.xml (required)</h3>
+<h3 id="components.xml">components.xml <span class="label label-important">Required</span></h3>
 <pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans&gt;
   &lt;bean id="DefaultHandler" class="org.tamacat.httpd.handler.LocalFileHttpHandler" /&gt;
