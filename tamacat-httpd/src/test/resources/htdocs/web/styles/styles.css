@@ -1,18 +1,18 @@
 @charset "utf-8";
-/*
+
 body,h1,h2,h3,h4,h5,h6,p,pre,button,caption,input,option,select,textarea,dl,ol,ul,table,tr,
  form,fieldset,legend,address,blockquote,dd,dt,li,td,th,div {
     font-size: 14px;
     font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-*/
 
-h1 { font-size:1.6em; }
-h2 { font-size:1.4em; }
-h3 { font-size:1.2em; }
-h4 { font-size:1.1em; }
-h5 { font-size:1.0em; }
-h6 { font-size:0.95em; }
+
+h1 { font-size:1.4em; }
+h2 { font-size:1.2em;}
+h3 { font-size:1.1em; }
+h4 { font-size:1.0em; }
+h5 { font-size:0.95em; }
+h6 { font-size:0.85em; }
 
 input[type="checkbox"],input[type="radio"] { display:inline; /* vertical-align:bottom; */ margin-left:5px; }
 label { font-weight: normal; display:inline; }
@@ -50,3 +50,12 @@ hr { border:0; height:0; border-top:1px solid rgba(0, 0, 0, 0.1); border-bottom:
 .prettyprint { background-color:#F7F7F9; border:1px solid #E1E1E8; padding:8px; }
 ol.linenums { margin:0 0 0 33px; }
 ol.linenums li { color:#BEBEC5; line-height:18px; padding-left:12px; text-shadow:0 1px 0 #FFFFFF; }
+
+h1{ border-bottom:1px solid #ccc; }
+.muted { color:#666; }
+span.top { font-size:9px; display:inline; float:right; right:1em; border-bottom:0px dashed #ccc; background:#fff; width:60px; text-align:left; }
+span.top a:hover{ text-decoration:none; }
+
+#footer { margin-top:1em; border-top:1px solid #ddd; background-color:#fff; }
+#footer span.top { display:inline; float:right; margin-right:1em; border:0px; background:#eee; width:60px; text-align:center; }
+#footer  span.top a:hover{ text-decoration:none; }

@@ -34,8 +34,8 @@
 					<li><a href="#httpd.xml">mime-types.properties (option)</a></li>
 				</ul>
 
+				<span class="top"><a href="#"><i class="icon-chevron-up"></i> TOP</a></span>
 				<h3 id="httpd.xml">httpd.xml <span class="label label-important">Required</span></h3>
-
 				<h4 id="httpd.xml-3">default (use server.properties)</h4>
 				<pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans&gt;
@@ -72,6 +72,7 @@
   &lt;/bean&gt;
 &lt;/beans&gt;
 </code></pre>
+				<span class="top"><a href="#"><i class="icon-chevron-up"></i> TOP</a></span>
 				<h3 id="server.properties">server.properties <span class="label label-important">Required</span></h3>
 				<pre class="prettyprint linenums"><code class="language-xml">ServerName=tamacat-httpd
 Port=80
@@ -101,6 +102,7 @@ components.file=components.xml
 #JMX.rmi.port=1099
 </code></pre>
 
+<span class="top"><a href="#"><i class="icon-chevron-up"></i> TOP</a></span>
 <h3 id="url-config.xml">url-config.xml <span class="label label-important">Required</span></h3>
 <pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;service-config&gt;
@@ -124,6 +126,7 @@ components.file=components.xml
   </tr>
 </table>
 
+<span class="top"><a href="#"><i class="icon-chevron-up"></i> TOP</a></span>
 <h3 id="components.xml">components.xml <span class="label label-important">Required</span></h3>
 <pre class="prettyprint linenums"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;beans&gt;
