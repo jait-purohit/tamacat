@@ -1,6 +1,12 @@
 #summary One-sentence summary of this page.
 #labels Phase-Support
 = Release Notes =
+
+==Release 1.0.6 (2013-07-01)==
+------------------------
+ * The ReverseProxyHandler and WorkerThread support keep-alive connection. (Bugfix)
+ * The keepAliveTimeout property was added to ReverseProxyHandler. (default:30000 msec.)
+
 ==Release 1.0.5 (2013-05-14)==
 ------------------------
  * Security update
