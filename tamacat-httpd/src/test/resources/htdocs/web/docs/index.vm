@@ -117,12 +117,16 @@ components.file=components.xml
     <th>name</th><th>value</th><th>description</th>
   </tr>
   <tr>
-    <td>type</td><td>normal, reverse, lb</td><td>"normal" is standard web server. "reverse" is Reverse proxy. "lb" is Load balancing with reverse proxy.</td>
+    <td>type</td><td>normal, reverse, lb</td>
+    <td>"normal" is standard web server. "reverse" is Reverse proxy.
+    "lb" is Load balancing with reverse proxy.</td>
   </tr>
   <tr>
-    <td>handler</td><td>The name of handler in components.xml</td><td>The Bean name in components.xml.
+    <td>handler</td><td>The name of handler in components.xml</td>
+    <td>The Bean name in components.xml.
   <tr>
-    <td>lb-method</td><td>The name of load balancing method for type="lb"</td><td>lb-method="RoundRobin" or "LeastConnection" default is "RoundRobin"</td>
+    <td>lb-method</td><td>The name of load balancing method for type="lb"</td>
+    <td>lb-method="RoundRobin" or "LeastConnection" default is "RoundRobin"</td>
   </tr>
 </table>
 
@@ -138,13 +142,16 @@ components.file=components.xml
     <th>class</th><th>description</th>
   </tr>
   <tr>
-    <td>org.tamacat.httpd.handler.LocalFileHttpHandler</td><td>returns local contents.<td>
+    <td>org.tamacat.httpd.handler.LocalFileHttpHandler</td>
+    <td>returns local contents.<td>
   </tr>
   <tr>
-    <td>org.tamacat.httpd.handler.VelocityHttpHandler</td><td>returns local contents using velocity templates.<td>
+    <td>org.tamacat.httpd.handler.VelocityHttpHandler</td>
+    <td>returns local contents using velocity templates.<td>
   </tr>
   <tr>
-    <td>org.tamacat.httpd.handler.ReverseProxyHttpHandler</td><td>returns remote server contents.(Reverse Proxy)<td>
+    <td>org.tamacat.httpd.handler.ReverseProxyHttpHandler</td>
+    <td>returns remote server contents.(Reverse Proxy)<td>
   </tr>
 </table>
 
