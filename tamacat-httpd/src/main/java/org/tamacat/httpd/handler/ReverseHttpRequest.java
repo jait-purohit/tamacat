@@ -8,7 +8,6 @@ import java.net.URL;
 
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
-import org.apache.http.RequestLine;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicRequestLine;
@@ -30,17 +29,8 @@ public class ReverseHttpRequest extends BasicHttpRequest {
 	static final Log LOG = LogFactory.getLog(ReverseHttpRequest.class);
 
 	protected ReverseUrl reverseUrl;
-
-	/**
-	 * <p>Constructs with the {@link RequestLine}.
-	 * @param line
-	 * @param reverseUrl
-	 */
-	public ReverseHttpRequest(RequestLine line, ReverseUrl reverseUrl) {
-		super(line);
-		this.reverseUrl = reverseUrl;
-	}
-
+	protected URL url;
+	
 	/**
 	 * <p>Constructs with the original request of {@link HttpRequest}.
 	 * @param request
@@ -52,12 +42,16 @@ public class ReverseHttpRequest extends BasicHttpRequest {
 				reverseUrl.getReverseUrl(request.getRequestLine().getUri()).getFile(),
 				request.getRequestLine().getProtocolVersion())
 		);
-		URL url = reverseUrl.getReverseUrl(request.getRequestLine().getUri());
+		url = reverseUrl.getReverseUrl(request.getRequestLine().getUri());
 		if (url == null) {
 			throw new NotFoundException("url is null.");
 		}
 		this.reverseUrl = reverseUrl;
 		setRequest(request, context);
+	}
+	
+	public URL getURL() {
+		return url;
 	}
 
 	/**
