@@ -70,6 +70,8 @@ public class VelocityErrorPage {
 			HttpRequest request, HttpResponse response,
 			VelocityContext context, HttpException exception) {
 		response.setStatusCode(exception.getHttpStatus().getStatusCode());
+		response.setReasonPhrase(exception.getHttpStatus().getReasonPhrase());
+
 		if (LOG.isTraceEnabled() && exception.getHttpStatus().isServerError()) {
 			LOG.trace(exception); //exception.printStackTrace();
 		}
