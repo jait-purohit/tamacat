@@ -1,0 +1,7 @@
+Implementation-Title: tamacat-httpd-geoip-filter
+Implementation-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.tamacat.httpd
+Bundle-Name: tamacat-httpd-geoip-filter
+Bundle-Vendor: TAMACAT.ORG
+Bundle-Version: 1.0
