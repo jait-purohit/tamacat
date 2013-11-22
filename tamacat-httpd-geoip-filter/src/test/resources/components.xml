@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+
+	<bean id="AccessLogFilter" class="org.tamacat.httpd.filter.AccessLogFilter" />
+	<bean id="GeoIPAccessControlFilter" class="org.tamacat.httpd.filter.geoip.GeoIPAccessControlFilter">
+		<property name="geoIpFile">
+			<value>GeoIP.dat</value>
+		</property>
+		<property name="allowCountry">
+			<value>JP</value>
+		</property>
+	</bean>
+	
+	<bean id="LocalFileHandler"
+		class="org.tamacat.httpd.handler.LocalFileHttpHandler">
+		<property name="docsRoot">
+			<value>${server.home}/src/test/resources/htdocs/</value>
+		</property>
+		
+		<property name="httpFilter">
+			<ref bean="AccessLogFilter" />
+		</property>
+		<property name="httpFilter">
+			<ref bean="GeoIPAccessControlFilter" />
+		</property>
+	</bean>
+</beans>
