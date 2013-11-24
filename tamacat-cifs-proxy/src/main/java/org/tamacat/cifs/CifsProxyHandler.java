@@ -19,7 +19,6 @@ import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.util.RequestUtils;
-import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.PropertyUtils;
@@ -124,7 +123,7 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 			String html = searchPage.getListingsPage(request, response, ctx, files);
 			//System.out.println(html);
 			response.setStatusCode(HttpStatus.SC_OK);
-			ResponseUtils.setEntity(response, getEntity(html));
+			response.setEntity(getEntity(html));
 			return;
 		}
 		if ("true".equals(RequestUtils.getParameter(context, "remake"))) {
@@ -150,7 +149,7 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 					String html = listingPage.getListingsPage(
 							request, response, file);
 					response.setStatusCode(HttpStatus.SC_OK);
-					ResponseUtils.setEntity(response, getEntity(html));
+					response.setEntity(getEntity(html));
 				} else {
 					LOG.trace("Cannot read file " + file.getPath());
 					throw new ForbiddenException();
@@ -160,7 +159,7 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 			else {
 				LOG.trace("File " + file.getPath() + " found");
 				response.setStatusCode(HttpStatus.SC_OK);
-				ResponseUtils.setEntity(response, getFileEntity(file));
+				response.setEntity(getFileEntity(file));
 				LOG.trace("Serving file " + file.getPath());
 			}
 		} catch (HttpException e) {
