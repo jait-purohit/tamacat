@@ -13,8 +13,7 @@ import org.tamacat.util.ClassUtils;
 public class PropertyValueHandler {
 
     static
-      private final HashMap<Class<?>, StringValueConverter<?>> CONVERTERS
-            = new HashMap<Class<?>, StringValueConverter<?>>();
+      private final HashMap<Class<?>, StringValueConverter<?>> CONVERTERS = new HashMap<>();
 
     static
       public final void register(Class<?> type, StringValueConverter<?> converter) {

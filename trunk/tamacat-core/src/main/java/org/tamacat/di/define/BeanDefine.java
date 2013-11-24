@@ -15,14 +15,14 @@ import org.tamacat.util.ClassUtils;
 public class BeanDefine implements Cloneable {
 	
     private String id;
-    private List<String> aliases = new ArrayList<String>();
+    private List<String> aliases = new ArrayList<>();
     private Class<?> type;
     private Method initMethod;
     private Method factoryMethod;
 
     private boolean isSingleton; // = true; -> v1.1 default false
-    private List<BeanDefineParam> properties = new ArrayList<BeanDefineParam>();
-    private List<BeanConstructorParam> constructorArgs = new ArrayList<BeanConstructorParam>();
+    private List<BeanDefineParam> properties = new ArrayList<>();
+    private List<BeanConstructorParam> constructorArgs = new ArrayList<>();
 
     public String getId() {
         return id;

@@ -116,23 +116,22 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
 	@Override
 	public void startElement(String uri, String localName, String name, Attributes attributes) {
 		valueBuffer = new StringBuilder();
-		if (name.equals(BEAN)) {
-			//3.3.2.3. Inner beans support
-			//if (isConstrctor) {
-			//	startInnerBean(attributes);
-			//} else {
+		switch (name) {
+			case BEAN:
 				startBean(attributes);
-			//}
-		} else if (name.equals(PROPERTY)) {
-			startProperty(attributes);
-		} else if (name.equals(REF)) {
-			startRef(attributes);
-		} else if (name.equals(CONSTRUCTOR_ARG)) {
-			startConstructorArg(attributes);
-		} else if (name.equals(VALUE)) {
-			startValue(attributes);
-		} else if (name.equals(NULL)) {
-			startValue(attributes);
+				break;
+			case PROPERTY:
+				startProperty(attributes);
+				break;
+			case REF:
+				startRef(attributes);
+				break;
+			case CONSTRUCTOR_ARG:
+				startConstructorArg(attributes);
+				break;
+			case VALUE: case NULL:
+				startValue(attributes);
+				break;
 		}
 	}
 
@@ -221,10 +220,6 @@ public class SpringBeanDefineHandler extends DefaultHandler2 implements BeanDefi
 		beans.put(bean.getId(), bean);
 		bean = null;
 	}
-
-	//protected void endInnerBean() {
-	//	beans.put(bean.getId(), bean);
-	//}
 
 	protected void endProperty() {
 		if (prop != null) { //<ref bean="xxx" />
