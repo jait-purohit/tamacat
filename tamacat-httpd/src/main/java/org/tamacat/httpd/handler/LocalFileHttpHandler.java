@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.handler;
@@ -23,7 +23,6 @@ import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.handler.page.VelocityListingsPage;
 import org.tamacat.httpd.util.RequestUtils;
-import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.PropertyUtils;
@@ -104,7 +103,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 				String html = listingPage.getListingsPage(
 						request, response, file);
 				response.setStatusCode(HttpStatus.SC_OK);
-				ResponseUtils.setEntity(response, getEntity(html));
+				response.setEntity(getEntity(html));
 			} else {
 				LOG.trace("Cannot read file " + file.getPath());
 				throw new ForbiddenException();
@@ -114,7 +113,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 		else {
 			LOG.trace("File " + file.getPath() + " found");
 			response.setStatusCode(HttpStatus.SC_OK);
-			ResponseUtils.setEntity(response, getFileEntity(file));
+			response.setEntity(getFileEntity(file));
 			LOG.trace("Serving file " + file.getPath());
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, TamaCat.org
+ * Copyright (c) 2011, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.config.lb;
@@ -117,7 +117,7 @@ public abstract class LbHealthCheckServiceUrl extends ServiceUrl
 		DefaultThreadFactory factory = new DefaultThreadFactory();
 		factory.setName("Monitor");
 		for (ReverseUrl url : reverseUrls) {
-			HttpMonitor<ReverseUrl> monitor = new HttpMonitor<ReverseUrl>();
+			HttpMonitor<ReverseUrl> monitor = new HttpMonitor<>();
 			monitor.setHealthCheckTarget(this);
 			monitor.setMonitorConfig(getMonitorConfig(url));
 			monitor.setTarget(url);

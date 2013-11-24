@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, TamaCat.org
+ * Copyright (c) 2011, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.config.lb;

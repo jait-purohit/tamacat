@@ -1,10 +1,14 @@
+/*
+ * Copyright (c) 2013, tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.auth;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Digest {
-	private Map<String, String> params = new LinkedHashMap<String, String>();
+	private Map<String, String> params = new LinkedHashMap<>();
 
 	public Digest(String line) {
 		String[] params = line.split(",");

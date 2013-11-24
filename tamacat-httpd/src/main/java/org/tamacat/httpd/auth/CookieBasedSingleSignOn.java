@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.auth;
@@ -34,7 +34,7 @@ public class CookieBasedSingleSignOn implements SingleSignOn {
 	protected String singleSignOnCookieNonce = "SingleSignOnNonce";
 	protected String privateKey = UniqueCodeGenerator.generate();
 
-	protected Set<String> freeAccessExtensions = new HashSet<String>();
+	protected Set<String> freeAccessExtensions = new HashSet<>();
 
 	/**
 	 * Constructor with Single Sign-On cookie.

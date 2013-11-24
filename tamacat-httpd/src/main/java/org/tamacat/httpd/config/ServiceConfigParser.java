@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, TamaCat.org
+ * Copyright (c) 2010, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.config;
@@ -169,12 +169,12 @@ public class ServiceConfigParser {
 	ServiceUrl getReverseUrl(ServiceUrl serviceUrl, Node urlNode) {
 		ReverseUrl reverseUrl = new DefaultReverseUrl(serviceUrl);
 		NodeList reverseNodes = urlNode.getChildNodes();
-		REV: for (int j=0; j<reverseNodes.getLength(); j++) {
-			Node reverseNode = reverseNodes.item(j);
+		for (int i=0; i<reverseNodes.getLength(); i++) {
+			Node reverseNode = reverseNodes.item(i);
 			if (REVERSE.equals(reverseNode.getNodeName())) {
 				String reverse = reverseNode.getTextContent();
 				reverseUrl.setReverse(getURL(reverse));
-				break REV;
+				break;
 			}
 		}
 		serviceUrl.setReverseUrl(reverseUrl);
@@ -188,9 +188,9 @@ public class ServiceConfigParser {
 		lbServiceUrl.setType(serviceUrl.getType());
 		lbServiceUrl.setHost(getURL(host));
 		NodeList reverseNodes = urlNode.getChildNodes();
-		for (int j=0; j<reverseNodes.getLength(); j++) {
+		for (int i=0; i<reverseNodes.getLength(); i++) {
 			ReverseUrl reverseUrl = new DefaultReverseUrl(lbServiceUrl);
-			Node reverseNode = reverseNodes.item(j);
+			Node reverseNode = reverseNodes.item(i);
 			if (REVERSE.equals(reverseNode.getNodeName())) {
 				String reverse = reverseNode.getTextContent();
 				reverseUrl.setReverse(getURL(reverse));

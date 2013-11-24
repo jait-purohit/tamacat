@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.auth;
@@ -29,8 +29,8 @@ public abstract class AbstractAuthProcessor implements RequestFilter,
 	protected SingleSignOn singleSignOn;
 	protected String algorithmName; // ex. SHA-256
 
-	protected Set<String> freeAccessUrls = new HashSet<String>();
-	protected Set<String> freeAccessExtensions = new HashSet<String>();
+	protected Set<String> freeAccessUrls = new HashSet<>();
+	protected Set<String> freeAccessExtensions = new HashSet<>();
 
 	@Override
 	public void init(ServiceUrl serviceUrl) {

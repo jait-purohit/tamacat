@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2011, tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.session;
 
 import java.util.Map;
@@ -10,7 +14,7 @@ import org.tamacat.log.LogFactory;
 public class MemorySessionStore implements SessionStore {
 
 	static final Log LOG = LogFactory.getLog(MemorySessionStore.class);
-	static final Map<String, Session> STORE = new ConcurrentHashMap<String, Session>();
+	static final Map<String, Session> STORE = new ConcurrentHashMap<>();
 	
 	@Override
 	public synchronized void store(Session session) {

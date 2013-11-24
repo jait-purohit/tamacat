@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2012, tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.filter;
 
 import java.util.HashSet;
@@ -14,8 +18,8 @@ import org.tamacat.httpd.config.ServiceUrl;
 public class CustomResponseHeaderFilter implements ResponseFilter {
 	
 	ServiceUrl serviceUrl;
-	LinkedHashMap<String, String> appendHeaders = new LinkedHashMap<String, String>();
-	HashSet<String> removeHeaders = new HashSet<String>();
+	LinkedHashMap<String, String> appendHeaders = new LinkedHashMap<>();
+	HashSet<String> removeHeaders = new HashSet<>();
 	
 	@Override
 	public void init(ServiceUrl serviceUrl) {

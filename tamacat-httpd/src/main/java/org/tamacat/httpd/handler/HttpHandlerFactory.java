@@ -7,7 +7,6 @@ package org.tamacat.httpd.handler;
 import org.tamacat.httpd.config.ServiceUrl;
 
 /**
- * 
  * <p>The factory interface of HttpHandler.
  */
 public interface HttpHandlerFactory {

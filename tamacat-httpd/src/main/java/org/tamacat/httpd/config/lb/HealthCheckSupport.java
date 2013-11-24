@@ -1,10 +1,8 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.config.lb;
-
-
 
 /**
  * <p>It is interface to express that I support a health check function.

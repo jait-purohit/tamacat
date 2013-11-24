@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, TamaCat.org
+ * Copyright (c) 2010, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.core.jmx;
@@ -20,10 +20,9 @@ public class URLBasicCounter {
 
 	static final Log LOG = LogFactory.getLog(URLBasicCounter.class);
 
-	private Map<String, ObjectName> onames
-		= new LinkedHashMap<String, ObjectName>();
+	private Map<String, ObjectName> onames = new LinkedHashMap<>();
 
-	private static final Map<String, BasicCounter> counters = new HashMap<String, BasicCounter>();
+	private static final Map<String, BasicCounter> counters = new HashMap<>();
 	private String objectName = "org.tamacat.httpd:type=URL#";
 
 	public BasicCounter getCounter(String url) {

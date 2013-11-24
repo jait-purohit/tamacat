@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.util;
@@ -30,7 +30,6 @@ import org.tamacat.httpd.config.ServiceUrl;
 import org.tamacat.httpd.core.BasicHttpStatus;
 import org.tamacat.httpd.core.RequestParameters;
 import org.tamacat.httpd.exception.HttpException;
-import org.tamacat.util.IOUtils;
 import org.tamacat.util.StringUtils;
 
 public class RequestUtils {
@@ -81,11 +80,7 @@ public class RequestUtils {
 		if (isEntityEnclosingRequest(request) && ! RequestUtils.isMultipart(request)) {
 			HttpEntity entity = getEntity(request);
 			if (entity != null) {
-				InputStream in = null;
-				BufferedReader reader = null;
-				try {
-					in = entity.getContent();
-					reader = new BufferedReader(new InputStreamReader(in)); //8192byte buffers
+				try (BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()))) {
 					String s;
 					StringBuilder sb = new StringBuilder();
 					while ((s = reader.readLine()) != null) {
@@ -104,9 +99,6 @@ public class RequestUtils {
 					}
 				} catch (IOException e) {
 					throw new HttpException(BasicHttpStatus.SC_BAD_REQUEST, e);
-				} finally {
-					IOUtils.close(reader);
-					IOUtils.close(in);
 				}
 			}
 		}

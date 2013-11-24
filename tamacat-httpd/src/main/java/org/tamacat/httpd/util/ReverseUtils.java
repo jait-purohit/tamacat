@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.util;
@@ -58,8 +58,8 @@ public class ReverseUtils {
 	private static final String HEADER_PROPERTIES = "reverse-header.properties";
 	private static final String DEFAULT_HEADER_PROPERTIES = "org/tamacat/httpd/util/reverse-header.properties";
 
-	private static final Set<String> removeRequestHeaders = new HashSet<String>();
-	private static final Set<String> removeResponseHeaders = new HashSet<String>();
+	private static final Set<String> removeRequestHeaders = new HashSet<>();
+	private static final Set<String> removeResponseHeaders = new HashSet<>();
 
 	//Configuration of remove request/response headers.
 	static {

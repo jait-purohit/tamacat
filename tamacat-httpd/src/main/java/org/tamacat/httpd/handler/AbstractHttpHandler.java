@@ -26,7 +26,6 @@ import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.handler.page.VelocityErrorPage;
 import org.tamacat.httpd.util.RequestUtils;
-import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.ExceptionUtils;
@@ -70,9 +69,9 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 	protected String docsRoot;
 	protected String encoding = "UTF-8";
 
-	protected List<HttpFilter> filters = new ArrayList<HttpFilter>();
-	protected List<RequestFilter> requestFilters = new ArrayList<RequestFilter>();
-	protected List<ResponseFilter> responseFilters = new ArrayList<ResponseFilter>();
+	protected List<HttpFilter> filters = new ArrayList<>();
+	protected List<RequestFilter> requestFilters = new ArrayList<>();
+	protected List<ResponseFilter> responseFilters = new ArrayList<>();
 	protected ClassLoader loader;
 
 	/**
@@ -166,7 +165,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
 					new ServiceUnavailableException(e));
 		}
 		HttpEntity entity = getEntity(html);
-		ResponseUtils.setEntity(response, entity);
+		response.setEntity(entity);
 	}
 
 	/**

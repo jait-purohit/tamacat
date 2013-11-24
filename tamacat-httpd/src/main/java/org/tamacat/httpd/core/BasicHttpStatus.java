@@ -86,7 +86,7 @@ public enum BasicHttpStatus implements HttpStatus {
 		this.reasonPhrase = reasonPhrase;
 	}
 
-	static HashMap<Integer,HttpStatus> find = new HashMap<Integer,HttpStatus>();
+	static HashMap<Integer,HttpStatus> find = new HashMap<>();
 
 	static {
 		for (HttpStatus s : values()) {

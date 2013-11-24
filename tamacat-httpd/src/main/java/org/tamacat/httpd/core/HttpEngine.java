@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.core;
@@ -62,12 +62,9 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 
 	private BasicCounter counter = new BasicCounter();
 
-	private List<HttpRequestInterceptor> requestInterceptors
-		= new ArrayList<HttpRequestInterceptor>();
+	private List<HttpRequestInterceptor> requestInterceptors = new ArrayList<>();
 
-	private List<HttpResponseInterceptor> responseInterceptors
-		= new ArrayList<HttpResponseInterceptor>();
-
+	private List<HttpResponseInterceptor> responseInterceptors = new ArrayList<>();
 
 	private static JMXConnectorServer jmxServer;
 	private static Registry rmiRegistry;
@@ -126,7 +123,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage());
 			}
 		}
 	}
@@ -267,7 +264,7 @@ public class HttpEngine implements JMXReloadableHttpd, Runnable {
 				objectName = new ObjectName(name);
 				server.registerMBean(this, objectName);
 
-				HashMap<String,Object> env = new HashMap<String,Object>();
+				HashMap<String,Object> env = new HashMap<>();
 				//env.put("jmx.remote.x.password.file", serverConfig.getParam("JMX.password", ""));
 				//env.put("jmx.remote.x.access.file", serverConfig.getParam("JMX.access", ""));
 				jmxServer = JMXConnectorServerFactory.newJMXConnectorServer(

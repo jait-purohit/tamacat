@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.session;
@@ -19,7 +19,7 @@ import org.tamacat.log.LogFactory;
 public class DefaultSessionFactory implements SessionFactory {
 	static final Log LOG = LogFactory.getLog(DefaultSessionFactory.class);
 
-	private List<SessionListener> listeners = new ArrayList<SessionListener>();
+	private List<SessionListener> listeners = new ArrayList<>();
 	
 	private int defaultMaxInactiveInterval = 30 * 60 * 1000; //30min.
 	

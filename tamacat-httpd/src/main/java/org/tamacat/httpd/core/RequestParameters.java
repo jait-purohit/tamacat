@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.core;
@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class RequestParameters {
 
-	private Map<String, List<String>> params = new LinkedHashMap<String,List<String>>();
+	private Map<String, List<String>> params = new LinkedHashMap<>();
 
 	public void setParameter(String name, String... values) {
 		if (name != null) {

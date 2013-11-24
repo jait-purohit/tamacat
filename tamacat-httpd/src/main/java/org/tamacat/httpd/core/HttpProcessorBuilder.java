@@ -18,8 +18,8 @@ import org.apache.http.protocol.ImmutableHttpProcessor;
  */
 public class HttpProcessorBuilder {
 
-	private List<HttpRequestInterceptor> req = new ArrayList<HttpRequestInterceptor>();
-	private List<HttpResponseInterceptor> res = new ArrayList<HttpResponseInterceptor>();
+	private List<HttpRequestInterceptor> req = new ArrayList<>();
+	private List<HttpResponseInterceptor> res = new ArrayList<>();
 
 	/**
 	 * <p>Add the {@link HttpRequestInterceptor}.

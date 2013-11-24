@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, TamaCat.org
+ * Copyright (c) 2010, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.config;
@@ -13,8 +13,7 @@ import java.util.Set;
  */
 public class HostServiceConfig {
 
-	private HashMap<String,ServiceConfig> serviceConfigs
-		= new HashMap<String, ServiceConfig>();
+	private HashMap<String,ServiceConfig> serviceConfigs = new HashMap<>();
 	
 	public void setDefaultServiceConfig(ServiceConfig defaultConfig) {
 		setServiceConfig("default", defaultConfig);

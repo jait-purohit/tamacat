@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, TamaCat.org
+ * Copyright (c) 2010, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.handler;
@@ -31,8 +31,7 @@ public class HostRequestHandlerMapper {
 	/** default key for empty host.*/
 	static final String DEFAULT_HOST = "default";
 
-	private HashMap<String, HttpRequestHandlerMapper> hostHandler
-		= new HashMap<String, HttpRequestHandlerMapper>();
+	private HashMap<String, HttpRequestHandlerMapper> hostHandler = new HashMap<>();
 
 	private boolean useVirtualHost = false;
 
@@ -102,9 +101,6 @@ public class HostRequestHandlerMapper {
 		HttpRequestHandler handler = null;
 		if (mapper != null) {
 			handler = mapper.lookup(request);
-			//if (handler == null) {
-			//	handler = mapper.lookup("/");
-			//}
 		}
 		return handler;
 	}
