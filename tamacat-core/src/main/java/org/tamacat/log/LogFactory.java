@@ -27,7 +27,7 @@ public class LogFactory {
 	private static final String LOGGING_PROPERTIES_FILE = "logging.properties";
 	private static final String KEY = "org.tamacat.log.Log";
 
-	private static final Map<String, Log> manager = new HashMap<String, Log>();
+	private static final Map<String, Log> manager = new HashMap<>();
 	protected ClassLoader loader = ClassUtils.getDefaultClassLoader();
 
 	public synchronized static Log getLog(String categoryName) {

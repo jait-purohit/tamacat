@@ -23,8 +23,8 @@ public class CacheLRU<K,V> {
 	
 	public CacheLRU(int maxSize) {
 		this.maxSize = maxSize;
-		this.cache = new LinkedHashMap<K,V>(maxSize);
-		this.used = new ArrayList<K>(maxSize);
+		this.cache = new LinkedHashMap<>(maxSize);
+		this.used = new ArrayList<>(maxSize);
 	}
 	
 	public CacheLRU() {

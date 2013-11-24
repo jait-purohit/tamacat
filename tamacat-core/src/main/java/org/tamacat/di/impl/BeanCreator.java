@@ -23,8 +23,7 @@ import org.tamacat.util.StringUtils;
  */
 public class BeanCreator {
 
-    static final Map<String, BeanAdapter<Object>> beans
-    	= new HashMap<String, BeanAdapter<Object>>();
+    static final Map<String, BeanAdapter<Object>> beans = new HashMap<>();
 
     protected final BeanDefineMap defines;
 

@@ -13,7 +13,7 @@ public final class ResourceManager {
 
 	static final Log LOG = LogFactory.getLog(ResourceManager.class);
 	
-	private ThreadLocal<Stack<Object>> manager = new ThreadLocal<Stack<Object>>();
+	private ThreadLocal<Stack<Object>> manager = new ThreadLocal<>();
 	
 	private final static ResourceManager self = new ResourceManager();
 	
@@ -26,7 +26,7 @@ public final class ResourceManager {
 	private Stack<Object> getThreadObject() {
 		Stack<Object> targets = manager.get();
 		if (targets == null) {
-			targets = new Stack<Object>();
+			targets = new Stack<>();
 			manager.set(targets);
 		}
 		return targets;
