@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.handler;
@@ -37,9 +37,9 @@ public class DefaultHttpService extends HttpService {
 	static final Log LOG = LogFactory.getLog(DefaultHttpService.class);
 
 	static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
-	//private HttpRequestHandlerResolver handlerResolver;
-	HttpRequestHandlerMapper handleMapper;
-	private HostRequestHandlerMapper hostResolver;
+	
+	protected HttpRequestHandlerMapper handleMapper;
+	protected HostRequestHandlerMapper hostResolver;
 	protected ClassLoader loader;
 	protected VelocityErrorPage errorPage;
 	protected String encoding = "UTF-8";
@@ -74,9 +74,6 @@ public class DefaultHttpService extends HttpService {
 			HttpRequestHandler handler = null;
 			if (handleMapper != null) {
 				handler = handleMapper.lookup(request);
-				//if (handler == null) {
-				//	handler = handleMapper.lookup("/");
-				//}
 			} else if (hostResolver != null) {
 				handler = hostResolver.lookup(request, context);
 			}

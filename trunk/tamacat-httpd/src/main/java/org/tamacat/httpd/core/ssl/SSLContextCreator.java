@@ -1,10 +1,8 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.core.ssl;
-
-import java.io.IOException;
 
 import java.net.URL;
 import java.security.KeyStore;
@@ -17,6 +15,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.tamacat.httpd.config.ServerConfig;
+import org.tamacat.io.RuntimeIOException;
 
 /**
  * <p>The {@link SSLContext} create from {@link ServerConfig} or setter methods.
@@ -67,7 +66,7 @@ public class SSLContextCreator {
 		this.protocol = protocol;
 	}
 	
-	public SSLContext getSSLContext() throws IOException {
+	public SSLContext getSSLContext() {
 		try {
 			URL url = getClass().getClassLoader().getResource(keyStoreFile);
 	        KeyStore keystore  = KeyStore.getInstance(type.name());
@@ -81,7 +80,7 @@ public class SSLContextCreator {
 	        sslcontext.init(keymanagers, TRUST_MANAGER, null);
 	        return sslcontext;
 		} catch (Exception e) {
-			throw new IOException(e);
+			throw new RuntimeIOException(e);
 		}
 	}
 	

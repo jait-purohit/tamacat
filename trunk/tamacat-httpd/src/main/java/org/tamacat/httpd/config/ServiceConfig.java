@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.config;
@@ -18,9 +18,9 @@ import org.tamacat.httpd.config.ServiceType;
  */
 public class ServiceConfig {
 
-	private List<ServiceUrl> reverseUrls = new ArrayList<ServiceUrl>();
-	private Map<String,ServiceUrl> regulars = new HashMap<String, ServiceUrl>();
-	private Map<String,ServiceUrl> reverses = new HashMap<String, ServiceUrl>();
+	private List<ServiceUrl> reverseUrls = new ArrayList<>();
+	private Map<String,ServiceUrl> regulars = new HashMap<>();
+	private Map<String,ServiceUrl> reverses = new HashMap<>();
 	
 	/**
 	 * <p>The method which acquires list of {@link ServiceUrl}.

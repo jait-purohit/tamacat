@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.config;
@@ -53,19 +53,19 @@ public class ServerConfig {
 	/**
 	 * <p>Returns the Socket timeout (ms).
 	 * @return Get the parameter value key of "ServerSocketTimeout",
-	 * if value is null then returns {@code 30000}.
+	 * if value is null then returns {@code 15000}.
 	 */
 	public int getSocketTimeout() {
-		return getParam("ServerSocketTimeout", 30000);
+		return getParam("ServerSocketTimeout", 15000);
 	}
 
 	/**
 	 * <p>Returns the Connection timeout (ms).
 	 * @return Get the parameter value key of "ConnectionTimeout",
-	 * if value is null then returns {@code 30000}.
+	 * if value is null then returns {@code 15000}.
 	 */
 	public int getConnectionTimeout() {
-		return getParam("ConnectionTimeout", 30000);
+		return getParam("ConnectionTimeout", 15000);
 	}
 
 	/**

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2013, tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.handler;
 
 import java.io.File;
@@ -19,7 +23,6 @@ import org.tamacat.httpd.exception.HttpException;
 import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.httpd.util.RequestUtils;
-import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.IOUtils;
@@ -66,7 +69,7 @@ public class LocalFileStreamingHttpHandler extends LocalFileHttpHandler {
 				String html = listingPage.getListingsPage(
 						request, response, file);
 				response.setStatusCode(HttpStatus.SC_OK);
-				ResponseUtils.setEntity(response, getEntity(html));
+				response.setEntity(getEntity(html));
 			} else {
 				LOG.trace("Cannot read file " + file.getPath());
 				throw new ForbiddenException();
@@ -110,7 +113,7 @@ public class LocalFileStreamingHttpHandler extends LocalFileHttpHandler {
 			} else {
 				FileInputStream in = new FileInputStream(file);
 				InputStreamEntity entity = new InputStreamEntity(in, file.length());
-				ResponseUtils.setEntity(response, entity);
+				response.setEntity(entity);
 			}
 		}
 	}
@@ -140,7 +143,7 @@ public class LocalFileStreamingHttpHandler extends LocalFileHttpHandler {
 			String value = "bytes "+offset+"-"+(offset+readed-1)+"/"+length;
 			LOG.debug("Content-Range: " + value);
 			response.setHeader("Content-Range", value);
-			ResponseUtils.setEntity(response, entity);
+			response.setEntity(entity);
 		} catch (IOException e) {
 			LOG.warn(e.getMessage());
 			LOG.debug(e);

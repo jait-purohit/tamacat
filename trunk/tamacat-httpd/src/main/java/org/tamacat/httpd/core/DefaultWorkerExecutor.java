@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, TamaCat.org
+ * Copyright (c) 2013, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.core;

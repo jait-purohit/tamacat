@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2011, tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.session;
 
 import org.tamacat.log.Log;

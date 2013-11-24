@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.auth;
@@ -22,9 +22,9 @@ import org.tamacat.util.DateUtils;
  */
 public class DynamicRealm {
 
-	private static final Pattern VARIABLE_PATTERN = Pattern.compile("(.*\\$\\{)(.*)(\\}.*)");
+	static final Pattern VARIABLE_PATTERN = Pattern.compile("(.*\\$\\{)(.*)(\\}.*)");
 
-	private static final IllegalArgumentException REALM_IS_NULL_EXCEPTION = new IllegalArgumentException();
+	static final IllegalArgumentException REALM_IS_NULL_EXCEPTION = new IllegalArgumentException();
 
 	/**
 	 * <p>

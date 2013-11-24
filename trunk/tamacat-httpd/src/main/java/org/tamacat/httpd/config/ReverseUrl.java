@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.config;
@@ -65,7 +65,10 @@ public interface ReverseUrl {
 	 */
 	InetSocketAddress getTargetAddress();
 
+	/**
+	 * <p>Returns the backend server's {@link HttpHost}.
+	 * @return {@code HttpHost}
+	 */
 	HttpHost getTargetHost();
-
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.handler;
@@ -26,7 +26,6 @@ import org.tamacat.httpd.exception.NotFoundException;
 import org.tamacat.httpd.handler.page.VelocityListingsPage;
 import org.tamacat.httpd.handler.page.VelocityPage;
 import org.tamacat.httpd.util.RequestUtils;
-import org.tamacat.httpd.util.ResponseUtils;
 import org.tamacat.util.PropertyUtils;
 
 /**
@@ -40,7 +39,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 
 	protected VelocityListingsPage listingPage;
 	protected VelocityPage page;
-	protected final Set<String> urlPatterns = new HashSet<String>();
+	protected final Set<String> urlPatterns = new HashSet<>();
 
 	public void setUrlPatterns(String patterns) {
 		for (String pattern : patterns.split(",")) {
@@ -157,7 +156,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 		try {
 			String html = listingPage.getListingsPage(
 					request, response, file);
-			ResponseUtils.setEntity(response, getEntity(html));
+			response.setEntity(getEntity(html));
 			response.setStatusCode(HttpStatus.SC_OK);
 		} catch (Exception e) {
 			throw new NotFoundException(e);
@@ -170,9 +169,9 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			String html = page.getPage(request, response, ctx, path);
 			Object contentType = ctx.get(CONTENT_TYPE);
 			if (contentType != null && contentType instanceof String) {
-				ResponseUtils.setEntity(response, getEntity(html, (String)contentType));
+				response.setEntity(getEntity(html, (String)contentType));
 			} else {
-				ResponseUtils.setEntity(response, getEntity(html));
+				response.setEntity(getEntity(html));
 			}
 		}
 	}
@@ -185,7 +184,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 				if (file.exists() == false) {
 					throw new NotFoundException();
 				}
-				ResponseUtils.setEntity(response, getFileEntity(file));
+				response.setEntity(getFileEntity(file));
 			} catch (Exception e) {
 				throw new NotFoundException(e);
 			}

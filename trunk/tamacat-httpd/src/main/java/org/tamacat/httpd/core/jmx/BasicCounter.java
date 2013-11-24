@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.core.jmx;
@@ -13,7 +13,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
+
 public class BasicCounter implements PerformanceCounterMonitor, Serializable {
+	static final Log LOG = LogFactory.getLog(BasicCounter.class);
+	
 	private static final long serialVersionUID = 6089725451626828983L;
 	
 	private static ThreadLocal<Long> time = new ThreadLocal<Long>() {
@@ -122,7 +127,8 @@ public class BasicCounter implements PerformanceCounterMonitor, Serializable {
 			MBeanServer server = ManagementFactory.getPlatformMBeanServer(); 
         	server.registerMBean(this, oname);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.warn(e.getMessage());
+			LOG.trace(e);
 		}
 	}
 	
@@ -133,7 +139,8 @@ public class BasicCounter implements PerformanceCounterMonitor, Serializable {
 			MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 			server.unregisterMBean(oname);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.warn(e.getMessage());
+			LOG.trace(e);
 		}
 	}
 }

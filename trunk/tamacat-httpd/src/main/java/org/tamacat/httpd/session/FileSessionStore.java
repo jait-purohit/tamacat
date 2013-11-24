@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2011, tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.session;
 
 import java.io.File;
@@ -9,9 +13,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Set;
 
+import org.tamacat.io.RuntimeIOException;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
-import org.tamacat.util.IOUtils;
 
 public class FileSessionStore implements SessionStore {
 
@@ -37,36 +41,25 @@ public class FileSessionStore implements SessionStore {
 	@Override
 	public void store(Session session) {
 		synchronized (session) {
-			ObjectOutputStream out = null;
 			String name = directory + fileNamePrefix + session.getId() + fileNameSuffix; 
-			try {
-				out = new ObjectOutputStream(new FileOutputStream(name));
+			try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(name))) {
 				out.writeObject(session);
 			} catch (IOException e) {
-				throw new RuntimeException(e);
-			} finally {
-				IOUtils.close(out);
+				throw new RuntimeIOException(e);
 			}
 		}
 	}
 
 	@Override
 	public Session load(String id) {
-		ObjectInputStream in = null;
 		String fileName = directory + fileNamePrefix + id + fileNameSuffix; 
-		try {
-			in = new ObjectInputStream(
-					new FileInputStream(fileName));
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
 			Session loaded = (Session) in.readObject();
 			if (loaded != null) {
 				return loaded;
 			}
-		} catch (IOException e) {
+		} catch (IOException | ClassNotFoundException e) {
 			LOG.warn(e.getMessage());
-		} catch (ClassNotFoundException e) {
-			LOG.warn(e.getMessage());
-		} finally {
-			IOUtils.close(in);
 		}
 		return null;
 	}
@@ -95,7 +88,6 @@ public class FileSessionStore implements SessionStore {
 
 	@Override
 	public int getActiveSessions() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

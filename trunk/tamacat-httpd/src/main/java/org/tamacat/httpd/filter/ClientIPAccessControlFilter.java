@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012 tamacat.org
+ * Copyright (c) 2010 tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.filter;
@@ -16,8 +16,8 @@ import org.tamacat.httpd.util.IpAddressMatcher;
 import org.tamacat.httpd.util.RequestUtils;
 
 public class ClientIPAccessControlFilter implements RequestFilter {
-	private List<IpAddressMatcher> allowMatchers = new ArrayList<IpAddressMatcher>();
-	private List<IpAddressMatcher> denyMatchers = new ArrayList<IpAddressMatcher>();
+	private List<IpAddressMatcher> allowMatchers = new ArrayList<>();
+	private List<IpAddressMatcher> denyMatchers = new ArrayList<>();
 
 	protected ServiceUrl serviceUrl;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, TamaCat.org
+ * Copyright (c) 2010, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.auth;

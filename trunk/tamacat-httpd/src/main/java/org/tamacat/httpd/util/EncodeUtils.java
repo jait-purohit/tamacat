@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.util;
@@ -12,7 +12,7 @@ import org.tamacat.util.PropertyUtils;
 
 public abstract class EncodeUtils {
 
-	private static HashMap<String,String> charsetMap = new HashMap<String,String>();
+	private static HashMap<String,String> charsetMap = new HashMap<>();
 	private static final String ENCODE_MAPPING_FILE = "encode-mapping.properties";
 	
 	static {

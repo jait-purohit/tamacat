@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2013, tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.handler;
 
 import org.apache.http.HttpEntityEnclosingRequest;
