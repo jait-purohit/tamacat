@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, TamaCat.org
+ * Copyright (c) 2008, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.pool.impl;
@@ -25,7 +25,7 @@ public class StackObjectPool<T> implements ObjectPool<T> {
 
     public StackObjectPool(PoolableObjectFactory<T> factory) {
         this.factory = factory;
-        pool = new Stack<T>();
+        pool = new Stack<>();
     }
 
     @Override

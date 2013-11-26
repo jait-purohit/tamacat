@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, TamaCat.org
+ * Copyright (c) 2008, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.dao.impl;
@@ -31,9 +31,9 @@ public class QueryImpl<T extends ORMappingSupport> implements Query<ORMappingSup
     static final String UPDATE = "UPDATE ${TABLE} SET ${VALUES}";
     static final String DELETE = "DELETE FROM ${TABLE}";
 
-    Collection<Column> selectColumns = new LinkedHashSet<Column>();
-    Collection<Column> updateColumns = new LinkedHashSet<Column>();
-    Set<Table> tables = new LinkedHashSet<Table>();
+    Collection<Column> selectColumns = new LinkedHashSet<>();
+    Collection<Column> updateColumns = new LinkedHashSet<>();
+    Set<Table> tables = new LinkedHashSet<>();
     StringBuffer where = new StringBuffer();
     StringBuffer orderBy = new StringBuffer();
 

@@ -26,12 +26,12 @@ public class MySQLDao<T extends ORMappingSupport> extends Dao<T> {
     
     @Override
     public Collection<T> searchList(Query<T> query, int start, int max) {
-        Collection<Column>columns = query.getSelectColumns();
+        Collection<Column> columns = query.getSelectColumns();
         String sql = query.getSelectSQL();
         sql = sql.replaceFirst("SELECT ", "SELECT SQL_CALC_FOUND_ROWS ");
         
         ResultSet rs = executeQuery(sql);
-        ArrayList<T> list = new ArrayList<T>();
+        ArrayList<T> list = new ArrayList<>();
         try {
         	if (start > 0) {
         		sql = sql + " limit " + start + "," + max;

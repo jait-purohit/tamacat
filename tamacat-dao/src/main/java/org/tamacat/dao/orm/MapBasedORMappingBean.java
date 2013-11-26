@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, TamaCat.org
+ * Copyright (c) 2008, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.dao.orm;
@@ -19,7 +19,7 @@ import org.tamacat.util.StringUtils;
 public class MapBasedORMappingBean extends LinkedHashMap<String, Object> implements ORMappingSupport {
 
     private static final long serialVersionUID = 1L;
-    protected Set<String> updated = new LinkedHashSet<String>();
+    protected Set<String> updated = new LinkedHashSet<>();
     protected GetFilter getfilter;
     protected SetFilter setfilter;
     

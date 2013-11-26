@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, TamaCat.org
+ * Copyright (c) 2008, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.sql;
@@ -26,8 +26,8 @@ public class TransactionStateManager {
 		return SINGLETON;
 	}
 	
-    private ThreadLocal<Boolean> isTran = new ThreadLocal<Boolean>();
-    private ThreadLocal<Integer> state = new ThreadLocal<Integer>();
+    private ThreadLocal<Boolean> isTran = new ThreadLocal<>();
+    private ThreadLocal<Integer> state = new ThreadLocal<>();
     
     public TransactionStateManager(){}
     
