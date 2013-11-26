@@ -29,7 +29,7 @@ public class CifsFileSearch {
 	}
 	
 	public List<SearchResult> search(String key, String value) {
-		List<SearchResult> files = new ArrayList<SearchResult>();
+		List<SearchResult> files = new ArrayList<>();
 	    IndexReader reader = null;
 	    try {
 	    	reader = DirectoryReader.open(FSDirectory.open(new File(indexDir)));
@@ -41,7 +41,7 @@ public class CifsFileSearch {
 		    int max = 100;
 		    //Query query = new TermQuery(new Term(key, value));
 		    TopDocs rs = searcher.search(parser.parse(value), null, max);
-		    //System.out.println(rs.totalHits);
+		    System.out.println(rs.totalHits);
 		    for (int i=0; i<rs.scoreDocs.length; i++) {
 		    	//Query query = parser.parse("");
 		    	Document firstHit = searcher.doc(rs.scoreDocs[i].doc);
