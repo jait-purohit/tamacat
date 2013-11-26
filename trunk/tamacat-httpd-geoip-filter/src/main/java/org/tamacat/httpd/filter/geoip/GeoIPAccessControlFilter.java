@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2013, tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.filter.geoip;
 
 import java.io.File;
