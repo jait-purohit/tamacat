@@ -19,9 +19,9 @@
 	</licenses>
 
 	<scm>
-		<url>http://tamacat.googlecode.com/svn/trunk/tamacat-httpd-tomcat7</url>
-		<connection>scm:svn:http://tamacat.googlecode.com/svn/trunk/tamacat-httpd-tomcat7</connection>
-		<developerConnection>scm:svn:https://tamacat.googlecode.com/svn/trunk/tamacat-httpd-tomcat7</developerConnection>
+		<url>http://tamacat.googlecode.com/svn/trunk/tamacat-httpd-tomcat</url>
+		<connection>scm:svn:http://tamacat.googlecode.com/svn/trunk/tamacat-httpd-tomcat</connection>
+		<developerConnection>scm:svn:https://tamacat.googlecode.com/svn/trunk/tamacat-httpd-tomcat</developerConnection>
 	</scm>
 	<dependencies>
 		<dependency>
@@ -33,19 +33,19 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
-			<version>8.0.0-RC3</version>
+			<version>7.0.47</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-logging-log4j</artifactId>
-			<version>8.0.0-RC3</version>
+			<version>7.0.47</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
-			<version>8.0.0-RC3</version>
+			<version>7.0.47</version>
 		</dependency>
 
 		<dependency>

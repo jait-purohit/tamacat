@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <service-config>
   <service>
-    <!-- <url path="/" type="normal" handler="VelocityHandler" /> -->
-    <url path="/webdav/" type="normal" handler="WebdavHandler" />
-    <!-- 
     <url path="/examples/" type="normal" handler="TomcatHandler" />
-    -->
-    <!--
-    <url path="/test/" type="normal" handler="TomcatHandler" />
-     -->
+    <url path="/webdav/" type="normal" handler="WebdavHandler" />
   </service>
 </service-config>
