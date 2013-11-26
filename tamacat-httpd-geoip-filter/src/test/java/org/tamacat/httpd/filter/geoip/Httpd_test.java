@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2013, TamaCat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.filter.geoip;
