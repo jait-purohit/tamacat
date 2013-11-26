@@ -21,8 +21,7 @@ public final class DBAccessManager implements LifecycleSupport {
 
 	static final Log LOG = LogFactory.getLog(DBAccessManager.class);
 	
-    private static final HashMap<String, DBAccessManager> MANAGER
-        = new HashMap<String, DBAccessManager>();
+    private static final HashMap<String, DBAccessManager> MANAGER = new HashMap<>();
 
     public static synchronized DBAccessManager getInstance(String name) {
         DBAccessManager dm = MANAGER.get(name);
@@ -32,9 +31,9 @@ public final class DBAccessManager implements LifecycleSupport {
         return dm;
     }
     
-    private ThreadLocal<Boolean> running = new ThreadLocal<Boolean>();
-    private ThreadLocal<Connection> con = new ThreadLocal<Connection>();
-    private ThreadLocal<Statement> stmt = new ThreadLocal<Statement>();
+    private ThreadLocal<Boolean> running = new ThreadLocal<>();
+    private ThreadLocal<Connection> con = new ThreadLocal<>();
+    private ThreadLocal<Statement> stmt = new ThreadLocal<>();
     private String name;
 
     private DBAccessManager(String name) {

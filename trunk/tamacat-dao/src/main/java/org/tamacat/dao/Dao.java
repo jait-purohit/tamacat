@@ -70,12 +70,12 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
 	}
 
     public Dao() {
-        orm = new ORMapper<T>();
+        orm = new ORMapper<>();
     }
     
     public Dao(DBAccessManager dbm) {
     	this.dbm = dbm;
-    	orm = new ORMapper<T>();
+    	orm = new ORMapper<>();
     }
     
     @SuppressWarnings("unchecked")
@@ -116,9 +116,8 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
     }
 
     public T search(Query<T> query) {
-        ResultSet rs = executeQuery(query.getSelectSQL());
         T o = null;
-        try {
+        try (ResultSet rs = executeQuery(query.getSelectSQL())) {
             if (rs.next()) {
                 o = mapping(query.getSelectColumns(), rs);
             } else {
@@ -126,8 +125,6 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
             }
         } catch (SQLException e) {
             handleException(e);
-        } finally {
-        	DBUtils.close(rs);
         }
         return o;
     }
@@ -142,9 +139,8 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
     
     public Collection<T> searchList(Query<T> query, int start, int max) {
         Collection<Column>columns = query.getSelectColumns();
-        ResultSet rs = executeQuery(query.getSelectSQL());
-        ArrayList<T> list = new ArrayList<T>();
-        try {
+        ArrayList<T> list = new ArrayList<>();
+        try (ResultSet rs = executeQuery(query.getSelectSQL())) {
         	if (start > 0) {
         		for (int i=1; i<start; i++) rs.next();
         	}
@@ -157,8 +153,6 @@ public class Dao<T extends ORMappingSupport> implements AutoCloseable {
             }
         } catch (SQLException e) {
             handleException(e);
-        } finally {
-        	DBUtils.close(rs);
         }
         return list;
     }

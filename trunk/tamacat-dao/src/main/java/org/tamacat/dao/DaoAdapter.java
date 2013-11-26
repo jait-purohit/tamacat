@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, TamaCat.org
+ * Copyright (c) 2007, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.dao;
@@ -27,7 +27,7 @@ public class DaoAdapter<T extends ORMappingSupport> implements AutoCloseable {
     }
 
     public void setDatabase(String dbname) {
-    	Dao<T> delegate = new Dao<T>();
+    	Dao<T> delegate = new Dao<>();
     	delegate.callerDao = getClass();
     	delegate.setDatabase(dbname);
     	setDao(delegate);

@@ -48,14 +48,11 @@ public class DriverManagerJdbcConfig implements JdbcConfig {
     	try {
     		con.setAutoCommit(true);
     		if (activateSQL != null) {
-    			Statement stmt = con.createStatement();
-    			try {
+    			try (Statement stmt = con.createStatement()) {
     				stmt.executeQuery(activateSQL);
     				if (LOG.isDebugEnabled()) {
     					LOG.debug(activateSQL);
     				}
-    			} finally {
-    				DBUtils.close(stmt);
     			}
     		}
     	} catch (SQLException e) {

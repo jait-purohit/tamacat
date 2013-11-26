@@ -18,8 +18,7 @@ public class ConnectionManager extends StackObjectPool<Connection> {
 
 	private static final String XML = "db.xml";
 	
-    private static final HashMap<String, ConnectionManager>
-        MANAGER = new HashMap<String, ConnectionManager>();
+    private static final HashMap<String, ConnectionManager> MANAGER = new HashMap<>();
 
     public synchronized static ConnectionManager getInstance(String name) {
         ConnectionManager cm = MANAGER.get(name);

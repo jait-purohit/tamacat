@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, TamaCat.org
+ * Copyright (c) 2008, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.mock.sql;
@@ -14,7 +14,6 @@ import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.sql.DataSource;
-
 
 public class MockDataSourceImpl implements DataSource, Referenceable {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, TamaCat.org
+ * Copyright (c) 2009, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.dao;
@@ -17,7 +17,6 @@ public class DaoFactory {
 	/**
 	 * Get the Dao object from orm.xml
 	 * @param id
-	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T>T getDao(String id) {

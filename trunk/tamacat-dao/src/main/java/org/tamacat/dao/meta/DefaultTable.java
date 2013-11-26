@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, TamaCat.org
+ * Copyright (c) 2008, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.dao.meta;
@@ -10,8 +10,8 @@ import java.util.LinkedHashSet;
 
 public class DefaultTable implements Table {
 
-    private LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
-    private HashSet<Column> primaryKeys = new HashSet<Column>();
+    private LinkedHashSet<Column> columns = new LinkedHashSet<>();
+    private HashSet<Column> primaryKeys = new HashSet<>();
 
     private String schemaName;
     private String tableName;

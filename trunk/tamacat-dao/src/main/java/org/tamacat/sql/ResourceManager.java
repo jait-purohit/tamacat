@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, TamaCat.org
+ * Copyright (c) 2008, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.sql;
@@ -12,8 +12,7 @@ public class ResourceManager {
 
 	static final Log LOG = LogFactory.getLog(ResourceManager.class);
 	
-	private ThreadLocal<Stack<LifecycleSupport>> manager
-		= new ThreadLocal<Stack<LifecycleSupport>>();
+	private ThreadLocal<Stack<LifecycleSupport>> manager = new ThreadLocal<>();
 	
 	private static final ResourceManager SELF = new ResourceManager();
 	private ResourceManager() {}

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2011, tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.dao.impl;
 
 import java.sql.ResultSet;
@@ -43,7 +47,7 @@ public class OracleDao<T extends ORMappingSupport> extends Dao<T> {
         	sql = q.toString();
         }
         ResultSet rs = executeQuery(sql);
-        ArrayList<T> list = new ArrayList<T>();
+        ArrayList<T> list = new ArrayList<>();
         try {
         	//if (start > 0) {
         	//	for (int i=1; i<start; i++) rs.next();
