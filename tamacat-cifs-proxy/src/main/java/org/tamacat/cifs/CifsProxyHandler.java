@@ -1,6 +1,5 @@
 package org.tamacat.cifs;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jcifs.smb.NtlmPasswordAuthentication;
@@ -102,30 +101,30 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 	@Override
 	public void doRequest(HttpRequest request, HttpResponse response, HttpContext context) {
 		String path = RequestUtils.getRequestPath(request);
-		if (path.startsWith(serviceUrl.getPath()+"search")) {
-			String key = RequestUtils.getParameter(context, "key");
-			String value = RequestUtils.getParameter(context, "q");
-			//System.out.println("key="+key+",value="+value);
+		String key = RequestUtils.getParameter(context, "key");
+		String value = RequestUtils.getParameter(context, "q");
+		
+		if (path.endsWith("/search") && StringUtils.isNotEmpty(key) && StringUtils.isNotEmpty(value)) {
 			VelocityContext ctx = new VelocityContext();
 			ctx.put("param", RequestUtils.getParameters(context).getParameterMap());
 			ctx.put("contextRoot", serviceUrl.getPath().replaceFirst("/$",""));
 			ctx.put("key", key);
 			ctx.put("q", value);
 			
-			List<SearchResult> files;
-			if (StringUtils.isNotEmpty(key) && StringUtils.isNotEmpty(value)) {
-				CifsFileSearch search = new CifsFileSearch();
-				files = search.search(key, value);
-			} else {
-				files = new ArrayList<SearchResult>();
-			}
+			CifsFileSearch search = new CifsFileSearch();
+			List<SearchResult> files = search.search(key, value);
 			ctx.put("hit", files.size());
+			
 			String html = searchPage.getListingsPage(request, response, ctx, files);
 			//System.out.println(html);
+			
 			response.setStatusCode(HttpStatus.SC_OK);
 			response.setEntity(getEntity(html));
 			return;
+		} else {
+			path = path.replace("/search", "/");
 		}
+
 		if ("true".equals(RequestUtils.getParameter(context, "remake"))) {
 			CrawlerThread thread = new CrawlerThread();
 			new Thread(thread).start();
@@ -138,6 +137,7 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 			NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(domain, username, password);
 			
 			file = new SmbFile(baseUrl + getDecodeUri(path.replace(serviceUrl.getPath(), "")), auth);
+
 			///// 404 NOT FOUND /////
 			if (!file.exists()) {
 				LOG.trace("File " + file.getPath() + " not found");
