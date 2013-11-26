@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2013, tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.tomcat;
 
 import java.io.File;
@@ -51,7 +55,8 @@ public class TomcatWebdavHandler extends ReverseProxyHandler {
 	    	//ProtectionDomain domain = TomcatHandler.class.getProtectionDomain();
 			//URL location = domain.getCodeSource().getLocation();
 	    	String baseDir = new File(contextRoot).getAbsolutePath();
-	    	StandardContext ctx = (StandardContext)tomcat.addWebapp(serviceUrl.getPath().replaceAll("/$", "/"), baseDir);
+	    	@SuppressWarnings("unused")
+			StandardContext ctx = (StandardContext)tomcat.addWebapp(serviceUrl.getPath().replaceAll("/$", "/"), baseDir);
 	    	//Wrapper w = ctx.createWrapper();
 			//System.out.println(serviceUrl.getPath().replaceAll("/$", "/"));
 	    	//WebdavServlet servlet = new WebdavServlet();
