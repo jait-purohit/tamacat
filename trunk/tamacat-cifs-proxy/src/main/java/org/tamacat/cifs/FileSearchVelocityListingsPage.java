@@ -13,7 +13,6 @@ import org.apache.velocity.VelocityContext;
 import org.tamacat.httpd.handler.page.VelocityListingsPage;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
-import org.tamacat.util.StringUtils;
 
 public class FileSearchVelocityListingsPage extends VelocityListingsPage {
 
@@ -35,26 +34,27 @@ public class FileSearchVelocityListingsPage extends VelocityListingsPage {
 			for (SearchResult f : files) {
 				CifsFile cifs = new CifsFile();
 				cifs.setDirectory(false);
-				//cifs.setName(f.getFolder()+f.getName());
+				cifs.setName(f.getFolder()+f.getName());
 				cifs.setName(f.getName());
-
-				cifs.setLength(StringUtils.parse(f.getLength(), 0L));				
-				cifs.setLastModified(StringUtils.parse(f.getLastModified(), 0L));
+				f.getLength();
+				cifs.setLength(f.getLength());	
+				cifs.setLastModified(f.getLastModifiedDate().getTime());
 				list.add(cifs);
-				System.out.println(f.length);
 			}
-			CifsFile[] cifsFiles = list.toArray(new CifsFile[list.size()]);
+			//CifsFile[] cifsFiles = list.toArray(new CifsFile[list.size()]);
 			//Arrays.sort(cifsFiles);
 			
-			context.put("list", list);
+			//context.put("list", list);
 
    			Template template = getTemplate(listingsPage + ".vm");
    			StringWriter writer = new StringWriter();
    			template.merge(context, writer);
    			return writer.toString();
     	} catch (Exception e) {
-    		LOG.trace(e.getMessage());
+    		LOG.error(e.getMessage());
     		return DEFAULT_ERROR_500_HTML;
     	}
     }
+	
+	
 }
