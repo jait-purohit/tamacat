@@ -114,7 +114,7 @@ public class CifsProxyHandler extends LocalFileHttpHandler {
 			CifsFileSearch search = new CifsFileSearch();
 			List<SearchResult> files = search.search(key, value);
 			ctx.put("hit", files.size());
-			
+			ctx.put("list", files);
 			String html = searchPage.getListingsPage(request, response, ctx, files);
 			//System.out.println(html);
 			

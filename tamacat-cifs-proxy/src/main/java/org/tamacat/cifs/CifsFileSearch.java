@@ -23,9 +23,14 @@ import org.tamacat.util.PropertyUtils;
 public class CifsFileSearch {
 
 	String indexDir;
+	String url;
+	String weburl;
+	
 	public CifsFileSearch() {
 		Properties props = PropertyUtils.getProperties("crawler.properties");
 		indexDir = props.getProperty("indexDir");
+		url = props.getProperty("url");
+		weburl = props.getProperty("weburl");
 	}
 	
 	public List<SearchResult> search(String key, String value) {
@@ -41,14 +46,12 @@ public class CifsFileSearch {
 		    int max = 100;
 		    //Query query = new TermQuery(new Term(key, value));
 		    TopDocs rs = searcher.search(parser.parse(value), null, max);
-		    System.out.println(rs.totalHits);
+		    //System.out.println("hits: "+rs.totalHits);
 		    for (int i=0; i<rs.scoreDocs.length; i++) {
 		    	//Query query = parser.parse("");
 		    	Document firstHit = searcher.doc(rs.scoreDocs[i].doc);
-		    	//System.out.print(firstHit.get("folder"));
-		    	//System.out.println(firstHit.get("length"));
 		    	SearchResult file = new SearchResult();
-		    	file.setUrl(firstHit.get("url"));
+		    	file.setUrl(firstHit.get("url").replace(url, weburl));
 		    	file.setFolder(firstHit.get("folder"));
 		    	file.setName(firstHit.get("name"));
 		    	file.setLastModified(firstHit.get("lastModified"));
