@@ -6,7 +6,6 @@ package org.tamacat.httpd.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 import org.apache.http.HttpEntity;
@@ -33,19 +32,19 @@ import org.tamacat.util.PropertyUtils;
 public class LocalFileHttpHandler extends AbstractHttpHandler {
 
 	static final Log LOG = LogFactory.getLog(LocalFileHttpHandler.class);
-	
+
 	protected String welcomeFile = "index.html";
 	protected VelocityListingsPage listingPage;
 	protected boolean listings;
 	protected Properties props;
-	
+
 	@Override
-    public void setServiceUrl(ServiceUrl serviceUrl) {
-    	super.setServiceUrl(serviceUrl);
+	public void setServiceUrl(ServiceUrl serviceUrl) {
+		super.setServiceUrl(serviceUrl);
 		props = PropertyUtils.getProperties("velocity.properties", getClassLoader());
 		listingPage = new VelocityListingsPage(props);
 	}
-	
+
 	/**
 	 * <p>Set the welcome file.
 	 * This method use after {@link #setListings}.
@@ -54,16 +53,16 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 	public void setWelcomeFile(String welcomeFile) {
 		this.welcomeFile = welcomeFile;
 	}
-	
+
 	/**
 	 * <p>Should directory listings be produced
 	 * if there is no welcome file in this directory.</p>
-	 * 
+	 *
 	 * <p>The welcome file becomes unestablished when I set true.<br>
 	 * When I set the welcome file, please set it after having
 	 * carried out this method.</p>
-	 * 
-	 * @param listings true: directory listings be produced (if welcomeFile is null). 
+	 *
+	 * @param listings true: directory listings be produced (if welcomeFile is null).
 	 */
 	public void setListings(boolean listings) {
 		this.listings = listings;
@@ -71,11 +70,11 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 			this.welcomeFile = null;
 		}
 	}
-	
+
 	public void setListingsPage(String listingsPage) {
 		listingPage.setListingsPage(listingsPage);
 	}
-	
+
 	protected boolean useDirectoryListings() {
 		if (listings && welcomeFile == null) {
 			return true;
@@ -83,7 +82,7 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public void doRequest(HttpRequest request, HttpResponse response, HttpContext context)
 			throws HttpException, IOException {
@@ -124,14 +123,14 @@ public class LocalFileHttpHandler extends AbstractHttpHandler {
 		try {
 			body = new StringEntity(html, encoding);
 			body.setContentType(DEFAULT_CONTENT_TYPE);
-		} catch (UnsupportedEncodingException e) {
+		} catch (Exception e) {
 		}
-        return body;
+		return body;
 	}
-	
+
 	@Override
 	protected HttpEntity getFileEntity(File file) {
 		FileEntity body = new FileEntity(file, ContentType.create(getContentType(file)));
-        return body;
+		return body;
 	}
 }

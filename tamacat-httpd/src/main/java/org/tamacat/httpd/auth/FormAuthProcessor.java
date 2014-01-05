@@ -4,7 +4,6 @@
  */
 package org.tamacat.httpd.auth;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
@@ -250,7 +249,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 			response.setEntity(new StringEntity(
 				"<html><meta http-equiv=\"refresh\" content=\"0;url="
 				+ HtmlUtils.escapeHtmlMetaChars(uri) + "\"></html>", "UTF-8"));
-		} catch (UnsupportedEncodingException e) {
+		} catch (Exception e) {
 			throw new UnauthorizedException();
 		}
 	}
@@ -291,7 +290,7 @@ public class FormAuthProcessor extends AbstractAuthProcessor {
 		if (!uri.endsWith(logoutActionUrl) && !uri.endsWith(loginActionUrl)) {
 			try {
 				return loginPageUrl + "?" + redirectKey + "=" + URLEncoder.encode(uri, charset);
-			} catch (UnsupportedEncodingException e) {
+			} catch (Exception e) {
 			}
 		}
 		return loginPageUrl;

@@ -6,7 +6,6 @@ package org.tamacat.httpd.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -196,7 +195,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			StringEntity entity = new StringEntity(html, encoding);
 			entity.setContentType(contentType);
 			return entity;
-		} catch (UnsupportedEncodingException e1) {
+		} catch (Exception e1) {
 			return null;
 		}
 	}
@@ -207,7 +206,7 @@ public class VelocityHttpHandler extends AbstractHttpHandler {
 			StringEntity entity = new StringEntity(html, encoding);
 			entity.setContentType(DEFAULT_CONTENT_TYPE);
 			return entity;
-		} catch (UnsupportedEncodingException e1) {
+		} catch (Exception e1) {
 			return null;
 		}
 	}
