@@ -14,8 +14,8 @@ import org.tamacat.log.LogFactory;
 
 public class HeaderLoggingFilter implements RequestFilter, ResponseFilter {
 
-	static final Log LOG = LogFactory.getLog(HeaderLoggingFilter.class);
-	
+	static final Log LOG = LogFactory.getLog("org.tamacat.httpd.debug.Header");
+
 	@Override
 	public void init(ServiceUrl serviceUrl) {}
 
@@ -29,15 +29,15 @@ public class HeaderLoggingFilter implements RequestFilter, ResponseFilter {
 			}
 		}
 	}
-	
+
 	@Override
 	public void afterResponse(HttpRequest request, HttpResponse response,
 			HttpContext context) {
+		LOG.info("[response] " + response.getStatusLine());
 		if (LOG.isDebugEnabled()) {
 			for (Header h : response.getAllHeaders()) {
 				LOG.debug("[response] " + h);
 			}
 		}
-		LOG.info("[response] " + response.getStatusLine());
 	}
 }

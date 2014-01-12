@@ -46,10 +46,6 @@ public class ReverseUtils {
 
 	static final Log LOG = LogFactory.getLog(ReverseUtils.class);
 
-	private static Charset charset = Charset.forName("UTF-8");
-	private static CharsetDecoder decoder = charset.newDecoder();
-	private static CharsetEncoder encoder = charset.newEncoder();
-
 	private static Pattern PATTERN = Pattern.compile(
 		"<[^<]*\\s+(href|src|action)=('|\")([^('|\")]*)('|\")[^>]*>",
 		Pattern.CASE_INSENSITIVE
@@ -89,6 +85,7 @@ public class ReverseUtils {
 	 */
 	public static void removeRequestHeaders(HttpRequest request) {
 		for (String h : removeRequestHeaders) {
+			if (LOG.isTraceEnabled()) LOG.trace("remove:"+h);
 			request.removeHeaders(h);
 		}
 	}
@@ -137,7 +134,7 @@ public class ReverseUtils {
 		Header[] locationHeaders = response.getHeaders("Content-Location");
 		response.removeHeaders("Content-Location");
 		for (Header location : locationHeaders) {
-			String value = location.getValue().replace("\r", "").replace("\n","");
+			String value = deleteCRLF(location.getValue());
 			String convertUrl = reverseUrl.getConvertRequestedUrl(value);
 			if (convertUrl != null) {
 				response.addHeader("Content-Location", convertUrl);
@@ -155,7 +152,7 @@ public class ReverseUtils {
 		Header[] locationHeaders = response.getHeaders("Location");
 		response.removeHeaders("Location");
 		for (Header location : locationHeaders) {
-			String value = location.getValue().replace("\r", "").replace("\n","");
+			String value = deleteCRLF(location.getValue());
 			String convertUrl = reverseUrl.getConvertRequestedUrl(value);
 			if (convertUrl != null) {
 				response.addHeader("Location", convertUrl);
@@ -287,6 +284,10 @@ public class ReverseUtils {
 		return str.substring(0, end);
 	}
 
+	private static Charset charset = Charset.forName("UTF-8");
+	private static CharsetDecoder decoder = charset.newDecoder();
+	private static CharsetEncoder encoder = charset.newEncoder();
+
 	//TODO bug?
 	public static ByteBuffer parse(ReverseUrl reverseUrl, ByteBuffer buffer) {
 		if (reverseUrl == null) return buffer;
@@ -314,5 +315,18 @@ public class ReverseUtils {
 			result = buffer;
 		}
 		return result;
+	}
+
+	/**
+	 * delete CRLF
+	 * @param str
+	 * @since 1.1
+	 */
+	static String deleteCRLF(String str) {
+		if (str != null && str.length() > 0 ) {
+			return str.replace("\r", "").replace("\n","");
+		} else {
+			return str;
+		}
 	}
 }
