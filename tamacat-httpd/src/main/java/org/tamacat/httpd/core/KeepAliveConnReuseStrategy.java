@@ -5,7 +5,6 @@
 package org.tamacat.httpd.core;
 
 import org.apache.http.HeaderIterator;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
@@ -18,7 +17,6 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.util.HeaderUtils;
-import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.log.Log;
 import org.tamacat.log.LogFactory;
 import org.tamacat.util.StringUtils;
@@ -148,10 +146,8 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 			// Check for the "Connection" header. If that is absent, check for
 			// the "Proxy-Connection" header. The latter is an unspecified and
 			// broken but unfortunately common extension of HTTP.
-			HttpRequest request = RequestUtils.getHttpRequest(context);
-			HeaderIterator hit = request.headerIterator(HTTP.CONN_DIRECTIVE);
+			HeaderIterator hit = response.headerIterator(HTTP.CONN_DIRECTIVE);
 			if (!hit.hasNext()) hit = response.headerIterator("Proxy-Connection");
-
 			// Experimental usage of the "Connection" header in HTTP/1.0 is
 			// documented in RFC 2068, section 19.7.1. A token "keep-alive" is
 			// used to indicate that the connection should be persistent.
