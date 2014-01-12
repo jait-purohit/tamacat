@@ -297,4 +297,13 @@ public class RequestUtils {
 		}
 		return path;
 	}
+
+	/**
+	 *
+	 * @param context
+	 * @since 1.1
+	 */
+	public static HttpRequest getHttpRequest(HttpContext context) {
+		return (HttpRequest) context.getAttribute(HttpCoreContext.HTTP_REQUEST);
+	}
 }

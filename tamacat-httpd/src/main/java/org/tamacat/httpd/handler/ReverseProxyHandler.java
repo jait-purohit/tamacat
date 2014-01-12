@@ -19,6 +19,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultBHttpClientConnection;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.protocol.HttpRequestExecutor;
@@ -128,14 +129,14 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		}
 		try {
 			context.setAttribute("reverseUrl", reverseUrl);
-	        Socket outsocket = new Socket(reverseUrl.getTargetAddress().getAddress(),
-	        		reverseUrl.getTargetAddress().getPort());
-	     
-            // Get the backend server configuration parameters from the server.properties.
-            // default value is:
-            //  - BackEndSocketBufferSize=8192
-	        //  - BackEndSocketTimeout=5000
-            //  - BackEndConnectionTimeout=10000
+			Socket outsocket = new Socket(reverseUrl.getTargetAddress().getAddress(),
+					reverseUrl.getTargetAddress().getPort());
+
+			// Get the backend server configuration parameters from the server.properties.
+			// default value is:
+			//  - BackEndSocketBufferSize=8192
+			//  - BackEndSocketTimeout=5000
+			//  - BackEndConnectionTimeout=10000
 			DefaultBHttpClientConnection conn = new DefaultBHttpClientConnection(
 					serviceUrl.getServerConfig().getParam("BackEndSocketBufferSize", 8192));
 			conn.setSocketTimeout(serviceUrl.getServerConfig().getParam("BackEndSocketTimeout", 5000));
@@ -147,21 +148,22 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 				LOG.trace("request: " + request);
 			}
 
+			BasicHttpContext reverseContext = new BasicHttpContext(/*context*/);
 			ReverseHttpRequest targetRequest =
-					ReverseHttpRequestFactory.getInstance(request, response, context, reverseUrl);
-			
+					ReverseHttpRequestFactory.getInstance(request, response, reverseContext, reverseUrl);
+
 			targetRequest.setHeader(proxyOrignPathHeader, serviceUrl.getPath()); //v1.1
 
 			//forward remote user.
-			ReverseUtils.setReverseProxyAuthorization(targetRequest, context, proxyAuthorizationHeader);
+			ReverseUtils.setReverseProxyAuthorization(targetRequest, reverseContext, proxyAuthorizationHeader);
 			try {
 				HttpProcessor httpproc = procBuilder.build();
 				if (reverseUrl instanceof PerformanceCounter) {
 					((PerformanceCounter)reverseUrl).countUp();
 				}
-				httpexecutor.preProcess(targetRequest, httpproc, context);
-				HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, context);
-				httpexecutor.postProcess(targetResponse, httpproc, context);
+				httpexecutor.preProcess(targetRequest, httpproc, reverseContext);
+				HttpResponse targetResponse = httpexecutor.execute(targetRequest, conn, reverseContext);
+				httpexecutor.postProcess(targetResponse, httpproc, reverseContext);
 				return targetResponse;
 			} finally {
 				if (reverseUrl instanceof PerformanceCounter) {
