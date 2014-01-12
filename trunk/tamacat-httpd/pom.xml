@@ -144,7 +144,7 @@
 					<show>protected</show>
 					<nohelp>true</nohelp>
 					<locale>en</locale>
-					<bottom>Copyright&amp;copy; 2013, tamacat.org</bottom>
+					<bottom>Copyright 2014 tamacat.org</bottom>
 				</configuration>
 			</plugin>
 		</plugins>
