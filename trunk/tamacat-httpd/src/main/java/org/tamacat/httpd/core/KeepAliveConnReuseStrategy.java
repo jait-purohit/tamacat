@@ -177,11 +177,11 @@ public class KeepAliveConnReuseStrategy extends DefaultConnectionReuseStrategy {
 					while (ti.hasNext()) {
 						final String token = ti.nextToken();
 						if (HTTP.CONN_CLOSE.equalsIgnoreCase(token)) {
-							LOG.debug("Keep-Alive: false (Connection:Close)");
+							LOG.debug("Keep-Alive:false (Connection:Close)");
 							return false;
 						} else if (HTTP.CONN_KEEP_ALIVE.equalsIgnoreCase(token)) {
 							// continue the loop, there may be a "close" afterwards
-							LOG.debug("Keep-Alive: true (Connection:Keep-Alive)");
+							LOG.debug("Keep-Alive:true (Connection:Keep-Alive)");
 							keepalive = true;
 						}
 					}

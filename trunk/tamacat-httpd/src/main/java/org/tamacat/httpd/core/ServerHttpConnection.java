@@ -7,11 +7,17 @@ package org.tamacat.httpd.core;
 import java.io.IOException;
 import java.net.Socket;
 
+import org.apache.http.HttpRequestFactory;
 import org.apache.http.impl.DefaultBHttpServerConnection;
+import org.apache.http.impl.io.DefaultHttpRequestParserFactory;
 
 public class ServerHttpConnection extends DefaultBHttpServerConnection {
 
 	final long CONN_START = new Long(System.currentTimeMillis());
+
+	public ServerHttpConnection(int buffersize, HttpRequestFactory factory) {
+		super(buffersize, buffersize, null, null, null, null, null, new DefaultHttpRequestParserFactory(null, factory), null);
+	}
 
 	public ServerHttpConnection(int buffersize) {
 		super(buffersize);
@@ -28,17 +34,6 @@ public class ServerHttpConnection extends DefaultBHttpServerConnection {
 		socketWrapper = new SocketWrapper(socket);
 		super.bind(socket);
 	}
-
-//	@Override
-//    protected HttpRequestFactory createHttpRequestFactory() {
-//        if (socketWrapper.isWebSocketSupport()) {
-//        	return new WebSocketRequestFactory();
-//        //} else if (socketWrapper.isWebDAVSupport()){
-//        //	return new WebDavHttpRequestFactory();
-//        } else {
-//        	return new DefaultHttpRequestFactory();
-//        }
-//    }
 
 	@Override
 	public Socket getSocket() {

@@ -37,7 +37,7 @@ public class DefaultHttpService extends HttpService {
 	static final Log LOG = LogFactory.getLog(DefaultHttpService.class);
 
 	static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
-	
+
 	protected HttpRequestHandlerMapper handleMapper;
 	protected HostRequestHandlerMapper hostResolver;
 	protected ClassLoader loader;
@@ -83,6 +83,7 @@ public class DefaultHttpService extends HttpService {
 				throw new NotFoundException();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			if (e instanceof org.tamacat.httpd.exception.HttpException) {
 				handleException(request, response,
 						(org.tamacat.httpd.exception.HttpException)e);

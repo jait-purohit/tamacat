@@ -14,6 +14,7 @@ import javax.net.ssl.SSLHandshakeException;
 import org.apache.http.ConnectionClosedException;
 import org.apache.http.HttpConnection;
 import org.apache.http.HttpConnectionMetrics;
+import org.apache.http.HttpRequestFactory;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
@@ -41,10 +42,14 @@ public class DefaultWorker implements Worker {
 	protected Socket socket;
 	protected PerformanceCounter counter;
 	protected ServerHttpConnection conn;
+	protected HttpRequestFactory httpRequestFactory;
 
-	public DefaultWorker() {}
+	public DefaultWorker() {
+		httpRequestFactory = new DefaultHttpRequestFactory();
+	}
 
-	public DefaultWorker(ServerConfig serverConfig, HttpService httpService, Socket socket) {
+	public DefaultWorker(ServerConfig serverConfig, HttpService httpService, HttpRequestFactory httpRequestFactory,Socket socket) {
+		this.httpRequestFactory = httpRequestFactory;
 		setServerConfig(serverConfig);
 		setHttpService(httpService);
 		setSocket(socket);
@@ -53,7 +58,7 @@ public class DefaultWorker implements Worker {
 	@Override
 	public void setServerConfig(ServerConfig serverConfig) {
 		this.serverConfig = serverConfig;
-		this.conn = new ServerHttpConnection(serverConfig.getSocketBufferSize());
+		this.conn = new ServerHttpConnection(serverConfig.getSocketBufferSize(), httpRequestFactory);
 		//serverConfig.getParam("WorkerThreadName", "httpd");
 	}
 
