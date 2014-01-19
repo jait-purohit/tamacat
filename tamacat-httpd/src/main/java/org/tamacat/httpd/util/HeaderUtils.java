@@ -14,6 +14,7 @@ import org.apache.http.HttpMessage;
 import org.apache.http.HttpRequest;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.tamacat.util.StringUtils;
 
 /**
  * <p>The utility class for HTTP request and response Headers.
@@ -35,7 +36,7 @@ public final class HeaderUtils {
 		Header header = message.getFirstHeader(name);
 		return header != null ? header.getValue() : null;
 	}
-	
+
 	/**
 	 * <p>Get the first header value.
 	 * When header is null, returns default value.
@@ -50,10 +51,10 @@ public final class HeaderUtils {
 		Header header = message.getFirstHeader(name);
 		return header != null ? header.getValue() : defaultValue;
 	}
-	
+
 	/**
 	 * <p>when each other's header names are equal returns true.
-	 * The header name does not distinguish a capital letter, a small letter. 
+	 * The header name does not distinguish a capital letter, a small letter.
 	 * @param target target header.
 	 * @param other other one.
 	 * @return true, header names are equals.
@@ -74,6 +75,7 @@ public final class HeaderUtils {
 	 */
 	public static List<Cookie> getCookies(String cookie) {
 		List<Cookie> cookies = new ArrayList<Cookie>();
+		if (StringUtils.isEmpty(cookie)) return cookies;
 		StringTokenizer token = new StringTokenizer(cookie, ";");
 		if (token != null) {
 			while (token.hasMoreTokens()) {
@@ -95,11 +97,11 @@ public final class HeaderUtils {
 		}
 		return cookies;
 	}
-	
+
 	public static String getCookieValue(HttpRequest request, String name) {
 		return getCookieValue(getHeader(request, "Cookie", ""), name);
 	}
-	
+
 	/**
 	 * <p>Get the Cookie value from Cookie header line.
 	 * @param cookie header line.
@@ -107,6 +109,7 @@ public final class HeaderUtils {
 	 * @return value of Cookie name in header line.
 	 */
 	public static String getCookieValue(String cookie, String name) {
+		if (StringUtils.isEmpty(cookie)) return null;
 		StringTokenizer token = new StringTokenizer(cookie, ";");
 		if (token != null) {
 			while (token.hasMoreTokens()) {
@@ -128,7 +131,7 @@ public final class HeaderUtils {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * <p>Check for use link convert.
 	 * @param contentType
@@ -149,7 +152,7 @@ public final class HeaderUtils {
 			}
 		}
 	}
-	
+
 	public static boolean isMultipart(String line) {
 		return line != null && line.toLowerCase().startsWith("multipart/");
 	}

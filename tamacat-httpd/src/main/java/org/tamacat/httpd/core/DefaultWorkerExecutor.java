@@ -9,8 +9,8 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.http.HttpRequestFactory;
 import org.apache.http.protocol.HttpService;
-
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.util.DefaultThreadFactory;
 import org.tamacat.log.Log;
@@ -31,6 +31,19 @@ public class DefaultWorkerExecutor implements WorkerExecutor {
 
 	protected ExecutorService executorService;
 	protected DefaultThreadFactory threadFactory = new DefaultThreadFactory();
+	protected HttpRequestFactory httpRequestFactory;
+
+	public DefaultWorkerExecutor() {
+		this(new DefaultHttpRequestFactory());
+	}
+
+	protected DefaultWorkerExecutor(HttpRequestFactory httpRequestFactory) {
+		this.httpRequestFactory = httpRequestFactory;
+	}
+
+	public void setHttpRequestFactory(HttpRequestFactory httpRequestFactory) {
+		this.httpRequestFactory = httpRequestFactory;
+	}
 
 	public void execute(Socket socket) throws IOException {
 		ExecutorService executors = getExecutorService();
@@ -38,7 +51,7 @@ public class DefaultWorkerExecutor implements WorkerExecutor {
 	}
 
 	protected Worker createWorker(Socket socket) {
-		return new DefaultWorker(serverConfig, httpService, socket);
+		return new DefaultWorker(serverConfig, httpService, httpRequestFactory, socket);
 	}
 
 	@Override
