@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, TamaCat.org
+ * Copyright (c) 2010, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.mime;
@@ -21,14 +21,14 @@ import org.apache.http.HttpRequest;
 import org.tamacat.io.MessageDigestInputStream;
 
 public class HttpFileUpload extends FileUpload {
-	
+
 	private String algorithm = "SHA-256";
-	
-    /**
-     * <p>Get the algorithm of checksum. (MessageDigest)
-     * Default algorithm: "SHA-256"
-     * @return algorithm
-     */
+
+	/**
+	 * <p>Get the algorithm of checksum. (MessageDigest)
+	 * Default algorithm: "SHA-256"
+	 * @return algorithm
+	 */
 	public String getAlgorithm() {
 		return algorithm;
 	}
@@ -41,52 +41,52 @@ public class HttpFileUpload extends FileUpload {
 	public void setAlgorithm(String algorithm) {
 		this.algorithm = algorithm;
 	}
-	
+
 	public List<FileItem> parseRequest(HttpRequest request)
 			throws FileUploadException {
 		RequestContext ctx = new HttpRequestContext(request);
-    	if (getFileItemFactory() == null) {
-    		setFileItemFactory(new DiskFileItemFactory());
-    	}
+		if (getFileItemFactory() == null) {
+			setFileItemFactory(new DiskFileItemFactory());
+		}
 		return parseRequest(ctx);
-    }
+	}
 
 	@Override
 	public List<FileItem> parseRequest(RequestContext ctx) throws FileUploadException {
-	   try {
-	       FileItemIterator iter = getItemIterator(ctx);
-	       List<FileItem> items = new ArrayList<FileItem>();
-	       FileItemFactory fac = getFileItemFactory();
-	       if (fac == null) {
-	           throw new NullPointerException(
-	               "No FileItemFactory has been set.");
-	       }
-	       while (iter.hasNext()) {
-	           FileItemStream item = iter.next();
-	           HttpFileItem fileItem = new HttpFileItem(fac.createItem(item.getFieldName(),
-	                   item.getContentType(), item.isFormField(),
-	                   item.getName())
-	           );
-	           try {
-	        	   MessageDigestInputStream in = new MessageDigestInputStream(
-	        			   item.openStream(), algorithm);
-	               Streams.copy(in, fileItem.getOutputStream(), true);
-	               
-	               fileItem.setDigest(in.getDigest());
-	           } catch (FileUploadIOException e) {
-	               throw (FileUploadException) e.getCause();
-	           } catch (IOException e) {
-	               throw new IOFileUploadException(
-	                       "Processing of " + MULTIPART_FORM_DATA
-	                       + " request failed. " + e.getMessage(), e);
-	           }
-	           items.add(fileItem);
-	       }
-	       return items;
-	   } catch (FileUploadIOException e) {
-	       throw (FileUploadException) e.getCause();
-	   } catch (IOException e) {
-	       throw new FileUploadException(e.getMessage(), e);
-	   }
+	try {
+		FileItemIterator iter = getItemIterator(ctx);
+		List<FileItem> items = new ArrayList<FileItem>();
+		FileItemFactory fac = getFileItemFactory();
+		if (fac == null) {
+			throw new NullPointerException(
+				"No FileItemFactory has been set.");
+		}
+		while (iter.hasNext()) {
+			FileItemStream item = iter.next();
+			HttpFileItem fileItem = new HttpFileItem(fac.createItem(item.getFieldName(),
+					item.getContentType(), item.isFormField(),
+					item.getName())
+			);
+			try {
+				MessageDigestInputStream in = new MessageDigestInputStream(
+						item.openStream(), algorithm);
+				Streams.copy(in, fileItem.getOutputStream(), true);
+
+				fileItem.setDigest(in.getDigest());
+			} catch (FileUploadIOException e) {
+				throw (FileUploadException) e.getCause();
+			} catch (IOException e) {
+				throw new IOFileUploadException(
+						"Processing of " + MULTIPART_FORM_DATA
+						+ " request failed. " + e.getMessage(), e);
+			}
+			items.add(fileItem);
+		}
+		return items;
+	} catch (FileUploadIOException e) {
+		throw (FileUploadException) e.getCause();
+	} catch (IOException e) {
+		throw new FileUploadException(e.getMessage(), e);
+	}
 	}
 }

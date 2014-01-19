@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, TamaCat.org
+ * Copyright (c) 2010 tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.filter;
@@ -28,7 +28,7 @@ import org.tamacat.util.FileUtils;
 public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 
 	static final Log LOG = LogFactory.getLog(MultipartHttpFilter.class);
-	
+
 	protected ServiceUrl serviceUrl;
 	protected String baseDirectory;
 	protected String encoding = "UTF-8";
@@ -84,13 +84,13 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 			}
 		}
 	}
-	
+
 	protected void handleFormField(HttpContext context, FileItem item) {
 		String key = item.getFieldName();
 		try {
 			String value = null;
 			if (encoding != null) {
-			    value = item.getString(encoding);
+				value = item.getString(encoding);
 			} else {
 				value = item.getString();
 			}
@@ -99,7 +99,7 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 		} catch (UnsupportedEncodingException e) {
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected void handleFileItem(HttpContext context, FileItem item) {
 		List<FileItem> list = (List<FileItem>)context.getAttribute(FileItem.class.getName());
@@ -114,11 +114,11 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 	public void init(ServiceUrl serviceUrl) {
 		this.serviceUrl = serviceUrl;
 	}
-	
+
 	protected String getBaseDirectory() {
 		return baseDirectory;
 	}
-	
+
 	public void setBaseDirectory(String baseDirectory) {
 		if (baseDirectory != null) {
 			baseDirectory = baseDirectory.replace("\\", "/");
@@ -145,7 +145,7 @@ public class MultipartHttpFilter implements RequestFilter, ResponseFilter {
 			}
 		}
 	}
-		
+
 	protected void writeFile(FileItem item, String name) throws IOException {
 		String fileName = getBaseDirectory() + "/"
 							+ FileUtils.normalizeFileName(name);
