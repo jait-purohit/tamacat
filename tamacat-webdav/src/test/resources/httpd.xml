@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
 
-  <bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor">
-    <property name="contentType">
-      <value>html,xml,css,javascript</value>
-    </property>
-  </bean>
-  
-  <bean id="server" class="org.tamacat.httpd.core.HttpEngine" singleton="false">
-    <property name="propertiesName">
-      <value>server.properties</value>
-    </property>
-    <!--
-    <property name="httpResponseInterceptor">
-      <ref bean="gzip" />
-    </property>
-    -->
-  </bean>
-  
+	<bean id="gzip" class="org.tamacat.httpd.filter.GzipResponseInterceptor">
+		<property name="contentType">
+			<value>html,xml,css,javascript</value>
+		</property>
+	</bean>
+
+	<bean id="executor" class="org.tamacat.httpd.webdav.WebDavWorkerExecutor" />
+
+	<bean id="server" class="org.tamacat.httpd.core.HttpEngine">
+		<property name="propertiesName">
+			<value>server.properties</value>
+		</property>
+		<property name="workerExecutor">
+			<ref bean="executor" />
+		</property>
+		<!--
+		<property name="httpResponseInterceptor">
+			<ref bean="gzip" />
+		</property>
+		-->
+	</bean>
+
 </beans>

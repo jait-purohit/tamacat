@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, TamaCat.org
+ * Copyright (c) 2010, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.webdav;
@@ -10,16 +10,16 @@ import java.io.OutputStream;
 
 import org.tamacat.io.RuntimeIOException;
 
-import com.bradmcevoy.http.FileItem;
+import io.milton.http.FileItem;
 
 public class WebDavFileItem implements FileItem {
 
 	private org.apache.commons.fileupload.FileItem item;
-	
+
 	WebDavFileItem(org.apache.commons.fileupload.FileItem item) {
 		this.item = item;
 	}
-	
+
 	@Override
 	public String getContentType() {
 		return item.getContentType();

@@ -21,9 +21,9 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.protocol.HttpContext;
 import org.tamacat.httpd.util.HeaderUtils;
 
-import com.bradmcevoy.http.AbstractResponse;
-import com.bradmcevoy.http.Cookie;
-import com.bradmcevoy.http.Response;
+import io.milton.http.AbstractResponse;
+import io.milton.http.Cookie;
+import io.milton.http.Response;
 
 public class WebDavHttpResponse extends AbstractResponse {
 
@@ -31,12 +31,12 @@ public class WebDavHttpResponse extends AbstractResponse {
 	@SuppressWarnings("unused")
 	private HttpContext context;
 	private OutputStream out;
-	
+
 	public WebDavHttpResponse(HttpResponse response, HttpContext context) {
 		this.response = response;
 		this.context = context;
 	}
-	
+
 	@Override
 	public Map<String, String> getHeaders() {
 		org.apache.http.Header[] headers = response.getAllHeaders();
@@ -109,5 +109,17 @@ public class WebDavHttpResponse extends AbstractResponse {
 	public void setStatus(Status status) {
 		response.setStatusCode(status.code);
 		response.setReasonPhrase(status.name());
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void sendError(Status status, String message) {
+		// TODO Auto-generated method stub
+
 	}
 }

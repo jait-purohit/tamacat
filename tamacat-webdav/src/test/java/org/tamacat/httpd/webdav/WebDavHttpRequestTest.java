@@ -8,13 +8,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.bradmcevoy.http.Request;
+import io.milton.http.Request;
 
 public class WebDavHttpRequestTest {
 
 	HttpRequest req;
 	WebDavHttpRequest request;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		req = new BasicHttpRequest("GET", "http://www.example.com/test/");
