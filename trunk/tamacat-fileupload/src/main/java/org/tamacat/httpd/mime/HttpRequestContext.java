@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, TamaCat.org
+ * Copyright (c) 2010, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.mime;
@@ -17,15 +17,15 @@ import org.tamacat.util.StringUtils;
 public class HttpRequestContext implements RequestContext {
 
 	HttpRequest request;
-	
+
 	public HttpRequestContext(HttpRequest request) {
 		this.request = request;
 	}
-	
+
 	public HttpRequest getHttpRequest() {
 		return request;
 	}
-	
+
 	@Override
 	public String getCharacterEncoding() {
 		Header h = request.getFirstHeader(HTTP.CONTENT_ENCODING);

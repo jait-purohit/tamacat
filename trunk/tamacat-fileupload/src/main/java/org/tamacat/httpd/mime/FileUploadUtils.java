@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2010 tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.mime;
 
 import java.util.List;
@@ -12,7 +16,7 @@ public class FileUploadUtils {
 	public static List<HttpFileItem> getFileItemList(HttpContext context) {
 		return (List<HttpFileItem>) context.getAttribute(FileItem.class.getName());
 	}
-	
+
 	public static Exception getException(HttpContext context) {
 		return (Exception) context.getAttribute(HttpFilter.EXCEPTION_KEY);
 	}

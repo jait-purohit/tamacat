@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2010, tamacat.org
+ * All rights reserved.
+ */
 package org.tamacat.httpd.mime;
 
 import java.io.File;
@@ -14,7 +18,7 @@ public class HttpFileItem implements FileItem, FileItemHeadersSupport {
 
 	private static final long serialVersionUID = 1L;
 	protected FileItem item;
-	
+
 	private String digest;
 
 	public String getDigest() {
@@ -104,7 +108,7 @@ public class HttpFileItem implements FileItem, FileItemHeadersSupport {
 	public OutputStream getOutputStream() throws IOException {
 		return item.getOutputStream();
 	}
-	
+
 	@Override
 	public FileItemHeaders getHeaders() {
 		if (item instanceof FileItemHeadersSupport) {
