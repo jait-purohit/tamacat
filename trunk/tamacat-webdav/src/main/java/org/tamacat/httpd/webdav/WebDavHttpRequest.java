@@ -21,24 +21,24 @@ import org.tamacat.httpd.util.HeaderUtils;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.StringUtils;
 
-import com.bradmcevoy.http.AbstractRequest;
-import com.bradmcevoy.http.Auth;
-import com.bradmcevoy.http.Cookie;
-import com.bradmcevoy.http.FileItem;
-import com.bradmcevoy.http.Request;
-import com.bradmcevoy.http.RequestParseException;
+import io.milton.http.AbstractRequest;
+import io.milton.http.Auth;
+import io.milton.http.Cookie;
+import io.milton.http.FileItem;
+import io.milton.http.Request;
+import io.milton.http.RequestParseException;
 
 public class WebDavHttpRequest extends AbstractRequest {
 
 	private HttpRequest request;
 	private HttpContext context;
 	private Auth auth;
-	
+
 	public WebDavHttpRequest(HttpRequest request, HttpContext context) {
 		this.request = request;
 		this.context = context;
 	}
-	
+
 	@Override
 	public String getRequestHeader(Request.Header header) {
 		return HeaderUtils.getHeader(request, header.name());
@@ -51,13 +51,13 @@ public class WebDavHttpRequest extends AbstractRequest {
 
 	@Override
 	public Auth getAuthorization() {
-        if (auth == null) {
-        	String h = getRequestHeader(Request.Header.AUTHORIZATION);
-        	if (StringUtils.isNotEmpty(h)) {
-        		auth = new Auth(h);
-        	}
-        }
-        return auth;
+		if (auth == null) {
+			String h = getRequestHeader(Request.Header.AUTHORIZATION);
+			if (StringUtils.isNotEmpty(h)) {
+				auth = new Auth(h);
+			}
+		}
+		return auth;
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public class WebDavHttpRequest extends AbstractRequest {
 
 	@Override
 	public void setAuthorization(Auth auth) {
-		
+
 	}
 
 	@Override

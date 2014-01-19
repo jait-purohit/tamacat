@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, TamaCat.org
+ * Copyright (c) 2010, tamacat.org
  * All rights reserved.
  */
 package org.tamacat.httpd.webdav;
@@ -8,18 +8,18 @@ import java.util.Date;
 
 import org.apache.http.cookie.SetCookie;
 
-import com.bradmcevoy.http.Cookie;
+import io.milton.http.Cookie;
 
 public class WebDavCookie implements Cookie {
 
 	private SetCookie cookie;
-	
+
 	WebDavCookie(org.apache.http.cookie.Cookie cookie) {
 		if (cookie instanceof SetCookie) {
 			this.cookie = (SetCookie)cookie;
 		}
 	}
-	
+
 	@Override
 	public String getDomain() {
 		return cookie.getDomain();
@@ -83,6 +83,16 @@ public class WebDavCookie implements Cookie {
 	@Override
 	public void setVersion(int version) {
 		cookie.setVersion(version);
+	}
+
+	@Override
+	public boolean isHttpOnly() {
+		return cookie.isSecure() == false;
+	}
+
+	@Override
+	public void setHttpOnly(boolean b) {
+		cookie.setSecure(!b);
 	}
 
 }
