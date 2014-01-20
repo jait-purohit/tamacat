@@ -4,25 +4,25 @@
  */
 package org.tamacat.httpd.webdav;
 
-import java.io.IOException;
-
-import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.tamacat.di.DI;
 import org.tamacat.di.DIContainer;
 import org.tamacat.httpd.core.HttpEngine;
+import org.tamacat.log.Log;
+import org.tamacat.log.LogFactory;
 
-@SuppressWarnings("deprecation")
 public class WebDavClient_test {
+
+	static final Log LOG = LogFactory.getLog(WebDavClient_test.class);
 
 	public static final String XML = "httpd.xml";
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		String config = args.length > 0 ? args[0] : XML;
 		DIContainer di = DI.configure(config);
 		if (di == null) throw new IllegalArgumentException(config + " is not found.");
@@ -30,59 +30,42 @@ public class WebDavClient_test {
 		Thread t = new Thread(server);
 		t.start();
 
-		create();
+		String file = "http://localhost:8080/test.txt";
 
-		delete();
+		put(file, new StringEntity("test1234","UTF-8"));
+
+		//delete(file);
 
 		System.exit(0);
 	}
 
-	static void create() throws Exception {
-		@SuppressWarnings("resource")
-		HttpClient client = new DefaultHttpClient();
+	static void put(String file, HttpEntity entity) {
+		HttpPut request = new HttpPut(file);
+		request.setEntity(entity);
 
-		HttpPut request = new HttpPut("http://localhost:8080/webdav/test.txt");
-		request.setEntity(new StringEntity("test1234","UTF-8"));
-		request.addHeader("Host", "localhost");
-		HttpResponse response = null;
-		try {
-			response = client.execute(request);
-			System.out.println("----------------------------------------");
-			System.out.println(response.getStatusLine());
-			System.out.println("----------------------------------------");
-			Header[] headers = response.getAllHeaders();
-			for (Header h : headers) {
-				System.out.println(h);
-			}
-			System.out.println(response.getStatusLine());
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		try (CloseableHttpClient client = HttpClients.custom().build()) {
+			HttpResponse response = client.execute(request);
+			LOG.info("------------------------------------------------------");
+			LOG.info(request.getRequestLine());
+
+			LOG.info(response.getStatusLine());
+			LOG.info("------------------------------------------------------");
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
 		}
 	}
 
-	static void delete() {
-		@SuppressWarnings("resource")
-		HttpClient client = new DefaultHttpClient();
+	static void delete(String file) {
+		HttpDelete request = new HttpDelete(file);
+		try (CloseableHttpClient client = HttpClients.custom().build()) {
+			HttpResponse response = client.execute(request);
+			LOG.info("------------------------------------------------------");
+			LOG.info(request.getRequestLine());
 
-		HttpDelete request = new HttpDelete("http://localhost:8080/webdav/test.txt");
-		request.addHeader("Host", "localhost");
-		HttpResponse response = null;
-		try {
-			response = client.execute(request);
-			System.out.println("----------------------------------------");
-			System.out.println(response.getStatusLine());
-			System.out.println("----------------------------------------");
-			Header[] headers = response.getAllHeaders();
-			for (Header h : headers) {
-				System.out.println(h);
-			}
-			System.out.println(response.getStatusLine());
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.info(response.getStatusLine());
+			LOG.info("------------------------------------------------------");
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
 		}
 	}
 }
