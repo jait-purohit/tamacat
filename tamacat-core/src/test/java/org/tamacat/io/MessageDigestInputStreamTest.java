@@ -50,9 +50,9 @@ public class MessageDigestInputStreamTest {
 		ByteArrayInputStream bi = new ByteArrayInputStream("TEST".getBytes());
 		MessageDigestInputStream in = new MessageDigestInputStream(bi);
 		long result = in.skip(2);
-		assertEquals(2, result);
-		
-		assertEquals(0, in.skip(-999));
+		assertSame(2L, result);
+
+		assertSame(0L, in.skip(-999));
 		IOUtils.close(in);
 	}
 
