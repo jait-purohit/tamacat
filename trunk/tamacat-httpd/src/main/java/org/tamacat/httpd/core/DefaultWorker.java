@@ -45,7 +45,7 @@ public class DefaultWorker implements Worker {
 	protected HttpRequestFactory httpRequestFactory;
 
 	public DefaultWorker() {
-		httpRequestFactory = new DefaultHttpRequestFactory();
+		httpRequestFactory = new StandardHttpRequestFactory();
 	}
 
 	public DefaultWorker(ServerConfig serverConfig, HttpService httpService, HttpRequestFactory httpRequestFactory,Socket socket) {

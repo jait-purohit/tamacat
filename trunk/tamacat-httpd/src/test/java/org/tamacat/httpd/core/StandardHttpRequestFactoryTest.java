@@ -9,24 +9,24 @@ import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicRequestLine;
 import org.junit.Test;
 
-public class DefaultHttpRequestFactoryTest {
+public class StandardHttpRequestFactoryTest {
 
 	@Test
 	public void testIsOneOf() {
 		String[] methods = new String[] {
 				"HEAD", "GET", "POST"
 		};
-		assertTrue(DefaultHttpRequestFactory.isOneOf(methods, "GET"));
-		assertTrue(DefaultHttpRequestFactory.isOneOf(methods, "POST"));
-		assertTrue(DefaultHttpRequestFactory.isOneOf(methods, "HEAD"));
+		assertTrue(StandardHttpRequestFactory.isOneOf(methods, "GET"));
+		assertTrue(StandardHttpRequestFactory.isOneOf(methods, "POST"));
+		assertTrue(StandardHttpRequestFactory.isOneOf(methods, "HEAD"));
 		
-		assertFalse(DefaultHttpRequestFactory.isOneOf(methods, "PUT"));
-		assertFalse(DefaultHttpRequestFactory.isOneOf(methods, "DELETE"));
+		assertFalse(StandardHttpRequestFactory.isOneOf(methods, "PUT"));
+		assertFalse(StandardHttpRequestFactory.isOneOf(methods, "DELETE"));
 	}
 
 	@Test
 	public void testNewHttpRequestRequestLine() {
-		DefaultHttpRequestFactory factory = new DefaultHttpRequestFactory();
+		StandardHttpRequestFactory factory = new StandardHttpRequestFactory();
 		try {
 			HttpRequest request = factory.newHttpRequest(
 					new BasicRequestLine("GET", "/", new ProtocolVersion("HTTP",1,1)));
@@ -75,7 +75,7 @@ public class DefaultHttpRequestFactoryTest {
 
 	@Test
 	public void testNewHttpRequestStringString() {
-		DefaultHttpRequestFactory factory = new DefaultHttpRequestFactory();
+		StandardHttpRequestFactory factory = new StandardHttpRequestFactory();
 		try {
 			HttpRequest request = factory.newHttpRequest("GET", "/");
 			assertEquals(false, request instanceof HttpEntityEnclosingRequest);

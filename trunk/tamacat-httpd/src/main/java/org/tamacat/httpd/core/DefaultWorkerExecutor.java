@@ -34,7 +34,7 @@ public class DefaultWorkerExecutor implements WorkerExecutor {
 	protected HttpRequestFactory httpRequestFactory;
 
 	public DefaultWorkerExecutor() {
-		this(new DefaultHttpRequestFactory());
+		this(new StandardHttpRequestFactory());
 	}
 
 	protected DefaultWorkerExecutor(HttpRequestFactory httpRequestFactory) {
