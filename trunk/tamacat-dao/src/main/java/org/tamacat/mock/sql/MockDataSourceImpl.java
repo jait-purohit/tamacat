@@ -17,40 +17,40 @@ import javax.sql.DataSource;
 
 public class MockDataSourceImpl implements DataSource, Referenceable {
 
-    private PrintWriter out;
-    Logger logger;
-    
-    public Connection getConnection() throws SQLException {
-        return new MockConnection();
-    }
+	private PrintWriter out;
+	Logger logger;
 
-    public Connection getConnection(String username, String password)
-            throws SQLException {
-        return new MockConnection();
-    }
+	public Connection getConnection() throws SQLException {
+		return new MockConnection();
+	}
 
-    public PrintWriter getLogWriter() throws SQLException {
-        return out;
-    }
+	public Connection getConnection(String username, String password)
+			throws SQLException {
+		return new MockConnection();
+	}
 
-    public int getLoginTimeout() throws SQLException {
-        return 0;
-    }
+	public PrintWriter getLogWriter() throws SQLException {
+		return out;
+	}
 
-    public void setLogWriter(PrintWriter out) throws SQLException {
-        this.out = out;
-    }
+	public int getLoginTimeout() throws SQLException {
+		return 0;
+	}
 
-    public void setLoginTimeout(int seconds) throws SQLException {
-    }
+	public void setLogWriter(PrintWriter out) throws SQLException {
+		this.out = out;
+	}
 
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return false;
-    }
+	public void setLoginTimeout(int seconds) throws SQLException {
+	}
 
-    public <T> T unwrap(Class<T> iface) throws SQLException {
-        return null;
-    }
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		return false;
+	}
+
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		return null;
+	}
 
 	public Reference getReference() throws NamingException {
 		return new Reference(getClass().getName());
@@ -61,6 +61,10 @@ public class MockDataSourceImpl implements DataSource, Referenceable {
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		if (logger == null) throw new SQLFeatureNotSupportedException();
 		return logger;
+	}
+
+	public void setParentLogger(Logger logger) {
+		this.logger = logger;
 	}
 
 }
