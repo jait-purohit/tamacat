@@ -47,14 +47,14 @@ public class ServerConfigTest {
 
 	@Test
 	public void testGetParamStringT() {
-		assertEquals(80, config.getParam("Port", 9999));
+		assertTrue(80 == config.getParam("Port", 9999));
 		assertEquals("url-config.xml", config.getParam("url-config.file", ""));
 
-		assertEquals(9999, config.getParam("test", 9999));
-		assertEquals(9999L, config.getParam("test", 9999L));
-		assertEquals(9999d, config.getParam("test", 9999d));
-		assertEquals(9999f, config.getParam("test", 9999f));
-		assertEquals('c', config.getParam("test", 'c'));
+		assertTrue(9999 == config.getParam("test", 9999));
+		assertTrue(9999L == config.getParam("test", 9999L));
+		assertTrue(9999d == config.getParam("test", 9999d));
+		assertTrue(9999f == config.getParam("test", 9999f));
+		assertTrue('c' == config.getParam("test", 'c'));
 		assertEquals("9999", config.getParam("test", "9999"));
 
 		assertEquals("80", config.getParam("Port", null));
