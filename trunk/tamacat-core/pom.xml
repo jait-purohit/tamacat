@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.3.1</version>
+			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -113,8 +113,8 @@
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
-				 <artifactId>wagon-ftp</artifactId>
-				 <version>1.0-alpha-6</version>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-alpha-6</version>
 			</extension>
 		</extensions>
 	</build>
