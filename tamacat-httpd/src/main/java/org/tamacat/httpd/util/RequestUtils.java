@@ -23,6 +23,8 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpServerConnection;
+import org.apache.http.RequestLine;
+import org.apache.http.message.BasicRequestLine;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
@@ -38,6 +40,37 @@ public class RequestUtils {
 
 	static final String CONTENT_TYPE_FORM_URLENCODED = "application/x-www-form-urlencoded";
 	static final String REQUEST_PARAMETERS_CONTEXT_KEY = "RequestParameters";
+
+
+	public static RequestLine getRequestLine(RequestLine requestline) {
+		String uri = requestline.getUri();
+		String path = getRequestPath(uri);
+		if (uri.equals(path)) {
+			return requestline;
+		} else {
+			return new BasicRequestLine(requestline.getMethod(),
+				path.substring(path.indexOf("/"), path.length()),
+				requestline.getProtocolVersion());
+		}
+	}
+
+	/**
+	 * Get request absolute URI to Path
+	 * @param uri
+	 */
+	public static String getRequestPath(final String uri) {
+		try {
+			if (uri.indexOf("http")==0 && uri.indexOf("://")>0) {
+				int idx = uri.indexOf("://");
+				String path = uri.substring(idx+3, uri.length());
+				if (path.indexOf("/")>0) {
+					return path.substring(path.indexOf("/"), path.length());
+				}
+			}
+		} catch (RuntimeException e) {
+		}
+		return uri;
+	}
 
 	public static String getRequestPath(HttpRequest request) {
 		String path = request.getRequestLine().getUri();

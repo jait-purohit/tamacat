@@ -83,7 +83,6 @@ public class DefaultHttpService extends HttpService {
 				throw new NotFoundException();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			if (e instanceof org.tamacat.httpd.exception.HttpException) {
 				handleException(request, response,
 						(org.tamacat.httpd.exception.HttpException)e);

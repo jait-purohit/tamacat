@@ -10,6 +10,7 @@ import org.apache.http.RequestLine;
 import org.apache.http.impl.DefaultHttpRequestFactory;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.message.BasicHttpRequest;
+import org.tamacat.httpd.util.RequestUtils;
 
 public class StandardHttpRequestFactory extends DefaultHttpRequestFactory {
 
@@ -41,12 +42,13 @@ public class StandardHttpRequestFactory extends DefaultHttpRequestFactory {
 		return false;
 	}
 
-	public HttpRequest newHttpRequest(final RequestLine requestline)
+	public HttpRequest newHttpRequest(RequestLine requestline)
 			throws MethodNotSupportedException {
 		if (requestline == null) {
 			throw new IllegalArgumentException("Request line may not be null");
 		}
 		String method = requestline.getMethod();
+		requestline = RequestUtils.getRequestLine(requestline);
 		if (isOneOf(RFC2616_COMMON_METHODS, method)) {
 			return new BasicHttpRequest(requestline);
 		} else if (isOneOf(RFC2616_ENTITY_ENC_METHODS, method)) {
@@ -59,8 +61,9 @@ public class StandardHttpRequestFactory extends DefaultHttpRequestFactory {
 		}
 	}
 
-	public HttpRequest newHttpRequest(final String method, final String uri)
+	public HttpRequest newHttpRequest(final String method, String uri)
 			throws MethodNotSupportedException {
+		uri = RequestUtils.getRequestPath(uri);
 		if (isOneOf(RFC2616_COMMON_METHODS, method)) {
 			return new BasicHttpRequest(method, uri);
 		} else if (isOneOf(RFC2616_ENTITY_ENC_METHODS, method)) {
