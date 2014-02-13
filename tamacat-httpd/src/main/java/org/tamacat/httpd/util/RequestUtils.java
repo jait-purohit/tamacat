@@ -52,6 +52,11 @@ public class RequestUtils {
 				path.substring(path.indexOf("/"), path.length()),
 				requestline.getProtocolVersion());
 		}
+//		Path path = Paths.get(uri);
+//		Path p = path.subpath(0, path.getNameCount());
+//		return new BasicRequestLine(requestline.getMethod(),
+//				p,
+//				requestline.getProtocolVersion());
 	}
 
 	/**

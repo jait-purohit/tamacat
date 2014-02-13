@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.junit.After;
@@ -22,14 +23,14 @@ public class BasicAuthProcessorTest {
 	HttpRequest request;
 	HttpResponse response;
 	HttpContext context;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		config = new ServerConfig();
 		ServiceUrl serviceUrl = new ServiceUrl(config);
 		auth = new BasicAuthProcessor();
 		auth.init(serviceUrl);
-		
+
 		TestAuthComponent authComponent = new TestAuthComponent();
 		authComponent.setAuthUsername("admin");
 		authComponent.setAuthPassword("pass");
@@ -50,13 +51,24 @@ public class BasicAuthProcessorTest {
 		} catch (UnauthorizedException e) {
 			assertTrue(true);
 		}
-		
+
 		String idpass = new String(new Base64().encode("admin:pass".getBytes()));
 		request.setHeader(BasicAuthProcessor.AUTHORIZATION, "Basic " + idpass);
 		try {
 			auth.doFilter(request, response, context);
 		} catch (UnauthorizedException e) {
 			fail();
+		}
+	}
+
+	@Test
+	public void testDoFilter_OPTIONS() {
+		request = HttpObjectFactory.createHttpRequest("OPTIONS", "/");
+		try {
+			auth.doFilter(request, response, context);
+			assertTrue(HttpStatus.SC_NO_CONTENT == response.getStatusLine().getStatusCode());
+		} catch (UnauthorizedException e) {
+			assertTrue(true);
 		}
 	}
 

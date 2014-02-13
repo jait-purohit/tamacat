@@ -222,6 +222,8 @@ public class ReverseUtils {
 			Object user = context.getAttribute(AuthComponent.REMOTE_USER_KEY);
 			if (user != null && user instanceof String) {
 				request.setHeader(headerName, (String)user);
+			} else {
+				request.removeHeaders(headerName);
 			}
 		}
 	}

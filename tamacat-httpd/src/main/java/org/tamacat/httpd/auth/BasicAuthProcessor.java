@@ -40,7 +40,7 @@ public class BasicAuthProcessor extends AbstractAuthProcessor {
 			return;
 		}
 		String path = RequestUtils.getRequestPath(request);
-		if (isFreeAccessUrl(path) || isFreeAccessExtensions(path) == false) {
+		if (isFreeAccessUrl(path) == false && isFreeAccessExtensions(path) == false) {
 			try {
 				String remoteUser = checkUser(request, response, context);
 				context.setAttribute(remoteUserKey, remoteUser);

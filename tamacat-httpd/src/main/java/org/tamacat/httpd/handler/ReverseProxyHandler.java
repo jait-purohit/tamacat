@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 
+import javax.net.SocketFactory;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -51,6 +53,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	protected static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
 
 	protected HttpRequestExecutor httpexecutor;
+	protected SocketFactory socketFactory;
 	protected HttpProcessorBuilder procBuilder = new HttpProcessorBuilder();
 	protected String proxyAuthorizationHeader = "X-ReverseProxy-Authorization";
 	protected String proxyOrignPathHeader = "X-ReverseProxy-Origin-Path"; //v1.1
@@ -62,6 +65,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	 */
 	public ReverseProxyHandler() {
 		this.httpexecutor = new HttpRequestExecutor();
+		this.socketFactory = SocketFactory.getDefault();
 		setDefaultHttpRequestInterceptor();
 	}
 
@@ -129,8 +133,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 		}
 		try {
 			context.setAttribute("reverseUrl", reverseUrl);
-			Socket outsocket = new Socket(reverseUrl.getTargetAddress().getAddress(),
-					reverseUrl.getTargetAddress().getPort());
+			Socket outsocket = createSocket(reverseUrl);
 
 			// Get the backend server configuration parameters from the server.properties.
 			// default value is:
@@ -155,7 +158,7 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 			targetRequest.setHeader(proxyOrignPathHeader, serviceUrl.getPath()); //v1.1
 
 			//forward remote user.
-			ReverseUtils.setReverseProxyAuthorization(targetRequest, reverseContext, proxyAuthorizationHeader);
+			ReverseUtils.setReverseProxyAuthorization(targetRequest, context, proxyAuthorizationHeader);
 			try {
 				HttpProcessor httpproc = procBuilder.build();
 				if (reverseUrl instanceof PerformanceCounter) {
@@ -238,5 +241,10 @@ public class ReverseProxyHandler extends AbstractHttpHandler {
 	protected HttpEntity getFileEntity(File file) {
 		FileEntity body = new FileEntity(file, ContentType.create(getContentType(file)));
 		return body;
+	}
+
+	protected Socket createSocket(ReverseUrl reverseUrl) throws IOException {
+		return socketFactory.createSocket(reverseUrl.getTargetAddress().getAddress(),
+				reverseUrl.getTargetAddress().getPort());
 	}
 }
