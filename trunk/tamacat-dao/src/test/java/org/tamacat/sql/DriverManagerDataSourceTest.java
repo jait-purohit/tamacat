@@ -8,16 +8,15 @@ package org.tamacat.sql;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import junit.framework.Assert;
-
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class DriverManagerDataSourceTest {
 
 	DriverManagerDataSource ds;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		ds = new DriverManagerDataSource();
@@ -30,7 +29,7 @@ public class DriverManagerDataSourceTest {
 	@After
 	public void tearDown() throws Exception {
 	}
-	
+
 	@Test
 	public void testGetConnection() {
 		try {
