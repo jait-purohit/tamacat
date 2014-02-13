@@ -18,6 +18,7 @@ import org.apache.http.protocol.HttpContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tamacat.httpd.auth.AuthComponent;
 import org.tamacat.httpd.config.DefaultReverseUrl;
 import org.tamacat.httpd.config.ServerConfig;
 import org.tamacat.httpd.config.ServiceType;
@@ -27,6 +28,7 @@ import org.tamacat.httpd.exception.ServiceUnavailableException;
 import org.tamacat.httpd.filter.RequestFilter;
 import org.tamacat.httpd.filter.ResponseFilter;
 import org.tamacat.httpd.handler.ReverseProxyHandler;
+import org.tamacat.httpd.mock.DummySocketFactory;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 import org.tamacat.httpd.util.RequestUtils;
 import org.tamacat.util.PropertyUtils;
@@ -39,7 +41,8 @@ public class ReverseProxyHandlerTest {
 	@Before
 	public void setUp() throws Exception {
 		handler = new ReverseProxyHandler();
-
+		handler.httpexecutor = new DummyHttpRequestExecutor(); //for Test
+		handler.socketFactory = new DummySocketFactory(); //for Test
 		serverConfig = new ServerConfig(PropertyUtils.getProperties("server.properties"));
 		ServiceUrl serviceUrl = new ServiceUrl(serverConfig);
 
@@ -175,6 +178,31 @@ public class ReverseProxyHandlerTest {
 
 		handler.setProxyOrignPathHeader("Custom-ProxyOrignPathHeader");
 		assertEquals("Custom-ProxyOrignPathHeader", handler.proxyOrignPathHeader);
+	}
+
+	@Test
+	public void testProxyAutorizationUser() {
+		HttpContext context = createContext();
+		context.setAttribute(AuthComponent.REMOTE_USER_KEY, "admin");
+		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html", HttpVersion.HTTP_1_0);
+		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
+		handler.forwardRequest(request, response, context);
+
+		DummyHttpRequestExecutor executor = (DummyHttpRequestExecutor)handler.httpexecutor;
+		assertEquals("admin", executor.getHttpRequest().getFirstHeader("X-ReverseProxy-Authorization").getValue());
+	}
+
+	@Test
+	public void testProxyAutorizationUserOverride() {
+		HttpContext context = createContext();
+		HttpRequest request = new BasicHttpRequest("GET", "/test/test.html", HttpVersion.HTTP_1_0);
+		request.setHeader("X-ReverseProxy-Authorization", "admin"); //Do not use (remove header)
+
+		HttpResponse response = HttpObjectFactory.createHttpResponse(200, "OK");
+		handler.forwardRequest(request, response, context);
+
+		DummyHttpRequestExecutor executor = (DummyHttpRequestExecutor)handler.httpexecutor;
+		assertEquals(null, executor.getHttpRequest().getFirstHeader("X-ReverseProxy-Authorization"));
 	}
 
 }

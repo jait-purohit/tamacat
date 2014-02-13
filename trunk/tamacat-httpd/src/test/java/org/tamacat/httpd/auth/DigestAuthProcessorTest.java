@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.junit.After;
@@ -15,20 +16,20 @@ import org.tamacat.httpd.exception.UnauthorizedException;
 import org.tamacat.httpd.mock.HttpObjectFactory;
 
 public class DigestAuthProcessorTest {
-	
+
 	private ServerConfig config;
 	private DigestAuthProcessor auth;
 	private HttpRequest request;
 	private HttpResponse response;
 	private HttpContext context;
-	
+
 	private String authHeader = "Digest username=\"admin\", "
 		+ "realm=\"Authentication required 20091124\", "
 		+ "nonce=\"bc33508387a84b0eb65ca8dfedb7bcba\", "
 		+ "uri=\"/web/\", algorithm=MD5, "
 		+ "response=\"97d955134af5546163075400e4727431\", "
 		+ "qop=auth, nc=00000001, cnonce=\"8a59d880636c718a\"";
-	
+
 	@Before
 	public void setUp() throws Exception {
 		config = new ServerConfig();
@@ -36,7 +37,7 @@ public class DigestAuthProcessorTest {
 
 		auth = new DigestAuthProcessor();
 		auth.init(serviceUrl);
-		
+
 		auth.setRealm("Authentication required 20091124");
 		TestAuthComponent authComponent = new TestAuthComponent();
 		authComponent.setAuthUsername("admin");
@@ -58,12 +59,23 @@ public class DigestAuthProcessorTest {
 		} catch (UnauthorizedException e) {
 			assertTrue(true);
 		}
-		
+
 		request.setHeader(DigestAuthProcessor.AUTHORIZATION, authHeader);
 		try {
 			auth.doFilter(request, response, context);
 		} catch (UnauthorizedException e) {
 			fail();
+		}
+	}
+
+	@Test
+	public void testDoFilter_OPTIONS() {
+		request = HttpObjectFactory.createHttpRequest("OPTIONS", "/");
+		try {
+			auth.doFilter(request, response, context);
+			assertTrue(HttpStatus.SC_NO_CONTENT == response.getStatusLine().getStatusCode());
+		} catch (UnauthorizedException e) {
+			assertTrue(true);
 		}
 	}
 

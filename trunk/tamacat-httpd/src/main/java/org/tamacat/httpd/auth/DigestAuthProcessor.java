@@ -31,7 +31,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Realm is changed. Default realm is "Authentication required".
-	 * 
+	 *
 	 * @param realm
 	 */
 	public void setRealm(String realm) {
@@ -40,7 +40,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Set the algorithm. Default algorithm is MD5
-	 * 
+	 *
 	 * @param algorithm
 	 */
 	public void setAlgorithm(String algorithm) {
@@ -54,7 +54,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Set the qop. Dejault is "auth".
-	 * 
+	 *
 	 * @param qop
 	 */
 	public void setQop(String qop) {
@@ -69,7 +69,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 			return;
 		}
 		String path = RequestUtils.getRequestPath(request);
-		if (isFreeAccessUrl(path) || isFreeAccessExtensions(path) == false) {
+		if (isFreeAccessUrl(path) == false && isFreeAccessExtensions(path) == false) {
 			try {
 				String remoteUser = checkUser(request, response, context);
 				context.setAttribute(remoteUserKey, remoteUser);
@@ -84,7 +84,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 	/**
 	 * When the user authentication check and correct, the username(login id) is
 	 * returned.
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @param context
@@ -124,7 +124,7 @@ public class DigestAuthProcessor extends AbstractAuthProcessor {
 
 	/**
 	 * Set the "WWW-Authenticate" response header of Digest authenticate realm.
-	 * 
+	 *
 	 * @param response
 	 */
 	protected void setWWWAuthenticateHeader(HttpResponse response) {
